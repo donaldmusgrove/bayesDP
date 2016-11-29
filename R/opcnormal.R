@@ -82,7 +82,7 @@ ui <- shinyUI(pageWithSidebar(
       ),
 
       tabPanel("R Code",
-               includeMarkdown("gaussianPrint.md")
+               includeMarkdown("./opcnormal/gaussianPrint.md")
       )
     )
   )
@@ -149,5 +149,13 @@ server <- shinyServer(function(input, output, session){
   })
 })
 
+################################################################################
+# Finally Run Everything
+################################################################################
+
+.runApp(shinyApp(ui, server))
+#runApp(shinyApp(ui, server),
+#       port=as.numeric(commandArgs(TRUE)[2]),
+#       launch.browser=FALSE)
 
 
