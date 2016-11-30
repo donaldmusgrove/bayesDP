@@ -243,7 +243,7 @@ server <- shinyServer(function(input, output, session){
 
 
   pp3 <- reactive({
-    p_value <- seq(0,1,,100)
+    p_value <- seq(0,1,100)
     dd      <- subset(sim_results(),true_rate==true_rate[1])
 
     f <- function(i,dd,p_value){
