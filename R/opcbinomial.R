@@ -26,7 +26,7 @@ library(rmarkdown)
 options(shiny.launch.browser = .rs.invokeShinyWindowViewer)
 
 ui <- shinyUI(pageWithSidebar(
-  actionButton("button", "Submit", icon("thumbs-o-up")),
+  #actionButton("button", "Submit", icon("thumbs-o-up")),
   br(),
   br(),
   wellPanel(
