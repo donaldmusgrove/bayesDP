@@ -8,3 +8,16 @@ Depends:
 License: What license is it under?
 LazyData: true
 RoxygenNote: 5.0.1
+
+Imports:
+shiny,
+shinyFiles,
+shinythemes,
+shinyBS,
+
+survival,
+ggplot2,
+MCMCpack,
+knitr,
+rmarkdown,
+parallel
