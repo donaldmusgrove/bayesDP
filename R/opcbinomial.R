@@ -38,7 +38,7 @@ library(rmarkdown)
 # UI
 ################################################################################
 
-options(shiny.launch.browser = .rs.invokeShinyWindowViewer)
+#options(shiny.launch.browser = .rs.invokeShinyWindowViewer)
 
 ui <- shinyUI(pageWithSidebar(
     headerPanel("Bayesian Loss Function - Operating Characteristics"),
