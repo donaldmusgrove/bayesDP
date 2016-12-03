@@ -1,5 +1,4 @@
 
-
 .runApp <- function(app, ...) {
   ## selectively use the RStudio viewer pane (if available)
   viewer <- getOption("viewer")
