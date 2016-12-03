@@ -1,14 +1,4 @@
-library(shiny)
-library(shinyFiles)
-library(shinythemes)
-library(shinyBS)
 
-library(survival)
-library(ggplot2)
-library(MCMCpack)
-library(knitr)
-library(rmarkdown)
-library(parallel)
 
 
 .runApp <- function(app, ...) {

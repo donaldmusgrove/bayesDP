@@ -13,16 +13,6 @@
 #'
 #' @export
 
-library(shiny)
-library(shinyFiles)
-library(shinythemes)
-library(shinyBS)
-library(survival)
-library(ggplot2)
-library(MCMCpack)
-library(knitr)
-library(rmarkdown)
-
 .runApp <- function(app, ...) {
   ## selectively use the RStudio viewer pane (if available)
   viewer <- getOption("viewer")
