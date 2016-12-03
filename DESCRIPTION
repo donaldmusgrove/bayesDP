@@ -1,11 +1,11 @@
 Package: mdictools
 Title: What the Package Does (one line, title case)
-Version: 0.0.0.9000
-Authors@R: person("First", "Last", email = "first.last@example.com", role = c("aut", "cre"))
-Description: What the package does (one paragraph).
+Version: 0.1.1
+Authors@R: person("Shawn", "Balcome", email = "balcomes@gmail.com", role = c("aut", "cre"))
+Description: MDIC tools for survival analysis.
 Depends:
     R (>= 3.2.3)
-License: What license is it under?
+License:
 LazyData: true
 RoxygenNote: 5.0.1
 
@@ -14,7 +14,6 @@ shiny,
 shinyFiles,
 shinythemes,
 shinyBS,
-
 survival,
 ggplot2,
 MCMCpack,
