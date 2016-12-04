@@ -1,20 +1,23 @@
 Package: mdictools
+Type: Package
 Title: MDIC Tools for Survival Analysis
-Version: 0.1.1
-Authors@R: person("Shawn", "Balcome", email = "sbalcome@mdic.org", role = c("aut", "cre"))
+Version: 0.1-1
+Date: 2016-10-24
+Authors@R: c(
+  person("Shawn", "Balcome", email = "sbalcome@mdic.org", role = c("aut", "cre"))
+  person("Donnie", "Musgrove", email = "donald.r.musgrove@medtronic.com", role = c("aut", "cre"))
+  person("Tarek", "Haddad", email = "tarek.d.haddad@medtronic.com", role = c("aut", "cre"))
+  )
+Depends: shiny, shinyFiles, shinythemes, shinyBS, survival, ggplot2, MCMCpack, knitr, rmarkdown, parallel
+Suggests:
 Description: Locally hosted shiny UI methods for survival analysis.
-Depends: R (>= 3.2.3)
+LazyLoad: yes
 License: GPL-3
-LazyData: true
-RoxygenNote: 5.0.1
-Imports:
-shiny,
-shinyFiles,
-shinythemes,
-shinyBS,
-survival,
-ggplot2,
-MCMCpack,
-knitr,
-rmarkdown,
-parallel
+URL: https://github.com/balcomes/mdictools
+BugReports: https://github.com/balcomes/mdictools/issues
+NeedsCompilation: yes
+Packaged:
+Author: Shawn Balcome [aut, cre], Donnie Musgrove [aut, cre], Tarek Haddad [aut, cre]
+Maintainer: Shawn Balcome <sbalcome@mdic.org>
+Repository: CRAN
+Date/Publication: 2016-12-04 23:30:16
