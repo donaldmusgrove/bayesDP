@@ -1,0 +1,803 @@
+%\VignetteEngine{knitr::knitr}
+%\VignetteIndexEntry{interactiveDisplay: A package for enabling interactive visualization of Bioconductor objects}
+
+\documentclass{article}
+\usepackage{url}
+\usepackage{cite, graphicx, Bioconductor}
+\usepackage[nottoc,numbib]{tocbibind}
+\usepackage{parskip}
+%\usepackage[colorlinks]{hyperref}
+\usepackage[section]{placeins}
+\usepackage{caption}
+%\usepackage{etoolbox}
+\DeclareCaptionTextFormat{bookmark}{\belowpdfbookmark{Figure \thefigure: #1}{\thefigure}#1}
+\captionsetup{textformat=bookmark}
+%\hypersetup{
+%    colorlinks = true,
+%    allcolors= {black}
+%}
+\DeclareGraphicsExtensions{.pdf,.png,.jpg}
+\graphicspath{ {./images/} }
+
+%\newcommand\listoffigures{%
+%    \section*{\listfigurename}%
+%      \@mkboth{\MakeUppercase\listfigurename}%
+%              {\MakeUppercase\listfigurename}%
+%    \@starttoc{lof}%
+%    }
+
+\begin{document}
+%\SweaveOpts{concordance=TRUE}
+
+<<include=FALSE>>=
+library(knitr)
+opts_chunk$set(concordance=TRUE)
+@
+
+\begin{titlepage}
+\title{\bf
+interactiveDisplay: A package for enabling interactive visualization of Bioconductor objects
+}
+
+\author{Shawn Balcome}
+\date{\today}
+
+\clearpage\maketitle
+\thispagestyle{empty}
+
+\end{titlepage}
+
+\tableofcontents
+\listoffigures
+
+\section{Introduction}
+
+interactiveDisplay makes use of Bioconductor visualization packages, the Shiny\cite{shiny} web framework, the D3.js visualization JavaScript library, and other libraries to produce various web applications built around Bioconductor objects.
+
+Four popular Bioconductor data objects are currently supported: \textit{GRanges}, \textit{GRangesList}, \textit{ExpressionSet} and \textit{RangedSummarizedExperiment}.  In addition, the second April 2014 release version now includes a method for data frames and is imported by the AnnotationHub\cite{AnnotationHub} package.
+
+This vignette will provide some background and guidance on the use of the current supported methods.
+
+\section{Installation}
+
+The webpage for the release version of interactiveDisplay is available at:
+
+\url{http://bioconductor.org/packages/release/bioc/html/interactiveDisplay.html}
+
+And the development version is available at: 	 	
+
+\url{http://bioconductor.org/packages/devel/bioc/html/interactiveDisplay.html} 	 	
+
+It can also be installed within the R console using biocLite().
+
+<<install1, eval=FALSE, results='asis'>>=
+source("http://bioconductor.org/biocLite.R")
+biocLite("interactiveDisplay")
+@
+
+interactiveDisplay is actively maintained and it may be desirable to use the developer branch of the package.  If the user is willing to install development versions of Bioconductor packages, this can be accomplished by toggling the setting with useDevel() and reinstalling packages with biocLite().  The development branch is actively changed, so users should expect to encounter errors.  Generally, development and release versions of packages should not be mixed.
+
+<<install2, eval=FALSE, results='asis'>>=
+source("http://bioconductor.org/biocLite.R")
+useDevel(TRUE)
+biocLite("interactiveDisplay")
+@
+
+Because interactiveDisplay depends on many different R packages, some of which are used in only one individual method, many dependencies are suggested and will only be required when a method is run for the first time.  This helps with load time when other packages (currently AnnotationHub) import methods from interactiveDisplay.  If a required package is missing when a method is run, a message with instructions on obtaining it will be output in the R console.
+
+\section{Support}
+
+\begin{itemize}
+\item Send me an email directly at \href{mailto:balc0022@umn.edu}{balc0022@umn.edu}
+
+\item Search, subscribe or contact the bioconductor or bioc-devel mailing lists at
+\url{http://www.bioconductor.org/help/mailing-list/}
+\end{itemize}
+
+\section{Citation}
+
+<<citation, eval=TRUE, results='tex'>>=
+citation("interactiveDisplay")
+@
+
+\section{Bioconductor Object Methods}
+\subsection{\textit{GRanges} and \textit{GRangesList}}
+\subsubsection{Object Background - \textit{GRanges}}
+
+The \textit{GRanges} object is a standardized container for genomic location data used in many Bioconductor packages.  It is built on S4 classes from the the infrastructure package IRanges.   
+
+First, load the libraries needed for the examples in this document and load the example \textit{GRanges} data provided with the interactiveDisplay package.
+
+<<libraries, eval=TRUE, results='asis'>>=
+options(width=80)
+options(continue=" ")
+suppressMessages(library(ggplot2))
+suppressMessages(library(interactiveDisplay))
+suppressMessages(library(Biobase))
+@
+
+<<data_mmgr, eval=TRUE, results='tex'>>=
+data(mmgr)
+mmgr
+@
+
+Each row in the \textit{GRanges} object represents an individual range using the IRanges Bioconductor object to store the first and last position on the sequence.  The chromosome and strand designation are both stored using run-length encoding (rle) for efficiency.  The sequence lengths of are also stored in the \textit{GRanges}.  Any columns to the right of the pipe symbols in the object are metadata columns.  Practically any R data object can be stored in the metadata, it is left up to the user and is often dependent on the experimental context of the data that is being conformed to the \textit{GRanges} standard.  For instance, to represent interactions between ranges, it is possible to store a \textit{GRanges} object within another \textit{GRanges} object's metadata.  In the example here, transcript information has been inserted in the metadata. 
+
+\subsubsection{Object Background - \textit{GRangesList}}
+
+The \textit{GRangesList} class is a container for storing a list of \textit{GRanges} objects, the class is produced with the function GenomicRangesList().  
+
+<<grl, eval=TRUE, results='tex'>>=
+grl <- GenomicRangesList(list(mmgr,mmgr))
+@
+
+\textit{GRangesList} objects are useful for compound objects, an example given in the documentation being spliced transcripts that are are made up of exons\cite{GenomicRanges}
+
+<<data_mmgrl, eval=TRUE, results='tex'>>=
+data(mmgrl)
+mmgrl
+@
+
+\subsubsection{Method}
+
+The display() function in interactiveDisplay will start a Shiny web application tailored to the particular supported object passed as an argument.  Both the \textit{GRanges} and \textit{GRangesList} data objects can be visualized as follows:
+
+<<display_mmgr, eval=FALSE, results='asis'>>=
+display(mmgr)
+@
+
+<<display_mmgrl, eval=FALSE, results='asis'>>=
+display(mmgrl)
+@
+
+It is also important to note, the GRanges and GRangesList methods are designed to send a subset of the submitted object back to the console as a result when the GUI application is exited.  If the user wants to store this new object, simply assign it as illustrated in the following examples.
+
+<<display_mmgr2, eval=FALSE, results='asis'>>=
+new_mmgr <- display(mmgr)
+@
+
+<<display_mmgrl2, eval=FALSE, results='asis'>>=
+new_mmgrl <- display(mmgrl)
+@
+
+While simple in concept, data cleaning and wrangling are universal to any workflow, so this is a reasonable first implementation of Shiny's capability of returning results back to R.
+
+\subsubsection{UI}
+
+Unlike other visualization packages that are run in the console and lend themselves to walkthroughs and examples using the knitr package, interactiveDisplay's reliance on Shiny moves many of its functional components outside of the R console.  This section will be a walkthrough of the user interface controls and features of the applications produced from the \textit{GRanges} and \textit{GRangesList} methods.  Besides a couple small exceptions, these two methods are functionally similar and their descriptions have been consolidated together.
+
+%GRange
+%Chromosome
+
+\FloatBarrier
+\begin{figure}[!htb]
+\centering
+\includegraphics[width=5cm,keepaspectratio]{GRange_Chromosome}
+\caption{GRange, Chromosome drop-down menus}
+\label{fig:GRange_Chromosome}
+\end{figure}
+\FloatBarrier
+
+These dropdown UI elements are used to select a particular \textit{GRanges} and ranges associated with a chosen chromosome (The \textit{GRanges} dropdown is not present in the \textit{GRanges} method).  These ranges will be shown in the \textbf{Interactive Plot} and the subsetting operations in the other UI elements will apply to these active ranges.
+
+%UCSCGenome
+%SuppressIdeogram
+
+\FloatBarrier
+\begin{figure}[!htb]
+\centering
+\includegraphics[width=5cm,keepaspectratio]{UCSC_Genome_Suppress_Ideogram}
+\caption{UCSC Genome drop-down, Suppress Ideogram checkbox}
+\label{fig:UCSCGenome_SuppressIdeogram}
+\end{figure}
+\FloatBarrier
+
+The \textbf{UCSC Genome} dropdown gives the user choices for the ideogram image shown above the trackplots.  This selection is entirely determined by the user and the particular data in the GRange/GRangesList may not correspond to any of the available choices.  This feature also depends on access to remote UCSC servers.  Because the correct ideogram may not be available, it can be suppressed via the \textbf{Suppress Ideogram} checkbox element. 
+
+%Plot Window
+%Range Length Filter
+%Choose a Strand
+
+\FloatBarrier
+\begin{figure}[!htb]
+\centering     
+\includegraphics[width=5cm,keepaspectratio]{Plot_Window_Range_Length_Filter_Choose_a_Strand}
+\caption{Plot Window Range slider, Length Filter slider, Choose a Strand drop-down}
+\label{fig:Plot_Window_Range_Length_Filter_Choose_a_Strand}
+\end{figure}
+\FloatBarrier
+
+The \textbf{Plot Window} and \textbf{Range Length Filter} sliders and \textbf{Choose a Strand} dropdown provide the user with options for subsetting the original data to only the current ranges in view.  The \textbf{Plot Window} is reflected by the highlighted region on the ideogram in addition to the trackplot below it.  The \textbf{Range Length Filter} can be used to filter ranges shown by their respective lengths.  The \textbf{Choose a Strand} dropdown gives the user a choice of displaying ranges located on positive, negative, or both strands.
+
+%Deposit Ranges in View
+%Clear Deposit
+%Save to Console
+
+\FloatBarrier
+\begin{figure}[!htb]
+\centering  
+\includegraphics[width=5cm,keepaspectratio]{Deposit_Ranges_in_View_Clear_Deposit_Save_to_Console}
+\caption{Deposit Ranges in View button, Clear Deposit button, Save to Console button}
+\label{fig:Deposit_Ranges_in_View_Clear_Deposit_Save_to_Console}
+\end{figure}
+\FloatBarrier
+
+Besides subsetting which ranges are in the current view, the current subset of ranges can be saved.  This is a two step process.  Ranges of interest are first deposited, allowing the user to select different chromosomes/\textit{GRanges} to manipulate and add to the list of deposited selections.  Once the user is ready to return the data back to the console, \textbf{Save to Console} stops the Shiny session and returns the subsetted \textit{GRanges} or \textit{GRangesList} object.  \textbf{Clear Deposit} resets all selections.  The usefulness of this feature is left to the user's individual needs and is also very dependent on the data submitted.  Upon inspection, ranges of interest may fall on the same chromosome or chromosome region, share specific metadata tags, or individual lengths.  The Shiny UI offers an alternative to filtering away unwanted ranges iteratively in the console with multiple subsetting commands (and repeatedly printing output for validation), while providing instant visual feedback.
+
+\subsubsection{Plots}
+
+%Static Circle Layout
+
+\FloatBarrier
+\begin{figure}[!htb]
+\centering
+\includegraphics{Static_Circle_Layout}
+\caption{Static Circle Layout}
+\label{fig:Static_Circle_Layout}
+\end{figure}
+\FloatBarrier
+
+The \textbf{Static Circle Layout} is a ggbio\cite{ggbio} based plot is provided for overview purposes and is not intended to represent the user's current subsetting operations.  It provides the user with a broad summary of the data they submitted in its unaltered form.
+
+%Interactive Plot
+
+\FloatBarrier
+\begin{figure}[!htb]
+\centering
+\includegraphics{Interactive_Plot}
+\caption{Interactive Plot}
+\label{fig:Interactive_Plot}
+\end{figure}
+\FloatBarrier
+
+The \textbf{Interactive Plot} is the main view for these two methods.  Trackplots are drawn with the Bioconductor package Gviz\cite{Gviz}.  
+
+%All Ranges in Object
+
+\FloatBarrier
+\begin{figure}[!htb]
+\centering
+\includegraphics{All_Ranges_in_Object}
+\caption{All Ranges in Object}
+\label{fig:All_Ranges_in_Object}
+\end{figure}
+\FloatBarrier
+
+Using Shiny's advanced datatables, this is a searchable, sortable table of all ranges contained in the current \textit{GRanges}.  In the case of the \textit{GRanges} method, this table contains all ranges in the object, and in the \textit{GRangesList} method the table contains ranges in the current active \textit{GRanges} selected from the dropdown.
+
+%Selected Ranges in Current View
+
+\FloatBarrier
+\begin{figure}[!htb]
+\centering
+\includegraphics{Selected_Ranges_in_Current_View}
+\caption{Selected Ranges in Current View}
+\label{fig:Selected_Ranges_in_Current_View}
+\end{figure}
+\FloatBarrier
+
+This table is similar to the previous view, except it reflects the current state of subsetting operations performed by the UI and what is currently displayed in the trackplot.  
+
+%Deposited Selections
+
+\FloatBarrier
+\begin{figure}[!htb]
+\centering
+\includegraphics{Deposited_Selections}
+\caption{Deposited Selections}
+\label{fig:Deposited_Selections}
+\end{figure}
+\FloatBarrier
+
+This table view doesn't show individual ranges, instead it gives a summary of selected ranges that have been locked in with the \textbf{Deposit Ranges in View} button.  Here the user can keep track of sets of ranges of interest that can be sent back to the console when the application is closed.
+
+\subsubsection{Metadata Tabset}
+
+%Dynamically Created Metadata Tabs
+
+\FloatBarrier
+\begin{figure}[!htb]
+\centering
+\includegraphics[width=5cm,keepaspectratio]{Dynamically_Created_Metadata_Tabs}
+\caption{Dynamically Created Metadata Tabs}
+\label{fig:Dynamically_Created_Metadata_Tabs}
+\end{figure}
+\FloatBarrier
+
+The lower tabset consists of individual tabs that are dynamically produced based on the metadata contents of the object submitted.  Each tab has a list of checkboxes that allow the user to subset the selection based on the metadata.  The subsetting is applied across all deposited selections.  The usefulness of this panel really depends on the content of the object submitted.  Objects containing no metadata columns obviously have no use for this UI, but metadata rich objects with categorical, biologically relevant labels can potentially be subset quickly according to them.
+
+\subsection{\textit{ExpressionSet}}
+
+\subsubsection{Object Background}
+
+The \textit{ExpressionSet} class is a standardized container for gene expression data, specifically from a microarray.
+
+
+<<data_expr, eval=TRUE, results='tex'>>=
+data(expr)
+expr
+@
+
+We can view the expression values with the exprs() function.
+
+<<exprs_expr, eval=TRUE, results='tex'>>=
+exprs(expr)[1:10,1:7]
+@
+
+The structure of the \textit{ExpressionSet} object\cite{GenomicRanges}:
+
+\begin{itemize}
+\item expression data (assayData)
+\item sample metadata (phenoData)
+\item annotations and instrument metadata (featureData, annotation)
+\item sample protocol (protocolData)
+\item experimental design (experimentData)
+\end{itemize}
+
+\subsubsection{Method}
+
+<<display_expr, eval=FALSE, results='asis'>>=
+display(expr)
+@
+
+\subsubsection{UI}
+
+The method for \textit{ExpressionSet} has the most features of any of the current objects handled by interactiveDisplay.  The main panel consists of three tabs that visualize the data as a heatmap, network and dendrogram.  Gene ontology summaries of probes or selected probe clusters are available in tables in the lower tabset of the main panel.
+
+%Experiment Info
+
+\FloatBarrier
+\begin{figure}[!htb]
+\centering
+\includegraphics[width=5cm,keepaspectratio]{Experiment_Info}
+\caption{Experiment Info}
+\label{fig:Experiment_Info}
+\end{figure}
+\FloatBarrier
+
+The Experiment Info table at the top of the sidebar is entirely dependent on whether the \textit{ExpressionSet} object submitted has these fields filled out.
+
+%Suppress Heatmap
+%Transpose Heatmap
+
+\FloatBarrier
+\begin{figure}[!htb]
+\centering
+\includegraphics[width=5cm,keepaspectratio]{Suppress_Heatmap_Transpose_Heatmap}
+\caption{Suppress Heatmap checkbox, Transpose Heatmap checkbox}
+\label{fig:Suppress_Heatmap_Transpose_Heatmap}
+\end{figure}
+\FloatBarrier
+
+Depending on whether the parameter sflag=FALSE is passed to the the display() method and the selected dimensions of the \textit{ExpressionSet}, replotting the heatmap can introduce delays.  Using the checkbox to suppress the heatmap plotting can circumvent this.  Also, depending on the relative dimensions of probes/samples, transposing the plot can make better use of the space available. 
+
+%Network/Dendrogram View: Sample or Probe:
+
+\FloatBarrier
+\begin{figure}[!htb]
+\centering
+\includegraphics[width=5cm,keepaspectratio]{Network_Dendrogram_View_Sample_or_Probe}
+\caption{Network/Dendrogram View dropdown}
+\label{fig:Network_Dendrogram_View_Sample_or_Probe}
+\end{figure}
+\FloatBarrier
+
+This UI element simply toggles between displaying plots that represent distances/clustering across probes or samples.
+
+%Group Wide GO Summary
+%Group Wide Summary: Min probe pop for GO term
+
+\FloatBarrier
+\begin{figure}[!htb]
+\centering
+\includegraphics[width=5cm,keepaspectratio]{Group_Wide_GO_Summary_Group_Wide_Summary_Min_probe_pop_for_G}
+\caption{Group Wide GO Summary UI}
+\label{fig:Group_Wide_GO_Summary_Group_Wide_Summary_Min_probe_pop_for_G}
+\end{figure}
+\FloatBarrier
+
+This set of UI elements can be used to provide a gene ontology summary of a chosen cluster of probes in the network view.  Simply mouseover a node within a cluster of interest and the cluster number will pop-up.  Input that cluster number into the input field and hit the \textbf{View/Update GO Summary} button.  This can take 10-30 seconds, which is why this is not automatically reactive.  Adjusting the Minimum probe population for GO term allows the user to explore general or specific top ranking terms.  The summary table is located in the second tab of the lower tabset. 
+
+%Chosen Probe for GO Summary
+
+\FloatBarrier
+\begin{figure}[!htb]
+\centering
+\includegraphics[width=5cm,keepaspectratio]{Chosen_Probe_for_GO_Summary}
+\caption{Individual Probe GO Summary dropdown}
+\label{fig:Chosen_Probe_for_GO_Summary}
+\end{figure}
+\FloatBarrier
+
+This drop-down contains options from the current subset of probes being visualized.  Selecting a probe refreshes the first tab of the lower tabset with a GO summary for that probe, as well as associated gene names and Entrez IDs.  When toggled to probe view, clicking on a probe node in the network view also refreshes this selection and may be more convenient.
+
+%how Top or Bottom Ranked,
+%Based On:
+%Number of Probes to Display
+%Number of Samples to Display
+
+\FloatBarrier
+\begin{figure}[!htb]
+\centering
+\includegraphics[width=5cm,keepaspectratio]{Show_Top_or_Bottom_Ranked_Based_On_Number_of_Probes_to_Displ}
+\caption{Subset UI}
+\label{fig:Show_Top_or_Bottom_Ranked_Based_On_Number_of_Probes_to_Displ}
+\end{figure}
+\FloatBarrier
+
+This UI set is used for subsetting the submitted \textit{ExpressionSet} object.  The initial values are set to the maximum number of samples and to a very conservative 20 probes.  The user is free to expand out to the full dimensions.  
+
+%Tweak Axis Label Font Size
+
+\FloatBarrier
+\begin{figure}[!htb]
+\centering
+\includegraphics[width=5cm,keepaspectratio]{Tweak_Axis_Label_Font_Size}
+\caption{Tweak Axis Label Font Size slider}
+\label{fig:Tweak_Axis_Label_Font_Size}
+\end{figure}
+\FloatBarrier
+
+Depending on the dimensions of the \textit{ExpressionSet} object submitted/subset, it may be necessary to adjust label sizes to prevent label overlapping or illegibly small text.
+
+%Number of Edges:
+%Distance Threshold:
+
+\FloatBarrier
+\begin{figure}[!htb]
+\centering
+\includegraphics[width=5cm,keepaspectratio]{Number_of_Edges_Distance_Threshold}
+\caption{Edge/Distance UI}
+\label{fig:Number_of_Edges_Distance_Threshold}
+\end{figure}
+\FloatBarrier
+
+This UI element is used in the network view, allowing the user to determine the number of edges and the distance threshold represented in the graph.
+
+%Force Layout Charge
+%Force Layout Link Distance
+
+\FloatBarrier
+\begin{figure}[!htb]
+\centering
+\includegraphics[width=5cm,keepaspectratio]{Force_Layout_Charge_Force_Layout_Link_Distance}
+\caption{Force Layout sliders}
+\label{fig:Force_Layout_Charge_Force_Layout_Link_Distance}
+\end{figure}
+\FloatBarrier
+
+This is a cosmetic control for the force directed graph, which allows the user to adjust how nodes spread themselves out and the length of their edges.
+
+%Number of Clusters:
+%Hierarchical Clustering Method
+%Distance/Similarity Method
+
+\FloatBarrier
+\begin{figure}[!htb]
+\centering
+\includegraphics[width=5cm,keepaspectratio]{Number_of_Clusters_Hierarchical_Clustering_Method_Distance_S}
+\caption{Clustering UI}
+\label{fig:Number_of_Clusters_Hierarchical_Clustering_Method_Distance_S}
+\end{figure}
+\FloatBarrier
+
+These controls set the parameters for the distance and hierarchical clustering methods used.  Only base R methods are currently implemented but more may be included in future releases as well as possible option of allowing the user to manually provide their own via a textbox element.
+
+%Heatmap Color Scale
+%Rainbow Three Color
+
+\FloatBarrier
+\begin{figure}[!htb]
+\centering
+\includegraphics[width=5cm,keepaspectratio]{Heatmap_Color_Scale_Rainbow_Three_Color}
+\caption{Color Picker UI}
+\label{fig:Heatmap_Color_Scale_Rainbow_Three_Color}
+\end{figure}
+\FloatBarrier
+
+These elements affect the coloration of the heatmap.  The color picker for the tricolor scale is not provided by the Shiny framework.  This uses an additional JavaScript library which will be discussed in a later section.  This is not just a cosmetic option, different modes can better visualize different data and accommodate color blind users.  
+
+%Stop Application
+
+\FloatBarrier
+\begin{figure}[!htb]
+\centering
+\includegraphics[width=5cm,keepaspectratio]{Stop_Application}
+\caption{Stop Application button}
+\label{fig:Stop_Application}
+\end{figure}
+\FloatBarrier
+
+This stops the application.  The \textit{ExpressionSet} method does not currently return any data back to the R console.
+
+\subsubsection{Plots}
+
+%Heat Plot
+
+\FloatBarrier
+\begin{figure}[!htb]
+\centering
+\includegraphics{Heat_Plot}
+\caption{Heat Plot}
+\label{fig:Heat_Plot}
+\end{figure}
+\FloatBarrier
+
+Many packages on CRAN and Bioconductor have specialized heatmap functions, HeatPlus\cite{Heatplus} has a specific function for \textit{ExpressionSet} objects.  Given that one of the goals of this package is modularity and reuse of code, the more generic plotting package ggplot2\cite{ggplot2} was used instead of other options.  Often heatmap and dendrogram plots are paired together but given that there is a great deal of screen real estate taken up by tables, UI controls and on-screen documentation, the dendrograms are moved to a separate tab.
+
+%Network View - Samples
+
+\FloatBarrier
+\begin{figure}[!htb]
+\centering
+\includegraphics{Network_View_Samples}
+\caption{Network View - Samples}
+\label{fig:Network_View_Samples}
+\end{figure}
+\FloatBarrier
+
+%Network View - Probes
+
+\FloatBarrier
+\begin{figure}[!htb]
+\centering
+\includegraphics{Network_View_Probes}
+\caption{Network View - Probes}
+\label{fig:Network_View_Probes}
+\end{figure}
+\FloatBarrier
+
+The \textbf{Network View} uses a D3.js based force directed graph to visualize distance/similarity between samples or probes based on user selected distance methods and threshold settings.  Nodes in the graph are colored based on cluster settings.  As stated previously, when the view is toggled to display probes, there is the added interface functionality of being to use the graph to conveniently gather GO information.  When used in conjunction with the heatmap view, the network graph can quickly convey to the user which samples have similar profiles or which probes have similar expression across samples.
+
+%Dendrogram - Samples
+
+\FloatBarrier
+\begin{figure}[!htb]
+\centering
+\includegraphics{Dendrogram_Samples}
+\caption{Dendrogram - Samples}
+\label{fig:Dendrogram_Samples}
+\end{figure}
+\FloatBarrier
+
+%Dendrogram - Probes
+
+\FloatBarrier
+\begin{figure}[!htb]
+\centering
+\includegraphics{Dendrogram_Probes}
+\caption{Dendrogram - Probes}
+\label{fig:Dendrogram_Probes}
+\end{figure}
+\FloatBarrier
+
+The decision to separate the dendrogram plots from the heatmap was a difficult one, paired heatmap/dendrogram plots quickly convey clustering groupings alongside the data that they were generated from.  However, due to the forementioned design/layout constraints, dendrograms are placed in their own tab.  This keeps the already complex UI as clean as possible with adequate space for all plots.  To accommodate this decision some care was taken to keep some consistency between views.  The clustering colors are consistent across the three views and the sample/probe order is the same between the heatmap and dendrogram views.  This consistency helps the user quickly switch between tabs and stay oriented with the data they are examining.
+
+\subsubsection{GO Tabset}
+
+%Individual Probe GO Summary
+
+\FloatBarrier
+\begin{figure}[!htb]
+\centering
+\includegraphics{Individual_Probe_GO_Summary}
+\caption{Individual Probe GO Summary}
+\label{fig:Individual_Probe_GO_Summary}
+\end{figure}
+\FloatBarrier
+
+These summary tables provide Entrez ID and gene names for the selected probe and the top ranking results for GO descriptors.  This table allows the user to manually choose and characterize probes that could be exhibiting differential expression in the submitted espressionSet. 
+
+%Probe Cluster GO Summary
+
+\FloatBarrier
+\begin{figure}[!htb]
+\centering
+\includegraphics{Probe_Cluster_GO_Summary}
+\caption{Probe Cluster GO Summary}
+\label{fig:Probe_Cluster_GO_Summary}
+\end{figure}
+\FloatBarrier
+
+This tab provides a table of the results of the hyperg() function from the GOstats package\cite{GOstats}.  Ranked in order of p-value, the results give a general GO summary across the group of selected probes.  Much like the previous table, this provides an interactive tool for characterizing differentially expressed sets of probes.
+
+\subsection{\textit{RangedSummarizedExperiment}}
+
+\subsubsection{Object Background}
+
+<<data_se, eval=TRUE, results='tex'>>=
+data(se)
+se
+@
+
+The \textit{RangedSummarizedExperiment} class is similar to a dataframe where rows represent ranges (using \textit{GRanges}/\textit{GRangesList}) and columns represent samples (with sample data summarized as a dataframe).  It can contain one or more assays.  Ranges have read counts associated with them\cite{GenomicRanges}.
+
+\subsubsection{Method}
+
+<<display_se, eval=FALSE, results='asis'>>=
+display(se)
+@
+
+\subsubsection{UI}
+
+%Chromosome
+%Number of Bins
+%Chromosome Range:
+%Use the mouse to drag and pan the plot. Use the mousewheel to zoom in/out.
+%Stop Application
+
+\FloatBarrier
+\begin{figure}[!htb]
+\centering
+\includegraphics[width=5cm,keepaspectratio]{summarizedExperimentUI}
+\caption{\textit{RangedSummarizedExperiment} UI}
+\label{fig:summarizedExperimentUI}
+\end{figure}
+\FloatBarrier
+
+The UI for the \textit{RangedSummarizedExperiment} method is relatively simple.  It is the best candidate of the existing methods for future development.  The \textit{RangedSummarizedExperiment} class is widely used, data rich object and has a lot of potential for improvement.
+
+\subsubsection{Plot}
+
+%Binned Mean Counts by Position
+
+\FloatBarrier
+\begin{figure}[!htb]
+\centering
+\includegraphics{Binned_Mean_Counts_by_Position}
+\caption{Binned Mean Counts by Position}
+\label{fig:Binned_Mean_Counts_by_Position}
+\end{figure}
+\FloatBarrier
+
+Currently the plot gives a simple depiction of expression score/counts across regions of the selected chromosome.  However, this plot currently obfuscates the relative coverage of the ranges of interest.  It will likely need to be replaced with a multiple track plot in future releases.
+
+\section{Additional Functions/Methods}
+
+\subsection{Dataframe - display()}
+
+<<display_mtcars, eval=FALSE, results='asis'>>=
+display(mtcars)
+@
+
+Similar to the GRanges and GRangesList methods, the dataframe method can send a subset of the submitted object back to the console and can be stored in a new variable.
+
+<<display_mtcars2, eval=FALSE, results='asis'>>=
+new_mtcars <- display(mtcars)
+@
+
+\FloatBarrier
+\begin{figure}[!htb]
+\centering
+\includegraphics{Dataframe_Table}
+\caption{Dataframe Table}
+\label{fig:Dataframe_Table}
+\end{figure}
+\FloatBarrier
+
+Despite the dataframe being a base R object and not exclusive to use with Bioconductor software, it's still useful to write methods for base R objects with genomic workflows in mind.  The Bioconductor package AnnotationHub imports this dataframe method.  This method makes use of Shiny's new advanced datatables with a slight modification to return selected rows back to the console. 
+
+\subsection{Dataframe - simplenet()}
+
+<<simplenet_mtcars, eval=FALSE, results='asis'>>=
+simplenet(mtcars)
+@
+
+\FloatBarrier
+\begin{figure}[!htb]
+\centering
+\includegraphics{simplenet}
+\caption{simplenet}
+\label{fig:simplenet}
+\end{figure}
+\FloatBarrier
+
+Code to produce the force network tab from the \textit{ExpressionSet} tab was recently converted to a stand-alone method for numeric dataframes in the developer branch of interactiveDisplay.
+
+\subsection{gridsvgjs()}
+
+One of the goals of this package is to provide users and future contributors with simple, modular functions that can be inserted into more complex methods or serve as the foundation or inspiration for future components.  This motivation was behind the decision to export the helper function gridsvgjs().   This function takes any grid based plot, converts it to SVG format (see section on gridSVG), inserts JavaScript for the Pan/Zoom functionality (see JavaScript Libraries section) and initiates a local Shiny instance.  The four display() methods make use of the majority of the code in gridsvgjs().  After considering the potential usefulness of doing this with any plot, I repackaged the code as a stand-alone function.  The standard R graphics viewer can sometimes be restrictive, particularly for larger plots.  Viewing a plot as a vector based rendering with pan and zoom capabilities seemed to be a desirable addition to the package.  The inserted JavaScript functionality is relatively simple, but hopefully it will encourage more interactivity in the future.
+
+\begin{center}
+<<plot_mtcars, eval=FALSE, results='asis'>>=
+data(mtcars)
+qp <- qplot(mpg, data=mtcars, geom="density", fill=factor(cyl), alpha=I(.4))
+plot(qp)
+@
+\end{center}
+
+To view the plot in the browser with JavaScript Pan/Zoom capabilities:
+
+<<gridsvgjs_qp, eval=FALSE, results='asis'>>=
+gridsvgjs(qp)
+@
+
+\section{Special Mention Components}
+
+\subsection{Shiny}
+
+The Shiny web framework is the component that was the main inspiration behind the proposal for this package.  The relative simplicity of prototyping applications and its use of existing universal web standards makes it an enticing piece of software to build an open source package around.  It means, unlike some packages built on low level code, there is a possibility for other biologists to contribute to the open source development.  Shiny provides the web service and predefined UI elements, but relies on existing R packages to provide the data analysis and plotting.  The interactivity of Shiny apps depends on its reactive programming model.
+
+\url{http://shiny.rstudio.com/}
+
+\subsection{Gviz/ggbio}
+
+Gviz and ggbio provide the biology specific plots in the \textit{GRanges} and \textit{GRangesList} methods in interactiveDisplay.  Both offer track-based plotting methods for genomic data.  Gviz was the initial choice for \textit{GRanges}/\textit{GRangesList} trackplots because it offered more generic, extensible plotting.  Later in development, ggbio plotting was also added as it handles additional complex plotting methods.
+
+\subsection{gridSVG}
+
+Simon Potter's gridSVG\cite{gridSVG} is an important asset in developing interactive R plots.  His package converts a grid\cite{base} based plot to SVG format directly.  Two major plotting packages for R, lattice\cite{lattice} and ggplot2 are built around grid (and many other packages depend on ggplot2), which gives gridSVG a lot of potential interaction with many Bioconductor libraries.
+
+\FloatBarrier
+\begin{figure}[!htb]
+\centering
+\includegraphics[width=5cm,keepaspectratio]{gridSVG}
+\caption{gridSVG\cite{gridSVG}}
+\label{fig:gridSVG}
+\end{figure}
+\FloatBarrier
+
+\section{JavaScript Libraries}
+
+\subsection{Data-Driven Documents}
+
+Michael Bostock's JavaScript library, D3.js (\url{http://d3js.org/}), allows for highly customizable data visualizations using universal web standards. It can work along with Shiny to bind data to the Document Object Model (DOM).  Unlike Shiny which handles the interactive elements but leaves R to handle the visualization, D3.js can handle both.  Currently only the \textit{ExpressionSet} method's Network View makes use of this library.
+
+\subsection{Zoom/Pan JavaScript libraries}
+
+This Zoom/Pan library is used in all four main display() methods and in gridsvgjs().  While a relatively simple feature, hopefully it will lead to more complex JavaScript interactivity that directly manipulates plots produced by R plotting packages.  The Andrea Leofreddi's original JavaScript code was expanded upon by John Krauss to produce the version of this library used in interactiveDisplay.
+
+Andrea Leofreddi
+
+\url{https://code.google.com/p/svgpan/}
+
+John Krauss
+
+\url{https://github.com/talos/jquery-svgpan}
+
+\subsection{JavaScript Color Chooser}
+
+The colorpicker included in the \textit{ExpressionSet} method should eventually be moved into the Shiny package itself.  Many R users outside of the Bioconductor community use RColorBrewer and could make use of this UI element in their Shiny based applications.
+
+Jan Odvarko
+
+\url{http://jscolor.com/}
+
+\section{Acknowledgments}
+
+Shiny \\*
+Joe Cheng and Winston Chang \\*
+\url{http://www.rstudio.com/shiny/}
+
+Force Layout \\*
+Jeff Allen \\*
+\url{https://github.com/trestletech/shiny-sandbox/tree/master/grn}
+
+gridSVG \\*
+Simon Potter \\*
+\url{http://sjp.co.nz/projects/gridsvg/}
+
+Zoom/Pan JavaScript libraries \\*
+John Krauss \\*
+\url{https://github.com/talos/jquery-svgpan} \\*
+Andrea Leofreddi \\*
+\url{https://code.google.com/p/svgpan/}
+
+JavaScript Color Chooser \\*
+Jan Odvarko \\*
+\url{http://jscolor.com/}
+
+Data-Driven Documents \\*
+Michael Bostock \\*
+\url{http://d3js.org/}
+
+\section{SessionInfo}
+
+<<sessionInfo, eval=TRUE, results='tex'>>=
+sessionInfo()
+@
+
+\bibliography{interactiveDisplay}
+\bibliographystyle{plain}
+
+\end{document}
