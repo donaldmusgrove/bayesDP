@@ -8,7 +8,7 @@ Authors@R: c(
   person("Donnie", "Musgrove", email = "donald.r.musgrove@medtronic.com", role = c("aut", "cre"))
   person("Tarek", "Haddad", email = "tarek.d.haddad@medtronic.com", role = c("aut", "cre"))
   )
-Depends: shiny, shinyFiles, shinythemes, shinyBS, survival, ggplot2, MCMCpack, knitr, rmarkdown, parallel
+Depends: testthat, shiny, shinyFiles, shinythemes, shinyBS, survival, ggplot2, MCMCpack, knitr, rmarkdown, parallel
 Suggests:
 Description: Locally hosted shiny UI methods for survival analysis.
 LazyLoad: yes

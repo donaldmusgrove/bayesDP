@@ -1,15 +1,3 @@
-
-.runApp <- function(app, ...) {
-  ## selectively use the RStudio viewer pane (if available)
-  viewer <- getOption("viewer")
-  if (!is.null(viewer) && is.function(viewer)) {
-    runApp(app, launch.browser = viewer, ...)
-  } else {
-    runApp(app, ...)
-  }
-}
-
-
 ################################################################################
 # UI
 ################################################################################
@@ -195,11 +183,3 @@ server <- shinyServer(function(input, output, session){
   })
 })
 
-################################################################################
-# Finally Run Everything
-################################################################################
-
-.runApp(shinyApp(ui, server))
-#runApp(shinyApp(ui, server),
-#       port=as.numeric(commandArgs(TRUE)[2]),
-#       launch.browser=FALSE)

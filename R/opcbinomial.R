@@ -1,29 +1,3 @@
-#' Illustration of crayon colors
-#'
-#' Creates a plot of the crayon colors in \code{\link{brocolors}}
-#'
-#' @param method2order method to order colors (\code{"hsv"} or \code{"cluster"})
-#' @param cex character expansion for the text
-#' @param mar margin paramaters; vector of length 4 (see \code{\link[graphics]{par}})
-#'
-#' @return None
-#'
-#' @examples
-#' plot_crayons()
-#'
-#' @export
-
-.runApp <- function(app, ...) {
-  ## selectively use the RStudio viewer pane (if available)
-  viewer <- getOption("viewer")
-  if (!is.null(viewer) && is.function(viewer)) {
-    runApp(app, launch.browser = viewer, ...)
-  } else {
-    runApp(app, ...)
-  }
-}
-
-
 ################################################################################
 # UI
 ################################################################################
@@ -161,7 +135,7 @@ ui <- shinyUI(pageWithSidebar(
                  plotOutput("pp3")),
         tabPanel("R Code",
                  ### Currently, only displays binomial code. Want this to be dependent on user input
-                 includeMarkdown("./opcbinomial/trunk/www/binomialPrint.md"),
+                 includeMarkdown("./inst/www/binomialPrint.md"),
 
                  ### Tooltips
                  bsTooltip('distribution', "Select distribution"),
@@ -328,13 +302,3 @@ server <- shinyServer(function(input, output, session){
 
 
 })
-
-################################################################################
-# Finally Run Everything
-################################################################################
-
-.runApp(shinyApp(ui, server))
-#runApp(shinyApp(ui, server),
-#       port=as.numeric(commandArgs(TRUE)[2]),
-#       launch.browser=FALSE)
-
