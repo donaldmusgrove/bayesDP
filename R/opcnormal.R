@@ -1,6 +1,31 @@
+library(shiny)
+library(shinyFiles)
+library(shinythemes)
+library(shinyBS)
+
+library(survival)
+library(ggplot2)
+library(MCMCpack)
+library(knitr)
+library(rmarkdown)
+library(parallel)
+
+.runApp <- function(app, ...) {
+  ## selectively use the RStudio viewer pane (if available)
+  viewer <- getOption("viewer")
+  if (!is.null(viewer) && is.function(viewer)) {
+    runApp(app, launch.browser = viewer, ...)
+  } else {
+    runApp(app, ...)
+  }
+}
+
 ################################################################################
 # UI
 ################################################################################
+
+options(shiny.launch.browser = .rs.invokeShinyWindowViewer)
+
 
 ui <- shinyUI(pageWithSidebar(
   headerPanel("NormalOPC"),
@@ -56,7 +81,7 @@ ui <- shinyUI(pageWithSidebar(
       ),
 
       tabPanel("R Code",
-               includeMarkdown("./opcnormal/gaussianPrint.md")
+               includeMarkdown("./inst/www/gaussianPrint.md")
       )
     )
   )
@@ -68,8 +93,8 @@ ui <- shinyUI(pageWithSidebar(
 
 server <- shinyServer(function(input, output, session){
 
-  source("./opcnormal/post_estimation_normal_functions.R")
-  source("./opcnormal/Normal_OPC_shiny.R")
+  source("./R/post_estimation_normal_functions.R")
+  source("./R/Normal_OPC_shiny.R")
 
   est <- reactive({
     estPost <- mu_posterior(mu            = input$mu,
@@ -122,3 +147,13 @@ server <- shinyServer(function(input, output, session){
     res1()$prior_for_test_group
   })
 })
+
+################################################################################
+# Finally Run Everything
+################################################################################
+
+.runApp(shinyApp(ui, server))
+#runApp(shinyApp(ui, server),
+#       port=as.numeric(commandArgs(TRUE)[2]),
+#       launch.browser=FALSE)
+
