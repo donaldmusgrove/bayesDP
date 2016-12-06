@@ -20,24 +20,24 @@
 ################################################################################
 
 ## declare the display generic
-setGeneric("opcnormal", function(object, ...)
+setGeneric("opcnormal", function(f, ...)
   standardGeneric("opcnormal")
 )
 
 setMethod("opcnormal",
-          signature(object = "ANY"),
-          function(object){
+          signature(f = "ANY"),
+          function(f){
             message("Wrong object")
           })
 
 setMethod("opcnormal",
-          signature(object = "missing"),
-          function(object){
+          signature(f = "missing"),
+          function(f){
             message("Missing object")
           })
 
 setMethod("opcnormal",
-          signature(object = "list"),
+          signature(f = "list"),
           function(f,posterior_test,H0,two_side,inequality){
 
   D4 <- data.frame(information_sources = "Posterior",

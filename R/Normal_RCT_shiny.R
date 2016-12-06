@@ -10,13 +10,32 @@
 # Developer: Tarek Haddad                                                      #
 # Tarek.D.Haddad@Medtronic.com                                                 #
 # Last modified: 9/10/2016                                                     #
-################################################################################ 
+################################################################################
 
 
-################################################################################ 
+################################################################################
 ### Results
 ################################################################################
 
+## declare the display generic
+setGeneric("rtcnormal", function(f, ...)
+  standardGeneric("rtcnormal")
+)
+
+setMethod("rtcnormal",
+          signature(f = "ANY"),
+          function(f){
+            message("Wrong object")
+          })
+
+setMethod("rtcnormal",
+          signature(f = "missing"),
+          function(f){
+            message("Missing object")
+          })
+
+setMethod("rtcnormal",
+          signature(f = "list"),
 results <- function(f,posterior_test,posterior_control,two_side,inequality,
                     N0_t,N0_c,delta=2){
   D1 <- data.frame(information_sources='Posterior',
@@ -71,7 +90,7 @@ results <- function(f,posterior_test,posterior_control,two_side,inequality,
                         aes(x=x,y=y)) +
     geom_line(size=2,aes(colour=group)) +
     ylab("Density (PDF)") +
-    xlab("values") + 
+    xlab("values") +
     theme_bw()
 
 
@@ -82,11 +101,11 @@ results <- function(f,posterior_test,posterior_control,two_side,inequality,
   if(two_side==0){
     p_value <- seq(0,1,,100)
   }
-  
-  Loss_function_test <- pweibull(p_value, 
+
+  Loss_function_test <- pweibull(p_value,
                                  shape=posterior_test$weibull_shape,
                                  scale=posterior_test$weibull_scale)*posterior_test$N0_max
-                                 
+
   Loss_function_control <- pweibull(p_value,
                                     shape=posterior_control$weibull_shape,
                                     scale=posterior_control$weibull_scale)*posterior_control$N0_max
@@ -103,27 +122,27 @@ results <- function(f,posterior_test,posterior_control,two_side,inequality,
 
   lossfun_plot <- ggplot()
   if(N0_t!=0){
-    lossfun_plot <- lossfun_plot + 
+    lossfun_plot <- lossfun_plot +
       geom_line(data=D1,aes(y=y,x=x,colour=group),size=1) +
       geom_vline(data=D2, aes(xintercept =pvalue,colour=group),lty=2) +
       geom_hline(data=D3, aes(yintercept =pvalue,colour=group),lty=2)
   }
   if(N0_c!=0){
-    lossfun_plot  <- lossfun_plot + 
+    lossfun_plot  <- lossfun_plot +
       geom_line(data=D4,aes(y=y,x=x,colour=group),size=1) +
       geom_vline(data=D5, aes(xintercept =pvalue,colour=group),lty=2) +
       geom_hline(data=D6, aes(yintercept =pvalue,colour=group),lty=2)
   }
-  
-  lossfun_plot <- lossfun_plot + 
-    facet_wrap(~group, ncol=1) + 
-    theme_bw() + 
+
+  lossfun_plot <- lossfun_plot +
+    facet_wrap(~group, ncol=1) +
+    theme_bw() +
     ylab("Effective sample size for historical data") +
     xlab("Bayesian p-value (new vs historical data)")
 
   if(inequality=="<"){
-  hypothesis <- paste('"We can define W as the difference between the means 
-                      for the test group versus control group, i.e. W=test 
+  hypothesis <- paste('"We can define W as the difference between the means
+                      for the test group versus control group, i.e. W=test
                       mean - control mean', '\n', 'Null Hypothesis (H_0): W>',
                       delta, '\n', "Alternative Hypothesis (H_a): W<", delta,
                       '\n', '\n', "P(W<",delta,"|data)=",
@@ -131,8 +150,8 @@ results <- function(f,posterior_test,posterior_control,two_side,inequality,
                       '\n', "We can accept H_a with a Probability of",
                       mean(f$TestMinusControl_post<delta))
   } else if(inequality==">"){
-  hypothesis <- paste('"We can define W as the difference between the means 
-                      for the test group versus control group, i.e. W=test 
+  hypothesis <- paste('"We can define W as the difference between the means
+                      for the test group versus control group, i.e. W=test
                       mean - control mean', '\n', 'Null Hypothesis (H_0): W<',
                       delta, '\n', "Alternative Hypothesis (H_a): W>", delta,
                       '\n', '\n', "P(W<",delta,"|data)=",
@@ -140,7 +159,7 @@ results <- function(f,posterior_test,posterior_control,two_side,inequality,
                       '\n', "We can accept H_a with a Probability of",
                       mean(f$TestMinusControl_post>delta))
   }
-  
+
   if(posterior_test$N0==0){
     prior_for_test_group <- "No Prior Supplied"
   } else{
@@ -166,3 +185,4 @@ results <- function(f,posterior_test,posterior_control,two_side,inequality,
               lossfun_plot            = lossfun_plot,
               hypothesis              = hypothesis))
 }
+)
