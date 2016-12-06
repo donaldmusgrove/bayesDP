@@ -16,43 +16,62 @@
 
 
 ################################################################################
-### Results     
+### Results
 ################################################################################
 
-results <- function(f,posterior_test,H0,two_side,inequality){
+## declare the display generic
+setGeneric("opcnormal", function(object, ...)
+  standardGeneric("opcnormal")
+)
 
-  D4 <- data.frame(information_sources = "Posterior", 
-                   group               = "Test", 
-                   y                   = f$den_post_test$y, 
+setMethod("opcnormal",
+          signature(object = "ANY"),
+          function(object){
+            message("Wrong object")
+          })
+
+setMethod("opcnormal",
+          signature(object = "missing"),
+          function(object){
+            message("Missing object")
+          })
+
+setMethod("opcnormal",
+          signature(object = "list"),
+          function(f,posterior_test,H0,two_side,inequality){
+
+  D4 <- data.frame(information_sources = "Posterior",
+                   group               = "Test",
+                   y                   = f$den_post_test$y,
                    x                   = f$den_post_test$x)
-                     
-  D5 <- data.frame(information_sources = "Current data", 
-                   group               = "Test", 
-                   y                   = f$den_flat_test$y, 
+
+  D5 <- data.frame(information_sources = "Current data",
+                   group               = "Test",
+                   y                   = f$den_flat_test$y,
                    x                   = f$den_flat_test$x)
-        
-  D6 <- data.frame(information_sources = "Prior", 
-                   group               = "Test", 
-                   y                   = f$den_prior_test$y, 
+
+  D6 <- data.frame(information_sources = "Prior",
+                   group               = "Test",
+                   y                   = f$den_prior_test$y,
                    x                   = f$den_prior_test$x)
 
   D <- as.data.frame(rbind(D4, D5, D6))
 
-  D$information_sources <- factor(D$information_sources, 
+  D$information_sources <- factor(D$information_sources,
                                   levels = (c("Posterior", "Current data", "Prior")))
 
   post_typeplot <- ggplot(D, aes(x = x, y = y)) +
     geom_line(size = 2, aes(colour = information_sources, lty = information_sources)) +
-    theme_bw() + 
-    facet_wrap(~group, ncol = 1, scale = "free") + 
-    ylab("Density (PDF)") + 
+    theme_bw() +
+    facet_wrap(~group, ncol = 1, scale = "free") +
+    ylab("Density (PDF)") +
     xlab("values")
 
-      
+
   densityplot <- ggplot(subset(D, information_sources == "Posterior"), aes(x = x, y = y)) +
-    geom_line(size = 2, aes(colour = group)) + 
-    ylab("Density (PDF)") + 
-    xlab("values") + 
+    geom_line(size = 2, aes(colour = group)) +
+    ylab("Density (PDF)") +
+    xlab("values") +
     theme_bw()
 
   if (two_side == 1) {
@@ -63,8 +82,8 @@ results <- function(f,posterior_test,H0,two_side,inequality){
       p_value = seq(0, 1, , 100)
   }
 
-  Loss_function_test <- pweibull(p_value, 
-                                 shape = posterior_test$weibull_shape, 
+  Loss_function_test <- pweibull(p_value,
+                                 shape = posterior_test$weibull_shape,
                                  scale = posterior_test$weibull_scale)*posterior_test$N0_max
 
   D1 <- data.frame(group = "test", y = Loss_function_test, x = seq(0, 1, , 100))
@@ -72,37 +91,37 @@ results <- function(f,posterior_test,H0,two_side,inequality){
   D3 <- data.frame(group = c("test"), pvalue = c(posterior_test$N0_effective))
 
 
-  lossfun_plot <- ggplot() + 
-    geom_line(data = D1, aes(y = y, x = x, colour = group), size = 1) + 
-    geom_vline(data = D2, aes(xintercept = pvalue, colour = group), lty = 2) + 
-    geom_hline(data = D3, aes(yintercept = pvalue, colour = group), lty = 2) + 
-    facet_wrap(~group, ncol = 1) + 
-    theme_bw() + 
-    ylab("Effective sample size for historical data") + 
+  lossfun_plot <- ggplot() +
+    geom_line(data = D1, aes(y = y, x = x, colour = group), size = 1) +
+    geom_vline(data = D2, aes(xintercept = pvalue, colour = group), lty = 2) +
+    geom_hline(data = D3, aes(yintercept = pvalue, colour = group), lty = 2) +
+    facet_wrap(~group, ncol = 1) +
+    theme_bw() +
+    ylab("Effective sample size for historical data") +
     xlab("Bayesian p-value (new vs historical data)")
 
   if (inequality == "<") {
-    hypothesis <- paste("\"We can define mu as the mean for the test", "\n", 
-                        "Null Hypothesis (H_0): mu>", H0, "\n", 
-                        "Alternative Hypothesis (H_a): mu<", H0, "\n", "\n", 
-                        "P(mu<", H0, "|data)=", mean(f$Testpost < H0), "\n", 
-                        "We can accept H_a with a Probability of", 
+    hypothesis <- paste("\"We can define mu as the mean for the test", "\n",
+                        "Null Hypothesis (H_0): mu>", H0, "\n",
+                        "Alternative Hypothesis (H_a): mu<", H0, "\n", "\n",
+                        "P(mu<", H0, "|data)=", mean(f$Testpost < H0), "\n",
+                        "We can accept H_a with a Probability of",
                         mean(f$Testpost < H0))
   }
-  
+
   if (inequality == ">") {
-    hypothesis <- paste("\"Define mu as the mean of the data", "\n", 
-                        "Null Hypothesis (H_0): mu<", H0, "\n", 
-                        "Alternative Hypothesis (H_a): mu>", H0, "\n", "\n", 
-                        "P(mu>", H0, "|data)=", mean(f$Testpost > H0), "\n", 
-                        "We can accept H_a with a Probability of", 
+    hypothesis <- paste("\"Define mu as the mean of the data", "\n",
+                        "Null Hypothesis (H_0): mu<", H0, "\n",
+                        "Alternative Hypothesis (H_a): mu>", H0, "\n", "\n",
+                        "P(mu>", H0, "|data)=", mean(f$Testpost > H0), "\n",
+                        "We can accept H_a with a Probability of",
                         mean(f$Testpost > H0))
   }
-    
+
   ### Print
-  prior_for_test_group <- list(`Effective sample size of prior(for test group)` = posterior_test$N0_effective, 
-                               `Bayesian p-value (new vs historical data)` = posterior_test$pvalue, 
-                               `loss function value` = posterior_test$alpha_loss, 
+  prior_for_test_group <- list(`Effective sample size of prior(for test group)` = posterior_test$N0_effective,
+                               `Bayesian p-value (new vs historical data)` = posterior_test$pvalue,
+                               `loss function value` = posterior_test$alpha_loss,
                                N0_max = posterior_test$N0_max)
 
   return(list(prior_for_test_group = prior_for_test_group,
@@ -113,3 +132,4 @@ results <- function(f,posterior_test,H0,two_side,inequality){
   )
 
 }
+)
