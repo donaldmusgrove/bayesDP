@@ -35,7 +35,7 @@ setMethod("rtcnormal",
           })
 
 setMethod("rtcnormal",
-          signature(f = "list"),
+          signature(f = "numeric"),
 results <- function(f,posterior_test,posterior_control,two_side,inequality,
                     N0_t,N0_c,delta=2){
   D1 <- data.frame(information_sources='Posterior',
