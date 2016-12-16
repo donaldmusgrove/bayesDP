@@ -1,1 +1,1 @@
-test_check("mdictools")
+#test_check("mdictools")
