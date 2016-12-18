@@ -16,7 +16,14 @@ setMethod("post_est_gaussian",
           })
 
 setMethod("post_est_gaussian",
-          signature(data = "numeric"),
+          signature(data = "numeric",
+                    prior_mu = "numeric",
+                    prior_sigma = "numeric",
+                    weibull_scale = "numeric",
+                    weibull_shape = "numeric",
+                    alpha_max = "numeric",
+                    N0_max = "numeric",
+                    N_mcmc = "numeric"),
           function(data, prior_mu, prior_sigma, weibull_scale, weibull_shape,
                               alpha_max, N0_max = NULL, N_mcmc){
 
