@@ -1,4 +1,23 @@
-post_est_gaussian <- function(data, prior_mu, prior_sigma, weibull_scale, weibull_shape,
+## declare the display generic
+setGeneric("post_est_gaussian", function(f, ...)
+  standardGeneric("post_est_gaussian")
+)
+
+setMethod("post_est_gaussian",
+          signature(f = "ANY"),
+          function(f){
+            message("Wrong object")
+          })
+
+setMethod("post_est_gaussian",
+          signature(f = "missing"),
+          function(f){
+            message("Missing object")
+          })
+
+setMethod("post_est_gaussian",
+          signature(f = "numeric"),
+          function(data, prior_mu, prior_sigma, weibull_scale, weibull_shape,
                               alpha_max, N0_max = NULL, N_mcmc){
 
 
@@ -73,7 +92,7 @@ post_est_gaussian <- function(data, prior_mu, prior_sigma, weibull_scale, weibul
 
   return(out)
 }
-
+)
 #set.seed(42)
 #data <- data.frame(y         = rnorm(100, 4, 0.1),
 #                   x         = c(rnorm(50,1,0.1), rnorm(50,3,0.1)),
