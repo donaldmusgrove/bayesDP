@@ -9,17 +9,17 @@ setGeneric("post_est_gaussian", function(data, prior_mu,
   standardGeneric("post_est_gaussian")
 )
 
-setMethod("post_est_gaussian",
-          signature(data = "ANY"),
-          function(data){
-            message("Wrong object")
-          })
+#setMethod("post_est_gaussian",
+#          signature(data = "ANY"),
+#          function(data){
+#            message("Wrong object")
+#          })
 
-setMethod("post_est_gaussian",
-          signature(data = "missing"),
-          function(data){
-            message("Missing object")
-          })
+#setMethod("post_est_gaussian",
+#          signature(data = "missing"),
+#          function(data){
+#            message("Missing object")
+#          })
 
 setMethod("post_est_gaussian",
           signature(data = "numeric",
