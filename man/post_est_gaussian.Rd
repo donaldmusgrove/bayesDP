@@ -1,4 +1,5 @@
 \name{post_est_gaussian}
+\alias{post_est_gaussian}
 \title{INSERT THIS LATER}
 \examples{
 set.seed(42)
