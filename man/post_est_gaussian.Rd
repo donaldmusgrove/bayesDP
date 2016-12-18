@@ -1,6 +1,12 @@
 \name{post_est_gaussian}
 \alias{post_est_gaussian}
 \title{Post Estimate Gaussian}
+\usage{
+}
+\arguments{
+}
+\description{
+}
 \examples{
 set.seed(42)
 data <- data.frame(y         = rnorm(100, 4, 0.1),
