@@ -1,3 +1,5 @@
+\name{post_est_gaussian}
+\title{INSERT THIS LATER}
 \examples{
 set.seed(42)
 data <- data.frame(y         = rnorm(100, 4, 0.1),
