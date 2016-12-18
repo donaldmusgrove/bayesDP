@@ -1,3 +1,4 @@
+\examples{
 set.seed(42)
 data <- data.frame(y         = rnorm(100, 4, 0.1),
                    x         = c(rnorm(50,1,0.1), rnorm(50,3,0.1)),
@@ -13,3 +14,4 @@ fit <- post_est_gaussian(data          = data,
 
 ### Main parameter of interest:
 fit$effect_est
+}
