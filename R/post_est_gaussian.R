@@ -1,22 +1,22 @@
 ## declare the display generic
-setGeneric("post_est_gaussian", function(f, ...)
+setGeneric("post_est_gaussian", function(data, ...)
   standardGeneric("post_est_gaussian")
 )
 
 setMethod("post_est_gaussian",
-          signature(f = "ANY"),
-          function(f){
+          signature(data = "ANY"),
+          function(data){
             message("Wrong object")
           })
 
 setMethod("post_est_gaussian",
-          signature(f = "missing"),
-          function(f){
+          signature(data = "missing"),
+          function(data){
             message("Missing object")
           })
 
 setMethod("post_est_gaussian",
-          signature(f = "numeric"),
+          signature(data = "numeric"),
           function(data, prior_mu, prior_sigma, weibull_scale, weibull_shape,
                               alpha_max, N0_max = NULL, N_mcmc){
 
