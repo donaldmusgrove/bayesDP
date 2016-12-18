@@ -1,5 +1,11 @@
 ## declare the display generic
-setGeneric("post_est_gaussian", function(data, ...)
+setGeneric("post_est_gaussian", function(data, prior_mu,
+                                         prior_sigma,
+                                         weibull_scale,
+                                         weibull_shape,
+                                         alpha_max,
+                                         N0_max = NULL,
+                                         N_mcmc)
   standardGeneric("post_est_gaussian")
 )
 
@@ -24,8 +30,14 @@ setMethod("post_est_gaussian",
                     alpha_max = "numeric",
                     N0_max = "numeric",
                     N_mcmc = "numeric"),
-          function(data, prior_mu, prior_sigma, weibull_scale, weibull_shape,
-                              alpha_max, N0_max = NULL, N_mcmc){
+          function(data,
+                   prior_mu,
+                   prior_sigma,
+                   weibull_scale,
+                   weibull_shape,
+                   alpha_max,
+                   N0_max = NULL,
+                   N_mcmc){
 
 
   N_new        <- nrow(data)
