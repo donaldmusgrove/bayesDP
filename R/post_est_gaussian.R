@@ -1,28 +1,3 @@
-## declare the display generic
-setGeneric("post_est_gaussian", function(data,
-                                         formula,
-                                         prior_mu,
-                                         prior_sigma,
-                                         weibull_scale,
-                                         weibull_shape,
-                                         alpha_max,
-                                         N0_max = NULL,
-                                         N_mcmc)
-  standardGeneric("post_est_gaussian")
-)
-
-#setMethod("post_est_gaussian",
-#          signature(data = "ANY"),
-#          function(data){
-#            message("Wrong object")
-#          })
-
-#setMethod("post_est_gaussian",
-#          signature(data = "missing"),
-#          function(data){
-#            message("Missing object")
-#          })
-
 #' Post Estimate Gaussian
 #'
 #' Post Estimate Gaussian
@@ -58,7 +33,33 @@ setGeneric("post_est_gaussian", function(data,
 #'
 #' @rdname post_est_gaussian
 #' @export post_est_gaussian
+setGeneric("post_est_gaussian",
+           function(data,
+                    formula,
+                    prior_mu,
+                    prior_sigma,
+                    weibull_scale,
+                    weibull_shape,
+                    alpha_max,
+                    N0_max = NULL,
+                    N_mcmc){
+             standardGeneric("post_est_gaussian")
+             })
 
+#setMethod("post_est_gaussian",
+#          signature(data = "ANY"),
+#          function(data){
+#            message("Wrong object")
+#          })
+
+#setMethod("post_est_gaussian",
+#          signature(data = "missing"),
+#          function(data){
+#            message("Missing object")
+#          })
+
+#' @rdname post_est_gaussian
+#' @aliases post_est_gaussian
 setMethod("post_est_gaussian",
           signature(data = "data.frame",
                     formula = "formula",
@@ -69,7 +70,6 @@ setMethod("post_est_gaussian",
                     alpha_max = "numeric",
                     N0_max = "missing",
                     N_mcmc = "numeric"),
-
           function(data,
                    formula,
                    prior_mu,
