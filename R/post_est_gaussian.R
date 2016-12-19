@@ -23,17 +23,6 @@ setGeneric("post_est_gaussian", function(data,
 #            message("Missing object")
 #          })
 
-setMethod("post_est_gaussian",
-          signature(data = "data.frame",
-                    formula = "formula",
-                    prior_mu = "numeric",
-                    prior_sigma = "numeric",
-                    weibull_scale = "numeric",
-                    weibull_shape = "numeric",
-                    alpha_max = "numeric",
-                    N0_max = "missing",
-                    N_mcmc = "numeric"),
-
 #' Post Estimate Gaussian
 #'
 #' Post Estimate Gaussian
@@ -69,6 +58,17 @@ setMethod("post_est_gaussian",
 #'
 #' @rdname post_est_gaussian
 #' @export post_est_gaussian
+
+setMethod("post_est_gaussian",
+          signature(data = "data.frame",
+                    formula = "formula",
+                    prior_mu = "numeric",
+                    prior_sigma = "numeric",
+                    weibull_scale = "numeric",
+                    weibull_shape = "numeric",
+                    alpha_max = "numeric",
+                    N0_max = "missing",
+                    N_mcmc = "numeric"),
 
           function(data,
                    formula,
