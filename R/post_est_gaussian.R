@@ -1,5 +1,7 @@
 ## declare the display generic
-setGeneric("post_est_gaussian", function(data, prior_mu,
+setGeneric("post_est_gaussian", function(data,
+                                         formula,
+                                         prior_mu,
                                          prior_sigma,
                                          weibull_scale,
                                          weibull_shape,
@@ -23,6 +25,7 @@ setGeneric("post_est_gaussian", function(data, prior_mu,
 
 setMethod("post_est_gaussian",
           signature(data = "data.frame",
+                    formula = "formula",
                     prior_mu = "numeric",
                     prior_sigma = "numeric",
                     weibull_scale = "numeric",
@@ -31,6 +34,7 @@ setMethod("post_est_gaussian",
                     N0_max = "missing",
                     N_mcmc = "numeric"),
           function(data,
+                   formula,
                    prior_mu,
                    prior_sigma,
                    weibull_scale,
@@ -44,7 +48,7 @@ N_new        <- nrow(data)
 ################################################################################
 ### Estimate alpha (loss function)
 ################################################################################
-q_flat       <- bayesglm(y ~ treatment + x,
+q_flat       <- bayesglm(formula,
                          prior.df    = Inf,
                          prior.scale = 1000,
                          prior.mean  = 0,
@@ -82,7 +86,7 @@ if(!is.null(N0_max)){
 ### Estimate treatment effect of current data with historical prior,
 ### where historical prior has been down-weighted using alpha0
 ################################################################################
-q_final     <- bayesglm(y ~ treatment + x,
+q_final     <- bayesglm(formula,
                         prior.df    = Inf,
                         prior.scale = c(std0, 1000),
                         prior.mean  = c(prior_mu, 0),

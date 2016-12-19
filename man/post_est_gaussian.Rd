@@ -14,6 +14,7 @@ data <- data.frame(y         = rnorm(100, 4, 0.1),
                    treatment = c(rep(0,50),rep(1,50)))
 
 fit <- post_est_gaussian(data          = data,
+                         formula       = y ~ treatment + x,
                          prior_mu      = 1,
                          prior_sigma   = 0.1,
                          weibull_scale = 1,
