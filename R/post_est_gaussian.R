@@ -108,12 +108,12 @@ setMethod("post_est_gaussian",
                     N_mcmc = "numeric"),
           function(data,
                    formula,
-                   family,
+                   family = "gaussian",
                    treatment,
                    prior.dist,
-                   prior.mean,
-                   prior.scale,
-                   prior.df,
+                   prior.mean = 0,
+                   prior.scale = 1000,
+                   prior.df = Inf,
                    prior_mu,
                    prior_sigma,
                    weibull_scale,
@@ -128,10 +128,10 @@ N_new        <- nrow(data)
 ### Estimate alpha (loss function)
 ################################################################################
 q_flat       <- bayesglm(formula,
-                         prior.df    = Inf,
-                         prior.scale = 1000,
-                         prior.mean  = 0,
-                         family      = gaussian,
+                         prior.df    = prior.df,
+                         prior.scale = prior.scale,
+                         prior.mean  = prior.mean,
+                         family      = family,
                          data        = data)
 
 ### Grab mean/sd of treatment effect
@@ -166,9 +166,9 @@ if(!is.null(N0_max)){
 ### where historical prior has been down-weighted using alpha0
 ################################################################################
 q_final     <- bayesglm(formula,
-                        prior.df    = Inf,
-                        prior.scale = c(std0, 1000),
-                        prior.mean  = c(prior_mu, 0),
+                        prior.df    = prior.df,
+                        prior.scale = c(std0, prior.scale),
+                        prior.mean  = c(prior_mu, prior.mean),
                         family      = gaussian,
                         data        = data)
 
