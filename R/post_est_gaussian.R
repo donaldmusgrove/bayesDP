@@ -61,28 +61,28 @@
 
 setGeneric("post_est_gaussian",
            function(data,
-                    formula,
-                    family,
-                    treatment,
-                    prior.dist,
-                    prior.mean,
-                    prior.scale,
-                    prior.df,
-                    prior_mu,
-                    prior_sigma,
-                    weibull_scale,
-                    weibull_shape,
-                    alpha_max,
+                    formula = y ~ treatment + x,
+                    family = "gaussian",
+                    treatment = NULL,
+                    prior.dist = NULL,
+                    prior.mean = 0,
+                    prior.scale = 1000,
+                    prior.df = Inf,
+                    prior_mu = 1,
+                    prior_sigma = 0.1,
+                    weibull_scale = 1,
+                    weibull_shape = 1,
+                    alpha_max = 1,
                     N0_max = NULL,
-                    N_mcmc){
+                    N_mcmc = 10000){
              standardGeneric("post_est_gaussian")
              })
 
-setMethod("post_est_gaussian",
-          signature(data = "list"),
-          function(data){
-            message("This is a case where the user doesn't have the data")
-          })
+#setMethod("post_est_gaussian",
+#          signature(data = "list"),
+#          function(data){
+#            message("This is a case where the user doesn't have the data")
+#          })
 
 setMethod("post_est_gaussian",
           signature(data = "missing"),
@@ -91,21 +91,21 @@ setMethod("post_est_gaussian",
           })
 
 setMethod("post_est_gaussian",
-          signature(data = "data.frame",
-                    formula = "formula",
-                    family = "character",
-                    treatment = "character",
-                    prior.dist = "character",
-                    prior.mean = "numeric",
-                    prior.scale = "numeric",
-                    prior.df = "numeric",
-                    prior_mu = "numeric",
-                    prior_sigma = "numeric",
-                    weibull_scale = "numeric",
-                    weibull_shape = "numeric",
-                    alpha_max = "numeric",
-                    N0_max = "missing",
-                    N_mcmc = "numeric"),
+          signature(data = "data.frame"),
+                    #formula = "formula",
+                    #family = "character",
+                    #treatment = "character",
+                    #prior.dist = "character",
+                    #prior.mean = "numeric",
+                    #prior.scale = "numeric",
+                    #prior.df = "numeric",
+                    #prior_mu = "numeric",
+                    #prior_sigma = "numeric",
+                    #weibull_scale = "numeric",
+                    #weibull_shape = "numeric",
+                    #alpha_max = "numeric",
+                    #N0_max = "missing",
+                    #N_mcmc = "numeric"),
           function(data,
                    formula = y ~ treatment + x,
                    family = "gaussian",

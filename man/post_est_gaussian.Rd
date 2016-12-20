@@ -4,9 +4,11 @@
 \alias{post_est_gaussian}
 \title{post_est_gaussian: Post Estimate Gaussian}
 \usage{
-post_est_gaussian(data, formula, family, treatment, prior.dist, prior.mean,
-  prior.scale, prior.df, prior_mu, prior_sigma, weibull_scale, weibull_shape,
-  alpha_max, N0_max = NULL, N_mcmc)
+post_est_gaussian(data, formula = y ~ treatment + x, family = "gaussian",
+  treatment = NULL, prior.dist = NULL, prior.mean = 0,
+  prior.scale = 1000, prior.df = Inf, prior_mu = 1, prior_sigma = 0.1,
+  weibull_scale = 1, weibull_shape = 1, alpha_max = 1, N0_max = NULL,
+  N_mcmc = 10000)
 }
 \arguments{
 \item{data}{numeric number}
