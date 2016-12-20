@@ -5,6 +5,12 @@
 #' @title post_est_gaussian: Post Estimate Gaussian
 #' @param data numeric number
 #' @param formula formula
+#' @param family family
+#' @param treatment treatment
+#' @param prior.dist prior.dist
+#' @param prior.mean prior.mean
+#' @param prior.scale prior.scale
+#' @param prior.df prior.df
 #' @param prior_mu prior_mu
 #' @param prior_sigma prior_sigma
 #' @param weibull_scale weibull_scale
@@ -33,9 +39,35 @@
 #'
 #' @rdname post_est_gaussian
 #' @export post_est_gaussian
+
+#bglm(y~x+z|y0~x0+z0,
+#     family      = binomial,
+#     data        = “someDataFrame”,
+#     type        = “rct”,
+#     treatment   = c(“x”,”x0”),
+#     prior.dist  = “gaussian")  # Prior on regression coefs
+#
+#     RCT Analysis – current data present and historical data given as summary stats
+#     Lengths of prior.mean, prior.scale, and prior.df must match number of levels of treatment vector “x”
+#     bglm(y~x+z,
+#     family      = binomial,
+#     data        = “someDataFrame”,
+#     type        = “rct”,
+#     treatment   = “x”,
+#     prior.dist  = ”t”,  # Prior on regression coefs
+#     prior.mean  = c(0,0),
+#     prior.scale = c(1,1),
+#     prior.df    = c(1,1))
+
 setGeneric("post_est_gaussian",
            function(data,
                     formula,
+                    family,
+                    treatment,
+                    prior.dist,
+                    prior.mean,
+                    prior.scale,
+                    prior.df,
                     prior_mu,
                     prior_sigma,
                     weibull_scale,
@@ -46,23 +78,27 @@ setGeneric("post_est_gaussian",
              standardGeneric("post_est_gaussian")
              })
 
-#setMethod("post_est_gaussian",
-#          signature(data = "ANY"),
-#          function(data){
-#            message("Wrong object")
-#          })
+setMethod("post_est_gaussian",
+          signature(data = "list"),
+          function(data){
+            message("This is a case where the user doesn't have the data")
+          })
 
-#setMethod("post_est_gaussian",
-#          signature(data = "missing"),
-#          function(data){
-#            message("Missing object")
-#          })
+setMethod("post_est_gaussian",
+          signature(data = "missing"),
+          function(data){
+            message("Missing object")
+          })
 
-#' @rdname post_est_gaussian
-#' @aliases post_est_gaussian
 setMethod("post_est_gaussian",
           signature(data = "data.frame",
                     formula = "formula",
+                    family = "character",
+                    treatment = "character",
+                    prior.dist = "character",
+                    prior.mean = "numeric",
+                    prior.scale = "numeric",
+                    prior.df = "numeric",
                     prior_mu = "numeric",
                     prior_sigma = "numeric",
                     weibull_scale = "numeric",
@@ -72,6 +108,12 @@ setMethod("post_est_gaussian",
                     N_mcmc = "numeric"),
           function(data,
                    formula,
+                   family,
+                   treatment,
+                   prior.dist,
+                   prior.mean,
+                   prior.scale,
+                   prior.df,
                    prior_mu,
                    prior_sigma,
                    weibull_scale,
