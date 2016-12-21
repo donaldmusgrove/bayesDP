@@ -60,29 +60,24 @@
 #     prior.df    = c(1,1))
 
 setGeneric("post_est_gaussian",
-           function(data,
-                    formula = y ~ treatment + x,
-                    family = "gaussian",
-                    treatment = NULL,
-                    prior.dist = NULL,
-                    prior.mean = 0,
-                    prior.scale = 1000,
-                    prior.df = Inf,
-                    prior_mu = 1,
-                    prior_sigma = 0.1,
-                    weibull_scale = 1,
-                    weibull_shape = 1,
-                    alpha_max = 1,
-                    N0_max = NULL,
-                    N_mcmc = 10000){
+           function(data, ...){
              standardGeneric("post_est_gaussian")
              })
 
-#setMethod("post_est_gaussian",
-#          signature(data = "list"),
-#          function(data){
-#            message("This is a case where the user doesn't have the data")
-#          })
+setMethod("post_est_gaussian",
+          signature(prior.mean = "numeric",
+                    prior.scale = "numeric",
+                    prior.df = "numeric"),
+          function(prior.mean = 0,
+                   prior.scale = 1000,
+                   prior.df = Inf){
+            message("This is a case where the user doesn't have the data and
+                    submits a list of parameters instead, a dataframe is build
+                    and then submitted to the dataframe method")
+            historical <- data.frame(y         = rnorm(100, 4, 0.1),
+                                     x         = c(rnorm(50,1,0.1), rnorm(50,3,0.1)),
+                                     treatment = c(rep(0,50),rep(1,50)))
+          })
 
 setMethod("post_est_gaussian",
           signature(data = "missing"),
@@ -91,7 +86,10 @@ setMethod("post_est_gaussian",
           })
 
 setMethod("post_est_gaussian",
-          signature(data = "data.frame"),
+          signature(prior.mean = "missing",
+                    prior.scale = "missing",
+                    prior.df = "missing"),
+                    #data = "data.frame"),
                     #formula = "formula",
                     #family = "character",
                     #treatment = "character",
