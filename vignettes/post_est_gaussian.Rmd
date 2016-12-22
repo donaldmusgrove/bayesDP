@@ -9,22 +9,35 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
+## MDICtools
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+Give a quick description, can be found at <https://github.com/balcomes/mdictools>.
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
+```{r first}
+library(mdictools)
 ```
 
-## Including Plots
+## post_est_gaussian example
 
-You can also embed plots, for example:
+example:
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+```{r second}
+set.seed(42)
+data <- data.frame(y         = rnorm(100, 4, 0.1),
+                   x         = c(rnorm(50,1,0.1), rnorm(50,3,0.1)),
+                   treatment = c(rep(0,50),rep(1,50)))
+
+fit <- post_est_gaussian(data          = data,
+                         formula       = y ~ treatment + x,
+                         prior_mu      = 1,
+                         prior_sigma   = 0.1,
+                         weibull_scale = 1,
+                         weibull_shape = 1,
+                         alpha_max     = 1,
+                         N_mcmc        = 10000)
+
+### Main parameter of interest:
+fit$effect_est
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+Etc Etc
