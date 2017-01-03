@@ -15,6 +15,38 @@ library(ggplot2)
 library(MCMCpack)
 library(survival)
 
+setGeneric("BayesianLossFunctionNormalOPC",
+           function(mu,
+                    sigma2,
+                    N,
+                    mu0,
+                    sigma02,
+                    N0,
+                    N0_max,
+                    weibull_scale,
+                    weibull_shape,
+                    number_mcmc,
+                    H0,
+                    two_side,
+                    inequality){
+             standardGeneric("BayesianLossFunctionNormalOPC")
+           })
+
+setMethod("BayesianLossFunctionNormalOPC",
+          signature(mu = "numeric"),
+          function(mu,
+                   sigma2,
+                   N,
+                   mu0,
+                   sigma02,
+                   N0,
+                   N0_max,
+                   weibull_scale,
+                   weibull_shape,
+                   number_mcmc,
+                   H0,
+                   two_side,
+                   inequality){
 
 ################################################################################
 ### Functions
@@ -296,3 +328,4 @@ lossfun_plot2
 
 hypothesis1
 prior_for_test_group1
+})
