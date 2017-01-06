@@ -1,3 +1,27 @@
+#' BayesianLossFunctionNormalOPC
+#'
+#' BayesianLossFunctionNormalOPC
+#'
+#' @title BayesianLossFunctionNormalOPC: BayesianLossFunctionNormalOPC
+#' @param mu numeric
+#' @param sigma2 numeric
+#' @param N numeric
+#' @param mu0 numeric
+#' @param sigma02 numeric
+#' @param N0 numeric
+#' @param N0_max numeric
+#' @param weibull_scale numeric
+#' @param weibull_shape numeric
+#' @param number_mcmc numeric
+#' @param H0 numeric
+#' @param two_side character
+#' @param inequality character
+#'
+#' @examples
+#'
+#' @rdname BayesianLossFunctionNormalOPC
+#' @export BayesianLossFunctionNormalOPC
+
 ################################################################################
 # This code is used for estimating posterior samples from a Gaussian outcome   #
 # where an informative prior is used. The prior weight is determined using a   #
@@ -11,9 +35,9 @@
 # Tarek.D.Haddad@Medtronic.com                                                 #
 # Last modified:1/26/2016                                                      #
 ################################################################################
-library(ggplot2)
-library(MCMCpack)
-library(survival)
+#library(ggplot2)
+#library(MCMCpack)
+#library(survival)
 
 setGeneric("BayesianLossFunctionNormalOPC",
            function(mu,

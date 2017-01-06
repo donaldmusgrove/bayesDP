@@ -1,3 +1,25 @@
+#' BayesianLossFunctionSimulation
+#'
+#' BayesianLossFunctionSimulation
+#'
+#' @title BayesianLossFunctionSimulation: BayesianLossFunctionSimulation
+#' @param y numeric
+#' @param N numeric
+#' @param y0 numeric
+#' @param N0 numeric
+#' @param N0_max numeric
+#' @param alpha0 numeric
+#' @param beta0 numeric
+#' @param number_mcmc numeric
+#' @param weibull_shape numeric
+#' @param weibull_scale numeric
+#' @param two_side character
+#'
+#' @examples
+#'
+#' @rdname BayesianLossFunctionSimulation
+#' @export BayesianLossFunctionSimulation
+
 ################################################################################
 # This code is used for estimating posterior samples from a binary outcome     #
 # where an informative prior is used. The prior weight is determined using a   #
@@ -16,8 +38,8 @@
 # Last modified: 1/26/2016. Edited by Donnie Musgrove 7/14/2016                #
 ################################################################################
 
-library(ggplot2)
-library(parallel)
+#library(ggplot2)
+#library(parallel)
 
 setGeneric("BayesianLossFunctionSimulation",
            function(y,

@@ -1,3 +1,26 @@
+#' BayesianLossFunctionRTC
+#'
+#' BayesianLossFunctionRTC
+#'
+#' @title BayesianLossFunctionRTC: BayesianLossFunctionRTC
+#' @param y numeric
+#' @param N numeric
+#' @param y0 numeric
+#' @param N0 numeric
+#' @param N0_max numeric
+#' @param alpha0 numeric
+#' @param beta0 numeric
+#' @param number_mcmc numeric
+#' @param weibull_shape numeric
+#' @param weibull_scale numeric
+#' @param two_side character
+#'
+#' @examples
+#'
+#' @rdname BayesianLossFunctionRTC
+#' @export BayesianLossFunctionRTC
+
+
 ################################################################################
 # This code is used for estimating posterior samples from a binary outcome     #
 # where an informative prior is used. The prior weight is determined using a   #
@@ -16,7 +39,7 @@
 # Tarek.D.Haddad@Medtronic.com                                                 #
 # Last modified:1/26/2016                                                      #
 ################################################################################
-library(ggplot2)
+#library(ggplot2)
 
 setGeneric("BayesianLossFunctionRTC",
            function(y,
