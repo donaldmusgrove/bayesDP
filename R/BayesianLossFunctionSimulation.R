@@ -19,6 +19,35 @@
 library(ggplot2)
 library(parallel)
 
+setGeneric("BayesianLossFunctionSimulation",
+           function(y,
+                    N,
+                    y0,
+                    N0,
+                    N0_max,
+                    alpha0,
+                    beta0,
+                    number_mcmc,
+                    weibull_shape,
+                    weibull_scale,
+                    two_side){
+             standardGeneric("BayesianLossFunctionSimulation")
+           })
+
+setMethod("BayesianLossFunctionSimulation",
+          signature(y = "numeric"),
+          function(y,
+                   N,
+                   y0,
+                   N0,
+                   N0_max,
+                   alpha0,
+                   beta0,
+                   number_mcmc,
+                   weibull_shape,
+                   weibull_scale,
+                   two_side){
+
 ### This function produces appropriate weight for prior data assuming a
 ### binomial outcome. Produces a scalar between 0 and 1
 Loss_function <- function(y,N,y0,N0,alpha0,beta0,number_mcmc,weibull_shape,
@@ -204,4 +233,14 @@ for(i in 1:nrow(dd)){
                          size=1,lty=2)
 }
 
-p3; pp3; sim_results
+#p3; pp3; sim_results
+
+me <- list(p3,
+           pp3,
+           sim_results)
+
+## Set the name for the class
+class(me) <- append(class(me),"BayesianLossFunctionSimulation")
+return(me)
+
+})
