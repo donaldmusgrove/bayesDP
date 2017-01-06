@@ -12,10 +12,48 @@
 # Last modified: 9/10/2016                                                     #
 ################################################################################
 
-#library(ggplot2)
-#library(MCMCpack)
-#library(survival)
+library(ggplot2)
+library(MCMCpack)
+library(survival)
 
+setGeneric("BayesianLossFunctionNormalRTC",
+           function(mu,
+                    sigma2,
+                    N,
+                    mu0,
+                    sigma02,
+                    N0,
+                    N0_max,
+                    weibull_scale,
+                    weibull_shape,
+                    number_mcmc,
+                    H0,
+                    two_side,
+                    inequality,
+                    N0_t,
+                    N0_c,
+                    delta){
+             standardGeneric("BayesianLossFunctionNormalRTC")
+           })
+
+setMethod("BayesianLossFunctionNormalRTC",
+          signature(mu = "numeric"),
+          function(mu,
+                   sigma2,
+                   N,
+                   mu0,
+                   sigma02,
+                   N0,
+                   N0_max,
+                   weibull_scale,
+                   weibull_shape,
+                   number_mcmc,
+                   H0,
+                   two_side,
+                   inequality,
+                   N0_t,
+                   N0_c,
+                   delta){
 
 ################################################################################
 ### Functions
@@ -380,9 +418,21 @@ prior_for_control_group1 <- res1$prior_for_control_group
 
 
 ### Display outputs
-post_typeplot1
-densityplot1
-lossfun_plot1
-cat(hypothesis1)
-prior_for_test_group1
-prior_for_control_group1
+#post_typeplot1
+#densityplot1
+#lossfun_plot1
+#cat(hypothesis1)
+#prior_for_test_group1
+#prior_for_control_group1
+
+me <- list(post_typeplot1,
+           densityplot1,
+           lossfun_plot1,
+           cat(hypothesis1),
+           prior_for_control_group1)
+
+## Set the name for the class
+class(me) <- append(class(me),"BayesianLossFunctionNormalRCT")
+return(me)
+
+})

@@ -321,11 +321,23 @@ hypothesis1 <- res1$hypothesis
 prior_for_test_group1 <- res1$prior_for_test_group
 
 ### Display outputs
-post_typeplot1
-densityplot1
-lossfun_plot1
-lossfun_plot2
+#post_typeplot1
+#densityplot1
+#lossfun_plot1
+#lossfun_plot2
 
-hypothesis1
-prior_for_test_group1
+#hypothesis1
+#prior_for_test_group1
+
+me <- list(post_typeplot1,
+           densityplot1,
+           lossfun_plot1,
+           lossfun_plot2,
+           hypothesis1,
+           prior_for_test_group1)
+
+## Set the name for the class
+class(me) <- append(class(me),"BayesianLossFunctionNormalOPC")
+return(me)
+
 })
