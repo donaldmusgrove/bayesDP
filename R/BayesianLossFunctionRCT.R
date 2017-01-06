@@ -16,7 +16,36 @@
 # Tarek.D.Haddad@Medtronic.com                                                 #
 # Last modified:1/26/2016                                                      #
 ################################################################################
-#library(ggplot2)
+library(ggplot2)
+
+setGeneric("BayesianLossFunctionRTC",
+           function(y,
+                    N,
+                    y0,
+                    N0,
+                    N0_max,
+                    alpha0,
+                    beta0,
+                    number_mcmc,
+                    weibull_shape,
+                    weibull_scale,
+                    two_side){
+             standardGeneric("BayesianLossFunctionRTC")
+           })
+
+setMethod("BayesianLossFunctionRTC",
+          signature(y = "numeric"),
+          function(y,
+                   N,
+                   y0,
+                   N0,
+                   N0_max,
+                   alpha0,
+                   beta0,
+                   number_mcmc,
+                   weibull_shape,
+                   weibull_scale,
+                   two_side){
 
 
 ### Section 1: Functions
@@ -240,20 +269,6 @@ pHist <- ggplot(data.frame(x = f$TestMinusControl_post),
   xlab("Test-Control") +
   geom_vline(xintercept = 0, linetype = "longdash")
 
-
-cat(paste('"We can define W as the difference between the event rates for the test group versus control group, i.e. W=test rate - control rate',
-          '\n',
-          'Null Hypothesis (H_0): W≥0.0%',
-          '\n',
-          "Alternative Hypothesis (H_a): W<0.0%",
-          '\n',
-          '\n',
-          "P(W<0.0%|data)=",mean(f$TestMinusControl_post<0),
-          '\n',
-          "We can accept H_a with a Probability of",mean(f$TestMinusControl_post<0)
-))
-
-
 p_value <- seq(0,1,,100)
 Loss_function_test <- pweibull(p_value,
                                shape=posterior_test$weibull_shape,
@@ -284,3 +299,38 @@ p3 <- p3+facet_wrap(~group, ncol=1) +
   theme_bw() +
   ylab("Effective sample size for historical data") +
   xlab("Bayesian p-value (new vs historical data)")
+
+
+cat(paste('"We can define W as the difference between the event rates for the test group versus control group, i.e. W=test rate - control rate',
+          '\n',
+          'Null Hypothesis (H_0): W≥0.0%',
+          '\n',
+          "Alternative Hypothesis (H_a): W<0.0%",
+          '\n',
+          '\n',
+          "P(W<0.0%|data)=",mean(f$TestMinusControl_post<0),
+          '\n',
+          "We can accept H_a with a Probability of",mean(f$TestMinusControl_post<0)
+))
+
+me <- list(cat(paste('"We can define W as the difference between the event rates for the test group versus control group, i.e. W=test rate - control rate',
+                     '\n',
+                     'Null Hypothesis (H_0): W≥0.0%',
+                     '\n',
+                     "Alternative Hypothesis (H_a): W<0.0%",
+                     '\n',
+                     '\n',
+                     "P(W<0.0%|data)=",mean(f$TestMinusControl_post<0),
+                     '\n',
+                     "We can accept H_a with a Probability of",mean(f$TestMinusControl_post<0))),
+           p,
+           p1,
+           p3,
+           pHist)
+
+## Set the name for the class
+class(me) <- append(class(me),"BayesianLossFunctionRCT")
+return(me)
+
+})
+
