@@ -13,7 +13,7 @@
 #' @param weibull_scale numeric
 #' @param weibull_shape numeric
 #' @param number_mcmc numeric
-#' @param H0 numeric
+#'
 #' @param two_side character
 #' @param inequality character
 #' @param N0_t numeric
@@ -45,44 +45,57 @@
 #library(MCMCpack)
 #library(survival)
 
+
+#  mu            = 10,    #Number of events observed  current data sets
+#  sigma2        = 2,
+#  N             = 20,    #Number of  current subjects
+#  mu0           = 12,
+#  sigma02       = 1,     #Number of events observed  historical  data sets
+#  N0            = N0_c,  #Number of historical subjects
+#  N0_max        = 20,    #The maximum effective sample size the prior can receive when the loss function equals 1
+#  number_mcmc   = 10000, #Number of simulations to estimate posterior and loss function
+#  weibull_scale = .2,    #Loss function parameter controlling the location of a weibull function
+#  weibull_shape = 2,     #Loss function parameter controlling the location of a weibull function
+#  two_side      = two_side)
+
 setGeneric("BayesianLossFunctionNormalRTC",
-           function(mu,
-                    sigma2,
-                    N,
-                    mu0,
-                    sigma02,
-                    N0,
-                    N0_max,
-                    weibull_scale,
-                    weibull_shape,
-                    number_mcmc,
-                    H0,
-                    two_side,
-                    inequality,
-                    N0_t,
-                    N0_c,
-                    delta){
+           function(mu = 10,
+                    sigma2 = 2,
+                    N = 20,
+                    mu0 = 12,
+                    sigma02 = 1,
+                    N0 = 10,
+                    N0_max = 20,
+                    weibull_scale = 0.2,
+                    weibull_shape = 2,
+                    number_mcmc  = 10000,
+#                    H0,
+                    two_side = 1,
+                    inequality = "<",
+                    N0_t = 10,
+                    N0_c = 0,
+                    delta = 0){
              standardGeneric("BayesianLossFunctionNormalRTC")
            })
 
 setMethod("BayesianLossFunctionNormalRTC",
           signature(mu = "numeric"),
-          function(mu,
-                   sigma2,
-                   N,
-                   mu0,
-                   sigma02,
-                   N0,
-                   N0_max,
-                   weibull_scale,
-                   weibull_shape,
-                   number_mcmc,
-                   H0,
-                   two_side,
-                   inequality,
-                   N0_t,
-                   N0_c,
-                   delta){
+          function(mu = 10,
+                   sigma2 = 2,
+                   N = 20,
+                   mu0 = 12,
+                   sigma02 = 1,
+                   N0 = 10,
+                   N0_max = 20,
+                   weibull_scale = 0.2,
+                   weibull_shape = 2,
+                   number_mcmc  = 10000,
+                   #                    H0,
+                   two_side = 1,
+                   inequality = "<",
+                   N0_t = 10,
+                   N0_c = 0,
+                   delta = 0){
 
 ################################################################################
 ### Functions
@@ -385,38 +398,38 @@ results <- function(f,posterior_test,posterior_control,two_side,inequality,
 ### Results
 ################################################################################
 
-two_side   <- 1   # 0 == 1-sided, 1 === 2-sided
-inequality <- "<" # Inequality of alternate hypothesis
-N0_t       <- 10  #Number of historical subjects in test group
-N0_c       <- 0   #Number of historical subjects in control group
-delta      <- 0   #Non-inferiority zone value
+#two_side   <- 1   # 0 == 1-sided, 1 === 2-sided
+#inequality <- "<" # Inequality of alternate hypothesis
+#N0_t       <- 10  #Number of historical subjects in test group
+#N0_c       <- 0   #Number of historical subjects in control group
+#delta      <- 0   #Non-inferiority zone value
 
 posterior_test <- mu_posterior(
-  mu            = 10,    #Number of events observed  current data sets
-  sigma2        = 5,
-  N             = 10,    #Number of  current subjects
-  mu0           = 9,
-  sigma02       = 5 ,    #Number of events observed  historical  data sets
-  N0            = N0_t,  #Number of historical subjects
-  N0_max        = 20,    #Maximum effective sample size prior can receive when the loss function equals 1
-  number_mcmc   = 10000, #Number of simulations to estimate posterior and loss function
-  weibull_scale = .2,    #Loss function parameter controlling the location of a weibull function
-  weibull_shape = 2,     #Loss function parameter controlling the location of a weibull function
-  two_side      = two_side)
+  mu,            #= 10,    #Number of events observed  current data sets
+  sigma2,        #= 5,
+  N,             #= 10,    #Number of  current subjects
+  mu0,           #= 9,
+  sigma02,       #= 5 ,    #Number of events observed  historical  data sets
+  N0,            #= N0_t,  #Number of historical subjects
+  N0_max,        #= 20,    #Maximum effective sample size prior can receive when the loss function equals 1
+  number_mcmc,   #= 10000, #Number of simulations to estimate posterior and loss function
+  weibull_scale, #= .2,    #Loss function parameter controlling the location of a weibull function
+  weibull_shape, #= 2,     #Loss function parameter controlling the location of a weibull function
+  two_side)      #= two_side)
 
 
 posterior_control <- mu_posterior(
-  mu            = 10,    #Number of events observed  current data sets
-  sigma2        = 2,
-  N             = 20,    #Number of  current subjects
-  mu0           = 12,
-  sigma02       = 1,     #Number of events observed  historical  data sets
-  N0            = N0_c,  #Number of historical subjects
-  N0_max        = 20,    #The maximum effective sample size the prior can receive when the loss function equals 1
-  number_mcmc   = 10000, #Number of simulations to estimate posterior and loss function
-  weibull_scale = .2,    #Loss function parameter controlling the location of a weibull function
-  weibull_shape = 2,     #Loss function parameter controlling the location of a weibull function
-  two_side      = two_side)
+  mu,            #= 10,    #Number of events observed  current data sets
+  sigma2,        #= 2,
+  N,             #= 20,    #Number of  current subjects
+  mu0,           #= 12,
+  sigma02,       #= 1,     #Number of events observed  historical  data sets
+  N0,            #= N0_c,  #Number of historical subjects
+  N0_max,        #= 20,    #The maximum effective sample size the prior can receive when the loss function equals 1
+  number_mcmc,   #= 10000, #Number of simulations to estimate posterior and loss function
+  weibull_scale, #= .2,    #Loss function parameter controlling the location of a weibull function
+  weibull_shape, #= 2,     #Loss function parameter controlling the location of a weibull function
+  two_side)      #= two_side)
 
 
 

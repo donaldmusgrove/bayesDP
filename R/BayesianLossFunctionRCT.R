@@ -8,6 +8,8 @@
 #' @param y0 numeric
 #' @param N0 numeric
 #' @param N0_max numeric
+#' @param N0_test numeric
+#' @param N0_control numeric
 #' @param alpha0 numeric
 #' @param beta0 numeric
 #' @param number_mcmc numeric
@@ -42,33 +44,37 @@
 #library(ggplot2)
 
 setGeneric("BayesianLossFunctionRTC",
-           function(y,
-                    N,
-                    y0,
-                    N0,
-                    N0_max,
-                    alpha0,
-                    beta0,
-                    number_mcmc,
-                    weibull_shape,
-                    weibull_scale,
-                    two_side){
+           function(y             = 1,          #Number of events observed  current data sets
+                    N             = 400,        #Number of  current subjects
+                    y0            = 10,         #Number of events observed  historical  data sets
+                    N0            = 100, #Number of historical subjects
+                    N0_max        = 200,        #Max effective sample size the prior can receive when loss function equals 1
+                    N0_test       = 1000,
+                    N0_control    = 100,
+                    alpha0        = 1,          #Noninformative Initial priors
+                    beta0         = 1,          #Noninformative Initial priors
+                    number_mcmc   = 10000,      #Number of simulations to estimate posterior and loss function
+                    weibull_scale = .05,        #Loss function parameter controlling the location of a weibull function
+                    weibull_shape = 2,          #Loss function parameter controlling the location of a weibull function
+                    two_side      = 0){
              standardGeneric("BayesianLossFunctionRTC")
            })
 
 setMethod("BayesianLossFunctionRTC",
           signature(y = "numeric"),
-          function(y,
-                   N,
-                   y0,
-                   N0,
-                   N0_max,
-                   alpha0,
-                   beta0,
-                   number_mcmc,
-                   weibull_shape,
-                   weibull_scale,
-                   two_side){
+          function(y             = 1,          #Number of events observed  current data sets
+                   N             = 400,        #Number of  current subjects
+                   y0            = 10,         #Number of events observed  historical  data sets
+                   N0            = 100, #Number of historical subjects
+                   N0_max        = 200,        #Max effective sample size the prior can receive when loss function equals 1
+                   N0_test       = 1000,
+                   N0_control    = 100,
+                   alpha0        = 1,          #Noninformative Initial priors
+                   beta0         = 1,          #Noninformative Initial priors
+                   number_mcmc   = 10000,      #Number of simulations to estimate posterior and loss function
+                   weibull_scale = .05,        #Loss function parameter controlling the location of a weibull function
+                   weibull_shape = 2,          #Loss function parameter controlling the location of a weibull function
+                   two_side      = 0){
 
 
 ### Section 1: Functions
@@ -187,37 +193,37 @@ final <- function(posterior_control,posterior_test){
 
 
 
-N0_test    <- 1000
-N0_control <- 100
+#N0_test    <- 1000
+#N0_control <- 100
 
 ### Function call & Input Variable name description
 ### - Input Variable name description
 posterior_test <- Binomial_posterior(
-  y             = 10,      #Number of events observed  current data sets
-  N             = 400,     #Number of  current subjects
-  y0            = 1,       #Number of events observed  historical  data sets
-  N0            = N0_test, #Number of historical subjects
-  N0_max        = 200,     #Max effective sample size the prior can receive when loss function equals 1
-  alpha0        = 1,       #Noninformative Initial priors
-  beta0         = 1,       #Noninformative Initial priors
-  number_mcmc   = 10000,   #Number of simulations to estimate posterior and loss function
-  weibull_scale = .2,      #Loss function parameter controlling the location of a weibull function
-  weibull_shape = 2,       #Loss function parameter controlling the location of a weibull function
-  two_side      = 0
+  y,             #= 10,      #Number of events observed  current data sets
+  N,             #= 400,     #Number of  current subjects
+  y0,            #= 1,       #Number of events observed  historical  data sets
+  N0,            #= N0_test, #Number of historical subjects
+  N0_max,        #= 200,     #Max effective sample size the prior can receive when loss function equals 1
+  alpha0,        #= 1,       #Noninformative Initial priors
+  beta0,         #= 1,       #Noninformative Initial priors
+  number_mcmc,   #= 10000,   #Number of simulations to estimate posterior and loss function
+  weibull_scale, #= .2,      #Loss function parameter controlling the location of a weibull function
+  weibull_shape, #= 2,       #Loss function parameter controlling the location of a weibull function
+  two_side       #= 0
 )
 
 posterior_control <- Binomial_posterior(
-  y             = 1,          #Number of events observed  current data sets
-  N             = 400,        #Number of  current subjects
-  y0            = 10,         #Number of events observed  historical  data sets
-  N0            = N0_control, #Number of historical subjects
-  N0_max        = 200,        #Max effective sample size the prior can receive when loss function equals 1
-  alpha0        = 1,          #Noninformative Initial priors
-  beta0         = 1,          #Noninformative Initial priors
-  number_mcmc   = 10000,      #Number of simulations to estimate posterior and loss function
-  weibull_scale = .05,        #Loss function parameter controlling the location of a weibull function
-  weibull_shape = 2,          #Loss function parameter controlling the location of a weibull function
-  two_side      = 0
+  y,             #= 1,          #Number of events observed  current data sets
+  N,             #= 400,        #Number of  current subjects
+  y0,            #= 10,         #Number of events observed  historical  data sets
+  N0,            #= N0_control, #Number of historical subjects
+  N0_max,        #= 200,        #Max effective sample size the prior can receive when loss function equals 1
+  alpha0,        #= 1,          #Noninformative Initial priors
+  beta0,         #= 1,          #Noninformative Initial priors
+  number_mcmc,   #= 10000,      #Number of simulations to estimate posterior and loss function
+  weibull_scale, #= .05,        #Loss function parameter controlling the location of a weibull function
+  weibull_shape, #= 2,          #Loss function parameter controlling the location of a weibull function
+  two_side       #= 0
 )
 
 f <- final(posterior_control,posterior_test)

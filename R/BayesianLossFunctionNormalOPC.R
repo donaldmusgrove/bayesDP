@@ -14,7 +14,7 @@
 #' @param weibull_shape numeric
 #' @param number_mcmc numeric
 #' @param H0 numeric
-#' @param two_side character
+#' @param two_side numeric
 #' @param inequality character
 #'
 #' @examples
@@ -39,38 +39,50 @@
 #library(MCMCpack)
 #library(survival)
 
+#mu            = 10,
+#sigma2        = 1,
+#N             = 10,   #Number of  current subjects
+#mu0           = 10,
+#sigma02       = 1,
+#N0            = 10,       #Number of historical subjects
+#N0_max        = 10,       #Maximum effective prior sample size
+#number_mcmc   = 1000,     #Number of posterior simulations
+#weibull_scale = 0.1,      #Loss function: Weibull location scale
+#weibull_shape = 1,        #Loss function: Weibull location shape
+#two_side      = two_side) # 0 == 1-sided, 1 === 2-sided
+
 setGeneric("BayesianLossFunctionNormalOPC",
-           function(mu,
-                    sigma2,
-                    N,
-                    mu0,
-                    sigma02,
-                    N0,
-                    N0_max,
-                    weibull_scale,
-                    weibull_shape,
-                    number_mcmc,
-                    H0,
-                    two_side,
-                    inequality){
+           function(mu = 10,
+                    sigma2 = 1,
+                    N = 10,
+                    mu0 = 10,
+                    sigma02 = 1,
+                    N0 = 10,
+                    N0_max = 10,
+                    weibull_scale = 0.1,
+                    weibull_shape = 1,
+                    number_mcmc = 1000,
+                    H0 = 10,
+                    two_side = 0,
+                    inequality = "<"){
              standardGeneric("BayesianLossFunctionNormalOPC")
            })
 
 setMethod("BayesianLossFunctionNormalOPC",
           signature(mu = "numeric"),
-          function(mu,
-                   sigma2,
-                   N,
-                   mu0,
-                   sigma02,
-                   N0,
-                   N0_max,
-                   weibull_scale,
-                   weibull_shape,
-                   number_mcmc,
-                   H0,
-                   two_side,
-                   inequality){
+          function(mu = 10,
+                   sigma2 = 1,
+                   N = 10,
+                   mu0 = 10,
+                   sigma02 = 1,
+                   N0 = 10,
+                   N0_max = 10,
+                   weibull_scale = 0.1,
+                   weibull_shape = 1,
+                   number_mcmc = 1000,
+                   H0 = 10,
+                   two_side = 0,
+                   inequality = "<"){
 
 ################################################################################
 ### Functions
@@ -309,17 +321,17 @@ two_side   <- 0    # 0 == 1-sided, 1 === 2-sided
 H0         <- 10   # H0 value
 inequality <- ">"  # Inequality of alternate hypothesis
 
-est <- mu_posterior(mu            = 10,
-                    sigma2        = 1,
-                    N             = 10,   #Number of  current subjects
-                    mu0           = 10,
-                    sigma02       = 1,
-                    N0            = 10,       #Number of historical subjects
-                    N0_max        = 10,       #Maximum effective prior sample size
-                    number_mcmc   = 1000,     #Number of posterior simulations
-                    weibull_scale = 0.1,      #Loss function: Weibull location scale
-                    weibull_shape = 1,        #Loss function: Weibull location shape
-                    two_side      = two_side) # 0 == 1-sided, 1 === 2-sided
+est <- mu_posterior(mu,            #= 10,
+                    sigma2,        #= 1,
+                    N,             #= 10,   #Number of  current subjects
+                    mu0,           #= 10,
+                    sigma02,       #= 1,
+                    N0,            #= 10,       #Number of historical subjects
+                    N0_max,        #= 10,       #Maximum effective prior sample size
+                    number_mcmc,   #= 1000,     #Number of posterior simulations
+                    weibull_scale, #= 0.1,      #Loss function: Weibull location scale
+                    weibull_shape, #= 1,        #Loss function: Weibull location shape
+                    two_side)      #= two_side) # 0 == 1-sided, 1 === 2-sided
 
 f1 <- final1(posterior_test = est)
 

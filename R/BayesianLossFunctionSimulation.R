@@ -3,7 +3,9 @@
 #' BayesianLossFunctionSimulation
 #'
 #' @title BayesianLossFunctionSimulation: BayesianLossFunctionSimulation
-#' @param y numeric
+#' @param true_rate numeric
+#' @param H0_rate numeric
+#' @param sim numeric
 #' @param N numeric
 #' @param y0 numeric
 #' @param N0 numeric
@@ -13,7 +15,6 @@
 #' @param number_mcmc numeric
 #' @param weibull_shape numeric
 #' @param weibull_scale numeric
-#' @param two_side character
 #'
 #' @examples
 #'
@@ -41,34 +42,53 @@
 #library(ggplot2)
 #library(parallel)
 
+#confidence_level = .95,
+#true_rate = c(.01,.05,.075,.1),
+#H0_rate = .1,
+#sim = 50,
+
+#N = 200,              #Number of  current subjects
+#y0 = 15,              #Number of events observed  historical  data sets
+#N0 = 200,             #Number of historical subjects
+#N0_max = 200,         #Max effective sample size prior can receive when loss function equals 1
+#alpha0 = 1,           #Noninformative Initial priors
+#beta0 = 1,            #Noninformative Initial priors
+#number_mcmc = 5000,   #Number of simulations to estimate posterior and loss function
+#weibull_scale = c(.1,.2,.3), #Loss function parameter: location of a Weibull function
+#weibull_shape = c(3,2))      #Loss function parameter: location of a Weibull function
+
 setGeneric("BayesianLossFunctionSimulation",
-           function(y,
-                    N,
-                    y0,
-                    N0,
-                    N0_max,
-                    alpha0,
-                    beta0,
-                    number_mcmc,
-                    weibull_shape,
-                    weibull_scale,
-                    two_side){
+           function(confidence_level = .95,
+                      true_rate = c(.01,.05,.075,.1),
+                      H0_rate = .1,
+                      sim = 50,
+                      N = 200,              #Number of  current subjects
+                      y0 = 15,              #Number of events observed  historical  data sets
+                      N0 = 200,             #Number of historical subjects
+                      N0_max = 200,         #Max effective sample size prior can receive when loss function equals 1
+                      alpha0 = 1,           #Noninformative Initial priors
+                      beta0 = 1,            #Noninformative Initial priors
+                      number_mcmc = 5000,   #Number of simulations to estimate posterior and loss function
+                      weibull_scale = c(.1,.2,.3), #Loss function parameter: location of a Weibull function
+                      weibull_shape = c(3,2)){      #Loss function parameter: location of a Weibull function){
              standardGeneric("BayesianLossFunctionSimulation")
            })
 
 setMethod("BayesianLossFunctionSimulation",
-          signature(y = "numeric"),
-          function(y,
-                   N,
-                   y0,
-                   N0,
-                   N0_max,
-                   alpha0,
-                   beta0,
-                   number_mcmc,
-                   weibull_shape,
-                   weibull_scale,
-                   two_side){
+          signature(confidence_level = "numeric"),
+          function(confidence_level = .95,
+                   true_rate = c(.01,.05,.075,.1),
+                   H0_rate = .1,
+                   sim = 50,
+                   N = 200,              #Number of  current subjects
+                   y0 = 15,              #Number of events observed  historical  data sets
+                   N0 = 200,             #Number of historical subjects
+                   N0_max = 200,         #Max effective sample size prior can receive when loss function equals 1
+                   alpha0 = 1,           #Noninformative Initial priors
+                   beta0 = 1,            #Noninformative Initial priors
+                   number_mcmc = 5000,   #Number of simulations to estimate posterior and loss function
+                   weibull_scale = c(.1,.2,.3), #Loss function parameter: location of a Weibull function
+                   weibull_shape = c(3,2)){      #Loss function parameter: location of a Weibull function){
 
 ### This function produces appropriate weight for prior data assuming a
 ### binomial outcome. Produces a scalar between 0 and 1
