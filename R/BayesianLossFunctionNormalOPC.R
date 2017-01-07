@@ -9,7 +9,7 @@
 #' @param mu0 numeric
 #' @param sigma02 numeric
 #' @param N0 numeric
-#' @param N0_max numeric
+#' @param alpha_max numeric
 #' @param weibull_scale numeric
 #' @param weibull_shape numeric
 #' @param number_mcmc numeric
@@ -45,7 +45,7 @@
 #mu0           = 10,
 #sigma02       = 1,
 #N0            = 10,       #Number of historical subjects
-#N0_max        = 10,       #Maximum effective prior sample size
+#alpha_max     = 1,        #Max loss function weight
 #number_mcmc   = 1000,     #Number of posterior simulations
 #weibull_scale = 0.1,      #Loss function: Weibull location scale
 #weibull_shape = 1,        #Loss function: Weibull location shape
@@ -58,7 +58,7 @@ setGeneric("BayesianLossFunctionNormalOPC",
                     mu0 = 10,
                     sigma02 = 1,
                     N0 = 10,
-                    N0_max = 10,
+                    alpha_max = 1,
                     weibull_scale = 0.1,
                     weibull_shape = 1,
                     number_mcmc = 1000,
@@ -76,7 +76,7 @@ setMethod("BayesianLossFunctionNormalOPC",
                    mu0 = 10,
                    sigma02 = 1,
                    N0 = 10,
-                   N0_max = 10,
+                   alpha_max = 1,
                    weibull_scale = 0.1,
                    weibull_shape = 1,
                    number_mcmc = 1000,
@@ -88,42 +88,41 @@ setMethod("BayesianLossFunctionNormalOPC",
 ### Functions
 ################################################################################
 
-Loss_function <- function(mu, sigma2, N, mu0, sigma02, N0, number_mcmc,
+Loss_function <- function(mu, sigma2, N, mu0, sigma02, N0, alpha_max, number_mcmc,
                           weibull_shape, weibull_scale, two_side) {
 
   ### mu for using flat prior
-  sigma2_post_flate <- rinvgamma(number_mcmc, (N-1)/2, ((N-1) * sigma2)/2)          #flat prior
-  mu_post_flate     <- rnorm(number_mcmc, mu, (sigma2_post_flate/((N-1) + 1))^0.5)  #flat prior
+  sigma2_post_flat <- rinvgamma(number_mcmc, (N-1)/2, ((N-1) * sigma2)/2)          #flat prior
+  mu_post_flat     <- rnorm(number_mcmc, mu, (sigma2_post_flat/((N-1) + 1))^0.5)  #flat prior
 
   ### Prior model
-  sigma2_post_flate0 <- rinvgamma(number_mcmc, (N0-1)/2, ((N0-1) * sigma02)/2)          #flat prior
-  mu_post_flate0     <- rnorm(number_mcmc, mu0, (sigma2_post_flate0/((N0-1) + 1))^0.5)  #flat prior
+  sigma2_post_flat0 <- rinvgamma(number_mcmc, (N0-1)/2, ((N0-1) * sigma02)/2)          #flat prior
+  mu_post_flat0     <- rnorm(number_mcmc, mu0, (sigma2_post_flat0/((N0-1) + 1))^0.5)  #flat prior
 
   ### Test of model vs real
-  p_test <- mean(mu_post_flate < mu_post_flate0)  # larger is higher failure
+  p_test <- mean(mu_post_flat < mu_post_flat0)  # larger is higher failure
 
   ### Number of effective sample size given shape and scale loss function
   if (two_side == 0) {
-    alpha_loss <- pweibull(p_test, shape = weibull_shape, scale = weibull_scale)
+    alpha_loss <- pweibull(p_test, shape = weibull_shape, scale = weibull_scale) * alpha_max
   } else if (two_side == 1) {
     p_test1    <- ifelse(p_test > 0.5, 1 - p_test, p_test)
-    alpha_loss <- pweibull(p_test1, shape = weibull_shape, scale = weibull_scale)
+    alpha_loss <- pweibull(p_test1, shape = weibull_shape, scale = weibull_scale) * alpha_max
   }
 
   return(list(alpha_loss    = alpha_loss,
               pvalue        = p_test,
-              mu_post_flate = mu_post_flate,
-              mu0           = mu_post_flate0))
+              mu_post_flat  = mu_post_flat,
+              mu0           = mu_post_flat0))
 }
 
 
 ################################################################################
-### Calculate posterior estimation for mu distribution given alpha_loss value
-### and maximum strength of (N0_max) prior if alpha_loss = 1
+# Calculates posterior estimation for Binomial distribution given alpha_loss   #
 ################################################################################
-mu_post_aug <- function(mu, sigma2, N, mu0, sigma02, N0, N0_max, alpha_loss,
+mu_post_aug <- function(mu, sigma2, N, mu0, sigma02, N0, alpha_loss,
                         number_mcmc){
-  effective_N0 <- N0_max * alpha_loss
+  effective_N0 <- N0 * alpha_loss
   sigma2_post  <- rinvgamma(number_mcmc, (N-1)/2, ((N-1) * sigma2)/2)    #flat prior
   sigma2_post0 <- rinvgamma(number_mcmc, (N0-1)/2, ((N0-1) * sigma02)/2) #flat prior
 
@@ -141,7 +140,7 @@ mu_post_aug <- function(mu, sigma2, N, mu0, sigma02, N0, N0_max, alpha_loss,
 #################################################################################
 ### Combines the loss function and posterior estimation into one function
 ################################################################################
-mu_posterior <- function(mu, sigma2, N, mu0, sigma02, N0, N0_max, number_mcmc,
+mu_posterior <- function(mu, sigma2, N, mu0, sigma02, N0, alpha_max, number_mcmc,
                          weibull_shape, weibull_scale, two_side) {
 
   alpha_loss <- Loss_function(mu            = mu,
@@ -150,6 +149,7 @@ mu_posterior <- function(mu, sigma2, N, mu0, sigma02, N0, N0_max, number_mcmc,
                               mu0           = mu0,
                               sigma02       = sigma02,
                               N0            = N0,
+                              alpha_max     = alpha_max,
                               number_mcmc   = number_mcmc,
                               weibull_shape = weibull_shape,
                               weibull_scale = weibull_scale,
@@ -161,14 +161,13 @@ mu_posterior <- function(mu, sigma2, N, mu0, sigma02, N0, N0_max, number_mcmc,
                               mu0         = mu0,
                               sigma02     = sigma02,
                               N0          = N0,
-                              N0_max      = N0_max,
                               alpha_loss  = alpha_loss$alpha_loss,
                               number_mcmc = number_mcmc)
 
   return(list(alpha_loss         = alpha_loss$alpha_loss,
               pvalue             = alpha_loss$pvalue,
               mu_posterior       = mu_posterior,
-              mu_posterior_flate = alpha_loss$mu_post_flate,
+              mu_posterior_flat  = alpha_loss$mu_post_flat,
               mu_prior           = alpha_loss$mu0,
               weibull_scale      = weibull_scale,
               weibull_shape      = weibull_shape,
@@ -176,35 +175,13 @@ mu_posterior <- function(mu, sigma2, N, mu0, sigma02, N0, N0_max, number_mcmc,
               N                  = N,
               mu0                = mu0,
               N0                 = N0,
-              N0_max             = N0_max,
-              N0_effective       = alpha_loss$alpha_loss * N0_max))
+              N0_effective       = alpha_loss$alpha_loss * N0))
 }
 
 
-final <- function(posterior_control, posterior_test) {
-  den_post_control  <- density(posterior_control$mu_posterior, adjust = 0.5)
-  den_flat_control  <- density(posterior_control$mu_posterior_flate, adjust = 0.5)
-  den_prior_control <- density(posterior_control$mu_prior, adjust = 0.5)
-
-  den_post_test     <- density(posterior_test$mu_posterior, adjust = 0.5)
-  den_flat_test     <- density(posterior_test$mu_posterior_flate, adjust = 0.5)
-  den_prior_test    <- density(posterior_test$mu_prior, adjust = 0.5)
-
-  TestMinusControl_post <- posterior_test$mu_posterior - posterior_control$mu_posterior
-
-  return(list(den_post_control      = den_post_control,
-              den_flat_control      = den_flat_control,
-              den_prior_control     = den_prior_control,
-              den_post_test         = den_post_test,
-              den_flat_test         = den_flat_test,
-              den_prior_test        = den_prior_test,
-              TestMinusControl_post = TestMinusControl_post))
-}
-
-
-final1 <- function(posterior_test) {
+final <- function(posterior_test) {
   den_post_test  <- density(posterior_test$mu_posterior, adjust = 0.5)
-  den_flat_test  <- density(posterior_test$mu_posterior_flate, adjust = 0.5)
+  den_flat_test  <- density(posterior_test$mu_posterior_flat, adjust = 0.5)
   den_prior_test <- density(posterior_test$mu_prior, adjust = 0.5)
 
   Testpost <- posterior_test$mu_posterior
@@ -262,7 +239,7 @@ results <- function(f,posterior_test,H0,two_side,inequality){
 
   Loss_function_test <- pweibull(p_value,
                                  shape = posterior_test$weibull_shape,
-                                 scale = posterior_test$weibull_scale)*posterior_test$N0_max
+                                 scale = posterior_test$weibull_scale)*posterior_test$N0
 
   D1 <- data.frame(group = "test", y = Loss_function_test, x = seq(0, 1, , 100))
   D2 <- data.frame(group = c("test"), pvalue = c(posterior_test$pvalue))
@@ -297,10 +274,10 @@ results <- function(f,posterior_test,H0,two_side,inequality){
   }
 
   ### Print
-  prior_for_test_group <- list(`Effective sample size of prior(for test group)` = posterior_test$N0_effective,
-                               `Bayesian p-value (new vs historical data)` = posterior_test$pvalue,
-                               `loss function value` = posterior_test$alpha_loss,
-                               N0_max = posterior_test$N0_max)
+  prior_for_test_group <- list(`Effective sample size of prior (for test group)` = posterior_test$N0_effective,
+                               `Bayesian p-value (new vs historical data)`       = posterior_test$pvalue,
+                               `Loss function value`                             = posterior_test$alpha_loss,
+                               `Sample size of prior (for test group)`           = posterior_test$N0)
 
   return(list(prior_for_test_group = prior_for_test_group,
               post_typeplot        = post_typeplot,
@@ -310,6 +287,7 @@ results <- function(f,posterior_test,H0,two_side,inequality){
   )
 
 }
+
 
 
 
@@ -327,13 +305,13 @@ est <- mu_posterior(mu,            #= 10,
                     mu0,           #= 10,
                     sigma02,       #= 1,
                     N0,            #= 10,       #Number of historical subjects
-                    N0_max,        #= 10,       #Maximum effective prior sample size
+                    alpha_max,     #= 10,       #Maximum effective prior sample size
                     number_mcmc,   #= 1000,     #Number of posterior simulations
                     weibull_scale, #= 0.1,      #Loss function: Weibull location scale
                     weibull_shape, #= 1,        #Loss function: Weibull location shape
                     two_side)      #= two_side) # 0 == 1-sided, 1 === 2-sided
 
-f1 <- final1(posterior_test = est)
+f1 <- final(posterior_test = est)
 
 res1 <- results(f              = f1,
                 posterior_test = est,
@@ -356,14 +334,6 @@ hypothesis1 <- res1$hypothesis
 
 prior_for_test_group1 <- res1$prior_for_test_group
 
-### Display outputs
-#post_typeplot1
-#densityplot1
-#lossfun_plot1
-#lossfun_plot2
-
-#hypothesis1
-#prior_for_test_group1
 
 me <- list(post_typeplot1,
            densityplot1,

@@ -16,7 +16,6 @@
 #' @param weibull_scale weibull_scale
 #' @param weibull_shape weibull_shape
 #' @param alpha_max alpha_max
-#' @param N0_max N0_max
 #' @param N_mcmc N_mcmc
 #'
 #' @examples
@@ -73,7 +72,6 @@ setGeneric("post_est_gaussian",
                     weibull_scale = 1,
                     weibull_shape = 1,
                     alpha_max = 1,
-                    N0_max = NULL,
                     N_mcmc = 10000){
              standardGeneric("post_est_gaussian")
            })
@@ -104,7 +102,6 @@ setMethod("post_est_gaussian",
           #weibull_scale = "numeric",
           #weibull_shape = "numeric",
           #alpha_max = "numeric",
-          #N0_max = "missing",
           #N_mcmc = "numeric"),
           function(data,
                    formula = y ~ treatment + x,
@@ -119,7 +116,6 @@ setMethod("post_est_gaussian",
                    weibull_scale = 1,
                    weibull_shape = 1,
                    alpha_max = 1,
-                   N0_max = NULL,
                    N_mcmc = 10000){
 
             N_new        <- nrow(data)
@@ -153,13 +149,6 @@ setMethod("post_est_gaussian",
             ### Scale the standard deviation of the historical group by alpha0
             std0        <- prior_sigma/sqrt(alpha0)
 
-            ### Note: if N0_max is not null, then use
-            if(!is.null(N0_max)){
-              alpha0     <- pweibull(p_test1, shape = weibull_shape, scale = weibull_scale)
-              alpha0     <- ifelse(alpha0<1e-12,1e-12,alpha0)
-              N_eff      <- N0_max*alpha0
-              std0       <- prior_sigma/sqrt(N0_max)
-            }
 
             ################################################################################
             ### Estimate treatment effect of current data with historical prior,
