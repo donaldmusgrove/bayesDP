@@ -145,7 +145,7 @@ mu_post_aug <- function(mu, sigma2, N, mu0, sigma02, N0, N0_max, alpha_loss,
                                             sigma2_post*effective_N0)
   } else {
     var_mu <- rinvgamma(number_mcmc, (N - 1)/2, ((N - 1) * sigma2)/2)
-    mu1    <- rnorm(number_mcmc, mu, (var_mu/((N - 1) + 1))^0.5)
+    mu1    <- mu
 
   }
   mu_post <- rnorm(number_mcmc, mu1, sqrt(var_mu))
