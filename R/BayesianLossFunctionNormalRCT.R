@@ -418,8 +418,8 @@ posterior_control <- mu_posterior(
 
 
 
-f1 <- final(posterior_test    = posterior_test,
-            posterior_control = posterior_control)
+f1 <- final(posterior_control = posterior_control,
+            posterior_test    = posterior_test)
 
 
 res1 <- results(f                 = f1,
