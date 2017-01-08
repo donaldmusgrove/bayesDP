@@ -3,12 +3,18 @@
 #' BayesianLossFunctionNormalRTC
 #'
 #' @title BayesianLossFunctionNormalRTC: BayesianLossFunctionNormalRTC
-#' @param mu numeric
-#' @param sigma2 numeric
-#' @param N numeric
-#' @param mu0 numeric
-#' @param sigma02 numeric
-#' @param N0 numeric
+#' @param mu_t numeric
+#' @param sigma2_t numeric
+#' @param N_t numeric
+#' @param mu_c numeric
+#' @param sigma2_c numeric
+#' @param N_c numeric
+#' @param mu0_t numeric
+#' @param sigma02_t numeric
+#' @param N0_t numeric
+#' @param mu0_c numeric
+#' @param sigma02_c numeric
+#' @param N0_c numeric
 #' @param alpha_max numeric
 #' @param weibull_scale numeric
 #' @param weibull_shape numeric
@@ -16,8 +22,6 @@
 #'
 #' @param two_side character
 #' @param inequality character
-#' @param N0_t numeric
-#' @param N0_c numeric
 #' @param delta numeric
 #'
 #' @examples
@@ -41,58 +45,50 @@
 # Last modified: 9/10/2016                                                     #
 ################################################################################
 
-#library(ggplot2)
-#library(MCMCpack)
-#library(survival)
-
-
-#  mu            = 10,    #Number of events observed  current data sets
-#  sigma2        = 2,
-#  N             = 20,    #Number of  current subjects
-#  mu0           = 12,
-#  sigma02       = 1,     #Number of events observed  historical  data sets
-#  N0            = N0_c,  #Number of historical subjects
-#  alpha_max     = 1,     #Max loss function weight
-#  number_mcmc   = 10000, #Number of simulations to estimate posterior and loss function
-#  weibull_scale = .2,    #Loss function parameter controlling the location of a weibull function
-#  weibull_shape = 2,     #Loss function parameter controlling the location of a weibull function
-#  two_side      = two_side)
 
 setGeneric("BayesianLossFunctionNormalRTC",
-           function(mu = 10,
-                    sigma2 = 2,
-                    N = 20,
-                    mu0 = 12,
-                    sigma02 = 1,
-                    N0 = 10,
+           function(mu_t = 10,
+                    sigma2_t = 2,
+                    N_t = 20,
+                    mu_c = 15,
+                    sigma2_c = 2,
+                    N_c = 20,
+                    mu0_t = 12,
+                    sigma02_t = 1,
+                    N0_t = 10,
+                    mu0_c = 12,
+                    sigma02_c = 1,
+                    N0_c = 10,
                     alpha_max = 1,
                     weibull_scale = 0.2,
                     weibull_shape = 2,
                     number_mcmc  = 10000,
                     two_side = 1,
                     inequality = "<",
-                    N0_t = 10,
-                    N0_c = 0,
                     delta = 0){
              standardGeneric("BayesianLossFunctionNormalRTC")
            })
 
 setMethod("BayesianLossFunctionNormalRTC",
           signature(mu = "numeric"),
-          function(mu = 10,
-                   sigma2 = 2,
-                   N = 20,
-                   mu0 = 12,
-                   sigma02 = 1,
-                   N0 = 10,
+          function(mu_t = 10,
+                   sigma2_t = 2,
+                   N_t = 20,
+                   mu_c = 15,
+                   sigma2_c = 2,
+                   N_c = 20,
+                   mu0_t = 12,
+                   sigma02_t = 1,
+                   N0_t = 10,
+                   mu0_c = 12,
+                   sigma02_c = 1,
+                   N0_c = 10,
                    alpha_max = 1,
                    weibull_scale = 0.2,
                    weibull_shape = 2,
                    number_mcmc  = 10000,
                    two_side = 1,
                    inequality = "<",
-                   N0_t = 10,
-                   N0_c = 0,
                    delta = 0){
 
                    
@@ -390,31 +386,31 @@ results <- function(f,posterior_test,posterior_control,two_side,inequality,
 #delta      <- 0   #Non-inferiority zone value
 
 posterior_test <- mu_posterior(
-  mu,            #= 10,    #Number of events observed  current data sets
-  sigma2,        #= 5,
-  N,             #= 10,    #Number of  current subjects
-  mu0,           #= 9,
-  sigma02,       #= 5 ,    #Number of events observed  historical  data sets
-  N0 = N0_t,     #= N0_t,  #Number of historical subjects
-  alpha_max,     #= 1,     #Max loss function weight
-  number_mcmc,   #= 10000, #Number of simulations to estimate posterior and loss function
-  weibull_scale, #= .2,    #Loss function parameter controlling the location of a weibull function
-  weibull_shape, #= 2,     #Loss function parameter controlling the location of a weibull function
-  two_side)      #= two_side)
+  mu      = mu_t,      #mean of current treatment
+  sigma2  = sigma2_t,  #variance of current treatment
+  N       = N_t,       #n subjects current treatment
+  mu0     = mu0_t,     #mean of historical treatment
+  sigma02 = sigma02_t, #variance of historical treatment
+  N0      = N0_t,      #n subjects historical treatment
+  alpha_max,           #Max loss function weight
+  number_mcmc,         #Number of simulations to estimate posterior and loss function
+  weibull_scale,       #Loss function parameter controlling the location of a weibull function
+  weibull_shape,       #Loss function parameter controlling the location of a weibull function
+  two_side)            #Two or one sided hypothesis test?
 
 
 posterior_control <- mu_posterior(
-  mu,            #= 10,    #Number of events observed  current data sets
-  sigma2,        #= 2,
-  N,             #= 20,    #Number of  current subjects
-  mu0,           #= 12,
-  sigma02,       #= 1,     #Number of events observed  historical  data sets
-  N0 = N0_c,     #= N0_c,  #Number of historical subjects
-  alpha_max,     #= 1,     #Max loss function weight
-  number_mcmc,   #= 10000, #Number of simulations to estimate posterior and loss function
-  weibull_scale, #= .2,    #Loss function parameter controlling the location of a weibull function
-  weibull_shape, #= 2,     #Loss function parameter controlling the location of a weibull function
-  two_side)      #= two_side)
+  mu      = mu_c,      #mean of current treatment
+  sigma2  = sigma2_c,  #variance of current treatment
+  N       = N_c,       #n subjects current treatment
+  mu0     = mu0_c,     #mean of historical treatment
+  sigma02 = sigma02_c, #variance of historical treatment
+  N0      = N0_c,      #n subjects historical treatment
+  alpha_max,           #Max loss function weight
+  number_mcmc,         #Number of simulations to estimate posterior and loss function
+  weibull_scale,       #Loss function parameter controlling the location of a weibull function
+  weibull_shape,       #Loss function parameter controlling the location of a weibull function
+  two_side)            #Two or one sided hypothesis test?
 
 
 
