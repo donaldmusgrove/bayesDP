@@ -19,7 +19,6 @@
 #' @param weibull_scale numeric
 #' @param weibull_shape numeric
 #' @param number_mcmc numeric
-#'
 #' @param two_side character
 #' @param inequality character
 #' @param delta numeric
@@ -70,7 +69,7 @@ setGeneric("BayesianLossFunctionNormalRTC",
            })
 
 setMethod("BayesianLossFunctionNormalRTC",
-          signature(mu = "numeric"),
+          signature(mu_t = "numeric"),
           function(mu_t = 10,
                    sigma2_t = 2,
                    N_t = 20,
