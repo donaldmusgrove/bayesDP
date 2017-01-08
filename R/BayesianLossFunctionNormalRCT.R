@@ -111,7 +111,7 @@ Loss_function <- function(mu, sigma2, N, mu0, sigma02, N0, alpha_max, number_mcm
 
   ### Number of effective sample size given shape and scale loss function
   if (two_side == 0) {
-    alpha_loss <- pweibull(p_test, shape = weibull_shape, scale = weibull_scale * alpha_max
+    alpha_loss <- pweibull(p_test, shape = weibull_shape, scale = weibull_scale) * alpha_max
   } else if (two_side == 1){
     p_test1    <- ifelse(p_test > 0.5, 1 - p_test, p_test)
     alpha_loss <- pweibull(p_test1, shape = weibull_shape, scale = weibull_scale) * alpha_max
