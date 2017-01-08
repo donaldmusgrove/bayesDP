@@ -201,7 +201,7 @@ mu_posterior <- function(mu, sigma2, N, mu0, sigma02, N0, alpha_max, number_mcmc
               N                  = N,
               mu0                = mu0,
               N0                 = N0,
-              N0_effective       = alpha_loss$alpha_loss * N0)
+              N0_effective       = alpha_loss$alpha_loss * N0))
 }
 
 final <- function(posterior_control, posterior_test) {
