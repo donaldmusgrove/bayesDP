@@ -33,9 +33,9 @@ setMethod("BayesianLossFunctionBinomial",
           signature(type = "character"),
           function(type = c("OPC", "RTC"), ...){
             if (type == "OPC"){
-              BayesianLossFunctionBinomialOPC(...)
+              return(BayesianLossFunctionBinomialOPC(...))
             }
             if(type == "RTC"){
-              BayesianLossFunctionBinomialRTC(...)
+              return(BayesianLossFunctionBinomialRTC(...))
             }
           })

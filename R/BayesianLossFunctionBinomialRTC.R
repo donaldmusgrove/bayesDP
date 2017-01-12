@@ -1,12 +1,13 @@
-#' BayesianLossFunctionRTC
+#' BayesianLossFunctionBinomialRTC
 #'
-#' BayesianLossFunctionRTC
+#' BayesianLossFunctionBinomialRTC
 #'
-#' @title BayesianLossFunctionRTC: BayesianLossFunctionRTC
+#' @title BayesianLossFunctionBinomialRTC: BayesianLossFunctionBinomialRTC
 #' @param y numeric
 #' @param N numeric
 #' @param y0 numeric
 #' @param N0 numeric
+#' @param N0_max numeric
 #' @param alpha_max numeric
 #' @param N0_t numeric
 #' @param N0_c numeric
@@ -20,8 +21,8 @@
 #'
 #' @examples
 #'
-#' @rdname BayesianLossFunctionRTC
-# @export BayesianLossFunctionRTC
+#' @rdname BayesianLossFunctionBinomialRTC
+# @export BayesianLossFunctionBinomialRTC
 
 
 ################################################################################
@@ -44,11 +45,12 @@
 ################################################################################
 #library(ggplot2)
 
-setGeneric("BayesianLossFunctionRTC",
+setGeneric("BayesianLossFunctionBinomialRTC",
            function(y             = 1,          #Number of events observed  current data sets
                     N             = 400,        #Number of  current subjects
                     y0            = 10,         #Number of events observed  historical  data sets
                     N0            = 100,        #Number of historical subjects
+                    N0_max        = 100,
                     alpha_max     = 1,          #Max loss function weight
                     N0_t          = 1000,
                     N0_c          = 100,
@@ -58,15 +60,16 @@ setGeneric("BayesianLossFunctionRTC",
                     weibull_scale = .05,        #Loss function parameter controlling the location of a weibull function
                     weibull_shape = 2,          #Loss function parameter controlling the location of a weibull function
                     two_side      = 0){
-             standardGeneric("BayesianLossFunctionRTC")
+             standardGeneric("BayesianLossFunctionBinomialRTC")
            })
 
-setMethod("BayesianLossFunctionRTC",
+setMethod("BayesianLossFunctionBinomialRTC",
           signature(y = "numeric"),
           function(y             = 1,          #Number of events observed  current data sets
                    N             = 400,        #Number of  current subjects
                    y0            = 10,         #Number of events observed  historical  data sets
                    N0            = 100,        #Number of historical subjects
+                   N0_max        = 100,
                    alpha_max     = 1,          #Max loss function weight
                    N0_t          = 1000,
                    N0_c          = 100,
@@ -421,7 +424,7 @@ me <- list(post_typeplot1,
 
 
 ## Set the name for the class
-class(me) <- append(class(me),"BayesianLossFunctionRTC")
+class(me) <- append(class(me),"BayesianLossFunctionBinomialRTC")
 return(me)
 
 })

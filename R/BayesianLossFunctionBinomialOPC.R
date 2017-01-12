@@ -13,7 +13,9 @@
 #' @param number_mcmc numeric
 #' @param weibull_shape numeric
 #' @param weibull_scale numeric
+#' @param H0 numeric
 #' @param two_side character
+#' @param inequality character
 #'
 #' @examples
 #'
@@ -47,7 +49,9 @@ setGeneric("BayesianLossFunctionBinomialOPC",
                     number_mcmc   = 10000, #n simulations
                     weibull_scale = .05,   #Loss function scale parameter
                     weibull_shape = 2,     #Loss function shape
-                    two_side      = 0){
+                    H0 = 10,
+                    two_side      = 0,
+                    inequality = "<"){
              standardGeneric("BayesianLossFunctionBinomialOPC")
            })
 
@@ -63,7 +67,9 @@ setMethod("BayesianLossFunctionBinomialOPC",
                    number_mcmc   = 10000, #n simulations
                    weibull_scale = .05,   #Loss function scale parameter
                    weibull_shape = 2,     #Loss function shape parameter
-                   two_side      = 0){
+                   H0 = 10,
+                   two_side      = 0,
+                   inequality = "<"){
 
 
 ################################################################################
@@ -281,7 +287,7 @@ results <- function(f, posterior_test, H0, two_side, inequality){
 est <- Binomial_posterior(y, N, y0, N0, alpha_max, a0, b0, number_mcmc,
                           weibull_scale, weibull_shape, two_side)
 
-f1 <- final(poster_test = est)
+f1 <- final(posterior_test = est)
 
 res1 <- results(f              = f1,
                 posterior_test = est,

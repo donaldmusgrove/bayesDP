@@ -33,9 +33,9 @@ setMethod("BayesianLossFunctionNormal",
           signature(type = "character"),
           function(type = c("OPC", "RTC"), ...){
             if (type == "OPC"){
-              BayesianLossFunctionNormalOPC(...)
+              return(BayesianLossFunctionNormalOPC(...))
             }
             if(type == "RTC"){
-              BayesianLossFunctionNormalRTC(...)
+              return(BayesianLossFunctionNormalRTC(...))
             }
           })
