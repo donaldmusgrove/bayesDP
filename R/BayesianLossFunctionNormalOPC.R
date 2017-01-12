@@ -20,7 +20,7 @@
 #' @examples
 #'
 #' @rdname BayesianLossFunctionNormalOPC
-#' @export BayesianLossFunctionNormalOPC
+# @export BayesianLossFunctionNormalOPC
 
 ################################################################################
 # This code is used for estimating posterior samples from a Gaussian outcome   #

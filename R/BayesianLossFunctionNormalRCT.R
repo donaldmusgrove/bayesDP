@@ -26,7 +26,7 @@
 #' @examples
 #'
 #' @rdname BayesianLossFunctionNormalRTC
-#' @export BayesianLossFunctionNormalRTC
+# @export BayesianLossFunctionNormalRTC
 
 
 
@@ -90,7 +90,7 @@ setMethod("BayesianLossFunctionNormalRTC",
                    inequality = "<",
                    delta = 0){
 
-                   
+
 ################################################################################
 # Produce prior data weight (scalar between 0 and 1) assuming a mu outcome     #
 ################################################################################
@@ -115,7 +115,7 @@ Loss_function <- function(mu, sigma2, N, mu0, sigma02, N0, alpha_max, number_mcm
     p_test1    <- ifelse(p_test > 0.5, 1 - p_test, p_test)
     alpha_loss <- pweibull(p_test1, shape = weibull_shape, scale = weibull_scale) * alpha_max
   }
-  
+
   return(list(alpha_loss   = alpha_loss,
               pvalue       = p_test,
               mu_post_flat = mu_post_flat,
@@ -188,7 +188,7 @@ mu_posterior <- function(mu, sigma2, N, mu0, sigma02, N0, alpha_max, number_mcmc
                        mu0          = rnorm(100),
                        mu_post_flat = mu_posterior)
   }
-  
+
   return(list(alpha_loss         = alpha_loss$alpha_loss,
               pvalue             = alpha_loss$pvalue,
               mu_posterior       = mu_posterior,
