@@ -446,7 +446,7 @@ me <- list(post_typeplot1,
            prior_for_control_group1)
 
 ## Set the name for the class
-class(me) <- append(class(me),"BayesianLossFunctionNormalRCT")
+class(me) <- append(class(me),"BayesianLossFunctionNormalRTC")
 return(me)
 
 })
