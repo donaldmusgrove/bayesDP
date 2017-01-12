@@ -18,7 +18,7 @@
 #' @examples
 #'
 #' @rdname BayesianLossFunctionBinomialOPC
-#' @export BayesianLossFunctionBinomialOPC
+# @export BayesianLossFunctionBinomialOPC
 
 
 ################################################################################
@@ -46,7 +46,7 @@ setGeneric("BayesianLossFunctionBinomialOPC",
                     b0            = 1,     #Noninformative Initial priors
                     number_mcmc   = 10000, #n simulations
                     weibull_scale = .05,   #Loss function scale parameter
-                    weibull_shape = 2,     #Loss function shape 
+                    weibull_shape = 2,     #Loss function shape
                     two_side      = 0){
              standardGeneric("BayesianLossFunctionBinomialOPC")
            })
@@ -113,7 +113,7 @@ theta_post_aug_bin <- function(y, N, y0, N0, alpha_loss, a0, b0,
 
   a_post_aug  <- y + a_prior
   b_post_aug  <- N - y + b_prior
-  
+
   theta_post_aug <- rbeta(number_mcmc, a_post_aug, b_post_aug)
   return(theta_post_aug)
 }
@@ -136,7 +136,7 @@ Binomial_posterior <- function(y, N, y0, N0, alpha_max, a0, b0, number_mcmc,
                                       weibull_shape = weibull_shape,
                                       weibull_scale = weibull_scale,
                                       two_side      = two_side)
-                                      
+
   Binomial_posterior <- theta_post_aug_bin(y           = y,
                                            N           = N,
                                            y0          = y0,
@@ -278,7 +278,7 @@ results <- function(f, posterior_test, H0, two_side, inequality){
 ################################################################################
 # Results                                                                      #
 ################################################################################
-est <- Binomial_posterior(y, N, y0, N0, alpha_max, a0, b0, number_mcmc, 
+est <- Binomial_posterior(y, N, y0, N0, alpha_max, a0, b0, number_mcmc,
                           weibull_scale, weibull_shape, two_side)
 
 f1 <- final(poster_test = est)

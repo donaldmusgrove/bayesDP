@@ -21,7 +21,7 @@
 #' @examples
 #'
 #' @rdname BayesianLossFunctionRTC
-#' @export BayesianLossFunctionRTC
+# @export BayesianLossFunctionRTC
 
 
 ################################################################################
