@@ -445,8 +445,57 @@ me <- list(post_typeplot1,
            cat(hypothesis1),
            prior_for_control_group1)
 
-## Set the name for the class
-class(me) <- append(class(me),"BayesianLossFunctionNormalRTC")
+setClass("BayesianLossFunctionNormalRTC",
+         representation(post_typeplot1 = "ANY",
+                        densityplot1 = "ANY",
+                        lossfun_plot1 = "ANY",
+                        hypothesis1 = "character",
+                        prior_for_control_group1 = "list"))
+
+me = new("BayesianLossFunctionNormalRTC",
+         post_typeplot1 = post_typeplot1,
+         densityplot1 = densityplot1,
+         lossfun_plot1 = lossfun_plot1,
+         hypothesis1 = hypothesis1,
+         prior_for_control_group1 = prior_for_control_group1)
+
 return(me)
 
+})
+
+
+#' plot
+#'
+#' plot
+#'
+#' @title plot: plot
+#' @param x BayesianLossFunctionNormalRTC
+#'
+#' @examples
+#'
+#' @rdname plot
+#' @export plot
+setMethod("plot", signature(x = "BayesianLossFunctionNormalRTC"), function(x){
+  op <- par(ask=TRUE)
+  plot(x@post_typeplot1)
+  plot(x@densityplot1)
+  plot(x@lossfun_plot1)
+  plot(x@lossfun_plot2)
+  par(op)
+})
+
+#' plot
+#'
+#' plot
+#'
+#' @title print: print
+#' @param x BayesianLossFunctionNormalRTC
+#'
+#' @examples
+#'
+#' @rdname print
+#' @export print
+setMethod("print", signature(x = "BayesianLossFunctionNormalRTC"), function(x){
+  print(cat(x@hypothesis1))
+  print(x@prior_for_test_group1)
 })
