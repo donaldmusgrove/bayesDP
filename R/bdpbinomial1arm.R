@@ -307,21 +307,30 @@ lossfun_plot2  <- res1$lossfun_plot
 hypothesis1           <- res1$hypothesis
 prior_for_test_group1 <- res1$prior_for_test_group
 
-setClass("bdpbinomial1arm",
-         representation(post_typeplot1 = "ANY",
-                        densityplot1 = "ANY",
-                        lossfun_plot1 = "ANY",
-                        lossfun_plot2 = "ANY",
-                        hypothesis1 = "character",
-                        prior_for_test_group1 = "list"))
+#setClass("bdpbinomial1arm",
+#         representation(post_typeplot1 = "ANY",
+#                        densityplot1 = "ANY",
+#                        lossfun_plot1 = "ANY",
+#                        lossfun_plot2 = "ANY",
+#                        hypothesis1 = "character",
+#                        prior_for_test_group1 = "list"))
 
-me = new("bdpbinomial1arm",
-         post_typeplot1 = post_typeplot1,
-         densityplot1 = densityplot1,
-         lossfun_plot1 = lossfun_plot1,
-         lossfun_plot2 = lossfun_plot2,
-         hypothesis1 = hypothesis1,
-         prior_for_test_group1 = prior_for_test_group1)
+#me = new("bdpbinomial1arm",
+#         post_typeplot1 = post_typeplot1,
+#         densityplot1 = densityplot1,
+#         lossfun_plot1 = lossfun_plot1,
+#         lossfun_plot2 = lossfun_plot2,
+#         hypothesis1 = hypothesis1,
+#         prior_for_test_group1 = prior_for_test_group1)
+
+me <- list(post_typeplot1 = post_typeplot1,
+           densityplot1 = densityplot1,
+           lossfun_plot1 = lossfun_plot1,
+           lossfun_plot2 = lossfun_plot2,
+           hypothesis1 = hypothesis1,
+           prior_for_test_group1 = prior_for_test_group1)
+
+class(me) <- "bdpbinomial1arm"
 
 return(me)
 
@@ -341,10 +350,10 @@ return(me)
 #' @export plot
 setMethod("plot", signature(x = "bdpbinomial1arm"), function(x){
   op <- par(ask=TRUE)
-  plot(x@post_typeplot1)
-  plot(x@densityplot1)
-  plot(x@lossfun_plot1)
-  plot(x@lossfun_plot2)
+  plot(x$post_typeplot1)
+  plot(x$densityplot1)
+  plot(x$lossfun_plot1)
+  plot(x$lossfun_plot2)
   par(op)
 })
 
@@ -360,6 +369,6 @@ setMethod("plot", signature(x = "bdpbinomial1arm"), function(x){
 #' @rdname print
 #' @export print
 setMethod("print", signature(x = "bdpbinomial1arm"), function(x){
-  print(cat(x@hypothesis1))
-  print(x@prior_for_test_group1)
+  print(cat(x$hypothesis1))
+  print(x$prior_for_test_group1)
 })
