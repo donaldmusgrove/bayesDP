@@ -1,4 +1,4 @@
-Package: mdictools
+Package: bayesDP
 Type: Package
 Title: MDIC Tools for Survival Analysis
 Version: 0.1-1
@@ -9,8 +9,8 @@ Suggests:
 Description: Locally hosted shiny UI methods for survival analysis.
 LazyLoad: yes
 License: GPL-3
-URL: https://github.com/balcomes/mdictools
-BugReports: https://github.com/balcomes/mdictools/issues
+URL: https://github.com/balcomes/bayesDP
+BugReports: https://github.com/balcomes/bayesDP/issues
 NeedsCompilation: yes
 Packaged: 
 Author: Shawn Balcome [aut, cre], Donnie Musgrove [aut, cre], Tarek Haddad [aut, cre]

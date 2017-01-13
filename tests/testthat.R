@@ -1,5 +1,5 @@
-#test_check("mdictools")
+#test_check("bayesDP")
 library(testthat)
-library(mdictools)
+library(bayesDP)
 
-test_check("mdictools")
+test_check("bayesDP")

@@ -11,10 +11,10 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## MDICtools
 
-Give a quick description, can be found at <https://github.com/balcomes/mdictools>.
+Give a quick description, can be found at <https://github.com/balcomes/bayesDP>.
 
 ```{r first}
-library(mdictools)
+library(bayesDP)
 ```
 
 ## post_est_gaussian example
