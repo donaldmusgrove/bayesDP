@@ -1,8 +1,8 @@
-#' BayesianLossFunctionNormalRTC
+#' bdpnormal2arm
 #'
-#' BayesianLossFunctionNormalRTC
+#' bdpnormal2arm
 #'
-#' @title BayesianLossFunctionNormalRTC: BayesianLossFunctionNormalRTC
+#' @title bdpnormal2arm: bdpnormal2arm
 #' @param mu_t numeric
 #' @param sigma2_t numeric
 #' @param N_t numeric
@@ -25,8 +25,8 @@
 #'
 #' @examples
 #'
-#' @rdname BayesianLossFunctionNormalRTC
-# @export BayesianLossFunctionNormalRTC
+#' @rdname bdpnormal2arm
+# @export bdpnormal2arm
 
 
 
@@ -45,7 +45,7 @@
 ################################################################################
 
 
-setGeneric("BayesianLossFunctionNormalRTC",
+setGeneric("bdpnormal2arm",
            function(mu_t = 10,
                     sigma2_t = 2,
                     N_t = 20,
@@ -65,10 +65,10 @@ setGeneric("BayesianLossFunctionNormalRTC",
                     two_side = 1,
                     inequality = "<",
                     delta = 0){
-             standardGeneric("BayesianLossFunctionNormalRTC")
+             standardGeneric("bdpnormal2arm")
            })
 
-setMethod("BayesianLossFunctionNormalRTC",
+setMethod("bdpnormal2arm",
           signature(mu_t = "numeric"),
           function(mu_t = 10,
                    sigma2_t = 2,
@@ -445,14 +445,14 @@ me <- list(post_typeplot1,
            cat(hypothesis1),
            prior_for_control_group1)
 
-setClass("BayesianLossFunctionNormalRTC",
+setClass("bdpnormal2arm",
          representation(post_typeplot1 = "ANY",
                         densityplot1 = "ANY",
                         lossfun_plot1 = "ANY",
                         hypothesis1 = "character",
                         prior_for_control_group1 = "list"))
 
-me = new("BayesianLossFunctionNormalRTC",
+me = new("bdpnormal2arm",
          post_typeplot1 = post_typeplot1,
          densityplot1 = densityplot1,
          lossfun_plot1 = lossfun_plot1,
@@ -469,13 +469,13 @@ return(me)
 #' plot
 #'
 #' @title plot: plot
-#' @param x BayesianLossFunctionNormalRTC
+#' @param x bdpnormal2arm
 #'
 #' @examples
 #'
 #' @rdname plot
 #' @export plot
-setMethod("plot", signature(x = "BayesianLossFunctionNormalRTC"), function(x){
+setMethod("plot", signature(x = "bdpnormal2arm"), function(x){
   op <- par(ask=TRUE)
   plot(x@post_typeplot1)
   plot(x@densityplot1)
@@ -489,13 +489,13 @@ setMethod("plot", signature(x = "BayesianLossFunctionNormalRTC"), function(x){
 #' plot
 #'
 #' @title print: print
-#' @param x BayesianLossFunctionNormalRTC
+#' @param x bdpnormal2arm
 #'
 #' @examples
 #'
 #' @rdname print
 #' @export print
-setMethod("print", signature(x = "BayesianLossFunctionNormalRTC"), function(x){
+setMethod("print", signature(x = "bdpnormal2arm"), function(x){
   print(cat(x@hypothesis1))
   print(x@prior_for_test_group1)
 })

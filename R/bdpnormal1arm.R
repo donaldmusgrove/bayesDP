@@ -1,8 +1,8 @@
-#' BayesianLossFunctionNormalOPC
+#' bdpnormal1arm
 #'
-#' BayesianLossFunctionNormalOPC
+#' bdpnormal1arm
 #'
-#' @title BayesianLossFunctionNormalOPC: BayesianLossFunctionNormalOPC
+#' @title bdpnormal1arm: bdpnormal1arm
 #' @param mu numeric
 #' @param sigma2 numeric
 #' @param N numeric
@@ -19,8 +19,8 @@
 #'
 #' @examples
 #'
-#' @rdname BayesianLossFunctionNormalOPC
-# @export BayesianLossFunctionNormalOPC
+#' @rdname bdpnormal1arm
+# @export bdpnormal1arm
 
 ################################################################################
 # This code is used for estimating posterior samples from a Gaussian outcome   #
@@ -51,7 +51,7 @@
 #weibull_shape = 1,        #Loss function: Weibull location shape
 #two_side      = two_side) # 0 == 1-sided, 1 === 2-sided
 
-setGeneric("BayesianLossFunctionNormalOPC",
+setGeneric("bdpnormal1arm",
            function(mu = 10,
                     sigma2 = 1,
                     N = 10,
@@ -65,10 +65,10 @@ setGeneric("BayesianLossFunctionNormalOPC",
                     H0 = 10,
                     two_side = 0,
                     inequality = "<"){
-             standardGeneric("BayesianLossFunctionNormalOPC")
+             standardGeneric("bdpnormal1arm")
            })
 
-setMethod("BayesianLossFunctionNormalOPC",
+setMethod("bdpnormal1arm",
           signature(mu = "numeric"),
           function(mu = 10,
                    sigma2 = 1,
@@ -334,7 +334,7 @@ hypothesis1 <- res1$hypothesis
 
 prior_for_test_group1 <- res1$prior_for_test_group
 
-setClass("BayesianLossFunctionNormalOPC",
+setClass("bdpnormal1arm",
          representation(post_typeplot1 = "ANY",
                         densityplot1 = "ANY",
                         lossfun_plot1 = "ANY",
@@ -342,7 +342,7 @@ setClass("BayesianLossFunctionNormalOPC",
                         hypothesis1 = "character",
                         prior_for_test_group1 = "list"))
 
-me = new("BayesianLossFunctionNormalOPC",
+me = new("bdpnormal1arm",
          post_typeplot1 = post_typeplot1,
          densityplot1 = densityplot1,
          lossfun_plot1 = lossfun_plot1,
@@ -360,13 +360,13 @@ return(me)
 #' plot
 #'
 #' @title plot: plot
-#' @param x BayesianLossFunctionNormalOPC
+#' @param x bdpnormal1arm
 #'
 #' @examples
 #'
 #' @rdname plot
 #' @export plot
-setMethod("plot", signature(x = "BayesianLossFunctionNormalOPC"), function(x){
+setMethod("plot", signature(x = "bdpnormal1arm"), function(x){
   op <- par(ask=TRUE)
   plot(x@post_typeplot1)
   plot(x@densityplot1)
@@ -380,13 +380,13 @@ setMethod("plot", signature(x = "BayesianLossFunctionNormalOPC"), function(x){
 #' plot
 #'
 #' @title print: print
-#' @param x BayesianLossFunctionNormalOPC
+#' @param x bdpnormal1arm
 #'
 #' @examples
 #'
 #' @rdname print
 #' @export print
-setMethod("print", signature(x = "BayesianLossFunctionNormalOPC"), function(x){
+setMethod("print", signature(x = "bdpnormal1arm"), function(x){
   print(cat(x@hypothesis1))
   print(x@prior_for_test_group1)
 })

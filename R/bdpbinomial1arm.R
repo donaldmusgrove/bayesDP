@@ -1,8 +1,8 @@
-#' BayesianLossFunctionBinomialOPC
+#' bdpbinomial1arm
 #'
-#' BayesianLossFunctionBinomialOPC
+#' bdpbinomial1arm
 #'
-#' @title BayesianLossFunctionBinomialOPC: BayesianLossFunctionBinomialOPC
+#' @title bdpbinomial1arm: bdpbinomial1arm
 #' @param y numeric
 #' @param N numeric
 #' @param y0 numeric
@@ -19,8 +19,8 @@
 #'
 #' @examples
 #'
-#' @rdname BayesianLossFunctionBinomialOPC
-# @export BayesianLossFunctionBinomialOPC
+#' @rdname bdpbinomial1arm
+# @export bdpbinomial1arm
 
 
 ################################################################################
@@ -38,7 +38,7 @@
 ################################################################################
 #library(ggplot2)
 
-setGeneric("BayesianLossFunctionBinomialOPC",
+setGeneric("bdpbinomial1arm",
            function(y             = 1,     #n events: current
                     N             = 400,   #n subjects: current
                     y0            = 10,    #n events: historical
@@ -52,10 +52,10 @@ setGeneric("BayesianLossFunctionBinomialOPC",
                     H0 = 10,
                     two_side      = 0,
                     inequality = "<"){
-             standardGeneric("BayesianLossFunctionBinomialOPC")
+             standardGeneric("bdpbinomial1arm")
            })
 
-setMethod("BayesianLossFunctionBinomialOPC",
+setMethod("bdpbinomial1arm",
           signature(y = "numeric"),
           function(y             = 1,     #n events: current
                    N             = 400,   #n subjects: current
@@ -307,7 +307,7 @@ lossfun_plot2  <- res1$lossfun_plot
 hypothesis1           <- res1$hypothesis
 prior_for_test_group1 <- res1$prior_for_test_group
 
-setClass("BayesianLossFunctionBinomialOPC",
+setClass("bdpbinomial1arm",
          representation(post_typeplot1 = "ANY",
                         densityplot1 = "ANY",
                         lossfun_plot1 = "ANY",
@@ -315,7 +315,7 @@ setClass("BayesianLossFunctionBinomialOPC",
                         hypothesis1 = "character",
                         prior_for_test_group1 = "list"))
 
-me = new("BayesianLossFunctionBinomialOPC",
+me = new("bdpbinomial1arm",
          post_typeplot1 = post_typeplot1,
          densityplot1 = densityplot1,
          lossfun_plot1 = lossfun_plot1,
@@ -333,13 +333,13 @@ return(me)
 #' plot
 #'
 #' @title plot: plot
-#' @param x BayesianLossFunctionBinomialOPC
+#' @param x bdpbinomial1arm
 #'
 #' @examples
 #'
 #' @rdname plot
 #' @export plot
-setMethod("plot", signature(x = "BayesianLossFunctionBinomialOPC"), function(x){
+setMethod("plot", signature(x = "bdpbinomial1arm"), function(x){
   op <- par(ask=TRUE)
   plot(x@post_typeplot1)
   plot(x@densityplot1)
@@ -353,13 +353,13 @@ setMethod("plot", signature(x = "BayesianLossFunctionBinomialOPC"), function(x){
 #' plot
 #'
 #' @title print: print
-#' @param x BayesianLossFunctionBinomialOPC
+#' @param x bdpbinomial1arm
 #'
 #' @examples
 #'
 #' @rdname print
 #' @export print
-setMethod("print", signature(x = "BayesianLossFunctionBinomialOPC"), function(x){
+setMethod("print", signature(x = "bdpbinomial1arm"), function(x){
   print(cat(x@hypothesis1))
   print(x@prior_for_test_group1)
 })

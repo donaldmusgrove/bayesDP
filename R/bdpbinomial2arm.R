@@ -1,8 +1,8 @@
-#' BayesianLossFunctionBinomialRTC
+#' bdpbinomial2arm
 #'
-#' BayesianLossFunctionBinomialRTC
+#' bdpbinomial2arm
 #'
-#' @title BayesianLossFunctionBinomialRTC: BayesianLossFunctionBinomialRTC
+#' @title bdpbinomial2arm: bdpbinomial2arm
 #' @param y numeric
 #' @param N numeric
 #' @param y0 numeric
@@ -21,8 +21,8 @@
 #'
 #' @examples
 #'
-#' @rdname BayesianLossFunctionBinomialRTC
-# @export BayesianLossFunctionBinomialRTC
+#' @rdname bdpbinomial2arm
+# @export bdpbinomial2arm
 
 
 ################################################################################
@@ -45,7 +45,7 @@
 ################################################################################
 #library(ggplot2)
 
-setGeneric("BayesianLossFunctionBinomialRTC",
+setGeneric("bdpbinomial2arm",
            function(y             = 1,          #Number of events observed  current data sets
                     N             = 400,        #Number of  current subjects
                     y0            = 10,         #Number of events observed  historical  data sets
@@ -60,10 +60,10 @@ setGeneric("BayesianLossFunctionBinomialRTC",
                     weibull_scale = .05,        #Loss function parameter controlling the location of a weibull function
                     weibull_shape = 2,          #Loss function parameter controlling the location of a weibull function
                     two_side      = 0){
-             standardGeneric("BayesianLossFunctionBinomialRTC")
+             standardGeneric("bdpbinomial2arm")
            })
 
-setMethod("BayesianLossFunctionBinomialRTC",
+setMethod("bdpbinomial2arm",
           signature(y = "numeric"),
           function(y             = 1,          #Number of events observed  current data sets
                    N             = 400,        #Number of  current subjects
@@ -413,14 +413,14 @@ hypothesis1              <- res1$hypothesis
 prior_for_test_group1    <- res1$prior_for_test_group
 prior_for_control_group1 <- res1$prior_for_control_group
 
-setClass("BayesianLossFunctionBinomialRTC",
+setClass("bdpbinomial2arm",
          representation(post_typeplot1 = "ANY",
                         densityplot1 = "ANY",
                         lossfun_plot1 = "ANY",
                         hypothesis1 = "character",
                         prior_for_control_group1 = "list"))
 
-me = new("BayesianLossFunctionBinomialRTC",
+me = new("bdpbinomial2arm",
          post_typeplot1 = post_typeplot1,
          densityplot1 = densityplot1,
          lossfun_plot1 = lossfun_plot1,
@@ -437,13 +437,13 @@ return(me)
 #' plot
 #'
 #' @title plot: plot
-#' @param x BayesianLossFunctionBinomialRTC
+#' @param x bdpbinomial2arm
 #'
 #' @examples
 #'
 #' @rdname plot
 #' @export plot
-setMethod("plot", signature(x = "BayesianLossFunctionBinomialRTC"), function(x){
+setMethod("plot", signature(x = "bdpbinomial2arm"), function(x){
   op <- par(ask=TRUE)
   plot(x@post_typeplot1)
   plot(x@densityplot1)
@@ -456,13 +456,13 @@ setMethod("plot", signature(x = "BayesianLossFunctionBinomialRTC"), function(x){
 #' plot
 #'
 #' @title print: print
-#' @param x BayesianLossFunctionBinomialRTC
+#' @param x bdpbinomial2arm
 #'
 #' @examples
 #'
 #' @rdname print
 #' @export print
-setMethod("print", signature(x = "BayesianLossFunctionBinomialRTC"), function(x){
+setMethod("print", signature(x = "bdpbinomial2arm"), function(x){
   print(cat(x@hypothesis1))
   print(x@prior_for_control_group1)
 })
