@@ -22,7 +22,7 @@
 #' @examples
 #'
 #' @rdname bdpbinomial2arm
-# @export bdpbinomial2arm
+#' @export bdpbinomial2arm
 
 
 ################################################################################
@@ -460,9 +460,9 @@ setMethod("plot", signature(x = "bdpbinomial2arm"), function(x){
   par(op)
 })
 
-#' plot
+#' print
 #'
-#' plot
+#' print
 #'
 #' @title print: print
 #' @param x bdpbinomial2arm

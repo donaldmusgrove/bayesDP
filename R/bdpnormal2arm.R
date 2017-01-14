@@ -26,7 +26,7 @@
 #' @examples
 #'
 #' @rdname bdpnormal2arm
-# @export bdpnormal2arm
+#' @export bdpnormal2arm
 
 
 
@@ -484,9 +484,9 @@ setMethod("plot", signature(x = "bdpnormal2arm"), function(x){
   par(op)
 })
 
-#' plot
+#' print
 #'
-#' plot
+#' print
 #'
 #' @title print: print
 #' @param x bdpnormal2arm

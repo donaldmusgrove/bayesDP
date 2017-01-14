@@ -20,7 +20,7 @@
 #' @examples
 #'
 #' @rdname bdpbinomial1arm
-# @export bdpbinomial1arm
+#' @export bdpbinomial1arm
 
 
 ################################################################################
@@ -348,7 +348,7 @@ return(me)
 #'
 #' @rdname plot
 #' @export plot
-setMethod("plot", signature(x = "bdpbinomial1arm"), function(x){
+UseMethod("plot", signature(x = "bdpbinomial1arm"), function(x){
   op <- par(ask=TRUE)
   plot(x$post_typeplot1)
   plot(x$densityplot1)
@@ -357,9 +357,9 @@ setMethod("plot", signature(x = "bdpbinomial1arm"), function(x){
   par(op)
 })
 
-#' plot
+#' print
 #'
-#' plot
+#' print
 #'
 #' @title print: print
 #' @param x bdpbinomial1arm
@@ -368,7 +368,7 @@ setMethod("plot", signature(x = "bdpbinomial1arm"), function(x){
 #'
 #' @rdname print
 #' @export print
-setMethod("print", signature(x = "bdpbinomial1arm"), function(x){
+UseMethod("print", signature(x = "bdpbinomial1arm"), function(x){
   print(cat(x$hypothesis1))
   print(x$prior_for_test_group1)
 })

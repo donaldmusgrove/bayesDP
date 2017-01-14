@@ -20,7 +20,7 @@
 #' @examples
 #'
 #' @rdname bdpnormal1arm
-# @export bdpnormal1arm
+#' @export bdpnormal1arm
 
 ################################################################################
 # This code is used for estimating posterior samples from a Gaussian outcome   #
@@ -384,9 +384,9 @@ setMethod("plot", signature(x = "bdpnormal1arm"), function(x){
   par(op)
 })
 
-#' plot
+#' print
 #'
-#' plot
+#' print
 #'
 #' @title print: print
 #' @param x bdpnormal1arm
