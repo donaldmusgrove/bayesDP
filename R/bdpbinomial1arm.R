@@ -54,7 +54,7 @@ setGeneric("bdpbinomial1arm",
            })
 
 setMethod("bdpbinomial1arm",
-          signature(y = "numeric"),
+          signature(y_t = "numeric"),
           function(y_t           = 1,     #n events: current
                    N_t           = 400,   #n subjects: current
                    y0_t          = 10,    #n events: historical
