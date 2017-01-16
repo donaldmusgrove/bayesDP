@@ -3,19 +3,19 @@
 #' bdpnormal1arm
 #'
 #' @title bdpnormal1arm: bdpnormal1arm
-#' @param mu numeric
-#' @param sigma2 numeric
-#' @param N numeric
-#' @param mu0 numeric
-#' @param sigma02 numeric
-#' @param N0 numeric
+#' @param mu_t numeric
+#' @param sigma2_t numeric
+#' @param N_t numeric
+#' @param mu0_t numeric
+#' @param sigma02_t numeric
+#' @param N0_t numeric
 #' @param alpha_max numeric
 #' @param weibull_scale numeric
 #' @param weibull_shape numeric
 #' @param number_mcmc numeric
-#' @param H0 numeric
 #' @param two_side numeric
 #' @param inequality character
+#' @param delta numeric
 #'
 #' @examples
 #'
@@ -52,37 +52,37 @@
 #two_side      = two_side) # 0 == 1-sided, 1 === 2-sided
 
 setGeneric("bdpnormal1arm",
-           function(mu = 10,
-                    sigma2 = 1,
-                    N = 10,
-                    mu0 = 10,
-                    sigma02 = 1,
-                    N0 = 10,
-                    alpha_max = 1,
+           function(mu_t          = 10,
+                    sigma2_t      = 1,
+                    N_t           = 10,
+                    mu0_t         = 10,
+                    sigma02_t     = 1,
+                    N0_t          = 10,
+                    alpha_max     = 1,
                     weibull_scale = 0.1,
                     weibull_shape = 1,
-                    number_mcmc = 1000,
-                    H0 = 10,
-                    two_side = 0,
-                    inequality = "<"){
+                    number_mcmc   = 10000,
+                    two_side      = 0,
+                    inequality    = "<",
+                    delta         = 0){
              standardGeneric("bdpnormal1arm")
            })
 
 setMethod("bdpnormal1arm",
           signature(mu = "numeric"),
-          function(mu = 10,
-                   sigma2 = 1,
-                   N = 10,
-                   mu0 = 10,
-                   sigma02 = 1,
-                   N0 = 10,
-                   alpha_max = 1,
+          function(mu_t          = 10,
+                   sigma2_t      = 1,
+                   N_t           = 10,
+                   mu0_t         = 10,
+                   sigma02_t     = 1,
+                   N0_t          = 10,
+                   alpha_max     = 1,
                    weibull_scale = 0.1,
                    weibull_shape = 1,
-                   number_mcmc = 1000,
-                   H0 = 10,
-                   two_side = 0,
-                   inequality = "<"){
+                   number_mcmc   = 10000,
+                   two_side      = 0,
+                   inequality    = "<",
+                   delta         = 0){
 
 ################################################################################
 ### Functions
@@ -193,7 +193,7 @@ final <- function(posterior_test) {
 }
 
 
-#results <- function(f,posterior_test,H0,two_side,inequality){
+#results <- function(f,posterior_test,delta,two_side,inequality){
 
 
 
@@ -204,40 +204,40 @@ final <- function(posterior_test) {
 ################################################################################
 
 #two_side   <- 0    # 0 == 1-sided, 1 === 2-sided
-#H0         <- 10   # H0 value
+#delta      <- 10   # delta value
 #inequality <- ">"  # Inequality of alternate hypothesis
 
-est <- mu_posterior(mu,            #= 10,
-                    sigma2,        #= 1,
-                    N,             #= 10,   #Number of  current subjects
-                    mu0,           #= 10,
-                    sigma02,       #= 1,
-                    N0,            #= 10,       #Number of historical subjects
-                    alpha_max,     #= 10,       #Maximum effective prior sample size
-                    number_mcmc,   #= 1000,     #Number of posterior simulations
-                    weibull_scale, #= 0.1,      #Loss function: Weibull location scale
-                    weibull_shape, #= 1,        #Loss function: Weibull location shape
-                    two_side)      #= two_side) # 0 == 1-sided, 1 === 2-sided
+est <- mu_posterior(mu            = mu_t,
+                    sigma2        = sigma2_t,
+                    N             = N_t,             
+                    mu0           = mu0_t,
+                    sigma02       = sigma02_t,
+                    N0            = N0_t,            
+                    alpha_max     = alpha_max,     
+                    number_mcmc   = number_mcmc,   
+                    weibull_scale = weibull_scale, 
+                    weibull_shape = weibull_shape, 
+                    two_side      = two_side)
 
 f1 <- final(posterior_test = est)
 
-args1 <- list(mu = mu,
-         sigma2 = sigma2,
-         N = N,
-         mu0 = mu0,
-         sigma02 = sigma02,
-         N0 = N0,
-         alpha_max = alpha_max,
-         weibull_scale = weibull_scale,
-         weibull_shape = weibull_shape,
-         number_mcmc = number_mcmc,
-         H0 = H0,
-         two_side = two_side,
-         inequality = inequality)
+args1 <- list(mu_t          = mu_t,
+              sigma2_t      = sigma2_t,
+              N_t           = N_t,
+              mu0_t         = mu0_t,
+              sigma02_t     = sigma02_t,
+              N0_t          = N0_t,
+              alpha_max     = alpha_max,
+              weibull_scale = weibull_scale,
+              weibull_shape = weibull_shape,
+              number_mcmc   = number_mcmc,
+              two_side      = two_side,
+              inequality    = inequality,
+              delta         = delta)
 
 #res1 <- results(f              = f1,
 #                posterior_test = est,
-#                H0             = H0,
+#                delta          = delta,
 #                two_side       = two_side,
 #                inequality     = inequality)
 
@@ -305,10 +305,10 @@ setMethod("plot", signature(x = "bdpnormal1arm"), function(x){
 
   f <- x$f1
   posterior_test <- x$est
-  H0 <- x$args1$H0
   two_side <- x$args1$two_side
   inequality <- x$args1$inequality
-
+  delta <- x$args1$delta
+  
   D4 <- data.frame(information_sources = "Posterior",
                    group               = "Test",
                    y                   = f$den_post_test$y,
@@ -391,25 +391,25 @@ setMethod("print", signature(x = "bdpnormal1arm"), function(x){
 
   f <- x$f1
   posterior_test <- x$est
-  H0 <- x$args1$H0
   inequality <- x$args1$inequality
-
+  delta <- x$args1$delta
+  
   if (inequality == "<") {
     hypothesis <- paste("\"We can define mu as the mean for the test", "\n",
-                        "Null Hypothesis (H_0): mu>", H0, "\n",
-                        "Alternative Hypothesis (H_a): mu<", H0, "\n", "\n",
-                        "P(mu<", H0, "|data)=", mean(f$Testpost < H0), "\n",
+                        "Null Hypothesis (H_0): mu>", delta, "\n",
+                        "Alternative Hypothesis (H_a): mu<", delta, "\n", "\n",
+                        "P(mu<", delta, "|data)=", mean(f$Testpost < delta), "\n",
                         "We can accept H_a with a Probability of",
-                        mean(f$Testpost < H0))
+                        mean(f$Testpost < delta))
   }
 
   if (inequality == ">") {
     hypothesis <- paste("\"Define mu as the mean of the data", "\n",
-                        "Null Hypothesis (H_0): mu<", H0, "\n",
-                        "Alternative Hypothesis (H_a): mu>", H0, "\n", "\n",
-                        "P(mu>", H0, "|data)=", mean(f$Testpost > H0), "\n",
+                        "Null Hypothesis (H_0): mu<", delta, "\n",
+                        "Alternative Hypothesis (H_a): mu>", delta, "\n", "\n",
+                        "P(mu>", delta, "|data)=", mean(f$Testpost > delta), "\n",
                         "We can accept H_a with a Probability of",
-                        mean(f$Testpost > H0))
+                        mean(f$Testpost > delta))
   }
 
   ### Print

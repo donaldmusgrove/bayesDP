@@ -3,21 +3,23 @@
 #' bdpbinomial2arm
 #'
 #' @title bdpbinomial2arm: bdpbinomial2arm
-#' @param y numeric
-#' @param N numeric
-#' @param y0 numeric
-#' @param N0 numeric
-#' @param N0_max numeric
-#' @param alpha_max numeric
+#' @param y_t numeric
+#' @param N_t numeric
+#' @param y_c numeric
+#' @param N_c numeric
+#' @param y0_t numeric
 #' @param N0_t numeric
+#' @param y0_c numeric
 #' @param N0_c numeric
+#' @param alpha_max numeric
 #' @param a0 numeric
 #' @param b0 numeric
 #' @param number_mcmc numeric
 #' @param weibull_shape numeric
 #' @param weibull_scale numeric
 #' @param two_side character
-#' @param delta numeric
+#' @param inequality character
+#' @param delta character
 #'
 #' @examples
 #'
@@ -46,39 +48,45 @@
 #library(ggplot2)
 
 setGeneric("bdpbinomial2arm",
-           function(y             = 1,          #Number of events observed  current data sets
-                    N             = 400,        #Number of  current subjects
-                    y0            = 10,         #Number of events observed  historical  data sets
-                    N0            = 100,        #Number of historical subjects
-                    N0_max        = 100,
-                    alpha_max     = 1,          #Max loss function weight
-                    N0_t          = 1000,
-                    N0_c          = 100,
-                    a0            = 1,          #Noninformative Initial priors
-                    b0            = 1,          #Noninformative Initial priors
-                    number_mcmc   = 10000,      #Number of simulations to estimate posterior and loss function
-                    weibull_scale = .05,        #Loss function parameter controlling the location of a weibull function
-                    weibull_shape = 2,          #Loss function parameter controlling the location of a weibull function
-                    two_side      = 0){
+           function(y_t           = 1,        #Number of events current treatment
+                    N_t           = 400,      #Number of subjects current treatment
+                    y_c           = 5,        #Number of events current control
+                    N_c           = 400,      #Number of subjects current control
+                    y0_t          = 1,        #Number of events historical treatment
+                    N0_t          = 200,      #Number of subjects historical treatment
+                    y0_c          = 5,        #Number of events historical control
+                    N0_c          = 200,      #Number of subjects historical control
+                    alpha_max     = 1,        #Max loss function weight
+                    a0            = 1,        #Noninformative Initial priors
+                    b0            = 1,        #Noninformative Initial priors
+                    number_mcmc   = 10000,    #Number of simulations to estimate posterior and loss function
+                    weibull_scale = .05,      #Loss function parameter controlling the location of a weibull function
+                    weibull_shape = 2,        #Loss function parameter controlling the location of a weibull function
+                    two_side      = 0,        #One or two-sided hypothesis test
+                    inequality    = "<",      #Lower or upper test
+                    delta         = 0){       #Difference margin
              standardGeneric("bdpbinomial2arm")
            })
 
 setMethod("bdpbinomial2arm",
           signature(y = "numeric"),
-          function(y             = 1,          #Number of events observed  current data sets
-                   N             = 400,        #Number of  current subjects
-                   y0            = 10,         #Number of events observed  historical  data sets
-                   N0            = 100,        #Number of historical subjects
-                   N0_max        = 100,
-                   alpha_max     = 1,          #Max loss function weight
-                   N0_t          = 1000,
-                   N0_c          = 100,
-                   a0            = 1,          #Noninformative Initial priors
-                   b0            = 1,          #Noninformative Initial priors
-                   number_mcmc   = 10000,      #Number of simulations to estimate posterior and loss function
-                   weibull_scale = .05,        #Loss function parameter controlling the location of a weibull function
-                   weibull_shape = 2,          #Loss function parameter controlling the location of a weibull function
-                   two_side      = 0){
+          function(y_t           = 1,        #Number of events current treatment
+                   N_t           = 400,      #Number of subjects current treatment
+                   y_c           = 5,        #Number of events current control
+                   N_c           = 400,      #Number of subjects current control
+                   y0_t          = 1,        #Number of events historical treatment
+                   N0_t          = 200,      #Number of subjects historical treatment
+                   y0_c          = 5,        #Number of events historical control
+                   N0_c          = 200,      #Number of subjects historical control
+                   alpha_max     = 1,        #Max loss function weight
+                   a0            = 1,        #Noninformative Initial priors
+                   b0            = 1,        #Noninformative Initial priors
+                   number_mcmc   = 10000,    #Number of simulations to estimate posterior and loss function
+                   weibull_scale = .05,      #Loss function parameter controlling the location of a weibull function
+                   weibull_shape = 2,        #Loss function parameter controlling the location of a weibull function
+                   two_side      = 0,        #One or two-sided hypothesis test
+                   inequality    = "<",      #Lower or upper test
+                   delta         = 0){       #Difference margin
 
 
 ################################################################################
@@ -177,7 +185,6 @@ Binomial_posterior <- function(y, N, y0, N0, alpha_max, a0, b0, number_mcmc,
               N                       = N,
               y0                      = y0,
               N0                      = N0,
-              N0_max                  = N0_max,
               N0_effective            = alpha_loss$alpha_loss * N0))
 }
 
@@ -216,9 +223,9 @@ final <- function(posterior_control, posterior_test){
 ### Function call & Input Variable name description
 ### - Input Variable name description
 posterior_test <- Binomial_posterior(
-  y,             #= 10,      #Number of events observed  current data sets
-  N,             #= 400,     #Number of  current subjects
-  y0,            #= 1,       #Number of events observed  historical  data sets
+  y = y_t,             #= 10,      #Number of events observed  current data sets
+  N = N_t,             #= 400,     #Number of  current subjects
+  y0 = y0_t,            #= 1,       #Number of events observed  historical  data sets
   N0 = N0_t,                 #Number of historical subjects
   alpha_max,     #= 1,       #Max loss function weight
   a0,            #= 1,       #Noninformative Initial priors
@@ -230,9 +237,9 @@ posterior_test <- Binomial_posterior(
 )
 
 posterior_control <- Binomial_posterior(
-  y,             #= 1,          #Number of events observed  current data sets
-  N,             #= 400,        #Number of  current subjects
-  y0,            #= 10,         #Number of events observed  historical  data sets
+  y = y_c,             #= 1,          #Number of events observed  current data sets
+  N = N_c,             #= 400,        #Number of  current subjects
+  y0 = y0_c,            #= 10,         #Number of events observed  historical  data sets
   N0 = N0_c,                    #Number of historical subjects
   alpha_max,     #= 200,        #Max loss function weight
   a0,            #= 1,          #Noninformative Initial priors
@@ -247,20 +254,23 @@ f1 <- final(posterior_control = posterior_control,
             posterior_test    = posterior_test)
 
 
-args1 <- list(y             = y,          #Number of events observed  current data sets
-         N             = N,        #Number of  current subjects
-         y0            = y0,         #Number of events observed  historical  data sets
-         N0            = N0,        #Number of historical subjects
-         N0_max        = N0_max,
-         alpha_max     = alpha_max,          #Max loss function weight
-         N0_t          = N0_t,
-         N0_c          = N0_c,
-         a0            = a0,          #Noninformative Initial priors
-         b0            = b0,          #Noninformative Initial priors
-         number_mcmc   = number_mcmc,      #Number of simulations to estimate posterior and loss function
-         weibull_scale = weibull_scale,        #Loss function parameter controlling the location of a weibull function
-         weibull_shape = weibull_shape,          #Loss function parameter controlling the location of a weibull function
-         two_side      = two_side)
+args1 <- list(y_t           = y_t,           #Number of events current treatment
+              N_t           = N_t,           #Number of subjects current treatment
+              y_c           = y_c,           #Number of events current control
+              N_c           = N_c,           #Number of subjects current control
+              y0_t          = y0_t,          #Number of events historical treatment
+              N0_t          = N0_t,          #Number of subjects historical treatment
+              y0_c          = y0_c,          #Number of events historical control
+              N0_c          = N0_c,          #Number of subjects historical control
+              alpha_max     = alpha_max,     #Max loss function weight
+              a0            = a0,            #Noninformative Initial priors
+              b0            = b0,            #Noninformative Initial priors
+              number_mcmc   = number_mcmc,   #Number of simulations to estimate posterior and loss function
+              weibull_scale = weibull_scale, #Loss function parameter controlling the location of a weibull function
+              weibull_shape = weibull_shape, #Loss function parameter controlling the location of a weibull function
+              two_side      = two_side,      #One or two-sided hypothesis test
+              inequality    = inequality,    #Lower or upper test
+              delta         = delta)
 
 
 ### Plot outputs
@@ -323,11 +333,11 @@ setMethod("plot", signature(x = "bdpbinomial2arm"), function(x){
   f <- x$f1
   posterior_test <- x$posterior_test
   posterior_control <- x$posterior_control
-  two_side <- x$args1$two_sid
+  two_side <- x$args1$two_side
   inequality <- x$args1$inequality
   N0_t <- x$args1$N0_t
   N0_c <- x$args1$N0_c
-  delta <- 2
+  delta <- x$args1$delta
 
   D1 <- data.frame(information_sources='Posterior',
                    group="Control",
@@ -454,11 +464,11 @@ setMethod("print", signature(x = "bdpbinomial2arm"), function(x){
   f <- x$f1
   posterior_test <- x$posterior_test
   posterior_control <- x$posterior_control
-  two_side <- x$args1$two_sid
+  two_side <- x$args1$two_side
   inequality <- x$args1$inequality
   N0_t <- x$args1$N0_t
   N0_c <- x$args1$N0_c
-  delta <- 2
+  delta <- x$args1$delta
 
   if(inequality=="<"){
     hypothesis <- paste('"We can define W as the difference between the means

@@ -347,7 +347,7 @@ setMethod("plot", signature(x = "bdpnormal2arm"), function(x){
   inequality <- x$args1$inequality
   N0_t <- x$args1$N0_t
   N0_c <- x$args1$N0_c
-  delta <- 2
+  delta <- x$args1$delta
 
   D1 <- data.frame(information_sources='Posterior',
                    group="Control",
@@ -479,7 +479,7 @@ setMethod("print", signature(x = "bdpnormal2arm"), function(x){
   inequality <- x$args1$inequality
   N0_t <- x$args1$N0_t
   N0_c <- x$args1$N0_c
-  delta <- 2
+  delta <- x$args1$delta
 
   if(inequality=="<"){
     hypothesis <- paste('"We can define W as the difference between the means

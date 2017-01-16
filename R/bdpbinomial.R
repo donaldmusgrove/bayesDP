@@ -3,20 +3,23 @@
 #' bdpbinomial
 #'
 #' @title bdpbinomial: bdpbinomial
-#' @param mu numeric
-#' @param sigma2 numeric
-#' @param N numeric
-#' @param mu0 numeric
-#' @param sigma02 numeric
-#' @param type character
-#' @param N0 numeric
+#' @param y_t numeric
+#' @param N_t numeric
+#' @param y_c numeric
+#' @param N_c numeric
+#' @param y0_t numeric
+#' @param N0_t numeric
+#' @param y0_c numeric
+#' @param N0_c numeric
 #' @param alpha_max numeric
-#' @param weibull_scale numeric
-#' @param weibull_shape numeric
+#' @param a0 numeric
+#' @param b0 numeric
 #' @param number_mcmc numeric
-#' @param H0 numeric
-#' @param two_side numeric
+#' @param weibull_shape numeric
+#' @param weibull_scale numeric
+#' @param two_side character
 #' @param inequality character
+#' @param delta character
 #'
 #' @examples
 #'

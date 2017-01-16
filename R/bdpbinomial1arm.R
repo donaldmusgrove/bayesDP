@@ -3,10 +3,10 @@
 #' bdpbinomial1arm
 #'
 #' @title bdpbinomial1arm: bdpbinomial1arm
-#' @param y numeric
-#' @param N numeric
-#' @param y0 numeric
-#' @param N0 numeric
+#' @param y_t numeric
+#' @param N_t numeric
+#' @param y0_t numeric
+#' @param N0_t numeric
 #' @param alpha_max numeric
 #' @param a0 numeric
 #' @param b0 numeric
@@ -37,10 +37,10 @@
 ################################################################################
 
 setGeneric("bdpbinomial1arm",
-           function(y             = 1,     #n events: current
-                    N             = 400,   #n subjects: current
-                    y0            = 10,    #n events: historical
-                    N0            = 100,   #n subjects: historical
+           function(y_t           = 1,     #n events: current
+                    N_t           = 400,   #n subjects: current
+                    y0_t          = 10,    #n events: historical
+                    N0_t          = 100,   #n subjects: historical
                     alpha_max     = 1,     #Max loss function weight
                     a0            = 1,     #Noninformative Initial priors
                     b0            = 1,     #Noninformative Initial priors
@@ -55,10 +55,10 @@ setGeneric("bdpbinomial1arm",
 
 setMethod("bdpbinomial1arm",
           signature(y = "numeric"),
-          function(y             = 1,     #n events: current
-                   N             = 400,   #n subjects: current
-                   y0            = 10,    #n events: historical
-                   N0            = 100,   #n subjects: historical
+          function(y_t           = 1,     #n events: current
+                   N_t           = 400,   #n subjects: current
+                   y0_t          = 10,    #n events: historical
+                   N0_t          = 100,   #n subjects: historical
                    alpha_max     = 1,     #Max loss function weight
                    a0            = 1,     #Noninformative Initial priors
                    b0            = 1,     #Noninformative Initial priors
@@ -179,15 +179,15 @@ setMethod("bdpbinomial1arm",
                 Testpost          = Testpost))
 }
 
-  est <- Binomial_posterior(y, N, y0, N0, alpha_max, a0, b0, number_mcmc,
+  est <- Binomial_posterior(y_t, N_t, y0_t, N0_t, alpha_max, a0, b0, number_mcmc,
                             weibull_scale, weibull_shape, two_side)
 
   f1 <- final(posterior_test = est)
 
-  args1 <- list(y = y,
-                N = N,
-                y0 = y0,
-                N0 = N0,
+  args1 <- list(y_t = y_t,
+                N_t = N_t,
+                y0_t = y0_t,
+                N0_t = N0_t,
                 alpha_max = alpha_max,
                 a0 = a0,
                 b0 = b0,
