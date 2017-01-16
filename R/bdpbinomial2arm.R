@@ -191,11 +191,11 @@ Binomial_posterior <- function(y, N, y0, N0, alpha_max, a0, b0, number_mcmc,
 
 final <- function(posterior_control, posterior_test){
   den_post_control  <- density(posterior_control$Binomial_posterior,adjust = .5)
-  den_flat_control  <- density(posterior_control$Binomial_posterior_flate,adjust = .5)
+  den_flat_control  <- density(posterior_control$Binomial_posterior_flat,adjust = .5)
   den_prior_control <- density(posterior_control$Binomial_prior,adjust = .5)
 
   den_post_test     <- density(posterior_test$Binomial_posterior,adjust = .5)
-  den_flat_test     <- density(posterior_test$Binomial_posterior_flate,adjust = .5)
+  den_flat_test     <- density(posterior_test$Binomial_posterior_flat,adjust = .5)
   den_prior_test    <- density(posterior_test$Binomial_prior,adjust = .5)
 
   TestMinusControl_post <- posterior_test$Binomial_posterior - posterior_control$Binomial_posterior
