@@ -193,7 +193,121 @@ final <- function(posterior_test) {
 }
 
 
-results <- function(f,posterior_test,H0,two_side,inequality){
+#results <- function(f,posterior_test,H0,two_side,inequality){
+
+
+
+
+
+################################################################################
+### Results
+################################################################################
+
+#two_side   <- 0    # 0 == 1-sided, 1 === 2-sided
+#H0         <- 10   # H0 value
+#inequality <- ">"  # Inequality of alternate hypothesis
+
+est <- mu_posterior(mu,            #= 10,
+                    sigma2,        #= 1,
+                    N,             #= 10,   #Number of  current subjects
+                    mu0,           #= 10,
+                    sigma02,       #= 1,
+                    N0,            #= 10,       #Number of historical subjects
+                    alpha_max,     #= 10,       #Maximum effective prior sample size
+                    number_mcmc,   #= 1000,     #Number of posterior simulations
+                    weibull_scale, #= 0.1,      #Loss function: Weibull location scale
+                    weibull_shape, #= 1,        #Loss function: Weibull location shape
+                    two_side)      #= two_side) # 0 == 1-sided, 1 === 2-sided
+
+f1 <- final(posterior_test = est)
+
+args1 <- list(mu = mu,
+         sigma2 = sigma2,
+         N = N,
+         mu0 = mu0,
+         sigma02 = sigma02,
+         N0 = N0,
+         alpha_max = alpha_max,
+         weibull_scale = weibull_scale,
+         weibull_shape = weibull_shape,
+         number_mcmc = number_mcmc,
+         H0 = H0,
+         two_side = two_side,
+         inequality = inequality)
+
+#res1 <- results(f              = f1,
+#                posterior_test = est,
+#                H0             = H0,
+#                two_side       = two_side,
+#                inequality     = inequality)
+
+
+### Plot outputs
+#post_typeplot1 <- res1$post_typeplot
+
+#densityplot1 <- res1$densityplot
+
+#lossfun_plot1 <- res1$lossfun_plot
+
+#lossfun_plot2 <- res1$lossfun_plot
+
+### Text outputs
+#hypothesis1 <- res1$hypothesis
+
+#prior_for_test_group1 <- res1$prior_for_test_group
+
+#setClass("bdpnormal1arm",
+#         representation(post_typeplot1 = "ANY",
+#                        densityplot1 = "ANY",
+#                        lossfun_plot1 = "ANY",
+#                        lossfun_plot2 = "ANY",
+#                        hypothesis1 = "character",
+#                        prior_for_test_group1 = "list"))
+
+#me = new("bdpnormal1arm",
+#         post_typeplot1 = post_typeplot1,
+#         densityplot1 = densityplot1,
+#         lossfun_plot1 = lossfun_plot1,
+#         lossfun_plot2 = lossfun_plot2,
+#         hypothesis1 = hypothesis1,
+#         prior_for_test_group1 = prior_for_test_group1)
+
+#me <- list(post_typeplot1 = post_typeplot1,
+#           densityplot1 = densityplot1,
+#           lossfun_plot1 = lossfun_plot1,
+#           lossfun_plot2 = lossfun_plot2,
+#           hypothesis1 = hypothesis1,
+#           prior_for_test_group1 = prior_for_test_group1)
+
+me <- list(est = est,
+           f1 = f1,
+           args1 = args1)
+
+class(me) <- "bdpnormal1arm"
+
+return(me)
+
+})
+
+
+#' plot
+#'
+#' plot
+#'
+#' @title plot: plot
+#' @param x bdpnormal1arm
+#'
+#' @examples
+#'
+#' @rdname plot
+#' @export plot
+setMethod("plot", signature(x = "bdpnormal1arm"), function(x){
+
+  f <- x$f1
+  posterior_test <- x$est
+  H0 <- x$args1$H0
+  two_side <- x$args1$two_side
+  inequality <- x$args1$inequality
 
   D4 <- data.frame(information_sources = "Posterior",
                    group               = "Test",
@@ -255,6 +369,31 @@ results <- function(f,posterior_test,H0,two_side,inequality){
     ylab("Effective sample size for historical data") +
     xlab("Bayesian p-value (new vs historical data)")
 
+  op <- par(ask=TRUE)
+  plot(post_typeplot)
+  plot(densityplot)
+  plot(lossfun_plot)
+  par(op)
+})
+
+#' print
+#'
+#' print
+#'
+#' @title print: print
+#' @param x bdpnormal1arm
+#'
+#' @examples
+#'
+#' @rdname print
+#' @export print
+setMethod("print", signature(x = "bdpnormal1arm"), function(x){
+
+  f <- x$f1
+  posterior_test <- x$est
+  H0 <- x$args1$H0
+  inequality <- x$args1$inequality
+
   if (inequality == "<") {
     hypothesis <- paste("\"We can define mu as the mean for the test", "\n",
                         "Null Hypothesis (H_0): mu>", H0, "\n",
@@ -279,123 +418,6 @@ results <- function(f,posterior_test,H0,two_side,inequality){
                                `Loss function value`                             = posterior_test$alpha_loss,
                                `Sample size of prior (for test group)`           = posterior_test$N0)
 
-  return(list(prior_for_test_group = prior_for_test_group,
-              post_typeplot        = post_typeplot,
-              densityplot          = densityplot,
-              lossfun_plot         = lossfun_plot,
-              hypothesis           = hypothesis)
-  )
-
-}
-
-
-
-
-################################################################################
-### Results
-################################################################################
-
-two_side   <- 0    # 0 == 1-sided, 1 === 2-sided
-H0         <- 10   # H0 value
-inequality <- ">"  # Inequality of alternate hypothesis
-
-est <- mu_posterior(mu,            #= 10,
-                    sigma2,        #= 1,
-                    N,             #= 10,   #Number of  current subjects
-                    mu0,           #= 10,
-                    sigma02,       #= 1,
-                    N0,            #= 10,       #Number of historical subjects
-                    alpha_max,     #= 10,       #Maximum effective prior sample size
-                    number_mcmc,   #= 1000,     #Number of posterior simulations
-                    weibull_scale, #= 0.1,      #Loss function: Weibull location scale
-                    weibull_shape, #= 1,        #Loss function: Weibull location shape
-                    two_side)      #= two_side) # 0 == 1-sided, 1 === 2-sided
-
-f1 <- final(posterior_test = est)
-
-res1 <- results(f              = f1,
-                posterior_test = est,
-                H0             = H0,
-                two_side       = two_side,
-                inequality     = inequality)
-
-
-### Plot outputs
-post_typeplot1 <- res1$post_typeplot
-
-densityplot1 <- res1$densityplot
-
-lossfun_plot1 <- res1$lossfun_plot
-
-lossfun_plot2 <- res1$lossfun_plot
-
-### Text outputs
-hypothesis1 <- res1$hypothesis
-
-prior_for_test_group1 <- res1$prior_for_test_group
-
-#setClass("bdpnormal1arm",
-#         representation(post_typeplot1 = "ANY",
-#                        densityplot1 = "ANY",
-#                        lossfun_plot1 = "ANY",
-#                        lossfun_plot2 = "ANY",
-#                        hypothesis1 = "character",
-#                        prior_for_test_group1 = "list"))
-
-#me = new("bdpnormal1arm",
-#         post_typeplot1 = post_typeplot1,
-#         densityplot1 = densityplot1,
-#         lossfun_plot1 = lossfun_plot1,
-#         lossfun_plot2 = lossfun_plot2,
-#         hypothesis1 = hypothesis1,
-#         prior_for_test_group1 = prior_for_test_group1)
-
-me <- list(post_typeplot1 = post_typeplot1,
-           densityplot1 = densityplot1,
-           lossfun_plot1 = lossfun_plot1,
-           lossfun_plot2 = lossfun_plot2,
-           hypothesis1 = hypothesis1,
-           prior_for_test_group1 = prior_for_test_group1)
-
-class(me) <- "bdpnormal1arm"
-
-return(me)
-
-})
-
-
-#' plot
-#'
-#' plot
-#'
-#' @title plot: plot
-#' @param x bdpnormal1arm
-#'
-#' @examples
-#'
-#' @rdname plot
-#' @export plot
-setMethod("plot", signature(x = "bdpnormal1arm"), function(x){
-  op <- par(ask=TRUE)
-  plot(x$post_typeplot1)
-  plot(x$densityplot1)
-  plot(x$lossfun_plot1)
-  plot(x$lossfun_plot2)
-  par(op)
-})
-
-#' print
-#'
-#' print
-#'
-#' @title print: print
-#' @param x bdpnormal1arm
-#'
-#' @examples
-#'
-#' @rdname print
-#' @export print
-setMethod("print", signature(x = "bdpnormal1arm"), function(x){
-  print(cat(x$hypothesis1))
-  print(x$prior_for_test_group1)
+  print(cat(hypothesis))
+  print(prior_for_test_group)
 })

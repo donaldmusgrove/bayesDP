@@ -203,8 +203,132 @@ final <- function(posterior_control, posterior_test){
 }
 
 
-results <- function(f, posterior_test, posterior_control, two_side,inequality,
-                    N0_t, N0_c, delta=2){
+
+
+
+
+
+
+################################################################################
+# Results                                                                      #
+################################################################################
+
+### Function call & Input Variable name description
+### - Input Variable name description
+posterior_test <- Binomial_posterior(
+  y,             #= 10,      #Number of events observed  current data sets
+  N,             #= 400,     #Number of  current subjects
+  y0,            #= 1,       #Number of events observed  historical  data sets
+  N0 = N0_t,                 #Number of historical subjects
+  alpha_max,     #= 1,       #Max loss function weight
+  a0,            #= 1,       #Noninformative Initial priors
+  b0,            #= 1,       #Noninformative Initial priors
+  number_mcmc,   #= 10000,   #Number of simulations to estimate posterior and loss function
+  weibull_scale, #= .2,      #Loss function parameter controlling the location of a weibull function
+  weibull_shape, #= 2,       #Loss function parameter controlling the location of a weibull function
+  two_side       #= 0
+)
+
+posterior_control <- Binomial_posterior(
+  y,             #= 1,          #Number of events observed  current data sets
+  N,             #= 400,        #Number of  current subjects
+  y0,            #= 10,         #Number of events observed  historical  data sets
+  N0 = N0_c,                    #Number of historical subjects
+  alpha_max,     #= 200,        #Max loss function weight
+  a0,            #= 1,          #Noninformative Initial priors
+  b0,            #= 1,          #Noninformative Initial priors
+  number_mcmc,   #= 10000,      #Number of simulations to estimate posterior and loss function
+  weibull_scale, #= .05,        #Loss function parameter controlling the location of a weibull function
+  weibull_shape, #= 2,          #Loss function parameter controlling the location of a weibull function
+  two_side       #= 0
+)
+
+f1 <- final(posterior_control = posterior_control,
+            posterior_test    = posterior_test)
+
+
+args1 <- list(y             = y,          #Number of events observed  current data sets
+         N             = N,        #Number of  current subjects
+         y0            = y0,         #Number of events observed  historical  data sets
+         N0            = N0,        #Number of historical subjects
+         N0_max        = N0_max,
+         alpha_max     = alpha_max,          #Max loss function weight
+         N0_t          = N0_t,
+         N0_c          = N0_c,
+         a0            = a0,          #Noninformative Initial priors
+         b0            = b0,          #Noninformative Initial priors
+         number_mcmc   = number_mcmc,      #Number of simulations to estimate posterior and loss function
+         weibull_scale = weibull_scale,        #Loss function parameter controlling the location of a weibull function
+         weibull_shape = weibull_shape,          #Loss function parameter controlling the location of a weibull function
+         two_side      = two_side)
+
+
+### Plot outputs
+#post_typeplot1 <- res1$post_typeplot
+#densityplot1   <- res1$densityplot
+#lossfun_plot1  <- res1$lossfun_plot
+
+
+### Text outputs
+#hypothesis1              <- res1$hypothesis
+#prior_for_test_group1    <- res1$prior_for_test_group
+#prior_for_control_group1 <- res1$prior_for_control_group
+
+#setClass("bdpbinomial2arm",
+#         representation(post_typeplot1 = "ANY",
+#                        densityplot1 = "ANY",
+#                        lossfun_plot1 = "ANY",
+#                        hypothesis1 = "character",
+#                        prior_for_control_group1 = "list"))
+
+#me = new("bdpbinomial2arm",
+#         post_typeplot1 = post_typeplot1,
+#         densityplot1 = densityplot1,
+#         lossfun_plot1 = lossfun_plot1,
+#         hypothesis1 = hypothesis1,
+#         prior_for_control_group1 = prior_for_control_group1)
+
+#me <- list(post_typeplot1 = post_typeplot1,
+#           densityplot1 = densityplot1,
+#           lossfun_plot1 = lossfun_plot1,
+#           hypothesis1 = hypothesis1,
+#           prior_for_control_group1 = prior_for_control_group1)
+
+me <- list(posterior_test = posterior_test,
+           posterior_control = posterior_control,
+           f1 = f1,
+           args1 = args1)
+
+class(me) <- "bdpbinomial2arm"
+
+
+return(me)
+
+})
+
+
+#' plot
+#'
+#' plot
+#'
+#' @title plot: plot
+#' @param x bdpbinomial2arm
+#'
+#' @examples
+#'
+#' @rdname plot
+#' @export plot
+setMethod("plot", signature(x = "bdpbinomial2arm"), function(x){
+
+  f <- x$f1
+  posterior_test <- x$posterior_test
+  posterior_control <- x$posterior_control
+  two_side <- x$args1$two_sid
+  inequality <- x$args1$inequality
+  N0_t <- x$args1$N0_t
+  N0_c <- x$args1$N0_c
+  delta <- 2
+
   D1 <- data.frame(information_sources='Posterior',
                    group="Control",
                    y=f$den_post_control$y,
@@ -307,6 +431,35 @@ results <- function(f, posterior_test, posterior_control, two_side,inequality,
     ylab("Effective sample size for historical data") +
     xlab("Bayesian p-value (new vs historical data)")
 
+  op <- par(ask=TRUE)
+  plot(post_typeplot)
+  plot(densityplot)
+  plot(lossfun_plot)
+  par(op)
+})
+
+#' print
+#'
+#' print
+#'
+#' @title print: print
+#' @param x bdpbinomial2arm
+#'
+#' @examples
+#'
+#' @rdname print
+#' @export print
+setMethod("print", signature(x = "bdpbinomial2arm"), function(x){
+
+  f <- x$f1
+  posterior_test <- x$posterior_test
+  posterior_control <- x$posterior_control
+  two_side <- x$args1$two_sid
+  inequality <- x$args1$inequality
+  N0_t <- x$args1$N0_t
+  N0_c <- x$args1$N0_c
+  delta <- 2
+
   if(inequality=="<"){
     hypothesis <- paste('"We can define W as the difference between the means
                         for the test group versus control group, i.e. W=test
@@ -345,133 +498,6 @@ results <- function(f, posterior_test, posterior_control, two_side,inequality,
                                     "Loss function value"                               = posterior_control$alpha_loss)
   }
 
-  return(list(prior_for_test_group    = prior_for_test_group,
-              prior_for_control_group = prior_for_control_group,
-              post_typeplot           = post_typeplot,
-              densityplot             = densityplot,
-              lossfun_plot            = lossfun_plot,
-              hypothesis              = hypothesis))
-}
-
-
-################################################################################
-# Results                                                                      #
-################################################################################
-
-### Function call & Input Variable name description
-### - Input Variable name description
-posterior_test <- Binomial_posterior(
-  y,             #= 10,      #Number of events observed  current data sets
-  N,             #= 400,     #Number of  current subjects
-  y0,            #= 1,       #Number of events observed  historical  data sets
-  N0 = N0_t,                 #Number of historical subjects
-  alpha_max,     #= 1,       #Max loss function weight
-  a0,            #= 1,       #Noninformative Initial priors
-  b0,            #= 1,       #Noninformative Initial priors
-  number_mcmc,   #= 10000,   #Number of simulations to estimate posterior and loss function
-  weibull_scale, #= .2,      #Loss function parameter controlling the location of a weibull function
-  weibull_shape, #= 2,       #Loss function parameter controlling the location of a weibull function
-  two_side       #= 0
-)
-
-posterior_control <- Binomial_posterior(
-  y,             #= 1,          #Number of events observed  current data sets
-  N,             #= 400,        #Number of  current subjects
-  y0,            #= 10,         #Number of events observed  historical  data sets
-  N0 = N0_c,                    #Number of historical subjects
-  alpha_max,     #= 200,        #Max loss function weight
-  a0,            #= 1,          #Noninformative Initial priors
-  b0,            #= 1,          #Noninformative Initial priors
-  number_mcmc,   #= 10000,      #Number of simulations to estimate posterior and loss function
-  weibull_scale, #= .05,        #Loss function parameter controlling the location of a weibull function
-  weibull_shape, #= 2,          #Loss function parameter controlling the location of a weibull function
-  two_side       #= 0
-)
-
-f1 <- final(posterior_control = posterior_control,
-            posterior_test    = posterior_test)
-
-
-
-res1 <- results(f                 = f1,
-                posterior_test    = posterior_test,
-                posterior_control = posterior_control,
-                two_side          = two_side,
-                inequality        = inequality,
-                N0_t              = N0_t,
-                N0_c              = N0_c,
-                delta             = delta)
-
-### Plot outputs
-post_typeplot1 <- res1$post_typeplot
-densityplot1   <- res1$densityplot
-lossfun_plot1  <- res1$lossfun_plot
-
-
-### Text outputs
-hypothesis1              <- res1$hypothesis
-prior_for_test_group1    <- res1$prior_for_test_group
-prior_for_control_group1 <- res1$prior_for_control_group
-
-#setClass("bdpbinomial2arm",
-#         representation(post_typeplot1 = "ANY",
-#                        densityplot1 = "ANY",
-#                        lossfun_plot1 = "ANY",
-#                        hypothesis1 = "character",
-#                        prior_for_control_group1 = "list"))
-
-#me = new("bdpbinomial2arm",
-#         post_typeplot1 = post_typeplot1,
-#         densityplot1 = densityplot1,
-#         lossfun_plot1 = lossfun_plot1,
-#         hypothesis1 = hypothesis1,
-#         prior_for_control_group1 = prior_for_control_group1)
-
-me <- list(post_typeplot1 = post_typeplot1,
-           densityplot1 = densityplot1,
-           lossfun_plot1 = lossfun_plot1,
-           hypothesis1 = hypothesis1,
-           prior_for_control_group1 = prior_for_control_group1)
-
-class(me) <- "bdpbinomial2arm"
-
-
-return(me)
-
-})
-
-
-#' plot
-#'
-#' plot
-#'
-#' @title plot: plot
-#' @param x bdpbinomial2arm
-#'
-#' @examples
-#'
-#' @rdname plot
-#' @export plot
-setMethod("plot", signature(x = "bdpbinomial2arm"), function(x){
-  op <- par(ask=TRUE)
-  plot(x$post_typeplot1)
-  plot(x$densityplot1)
-  plot(x$lossfun_plot1)
-  par(op)
-})
-
-#' print
-#'
-#' print
-#'
-#' @title print: print
-#' @param x bdpbinomial2arm
-#'
-#' @examples
-#'
-#' @rdname print
-#' @export print
-setMethod("print", signature(x = "bdpbinomial2arm"), function(x){
-  print(cat(x$hypothesis1))
-  print(x$prior_for_control_group1)
+  print(cat(hypothesis))
+  print(prior_for_control_group)
 })
