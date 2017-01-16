@@ -224,6 +224,7 @@ final <- function(posterior_control, posterior_test) {
               TestMinusControl_post = TestMinusControl_post))
 }
 
+<<<<<<< HEAD
 #results <- function(f,posterior_test,posterior_control,two_side,inequality,
 #                    N0_t,N0_c,delta=2){
 
@@ -349,6 +350,10 @@ setMethod("plot", signature(x = "bdpnormal2arm"), function(x){
   N0_c <- x$args1$N0_c
   delta <- x$args1$delta
 
+=======
+results <- function(f,posterior_test,posterior_control,two_side,inequality,
+                    N0_t,N0_c,delta=2){
+>>>>>>> parent of 350bc00... Refactored the other 3 functions, bug in 2arm binomial at this stage though.
   D1 <- data.frame(information_sources='Posterior',
                    group="Control",
                    y=f$den_post_control$y,
@@ -451,6 +456,7 @@ setMethod("plot", signature(x = "bdpnormal2arm"), function(x){
     ylab("Effective sample size for historical data") +
     xlab("Bayesian p-value (new vs historical data)")
 
+<<<<<<< HEAD
 
   op <- par(ask=TRUE)
   plot(post_typeplot)
@@ -481,6 +487,8 @@ setMethod("print", signature(x = "bdpnormal2arm"), function(x){
   N0_c <- x$args1$N0_c
   delta <- x$args1$delta
 
+=======
+>>>>>>> parent of 350bc00... Refactored the other 3 functions, bug in 2arm binomial at this stage though.
   if(inequality=="<"){
     hypothesis <- paste('"We can define W as the difference between the means
                         for the test group versus control group, i.e. W=test
@@ -519,6 +527,136 @@ setMethod("print", signature(x = "bdpnormal2arm"), function(x){
                                     "Loss function value"                               = posterior_control$alpha_loss)
   }
 
-  print(cat(hypothesis))
-  print(prior_for_test_group)
+  return(list(prior_for_test_group    = prior_for_test_group,
+              prior_for_control_group = prior_for_control_group,
+              post_typeplot           = post_typeplot,
+              densityplot             = densityplot,
+              lossfun_plot            = lossfun_plot,
+              hypothesis              = hypothesis))
+}
+
+
+################################################################################
+# Results                                                                      #
+################################################################################
+#two_side   <- 1   # 0 == 1-sided, 1 === 2-sided
+#inequality <- "<" # Inequality of alternate hypothesis
+#N0_t       <- 10  #Number of historical subjects in test group
+#N0_c       <- 0   #Number of historical subjects in control group
+#delta      <- 0   #Non-inferiority zone value
+
+posterior_test <- mu_posterior(
+  mu      = mu_t,      #mean of current treatment
+  sigma2  = sigma2_t,  #variance of current treatment
+  N       = N_t,       #n subjects current treatment
+  mu0     = mu0_t,     #mean of historical treatment
+  sigma02 = sigma02_t, #variance of historical treatment
+  N0      = N0_t,      #n subjects historical treatment
+  alpha_max,           #Max loss function weight
+  number_mcmc,         #Number of simulations to estimate posterior and loss function
+  weibull_scale,       #Loss function parameter controlling the location of a weibull function
+  weibull_shape,       #Loss function parameter controlling the location of a weibull function
+  two_side)            #Two or one sided hypothesis test?
+
+
+posterior_control <- mu_posterior(
+  mu      = mu_c,      #mean of current treatment
+  sigma2  = sigma2_c,  #variance of current treatment
+  N       = N_c,       #n subjects current treatment
+  mu0     = mu0_c,     #mean of historical treatment
+  sigma02 = sigma02_c, #variance of historical treatment
+  N0      = N0_c,      #n subjects historical treatment
+  alpha_max,           #Max loss function weight
+  number_mcmc,         #Number of simulations to estimate posterior and loss function
+  weibull_scale,       #Loss function parameter controlling the location of a weibull function
+  weibull_shape,       #Loss function parameter controlling the location of a weibull function
+  two_side)            #Two or one sided hypothesis test?
+
+
+
+f1 <- final(posterior_control = posterior_control,
+            posterior_test    = posterior_test)
+
+
+res1 <- results(f                 = f1,
+                posterior_test    = posterior_test,
+                posterior_control = posterior_control,
+                two_side          = two_side,
+                inequality        = inequality,
+                N0_t              = N0_t,
+                N0_c              = N0_c,
+                delta             = delta)
+
+
+### Plot outputs
+post_typeplot1 <- res1$post_typeplot
+densityplot1   <- res1$densityplot
+lossfun_plot1  <- res1$lossfun_plot
+
+
+### Text outputs
+hypothesis1              <- res1$hypothesis
+prior_for_test_group1    <- res1$prior_for_test_group
+prior_for_control_group1 <- res1$prior_for_control_group
+
+#setClass("bdpnormal2arm",
+#         representation(post_typeplot1 = "ANY",
+#                        densityplot1 = "ANY",
+#                        lossfun_plot1 = "ANY",
+#                        hypothesis1 = "character",
+#                        prior_for_control_group1 = "list"))
+
+#me = new("bdpnormal2arm",
+#         post_typeplot1 = post_typeplot1,
+#         densityplot1 = densityplot1,
+#         lossfun_plot1 = lossfun_plot1,
+#         hypothesis1 = hypothesis1,
+#         prior_for_control_group1 = prior_for_control_group1)
+
+me <- list(post_typeplot1 = post_typeplot1,
+           densityplot1 = densityplot1,
+           lossfun_plot1 = lossfun_plot1,
+           hypothesis1 = hypothesis1,
+           prior_for_control_group1 = prior_for_control_group1)
+
+class(me) <- "bdpnormal2arm"
+
+return(me)
+
+})
+
+
+#' plot
+#'
+#' plot
+#'
+#' @title plot: plot
+#' @param x bdpnormal2arm
+#'
+#' @examples
+#'
+#' @rdname plot
+#' @export plot
+setMethod("plot", signature(x = "bdpnormal2arm"), function(x){
+  op <- par(ask=TRUE)
+  plot(x$post_typeplot1)
+  plot(x$densityplot1)
+  plot(x$lossfun_plot1)
+  par(op)
+})
+
+#' print
+#'
+#' print
+#'
+#' @title print: print
+#' @param x bdpnormal2arm
+#'
+#' @examples
+#'
+#' @rdname print
+#' @export print
+setMethod("print", signature(x = "bdpnormal2arm"), function(x){
+  print(cat(x$hypothesis1))
+  print(x$prior_for_test_group1)
 })
