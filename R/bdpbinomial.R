@@ -11,6 +11,7 @@
 #' @param N0_t numeric
 #' @param y0_c numeric
 #' @param N0_c numeric
+#' @param type numeric
 #' @param alpha_max numeric
 #' @param a0 numeric
 #' @param b0 numeric

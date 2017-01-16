@@ -32,17 +32,17 @@
 
 
 setGeneric("bdpnormal",
-function(type = c("OPC", "RCT"), ...){
+function(type = c("1arm", "2arm"), ...){
   standardGeneric("bdpnormal")
 })
 
 setMethod("bdpnormal",
           signature(type = "character"),
-          function(type = c("OPC", "RCT"), ...){
-            if (type == "OPC"){
+          function(type = c("1arm", "2arm"), ...){
+            if (type == "1arm"){
               return(bdpnormal1arm(...))
             }
-            if(type == "RCT"){
+            if(type == "2arm"){
               return(bdpnormal2arm(...))
             }
           })
