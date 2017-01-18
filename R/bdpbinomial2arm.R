@@ -69,7 +69,7 @@ setGeneric("bdpbinomial2arm",
            })
 
 setMethod("bdpbinomial2arm",
-          signature(y_t = "numeric"),
+          signature(),
           function(y_t           = 1,        #Number of events current treatment
                    N_t           = 400,      #Number of subjects current treatment
                    y_c           = 5,        #Number of events current control

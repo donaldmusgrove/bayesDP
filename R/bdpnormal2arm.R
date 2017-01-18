@@ -69,7 +69,7 @@ setGeneric("bdpnormal2arm",
            })
 
 setMethod("bdpnormal2arm",
-          signature(mu_t = "numeric"),
+          signature(),
           function(mu_t = 10,
                    sigma2_t = 2,
                    N_t = 20,
