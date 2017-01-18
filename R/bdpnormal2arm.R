@@ -522,3 +522,67 @@ setMethod("print", signature(x = "bdpnormal2arm"), function(x){
   print(cat(hypothesis))
   print(prior_for_test_group)
 })
+
+#' summary
+#'
+#' summary
+#'
+#' @title summary: summary
+#' @param object bdpnormal2arm
+#'
+#' @examples
+#'
+#' @rdname summary
+#' @export summary
+setMethod("summary", signature(object = "bdpnormal2arm"), function(object){
+
+  f <- object$f1
+  posterior_test <- object$posterior_test
+  posterior_control <- object$posterior_control
+  two_side <- object$args1$two_sid
+  inequality <- object$args1$inequality
+  N0_t <- object$args1$N0_t
+  N0_c <- object$args1$N0_c
+  delta <- object$args1$delta
+
+  if(inequality=="<"){
+    hypothesis <- paste('"We can define W as the difference between the means
+                        for the test group versus control group, i.e. W=test
+                        mean - control mean', '\n', 'Null Hypothesis (H_0): W>',
+                        delta, '\n', "Alternative Hypothesis (H_a): W<", delta,
+                        '\n', '\n', "P(W<",delta,"|data)=",
+                        mean(f$TestMinusControl_post<delta),
+                        '\n', "We can accept H_a with a Probability of",
+                        mean(f$TestMinusControl_post<delta))
+  } else if(inequality==">"){
+    hypothesis <- paste('"We can define W as the difference between the means
+                        for the test group versus control group, i.e. W=test
+                        mean - control mean', '\n', 'Null Hypothesis (H_0): W<',
+                        delta, '\n', "Alternative Hypothesis (H_a): W>", delta,
+                        '\n', '\n', "P(W<",delta,"|data)=",
+                        mean(f$TestMinusControl_post>delta),
+                        '\n', "We can accept H_a with a Probability of",
+                        mean(f$TestMinusControl_post>delta))
+  }
+
+  if(posterior_test$N0==0){
+    prior_for_test_group <- "No Prior Supplied"
+  } else{
+    prior_for_test_group <- list("Sample size of prior (for test group)"          = posterior_test$N0,
+                                 "Effective sample size of prior(for test group)" = posterior_test$N0_effective,
+                                 "Bayesian p-value (new vs historical data)"      = posterior_test$pvalue,
+                                 "Loss function value"                            = posterior_test$alpha_loss)
+  }
+
+  if(posterior_control$N0==0){
+    prior_for_control_group <- "No Prior Supplied"
+  } else{
+    prior_for_control_group <- list("Sample size of prior (for control group)"          = posterior_control$N0,
+                                    "Effective sample size of prior(for control group)" = posterior_control$N0_effective,
+                                    "Bayesian p-value (new vs historical data)"         = posterior_control$pvalue,
+                                    "Loss function value"                               = posterior_control$alpha_loss)
+  }
+
+  print(cat(hypothesis))
+  print(prior_for_test_group)
+})

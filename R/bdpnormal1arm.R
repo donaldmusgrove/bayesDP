@@ -209,14 +209,14 @@ final <- function(posterior_test) {
 
 est <- mu_posterior(mu            = mu_t,
                     sigma2        = sigma2_t,
-                    N             = N_t,             
+                    N             = N_t,
                     mu0           = mu0_t,
                     sigma02       = sigma02_t,
-                    N0            = N0_t,            
-                    alpha_max     = alpha_max,     
-                    number_mcmc   = number_mcmc,   
-                    weibull_scale = weibull_scale, 
-                    weibull_shape = weibull_shape, 
+                    N0            = N0_t,
+                    alpha_max     = alpha_max,
+                    number_mcmc   = number_mcmc,
+                    weibull_scale = weibull_scale,
+                    weibull_shape = weibull_shape,
                     two_side      = two_side)
 
 f1 <- final(posterior_test = est)
@@ -308,7 +308,7 @@ setMethod("plot", signature(x = "bdpnormal1arm"), function(x){
   two_side <- x$args1$two_side
   inequality <- x$args1$inequality
   delta <- x$args1$delta
-  
+
   D4 <- data.frame(information_sources = "Posterior",
                    group               = "Test",
                    y                   = f$den_post_test$y,
@@ -393,7 +393,7 @@ setMethod("print", signature(x = "bdpnormal1arm"), function(x){
   posterior_test <- x$est
   inequality <- x$args1$inequality
   delta <- x$args1$delta
-  
+
   if (inequality == "<") {
     hypothesis <- paste("\"We can define mu as the mean for the test", "\n",
                         "Null Hypothesis (H_0): mu>", delta, "\n",
@@ -413,6 +413,52 @@ setMethod("print", signature(x = "bdpnormal1arm"), function(x){
   }
 
   ### Print
+  prior_for_test_group <- list(`Effective sample size of prior (for test group)` = posterior_test$N0_effective,
+                               `Bayesian p-value (new vs historical data)`       = posterior_test$pvalue,
+                               `Loss function value`                             = posterior_test$alpha_loss,
+                               `Sample size of prior (for test group)`           = posterior_test$N0)
+
+  print(cat(hypothesis))
+  print(prior_for_test_group)
+})
+
+#' summary
+#'
+#' summary
+#'
+#' @title summary: summary
+#' @param object bdpnormal1arm
+#'
+#' @examples
+#'
+#' @rdname summary
+#' @export summary
+setMethod("summary", signature(object = "bdpnormal1arm"), function(object){
+
+  f <- object$f1
+  posterior_test <- object$est
+  inequality <- object$args1$inequality
+  delta <- object$args1$delta
+
+  if (inequality == "<") {
+    hypothesis <- paste("\"We can define mu as the mean for the test", "\n",
+                        "Null Hypothesis (H_0): mu>", delta, "\n",
+                        "Alternative Hypothesis (H_a): mu<", delta, "\n", "\n",
+                        "P(mu<", delta, "|data)=", mean(f$Testpost < delta), "\n",
+                        "We can accept H_a with a Probability of",
+                        mean(f$Testpost < delta))
+  }
+
+  if (inequality == ">") {
+    hypothesis <- paste("\"Define mu as the mean of the data", "\n",
+                        "Null Hypothesis (H_0): mu<", delta, "\n",
+                        "Alternative Hypothesis (H_a): mu>", delta, "\n", "\n",
+                        "P(mu>", delta, "|data)=", mean(f$Testpost > delta), "\n",
+                        "We can accept H_a with a Probability of",
+                        mean(f$Testpost > delta))
+  }
+
+  ### summary
   prior_for_test_group <- list(`Effective sample size of prior (for test group)` = posterior_test$N0_effective,
                                `Bayesian p-value (new vs historical data)`       = posterior_test$pvalue,
                                `Loss function value`                             = posterior_test$alpha_loss,

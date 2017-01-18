@@ -208,56 +208,6 @@ setMethod("bdpbinomial1arm",
 
 })
 
-#' print
-#'
-#' print
-#'
-#' @title print: print
-#' @param x bdpbinomial1arm
-#'
-#' @examples
-#'
-#' @method print
-#' @S3method print
-#'
-#' @rdname print
-#' @export print
-setMethod("print", signature(x = "bdpbinomial1arm"), function(x){
-
-  f <- x$f1
-  posterior_test <- x$est
-  H0 <- x$args1$H0
-  inequality <- x$args1$inequality
-
-  if (inequality == "<") {
-    hypothesis <- paste("\"We can define mu as the mean for the test", "\n",
-                        "Null Hypothesis (H_0): mu>", H0, "\n",
-                        "Alternative Hypothesis (H_a): mu<", H0, "\n", "\n",
-                        "P(mu<", H0, "|data)=", mean(f$Testpost < H0), "\n",
-                        "We can accept H_a with a Probability of",
-                        mean(f$Testpost < H0))
-  }
-
-  if (inequality == ">") {
-    hypothesis <- paste("\"Define mu as the mean of the data", "\n",
-                        "Null Hypothesis (H_0): mu<", H0, "\n",
-                        "Alternative Hypothesis (H_a): mu>", H0, "\n", "\n",
-                        "P(mu>", H0, "|data)=", mean(f$Testpost > H0), "\n",
-                        "We can accept H_a with a Probability of",
-                        mean(f$Testpost > H0))
-  }
-
-  ### Print
-  prior_for_test_group <- list(`Effective sample size of prior (for test group)` = posterior_test$N0_effective,
-                               `Bayesian p-value (new vs historical data)`       = posterior_test$pvalue,
-                               `Loss function value`                             = posterior_test$alpha_loss,
-                               `Sample size of prior (for test group)`           = posterior_test$N0)
-
-  ### Text outputs
-  print(cat(hypothesis))
-  print(prior_for_test_group)
-})
-
 #' plot
 #'
 #' plot
@@ -343,4 +293,54 @@ setMethod("plot", signature(x = "bdpbinomial1arm"), function(x){
   plot(densityplot)
   plot(lossfun_plot)
   par(op)
+})
+
+#' summary
+#'
+#' summary
+#'
+#' @title summary: summary
+#' @param object bdpbinomial1arm
+#'
+#' @examples
+#'
+#' @method summary
+#' @S3method summary
+#'
+#' @rdname summary
+#' @export summary
+setMethod("summary", signature(object = "bdpbinomial1arm"), function(object){
+
+  f <- object$f1
+  posterior_test <- object$est
+  H0 <- object$args1$H0
+  inequality <- object$args1$inequality
+
+  if (inequality == "<") {
+    hypothesis <- paste("\"We can define mu as the mean for the test", "\n",
+                        "Null Hypothesis (H_0): mu>", H0, "\n",
+                        "Alternative Hypothesis (H_a): mu<", H0, "\n", "\n",
+                        "P(mu<", H0, "|data)=", mean(f$Testpost < H0), "\n",
+                        "We can accept H_a with a Probability of",
+                        mean(f$Testpost < H0))
+  }
+
+  if (inequality == ">") {
+    hypothesis <- paste("\"Define mu as the mean of the data", "\n",
+                        "Null Hypothesis (H_0): mu<", H0, "\n",
+                        "Alternative Hypothesis (H_a): mu>", H0, "\n", "\n",
+                        "P(mu>", H0, "|data)=", mean(f$Testpost > H0), "\n",
+                        "We can accept H_a with a Probability of",
+                        mean(f$Testpost > H0))
+  }
+
+  ### Print
+  prior_for_test_group <- list(`Effective sample size of prior (for test group)` = posterior_test$N0_effective,
+                               `Bayesian p-value (new vs historical data)`       = posterior_test$pvalue,
+                               `Loss function value`                             = posterior_test$alpha_loss,
+                               `Sample size of prior (for test group)`           = posterior_test$N0)
+
+  ### Text outputs
+  print(cat(hypothesis))
+  print(prior_for_test_group)
 })
