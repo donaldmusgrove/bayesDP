@@ -34,6 +34,8 @@ setMethod("data_helper",
 setMethod("data_helper",
           signature(current = "data.frame", historical = "data.frame"),
           function(current, historical){
+            #get rid of sapply is this is used...
+
             ok <- current[complete.cases(current),]
 
             n <- nrow(ok)

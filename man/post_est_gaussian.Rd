@@ -7,8 +7,7 @@
 post_est_gaussian(data, formula = y ~ treatment + x, family = "gaussian",
   treatment = NULL, prior.dist = NULL, prior.mean = 0,
   prior.scale = 1000, prior.df = Inf, prior_mu = 1, prior_sigma = 0.1,
-  weibull_scale = 1, weibull_shape = 1, alpha_max = 1, N0_max = NULL,
-  N_mcmc = 10000)
+  weibull_scale = 1, weibull_shape = 1, alpha_max = 1, N_mcmc = 10000)
 }
 \arguments{
 \item{data}{numeric number}
@@ -36,8 +35,6 @@ post_est_gaussian(data, formula = y ~ treatment + x, family = "gaussian",
 \item{weibull_shape}{weibull_shape}
 
 \item{alpha_max}{alpha_max}
-
-\item{N0_max}{N0_max}
 
 \item{N_mcmc}{N_mcmc}
 }

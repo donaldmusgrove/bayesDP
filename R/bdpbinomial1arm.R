@@ -218,7 +218,6 @@ setMethod("bdpbinomial1arm",
 #' @examples
 #'
 #' @method plot
-#' @S3method plot
 #'
 #' @rdname plot
 #' @export plot
@@ -305,7 +304,6 @@ setMethod("plot", signature(x = "bdpbinomial1arm"), function(x){
 #' @examples
 #'
 #' @method summary
-#' @S3method summary
 #'
 #' @rdname summary
 #' @export summary
