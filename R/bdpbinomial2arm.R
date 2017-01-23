@@ -1,4 +1,19 @@
-#' bdpbinomial2arm
+#' This code is used for estimating posterior samples from a binary outcome
+#' where an informative prior is used. The prior weight is determined using a
+#' loss function. In addition this code simulate many trials in order to get
+#' trial characteristics you must specify the parameters of the loss function
+#' as well as the maximum strength for the prior. This code assumes a
+#' non-adaptive trial.
+#' This code is modeled after the methodologies developed by the MDIC working
+#' group: "Informing clinical trials using bench & simulations"
+#' Section 1: of the code defines functions needed
+#' Section 2: of the code estimates a posterior and the loss function value
+#'            given inputs
+#' Section 3: of the code simulates the trial many times to get trial
+#'            characteristics
+#' Developer: Tarek Haddad
+#' Tarek.D.Haddad@Medtronic.com
+#' Last modified:1/26/2016
 #'
 #' bdpbinomial2arm
 #'
@@ -25,27 +40,6 @@
 #'
 #' @rdname bdpbinomial2arm
 #' @export bdpbinomial2arm
-
-
-################################################################################
-# This code is used for estimating posterior samples from a binary outcome     #
-# where an informative prior is used. The prior weight is determined using a   #
-# loss function. In addition this code simulate many trials in order to get    #
-# trial characteristics you must specify the parameters of the loss function   #
-# as well as the maximum strength for the prior. This code assumes a           #
-# non-adaptive trial.                                                          #
-# This code is modeled after the methodologies developed by the MDIC working   #
-# group: "Informing clinical trials using bench & simulations"                 #
-# Section 1: of the code defines functions needed                              #
-# Section 2: of the code estimates a posterior and the loss function value     #
-#            given inputs                                                      #
-# Section 3: of the code simulates the trial many times to get trial           #
-#            characteristics                                                   #
-# Developer: Tarek Haddad                                                      #
-# Tarek.D.Haddad@Medtronic.com                                                 #
-# Last modified:1/26/2016                                                      #
-################################################################################
-#library(ggplot2)
 
 setGeneric("bdpbinomial2arm",
            function(y_t           = 1,        #Number of events current treatment

@@ -1,4 +1,14 @@
-#' bdpnormal1arm
+#' This code is used for estimating posterior samples from a Gaussian outcome
+#' where an informative prior is used. The prior weight is determined using a
+#' loss function. In addition this code simulate many trials in order to get
+#' trial characteristics you must specify the parameters of the loss function
+#' as well as the maximum strength for the prior. This code assumes a
+#' non-adaptive trial.
+#' This code is modeled after the methodologies developed by the MDIC working
+#' group: "Informing clinical trials using bench & simulations"
+#' Developer: Tarek Haddad
+#' Tarek.D.Haddad@Medtronic.com
+#' Last modified:1/26/2016
 #'
 #' bdpnormal1arm
 #'
@@ -21,35 +31,6 @@
 #'
 #' @rdname bdpnormal1arm
 #' @export bdpnormal1arm
-
-################################################################################
-# This code is used for estimating posterior samples from a Gaussian outcome   #
-# where an informative prior is used. The prior weight is determined using a   #
-# loss function. In addition this code simulate many trials in order to get    #
-# trial characteristics you must specify the parameters of the loss function   #
-# as well as the maximum strength for the prior. This code assumes a           #
-# non-adaptive trial.                                                          #
-# This code is modeled after the methodologies developed by the MDIC working   #
-# group: "Informing clinical trials using bench & simulations"                 #
-# Developer: Tarek Haddad                                                      #
-# Tarek.D.Haddad@Medtronic.com                                                 #
-# Last modified:1/26/2016                                                      #
-################################################################################
-#library(ggplot2)
-#library(MCMCpack)
-#library(survival)
-
-#mu            = 10,
-#sigma2        = 1,
-#N             = 10,   #Number of  current subjects
-#mu0           = 10,
-#sigma02       = 1,
-#N0            = 10,       #Number of historical subjects
-#alpha_max     = 1,        #Max loss function weight
-#number_mcmc   = 1000,     #Number of posterior simulations
-#weibull_scale = 0.1,      #Loss function: Weibull location scale
-#weibull_shape = 1,        #Loss function: Weibull location shape
-#two_side      = two_side) # 0 == 1-sided, 1 === 2-sided
 
 setGeneric("bdpnormal1arm",
            function(mu_t          = 10,
