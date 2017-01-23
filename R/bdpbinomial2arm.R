@@ -574,4 +574,7 @@ setMethod("summary", signature(object = "bdpbinomial2arm"), function(object){
 
   print(cat(hypothesis))
   print(prior_for_control_group)
+  argsdf <- data.frame(t(data.frame(object$args1)))
+  names(argsdf) <- "args"
+  print(argsdf)
 })

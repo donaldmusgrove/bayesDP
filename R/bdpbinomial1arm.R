@@ -341,4 +341,7 @@ setMethod("summary", signature(object = "bdpbinomial1arm"), function(object){
   ### Text outputs
   print(cat(hypothesis))
   print(prior_for_test_group)
+  argsdf <- data.frame(t(data.frame(object$args1)))
+  names(argsdf) <- "args"
+  print(argsdf)
 })

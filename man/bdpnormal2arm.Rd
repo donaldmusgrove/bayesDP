@@ -50,7 +50,17 @@ bdpnormal2arm(mu_t = 10, sigma2_t = 2, N_t = 20, mu_c = 15,
 \item{delta}{numeric}
 }
 \description{
-bdpnormal2arm
+This code is used for estimating posterior samples from a /n
+Gaussian outcome where an informative prior is used. The prior weight is /n
+determined using a loss function. In addition this code simulate many /n
+trials in order to get trial characteristics you must specify the /n
+parameters of the loss function as well as the maximum strength for the /n
+prior. This code assumes a non-adaptive trial. This code is modeled after /n
+the methodologies developed by the MDIC working group: /n
+'Informing clinical trials using bench & simulations' /n
+Developer: Tarek Haddad /n
+Tarek.D.Haddad@Medtronic.com /n
+Last modified: 9/10/2016 /n
 }
 \details{
 bdpnormal2arm
