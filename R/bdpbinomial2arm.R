@@ -266,45 +266,12 @@ args1 <- list(y_t           = y_t,           #Number of events current treatment
               inequality    = inequality,    #Lower or upper test
               delta         = delta)
 
-
-### Plot outputs
-#post_typeplot1 <- res1$post_typeplot
-#densityplot1   <- res1$densityplot
-#lossfun_plot1  <- res1$lossfun_plot
-
-
-### Text outputs
-#hypothesis1              <- res1$hypothesis
-#prior_for_test_group1    <- res1$prior_for_test_group
-#prior_for_control_group1 <- res1$prior_for_control_group
-
-#setClass("bdpbinomial2arm",
-#         representation(post_typeplot1 = "ANY",
-#                        densityplot1 = "ANY",
-#                        lossfun_plot1 = "ANY",
-#                        hypothesis1 = "character",
-#                        prior_for_control_group1 = "list"))
-
-#me = new("bdpbinomial2arm",
-#         post_typeplot1 = post_typeplot1,
-#         densityplot1 = densityplot1,
-#         lossfun_plot1 = lossfun_plot1,
-#         hypothesis1 = hypothesis1,
-#         prior_for_control_group1 = prior_for_control_group1)
-
-#me <- list(post_typeplot1 = post_typeplot1,
-#           densityplot1 = densityplot1,
-#           lossfun_plot1 = lossfun_plot1,
-#           hypothesis1 = hypothesis1,
-#           prior_for_control_group1 = prior_for_control_group1)
-
 me <- list(posterior_test = posterior_test,
            posterior_control = posterior_control,
            f1 = f1,
            args1 = args1)
 
 class(me) <- "bdpbinomial2arm"
-
 
 return(me)
 

@@ -231,11 +231,6 @@ final <- function(posterior_control, posterior_test) {
 ################################################################################
 # Results                                                                      #
 ################################################################################
-#two_side   <- 1   # 0 == 1-sided, 1 === 2-sided
-#inequality <- "<" # Inequality of alternate hypothesis
-#N0_t       <- 10  #Number of historical subjects in test group
-#N0_c       <- 0   #Number of historical subjects in control group
-#delta      <- 0   #Non-inferiority zone value
 
 posterior_test <- mu_posterior(
   mu      = mu_t,      #mean of current treatment
@@ -264,11 +259,8 @@ posterior_control <- mu_posterior(
   weibull_shape,       #Loss function parameter controlling the location of a weibull function
   two_side)            #Two or one sided hypothesis test?
 
-
-
 f1 <- final(posterior_control = posterior_control,
             posterior_test    = posterior_test)
-
 
 args1 <- list(mu_t = mu_t,
          sigma2_t = sigma2_t,
@@ -289,26 +281,6 @@ args1 <- list(mu_t = mu_t,
          two_side = two_side,
          inequality = inequality,
          delta = delta)
-
-#setClass("bdpnormal2arm",
-#         representation(post_typeplot1 = "ANY",
-#                        densityplot1 = "ANY",
-#                        lossfun_plot1 = "ANY",
-#                        hypothesis1 = "character",
-#                        prior_for_control_group1 = "list"))
-
-#me = new("bdpnormal2arm",
-#         post_typeplot1 = post_typeplot1,
-#         densityplot1 = densityplot1,
-#         lossfun_plot1 = lossfun_plot1,
-#         hypothesis1 = hypothesis1,
-#         prior_for_control_group1 = prior_for_control_group1)
-
-#me <- list(post_typeplot1 = post_typeplot1,
-#           densityplot1 = densityplot1,
-#           lossfun_plot1 = lossfun_plot1,
-#           hypothesis1 = hypothesis1,
-#           prior_for_control_group1 = prior_for_control_group1)
 
 me <- list(posterior_test = posterior_test,
            posterior_control = posterior_control,

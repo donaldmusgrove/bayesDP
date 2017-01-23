@@ -184,10 +184,6 @@ final <- function(posterior_test) {
 ### Results
 ################################################################################
 
-#two_side   <- 0    # 0 == 1-sided, 1 === 2-sided
-#delta      <- 10   # delta value
-#inequality <- ">"  # Inequality of alternate hypothesis
-
 est <- mu_posterior(mu            = mu_t,
                     sigma2        = sigma2_t,
                     N             = N_t,
@@ -215,50 +211,6 @@ args1 <- list(mu_t          = mu_t,
               two_side      = two_side,
               inequality    = inequality,
               delta         = delta)
-
-#res1 <- results(f              = f1,
-#                posterior_test = est,
-#                delta          = delta,
-#                two_side       = two_side,
-#                inequality     = inequality)
-
-
-### Plot outputs
-#post_typeplot1 <- res1$post_typeplot
-
-#densityplot1 <- res1$densityplot
-
-#lossfun_plot1 <- res1$lossfun_plot
-
-#lossfun_plot2 <- res1$lossfun_plot
-
-### Text outputs
-#hypothesis1 <- res1$hypothesis
-
-#prior_for_test_group1 <- res1$prior_for_test_group
-
-#setClass("bdpnormal1arm",
-#         representation(post_typeplot1 = "ANY",
-#                        densityplot1 = "ANY",
-#                        lossfun_plot1 = "ANY",
-#                        lossfun_plot2 = "ANY",
-#                        hypothesis1 = "character",
-#                        prior_for_test_group1 = "list"))
-
-#me = new("bdpnormal1arm",
-#         post_typeplot1 = post_typeplot1,
-#         densityplot1 = densityplot1,
-#         lossfun_plot1 = lossfun_plot1,
-#         lossfun_plot2 = lossfun_plot2,
-#         hypothesis1 = hypothesis1,
-#         prior_for_test_group1 = prior_for_test_group1)
-
-#me <- list(post_typeplot1 = post_typeplot1,
-#           densityplot1 = densityplot1,
-#           lossfun_plot1 = lossfun_plot1,
-#           lossfun_plot2 = lossfun_plot2,
-#           hypothesis1 = hypothesis1,
-#           prior_for_test_group1 = prior_for_test_group1)
 
 me <- list(est = est,
            f1 = f1,
