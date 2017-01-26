@@ -14,10 +14,10 @@
 #'
 #' @title bdpnormal1arm: bdpnormal1arm
 #' @param mu_t numeric
-#' @param sigma2_t numeric
+#' @param sigma_t numeric
 #' @param N_t numeric
 #' @param mu0_t numeric
-#' @param sigma02_t numeric
+#' @param sigma0_t numeric
 #' @param N0_t numeric
 #' @param alpha_max numeric
 #' @param weibull_scale numeric
@@ -34,10 +34,10 @@
 
 setGeneric("bdpnormal1arm",
            function(mu_t          = 10,
-                    sigma2_t      = 1,
+                    sigma_t       = 1,
                     N_t           = 10,
                     mu0_t         = 10,
-                    sigma02_t     = 1,
+                    sigma0_t      = 1,
                     N0_t          = 10,
                     alpha_max     = 1,
                     weibull_scale = 0.1,
@@ -52,10 +52,10 @@ setGeneric("bdpnormal1arm",
 setMethod("bdpnormal1arm",
           signature(),
           function(mu_t          = 10,
-                   sigma2_t      = 1,
+                   sigma_t      = 1,
                    N_t           = 10,
                    mu0_t         = 10,
-                   sigma02_t     = 1,
+                   sigma0_t      = 1,
                    N0_t          = 10,
                    alpha_max     = 1,
                    weibull_scale = 0.1,
@@ -69,15 +69,15 @@ setMethod("bdpnormal1arm",
 ### Functions
 ################################################################################
 
-Loss_function <- function(mu, sigma2, N, mu0, sigma02, N0, alpha_max, number_mcmc,
+Loss_function <- function(mu, sigma, N, mu0, sigma0, N0, alpha_max, number_mcmc,
                           weibull_shape, weibull_scale, two_side) {
 
   ### mu for using flat prior
-  sigma2_post_flat <- rinvgamma(number_mcmc, (N-1)/2, ((N-1) * sigma2)/2)          #flat prior
+  sigma2_post_flat <- rinvgamma(number_mcmc, (N-1)/2, ((N-1) * sigma^2)/2)          #flat prior
   mu_post_flat     <- rnorm(number_mcmc, mu, (sigma2_post_flat/((N-1) + 1))^0.5)  #flat prior
 
   ### Prior model
-  sigma2_post_flat0 <- rinvgamma(number_mcmc, (N0-1)/2, ((N0-1) * sigma02)/2)          #flat prior
+  sigma2_post_flat0 <- rinvgamma(number_mcmc, (N0-1)/2, ((N0-1) * sigma0^2)/2)          #flat prior
   mu_post_flat0     <- rnorm(number_mcmc, mu0, (sigma2_post_flat0/((N0-1) + 1))^0.5)  #flat prior
 
   ### Test of model vs real
@@ -101,11 +101,11 @@ Loss_function <- function(mu, sigma2, N, mu0, sigma02, N0, alpha_max, number_mcm
 ################################################################################
 # Calculates posterior estimation for Binomial distribution given alpha_loss   #
 ################################################################################
-mu_post_aug <- function(mu, sigma2, N, mu0, sigma02, N0, alpha_loss,
+mu_post_aug <- function(mu, sigma, N, mu0, sigma0, N0, alpha_loss,
                         number_mcmc){
   effective_N0 <- N0 * alpha_loss
-  sigma2_post  <- rinvgamma(number_mcmc, (N-1)/2, ((N-1) * sigma2)/2)    #flat prior
-  sigma2_post0 <- rinvgamma(number_mcmc, (N0-1)/2, ((N0-1) * sigma02)/2) #flat prior
+  sigma2_post  <- rinvgamma(number_mcmc, (N-1)/2, ((N-1) * sigma^2)/2)    #flat prior
+  sigma2_post0 <- rinvgamma(number_mcmc, (N0-1)/2, ((N0-1) * sigma0^2)/2) #flat prior
 
   mu1 <- (sigma2_post0 * N * mu + sigma2_post * effective_N0 * mu0)/(N *
                                                                        sigma2_post0 + sigma2_post * effective_N0)
@@ -121,14 +121,14 @@ mu_post_aug <- function(mu, sigma2, N, mu0, sigma02, N0, alpha_loss,
 #################################################################################
 ### Combines the loss function and posterior estimation into one function
 ################################################################################
-mu_posterior <- function(mu, sigma2, N, mu0, sigma02, N0, alpha_max, number_mcmc,
+mu_posterior <- function(mu, sigma, N, mu0, sigma0, N0, alpha_max, number_mcmc,
                          weibull_shape, weibull_scale, two_side) {
 
   alpha_loss <- Loss_function(mu            = mu,
-                              sigma2        = sigma2,
+                              sigma         = sigma,
                               N             = N,
                               mu0           = mu0,
-                              sigma02       = sigma02,
+                              sigma0        = sigma0,
                               N0            = N0,
                               alpha_max     = alpha_max,
                               number_mcmc   = number_mcmc,
@@ -137,10 +137,10 @@ mu_posterior <- function(mu, sigma2, N, mu0, sigma02, N0, alpha_max, number_mcmc
                               two_side      = two_side)
 
   mu_posterior <- mu_post_aug(mu          = mu,
-                              sigma2      = sigma2,
+                              sigma       = sigma,
                               N           = N,
                               mu0         = mu0,
-                              sigma02     = sigma02,
+                              sigma0      = sigma0,
                               N0          = N0,
                               alpha_loss  = alpha_loss$alpha_loss,
                               number_mcmc = number_mcmc)
@@ -174,21 +174,14 @@ final <- function(posterior_test) {
 }
 
 
-#results <- function(f,posterior_test,delta,two_side,inequality){
-
-
-
-
-
 ################################################################################
 ### Results
 ################################################################################
-
 est <- mu_posterior(mu            = mu_t,
-                    sigma2        = sigma2_t,
+                    sigma         = sigma_t,
                     N             = N_t,
                     mu0           = mu0_t,
-                    sigma02       = sigma02_t,
+                    sigma0        = sigma0_t,
                     N0            = N0_t,
                     alpha_max     = alpha_max,
                     number_mcmc   = number_mcmc,
@@ -199,10 +192,10 @@ est <- mu_posterior(mu            = mu_t,
 f1 <- final(posterior_test = est)
 
 args1 <- list(mu_t          = mu_t,
-              sigma2_t      = sigma2_t,
+              sigma_t       = sigma_t,
               N_t           = N_t,
               mu0_t         = mu0_t,
-              sigma02_t     = sigma02_t,
+              sigma0_t      = sigma0_t,
               N0_t          = N0_t,
               alpha_max     = alpha_max,
               weibull_scale = weibull_scale,

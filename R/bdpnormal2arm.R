@@ -16,16 +16,16 @@
 #'
 #' @title bdpnormal2arm: bdpnormal2arm
 #' @param mu_t numeric
-#' @param sigma2_t numeric
+#' @param sigma_t numeric
 #' @param N_t numeric
 #' @param mu_c numeric
-#' @param sigma2_c numeric
+#' @param sigma_c numeric
 #' @param N_c numeric
 #' @param mu0_t numeric
-#' @param sigma02_t numeric
+#' @param sigma0_t numeric
 #' @param N0_t numeric
 #' @param mu0_c numeric
-#' @param sigma02_c numeric
+#' @param sigma0_c numeric
 #' @param N0_c numeric
 #' @param alpha_max numeric
 #' @param weibull_scale numeric
@@ -42,16 +42,16 @@
 
 setGeneric("bdpnormal2arm",
            function(mu_t = 10,
-                    sigma2_t = 2,
+                    sigma_t = 2,
                     N_t = 20,
                     mu_c = 15,
-                    sigma2_c = 2,
+                    sigma_c = 2,
                     N_c = 20,
                     mu0_t = 12,
-                    sigma02_t = 1,
+                    sigma0_t = 1,
                     N0_t = 10,
                     mu0_c = 12,
-                    sigma02_c = 1,
+                    sigma0_c = 1,
                     N0_c = 10,
                     alpha_max = 1,
                     weibull_scale = 0.2,
@@ -66,16 +66,16 @@ setGeneric("bdpnormal2arm",
 setMethod("bdpnormal2arm",
           signature(),
           function(mu_t = 10,
-                   sigma2_t = 2,
+                   sigma_t = 2,
                    N_t = 20,
                    mu_c = 15,
-                   sigma2_c = 2,
+                   sigma_c = 2,
                    N_c = 20,
                    mu0_t = 12,
-                   sigma02_t = 1,
+                   sigma0_t = 1,
                    N0_t = 10,
                    mu0_c = 12,
-                   sigma02_c = 1,
+                   sigma0_c = 1,
                    N0_c = 10,
                    alpha_max = 1,
                    weibull_scale = 0.2,
@@ -89,15 +89,15 @@ setMethod("bdpnormal2arm",
 ################################################################################
 # Produce prior data weight (scalar between 0 and 1) assuming a mu outcome     #
 ################################################################################
-Loss_function <- function(mu, sigma2, N, mu0, sigma02, N0, alpha_max, number_mcmc,
+Loss_function <- function(mu, sigma, N, mu0, sigma0, N0, alpha_max, number_mcmc,
                           weibull_shape, weibull_scale, two_side){
 
   ### mu for using flat prior
-  sigma2_post_flat <- rinvgamma(number_mcmc, (N - 1)/2, ((N - 1) * sigma2)/2)
+  sigma2_post_flat <- rinvgamma(number_mcmc, (N - 1)/2, ((N - 1) * sigma^2)/2)
   mu_post_flat     <- rnorm(number_mcmc, mu, (sigma2_post_flat/((N-1)+1))^0.5)
 
   ### Prior model (flat priors)
-  sigma2_post_flat0 <- rinvgamma(number_mcmc, (N0-1)/2, ((N0-1)*sigma02)/2)
+  sigma2_post_flat0 <- rinvgamma(number_mcmc, (N0-1)/2, ((N0-1)*sigma0^2)/2)
   mu_post_flat0     <- rnorm(number_mcmc, mu0, (sigma2_post_flat0/((N0-1)+1))^0.5)
 
   ### Test of model vs real
@@ -121,19 +121,19 @@ Loss_function <- function(mu, sigma2, N, mu0, sigma02, N0, alpha_max, number_mcm
 ################################################################################
 # Estimate posterior for mu given alpha_loss value                             #
 ################################################################################
-mu_post_aug <- function(mu, sigma2, N, mu0, sigma02, N0, alpha_loss,
+mu_post_aug <- function(mu, sigma, N, mu0, sigma0, N0, alpha_loss,
                         number_mcmc) {
   if (N0 != 0){
     effective_N0 <- N0 * alpha_loss
-    sigma2_post  <- rinvgamma(number_mcmc, (N-1)/2, ((N-1)*sigma2)/2)
-    sigma2_post0 <- rinvgamma(number_mcmc, (N0-1)/2, ((N0-1)*sigma02)/2)
+    sigma2_post  <- rinvgamma(number_mcmc, (N-1)/2, ((N-1)*sigma^2)/2)
+    sigma2_post0 <- rinvgamma(number_mcmc, (N0-1)/2, ((N0-1)*sigma0^2)/2)
 
     mu1 <- (sigma2_post0*N*mu + sigma2_post*effective_N0*mu0)/(N*sigma2_post0 +
                                                                  sigma2_post*effective_N0)
     var_mu <- (sigma2_post*sigma2_post0)/(N*sigma2_post0 +
                                             sigma2_post*effective_N0)
   } else {
-    var_mu <- rinvgamma(number_mcmc, (N - 1)/2, ((N - 1) * sigma2)/2)
+    var_mu <- rinvgamma(number_mcmc, (N - 1)/2, ((N - 1) * sigma^2)/2)
     mu1    <- mu
 
   }
@@ -145,14 +145,14 @@ mu_post_aug <- function(mu, sigma2, N, mu0, sigma02, N0, alpha_loss,
 ################################################################################
 # Combine loss function and posterior estimation into one function             #
 ################################################################################
-mu_posterior <- function(mu, sigma2, N, mu0, sigma02, N0, alpha_max, number_mcmc,
+mu_posterior <- function(mu, sigma, N, mu0, sigma0, N0, alpha_max, number_mcmc,
                          weibull_shape, weibull_scale, two_side) {
   if (N0 != 0) {
     alpha_loss <- Loss_function(mu            = mu,
-                                sigma2        = sigma2,
+                                sigma         = sigma,
                                 N             = N,
                                 mu0           = mu0,
-                                sigma02       = sigma02,
+                                sigma0        = sigma0,
                                 N0            = N0,
                                 alpha_max     = alpha_max,
                                 number_mcmc   = number_mcmc,
@@ -161,19 +161,19 @@ mu_posterior <- function(mu, sigma2, N, mu0, sigma02, N0, alpha_max, number_mcmc
                                 two_side      = two_side)
 
     mu_posterior <- mu_post_aug(mu          = mu,
-                                sigma2      = sigma2,
+                                sigma       = sigma,
                                 N           = N,
                                 mu0         = mu0,
-                                sigma02     = sigma02,
+                                sigma0      = sigma0,
                                 N0          = N0,
                                 alpha_loss  = alpha_loss$alpha_loss,
                                 number_mcmc = number_mcmc)
   } else {
     mu_posterior <- mu_post_aug(mu          = mu,
-                                sigma2      = sigma2,
+                                sigma       = sigma,
                                 N           = N,
                                 mu0         = mu0,
-                                sigma02     = sigma02,
+                                sigma0     = sigma0,
                                 N0          = N0,
                                 alpha_loss  = 0,
                                 number_mcmc = number_mcmc)
@@ -219,25 +219,16 @@ final <- function(posterior_control, posterior_test) {
               TestMinusControl_post = TestMinusControl_post))
 }
 
-#results <- function(f,posterior_test,posterior_control,two_side,inequality,
-#                    N0_t,N0_c,delta=2){
-
-
-
-
-
-
-
 ################################################################################
 # Results                                                                      #
 ################################################################################
 
 posterior_test <- mu_posterior(
   mu      = mu_t,      #mean of current treatment
-  sigma2  = sigma2_t,  #variance of current treatment
+  sigma   = sigma_t,   #sd of current treatment
   N       = N_t,       #n subjects current treatment
   mu0     = mu0_t,     #mean of historical treatment
-  sigma02 = sigma02_t, #variance of historical treatment
+  sigma0  = sigma0_t,  #sd of historical treatment
   N0      = N0_t,      #n subjects historical treatment
   alpha_max,           #Max loss function weight
   number_mcmc,         #Number of simulations to estimate posterior and loss function
@@ -248,10 +239,10 @@ posterior_test <- mu_posterior(
 
 posterior_control <- mu_posterior(
   mu      = mu_c,      #mean of current treatment
-  sigma2  = sigma2_c,  #variance of current treatment
+  sigma   = sigma_c,   #sd of current treatment
   N       = N_c,       #n subjects current treatment
   mu0     = mu0_c,     #mean of historical treatment
-  sigma02 = sigma02_c, #variance of historical treatment
+  sigma0  = sigma0_c,  #sd of historical treatment
   N0      = N0_c,      #n subjects historical treatment
   alpha_max,           #Max loss function weight
   number_mcmc,         #Number of simulations to estimate posterior and loss function
@@ -263,16 +254,16 @@ f1 <- final(posterior_control = posterior_control,
             posterior_test    = posterior_test)
 
 args1 <- list(mu_t = mu_t,
-         sigma2_t = sigma2_t,
+         sigma_t = sigma_t,
          N_t = N_t,
          mu_c = mu_c,
-         sigma2_c = sigma2_c,
+         sigma_c = sigma_c,
          N_c = N_c,
          mu0_t = mu0_t,
-         sigma02_t = sigma02_t,
+         sigma0_t = sigma0_t,
          N0_t = N0_t,
          mu0_c = mu0_c,
-         sigma02_c = sigma02_c,
+         sigma0_c = sigma0_c,
          N0_c = N0_c,
          alpha_max = alpha_max,
          weibull_scale = weibull_scale,
