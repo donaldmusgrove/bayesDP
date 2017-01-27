@@ -52,28 +52,36 @@ discount_function_binomial <- function(y, N, y0, N0, alpha_max, a0, b0, number_m
     ### Theta for using flat prior
     a_post_flat     <- y + a0
     b_post_flat     <- N - y + b0
-    theta_post_flat <- rbeta(number_mcmc, a_post_flat, b_post_flat)
+    posterior_flat  <- rbeta(number_mcmc, a_post_flat, b_post_flat)
 
     ### Prior model
     a_prior  <- y0 + a0
     b_prior  <- N0 - y0 + b0
-    theta0   <- rbeta(number_mcmc, a_prior, b_prior) #flat prior
+    prior   <- rbeta(number_mcmc, a_prior, b_prior) #flat prior
 
     ### Test of model vs real
-    p_test <- mean(theta_post_flat < theta0)   # larger is higher failure
+    p_test <- mean(posterior_flat < prior)   # larger is higher failure
 
     ### Number of effective sample size given shape and scale discount function
-    if (two_side == 0) {
-      alpha_discount <- pweibull(p_test, shape=weibull_shape, scale=weibull_scale)*alpha_max
-    } else if (two_side == 1){
-      p_test1    <- ifelse(p_test > 0.5, 1 - p_test, p_test)
-      alpha_discount <- pweibull(p_test1, shape=weibull_shape, scale=weibull_scale)*alpha_max
+    if(weibull_shape %in% c(0,Inf)){
+      if(weibull_shape == 0){
+        alpha_discount <- 0
+      } else{
+        alpha_discount <- 1
+      }
+    } else{
+      if (two_side == 0) {
+        alpha_discount <- pweibull(p_test, shape=weibull_shape, scale=weibull_scale)*alpha_max
+      } else if (two_side == 1){
+        p_test1    <- ifelse(p_test > 0.5, 1 - p_test, p_test)
+        alpha_discount <- pweibull(p_test1, shape=weibull_shape, scale=weibull_scale)*alpha_max
+      }
     }
-
+    
     return(list(alpha_discount  = alpha_discount,
                 pvalue          = p_test,
-                theta_post_flat = theta_post_flat,
-                theta0          = theta0))
+                posterior_flat  = posterior_flat,
+                prior           = prior))
 }
 
 
@@ -130,8 +138,8 @@ binomial_posterior <- function(y, N, y0, N0, alpha_max, a0, b0, number_mcmc,
     return(list(alpha_discount  = alpha_discount$alpha_discount,
                 pvalue          = alpha_discount$pvalue,
                 posterior       = posterior,
-                posterior_flat  = alpha_discount$theta_post_flat,
-                prior           = alpha_discount$theta0,
+                posterior_flat  = alpha_discount$posterior_flat,
+                prior           = alpha_discount$prior,
                 weibull_scale   = weibull_scale,
                 weibull_shape   = weibull_shape,
                 y               = y,
