@@ -1,7 +1,7 @@
 #' This code is used for estimating posterior samples from a binary outcome
 #' where an informative prior is used. The prior weight is determined using a
-#' loss function. In addition this code simulate many trials in order to get
-#' trial characteristics you must specify the parameters of the loss function
+#' discount function. In addition this code simulate many trials in order to get
+#' trial characteristics you must specify the parameters of the discount function
 #' as well as the maximum strength for the prior. This code assumes a
 #' non-adaptive trial.
 #' This code is modeled after the methodologies developed by the MDIC working
@@ -23,9 +23,7 @@
 #' @param number_mcmc numeric
 #' @param weibull_shape numeric
 #' @param weibull_scale numeric
-#' @param H0 numeric
 #' @param two_side character
-#' @param inequality character
 #'
 #' @examples
 #'
@@ -33,170 +31,68 @@
 #' @export bdpbinomial1arm
 
 setGeneric("bdpbinomial1arm",
-           function(y_t           = 1,     #n events: current
-                    N_t           = 400,   #n subjects: current
-                    y0_t          = 10,    #n events: historical
-                    N0_t          = 100,   #n subjects: historical
-                    alpha_max     = 1,     #Max loss function weight
-                    a0            = 1,     #Noninformative Initial priors
-                    b0            = 1,     #Noninformative Initial priors
-                    number_mcmc   = 10000, #n simulations
-                    weibull_scale = .05,   #Loss function scale parameter
-                    weibull_shape = 2,     #Loss function shape
-                    H0 = 10,
-                    two_side      = 0,
-                    inequality = "<"){
+           function(y_t           = NULL,
+                    N_t           = NULL,
+                    y0_t          = NULL,
+                    N0_t          = NULL,
+                    alpha_max     = 1,
+                    a0            = 1,
+                    b0            = 1,
+                    number_mcmc   = 10000,
+                    weibull_scale = 0.135,
+                    weibull_shape = 3,
+                    two_side      = 1){
              standardGeneric("bdpbinomial1arm")
            })
 
 setMethod("bdpbinomial1arm",
           signature(),
-          function(y_t           = 1,     #n events: current
-                   N_t           = 400,   #n subjects: current
-                   y0_t          = 10,    #n events: historical
-                   N0_t          = 100,   #n subjects: historical
-                   alpha_max     = 1,     #Max loss function weight
-                   a0            = 1,     #Noninformative Initial priors
-                   b0            = 1,     #Noninformative Initial priors
-                   number_mcmc   = 10000, #n simulations
-                   weibull_scale = .05,   #Loss function scale parameter
-                   weibull_shape = 2,     #Loss function shape parameter
-                   H0 = 10,
-                   two_side      = 0,
-                   inequality = "<"){
-
-################################################################################
-# Estimate weight for prior data assuming a binomial outcome                   #
-################################################################################
-  Loss_function <- function(y, N, y0, N0, alpha_max, a0, b0, number_mcmc,
-                            weibull_shape, weibull_scale, two_side=0){
-
-    ### Theta for using flat prior
-    a_post_flat     <- y + a0
-    b_post_flat     <- N - y + b0
-    theta_post_flat <- rbeta(number_mcmc, a_post_flat, b_post_flat)
-
-    ### Prior model
-    a_prior  <- y0 + a0
-    b_prior  <- N0 - y0 + b0
-    theta0   <- rbeta(number_mcmc, a_prior, b_prior) #flat prior
-
-    ### Test of model vs real
-    p_test <- mean(theta_post_flat<theta0)   # larger is higher failure
-
-    ### Number of effective sample size given shape and scale loss function
-    if (two_side == 0) {
-      alpha_loss <- pweibull(p_test, shape = weibull_shape, scale = weibull_scale)*alpha_max
-    } else if (two_side == 1){
-      p_test1    <- ifelse(p_test > 0.5, 1 - p_test, p_test)
-      alpha_loss <- pweibull(p_test1, shape = weibull_shape, scale = weibull_scale)*alpha_max
-    }
-
-    return(list(alpha_loss      = alpha_loss,
-                pvalue          = p_test,
-                theta_post_flat = theta_post_flat,
-                theta0          = theta0))
-}
+          function(y_t           = NULL,
+                   N_t           = NULL,
+                   y0_t          = NULL,
+                   N0_t          = NULL,
+                   alpha_max     = 1,
+                   a0            = 1,
+                   b0            = 1,
+                   number_mcmc   = 10000,
+                   weibull_scale = 0.135,
+                   weibull_shape = 3,
+                   two_side      = 1){
 
 
-################################################################################
-# Calculates posterior estimation for Binomial distribution given alpha_loss   #
-################################################################################
-  theta_post_aug_bin <- function(y, N, y0, N0, alpha_loss, a0, b0,
-                                 number_mcmc){
+  ##############################################################################
+  # Run model and collect results
+  ##############################################################################
+  posterior_treatment <- binomial_posterior(
+    y_t           = y_t, 
+    N_t           = N_t, 
+    y0_t          = y0_t, 
+    N0_t          = N0_t, 
+    alpha_max     = alpha_max[1], 
+    a0            = a0, 
+    b0            = b0, 
+    number_mcmc   = number_mcmc,
+    weibull_scale = weibull_scale[1], 
+    weibull_shape = weibull_shape[1], 
+    two_side      = two_side)
 
-    effective_N0 <- N0*alpha_loss
+  f1 <- final_binomial(posterior_treatment = posterior_treatment)
 
-    a_prior  <- (y0/N0)*effective_N0 + a0
-    b_prior  <- effective_N0 - (y0/N0)*effective_N0 + b0
+  args1 <- list(y_t           = y_t,
+                N_t           = N_t,
+                y0_t          = y0_t,
+                N0_t          = N0_t,
+                alpha_max     = alpha_max[1],
+                a0            = a0,
+                b0            = b0,
+                number_mcmc   = number_mcmc,
+                weibull_scale = weibull_scale[1],
+                weibull_shape = weibull_shape[1],
+                two_side      = two_side)
 
-    a_post_aug  <- y + a_prior
-    b_post_aug  <- N - y + b_prior
-
-    theta_post_aug <- rbeta(number_mcmc, a_post_aug, b_post_aug)
-    return(theta_post_aug)
-}
-
-
-################################################################################
-# Combines the loss function and posterior estimation into one function        #
-################################################################################
-  Binomial_posterior <- function(y, N, y0, N0, alpha_max, a0, b0, number_mcmc,
-                                 weibull_shape, weibull_scale, two_side){
-
-    alpha_loss         <- Loss_function(y             = y,
-                                        N             = N,
-                                        y0            = y0,
-                                        N0            = N0,
-                                        alpha_max     = alpha_max,
-                                        a0            = a0,
-                                        b0            = b0,
-                                        number_mcmc   = number_mcmc,
-                                        weibull_shape = weibull_shape,
-                                        weibull_scale = weibull_scale,
-                                        two_side      = two_side)
-
-    Binomial_posterior <- theta_post_aug_bin(y           = y,
-                                             N           = N,
-                                             y0          = y0,
-                                             N0          = N0,
-                                             alpha_loss  = alpha_loss$alpha_loss,
-                                             a0          = a0,
-                                             b0          = b0,
-                                             number_mcmc = number_mcmc)
-
-    return(list(alpha_loss               = alpha_loss$alpha_loss,
-                pvalue                   = alpha_loss$pvalue,
-                Binomial_posterior       = Binomial_posterior,
-                Binomial_posterior_flat  = alpha_loss$theta_post_flat,
-                Binomial_prior           = alpha_loss$theta0,
-                weibull_scale            = weibull_scale,
-                weibull_shape            = weibull_shape,
-                y                        = y,
-                N                        = N,
-                y0                       = y0,
-                N0                       = N0,
-                N0_effective             = alpha_loss$alpha_loss*N0))
-}
-
-################################################################################
-# Creates the final result class                                               #
-################################################################################
-  final <- function(posterior_test){
-    den_post_test  <- density(posterior_test$Binomial_posterior,adjust = 0.5)
-    den_flat_test  <- density(posterior_test$Binomial_posterior_flat,adjust = 0.5)
-    den_prior_test <- density(posterior_test$Binomial_prior,adjust = 0.5)
-
-    Testpost <- posterior_test$Binomial_posterior
-
-    return(list(den_post_test     = den_post_test,
-                den_flat_test     = den_flat_test,
-                den_prior_test    = den_prior_test,
-                Testpost          = Testpost))
-}
-
-  est <- Binomial_posterior(y_t, N_t, y0_t, N0_t, alpha_max, a0, b0, number_mcmc,
-                            weibull_scale, weibull_shape, two_side)
-
-  f1 <- final(posterior_test = est)
-
-  args1 <- list(y_t = y_t,
-                N_t = N_t,
-                y0_t = y0_t,
-                N0_t = N0_t,
-                alpha_max = alpha_max,
-                a0 = a0,
-                b0 = b0,
-                number_mcmc = number_mcmc,
-                weibull_scale = weibull_scale,
-                weibull_shape = weibull_shape,
-                H0 = H0,
-                two_side = two_side,
-                inequality = inequality)
-
-  me <- list(est = est,
-             f1 = f1,
-             args1 = args1)
+  me <- list(posterior_treatment = posterior_treatment,
+             f1                  = f1,
+             args1               = args1)
 
   class(me) <- "bdpbinomial1arm"
 
@@ -219,26 +115,24 @@ setMethod("bdpbinomial1arm",
 #' @export plot
 setMethod("plot", signature(x = "bdpbinomial1arm"), function(x){
 
-  f <- x$f1
-  posterior_test <- x$est
-  H0 <- x$args1$H0
-  two_side <- x$args1$two_side
-  inequality <- x$args1$inequality
+  f                   <- x$f1
+  posterior_treatment <- x$posterior_treatment
+  two_side            <- x$args1$two_side
 
   D4 <- data.frame(information_sources = "Posterior",
-                   group               = "Test",
-                   y                   = f$den_post_test$y,
-                   x                   = f$den_post_test$x)
+                   group               = "Treatment",
+                   y                   = f$density_post_treatment$y,
+                   x                   = f$density_post_treatment$x)
 
   D5 <- data.frame(information_sources = "Current data",
-                   group               = "Test",
-                   y                   = f$den_flat_test$y,
-                   x                   = f$den_flat_test$x)
+                   group               = "Treatment",
+                   y                   = f$density_flat_treatment$y,
+                   x                   = f$density_flat_treatment$x)
 
   D6 <- data.frame(information_sources = "Prior",
-                   group               = "Test",
-                   y                   = f$den_prior_test$y,
-                   x                   = f$den_prior_test$x)
+                   group               = "Treatment",
+                   y                   = f$density_prior_treatment$y,
+                   x                   = f$density_prior_treatment$x)
 
   D <- as.data.frame(rbind(D4, D5, D6))
 
@@ -266,15 +160,15 @@ setMethod("plot", signature(x = "bdpbinomial1arm"), function(x){
     p_value = seq(0, 1, , 100)
   }
 
-  Loss_function_test <- pweibull(p_value,
-                                 shape = posterior_test$weibull_shape,
-                                 scale = posterior_test$weibull_scale)*posterior_test$N0
+  discount_function_treatment <- pweibull(p_value,
+    shape = posterior_treatment$weibull_shape,
+    scale = posterior_treatment$weibull_scale)*posterior_treatment$N0
 
-  D1 <- data.frame(group = "test", y = Loss_function_test, x = seq(0, 1, , 100))
-  D2 <- data.frame(group = c("test"), pvalue = c(posterior_test$pvalue))
-  D3 <- data.frame(group = c("test"), pvalue = c(posterior_test$N0_effective))
+  D1 <- data.frame(group = "Treatment", y = discount_function_treatment, x = seq(0, 1, , 100))
+  D2 <- data.frame(group = c("Treatment"), pvalue = c(posterior_treatment$pvalue))
+  D3 <- data.frame(group = c("Treatment"), pvalue = c(posterior_treatment$N0_effective))
 
-  lossfun_plot <- ggplot() +
+  discountfun_plot <- ggplot() +
     geom_line(data = D1, aes(y = y, x = x, colour = group), size = 1) +
     geom_vline(data = D2, aes(xintercept = pvalue, colour = group), lty = 2) +
     geom_hline(data = D3, aes(yintercept = pvalue, colour = group), lty = 2) +
@@ -286,7 +180,7 @@ setMethod("plot", signature(x = "bdpbinomial1arm"), function(x){
   op <- par(ask=TRUE)
   plot(post_typeplot)
   plot(densityplot)
-  plot(lossfun_plot)
+  plot(discountfun_plot)
   par(op)
 })
 
@@ -305,38 +199,18 @@ setMethod("plot", signature(x = "bdpbinomial1arm"), function(x){
 #' @export summary
 setMethod("summary", signature(object = "bdpbinomial1arm"), function(object){
 
-  f <- object$f1
-  posterior_test <- object$est
-  H0 <- object$args1$H0
-  inequality <- object$args1$inequality
-
-  if (inequality == "<") {
-    hypothesis <- paste("\"We can define mu as the mean for the test", "\n",
-                        "Null Hypothesis (H_0): mu>", H0, "\n",
-                        "Alternative Hypothesis (H_a): mu<", H0, "\n", "\n",
-                        "P(mu<", H0, "|data)=", mean(f$Testpost < H0), "\n",
-                        "We can accept H_a with a Probability of",
-                        mean(f$Testpost < H0))
-  }
-
-  if (inequality == ">") {
-    hypothesis <- paste("\"Define mu as the mean of the data", "\n",
-                        "Null Hypothesis (H_0): mu<", H0, "\n",
-                        "Alternative Hypothesis (H_a): mu>", H0, "\n", "\n",
-                        "P(mu>", H0, "|data)=", mean(f$Testpost > H0), "\n",
-                        "We can accept H_a with a Probability of",
-                        mean(f$Testpost > H0))
-  }
+  f                   <- object$f1
+  posterior_treatment <- object$posterior_treatment
 
   ### Print
-  prior_for_test_group <- list(`Effective sample size of prior (for test group)` = posterior_test$N0_effective,
-                               `Bayesian p-value (new vs historical data)`       = posterior_test$pvalue,
-                               `Loss function value`                             = posterior_test$alpha_loss,
-                               `Sample size of prior (for test group)`           = posterior_test$N0)
+  prior_for_treatment_group <- list(
+    `Sample size of prior (treatment group)`           = posterior_treatment$N0,
+    `Effective sample size of prior (treatment group)` = posterior_treatment$N0_effective,
+    `Bayesian p-value (new vs historical data)`        = posterior_treatment$pvalue,
+    `Discount function value`                          = posterior_treatment$alpha_discount)
 
   ### Text outputs
-  print(cat(hypothesis))
-  print(prior_for_test_group)
+  print(prior_for_treatment_group)
   argsdf <- data.frame(t(data.frame(object$args1)))
   names(argsdf) <- "args"
   print(argsdf)
