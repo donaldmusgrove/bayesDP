@@ -158,9 +158,9 @@ final_binomial <- function(posterior_treatment, posterior_control=NULL){
   if(is.null(posterior_control)){
     treatment_posterior <- posterior_treatment$posterior
   
-    return(list(density_post_treatment  = den_post_treatment,
-                density_flat_treatment  = den_flat_treatment,
-                density_prior_treatment = den_prior_treatment,
+    return(list(density_post_treatment  = density_post_treatment,
+                density_flat_treatment  = density_flat_treatment,
+                density_prior_treatment = density_prior_treatment,
                 treatment_posterior     = treatment_posterior))
   } else{
     density_post_control  <- density(posterior_control$posterior,
