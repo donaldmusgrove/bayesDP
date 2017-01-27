@@ -33,8 +33,6 @@
 #' @param weibull_shape numeric
 #' @param weibull_scale numeric
 #' @param two_side character
-#' @param inequality character
-#' @param delta character
 #'
 #' @examples
 #'
@@ -144,9 +142,7 @@ setMethod("bdpbinomial2arm",
                 number_mcmc   = number_mcmc,
                 weibull_scale = weibull_scale,
                 weibull_shape = weibull_shape,
-                two_side      = two_side,
-                inequality    = inequality,
-                delta         = delta)
+                two_side      = two_side)
 
 me <- list(posterior_treatment = posterior_treatment,
            posterior_control   = posterior_control,
