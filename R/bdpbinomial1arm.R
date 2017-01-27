@@ -64,10 +64,10 @@ setMethod("bdpbinomial1arm",
   # Run model and collect results
   ##############################################################################
   posterior_treatment <- binomial_posterior(
-    y_t           = y_t, 
-    N_t           = N_t, 
-    y0_t          = y0_t, 
-    N0_t          = N0_t, 
+    y             = y_t, 
+    N             = N_t, 
+    y0            = y0_t, 
+    N0            = N0_t, 
     alpha_max     = alpha_max[1], 
     a0            = a0, 
     b0            = b0, 
