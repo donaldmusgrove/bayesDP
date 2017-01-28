@@ -52,14 +52,14 @@ setGeneric("bdpnormal2arm",
                     N0_t = 10,
                     mu0_c = 12,
                     sigma0_c = 1,
-                    N0_c = 10,
-                    alpha_max = 1,
-                    weibull_scale = 0.2,
-                    weibull_shape = 2,
-                    number_mcmc  = 10000,
+                    N0_c = 10,  # up to here null
+                    alpha_max = 1, # default 1
+                    weibull_scale = 0.135, #  0.135
+                    weibull_shape = 3, # 3
+                    number_mcmc  = 10000, # 10000 good
                     two_side = 1,
-                    inequality = "<",
-                    delta = 0){
+                    inequality = "<", # get rid of this
+                    delta = 0){ # get rid of this
              standardGeneric("bdpnormal2arm")
            })
 
