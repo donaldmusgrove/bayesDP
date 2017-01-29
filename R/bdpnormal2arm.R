@@ -1,16 +1,4 @@
-
-#' This code is used for estimating posterior samples from a
-#' Gaussian outcome where an informative prior is used. The prior weight is
-#' determined using a loss function. In addition this code simulate many
-#' trials in order to get trial characteristics you must specify the
-#' parameters of the loss function as well as the maximum strength for the
-#' prior. This code assumes a non-adaptive trial. This code is modeled after
-#' the methodologies developed by the MDIC working group:
-#' 'Informing clinical trials using bench & simulations'
-#' Developer: Tarek Haddad
-#' Tarek.D.Haddad@Medtronic.com
-#' Last modified: 9/10/2016
-
+c
 #'
 #' bdpnormal2arm
 #'
@@ -31,7 +19,7 @@
 #' @param weibull_scale numeric
 #' @param weibull_shape numeric
 #' @param number_mcmc numeric
-#' @param two_side character
+#' @param two_side numeric
 #' @param inequality character
 #' @param delta numeric
 #'
