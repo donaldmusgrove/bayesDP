@@ -40,33 +40,29 @@
 #' @export bdpnormal2arm
 
 setGeneric("bdpnormal2arm",
-           function(type =  c("1arm","2arm"),
-                    mu_t = 10,
-                    sigma_t = 2,
-                    N_t = 20,
-                    mu_c = 15,
-                    sigma_c = 2,
-                    N_c = 20,
-                    mu0_t = 12,
-                    sigma0_t = 1,
-                    N0_t = 10,
-                    mu0_c = 12,
-                    sigma0_c = 1,
-                    N0_c = 10,  # up to here null
+           function(mu_t = NULL,
+                    sigma_t = NULL,
+                    N_t = NULL,
+                    mu_c = NULL,
+                    sigma_c = NULL,
+                    N_c = NULL,
+                    mu0_t = NULL,
+                    sigma0_t = NULL,
+                    N0_t = NULL,
+                    mu0_c = NULL,
+                    sigma0_c = NULL,
+                    N0_c = NULL,  # up to here null
                     alpha_max = 1, # default 1
                     weibull_scale = 0.135, #  0.135
                     weibull_shape = 3, # 3
                     number_mcmc  = 10000, # 10000 good
-                    two_side = 1,
-                    inequality = "<", # get rid of this
-                    delta = 0){ # get rid of this
+                    two_side = 1){ # get rid of this
              standardGeneric("bdpnormal2arm")
            })
 
 setMethod("bdpnormal2arm",
           signature(),
-          function(type =  c("1arm","2arm"),
-                   mu_t = NULL,
+          function(mu_t = NULL,
                    sigma_t = NULL,
                    N_t = NULL,
                    mu_c = NULL,
@@ -77,14 +73,12 @@ setMethod("bdpnormal2arm",
                    N0_t = NULL,
                    mu0_c = NULL,
                    sigma0_c = NULL,
-                   N0_c = NULL,
+                   N0_c = NULL,  # up to here null
                    alpha_max = 1, # default 1
                    weibull_scale = 0.135, #  0.135
                    weibull_shape = 3, # 3
                    number_mcmc  = 10000, # 10000 good
-                   two_side = 1,
-                   inequality = "<", # get rid of this
-                   delta = 0){ # get rid of this
+                   two_side = 1){ # get rid of this
 
 ################################################################################
 # Produce prior data weight (scalar between 0 and 1) assuming a mu outcome     #
