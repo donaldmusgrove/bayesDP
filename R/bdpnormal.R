@@ -47,6 +47,8 @@ NULL
 #' @rdname bdpnormal
 #' @export bdpnormal
 
+# Depends: testthat,shiny,shinyFiles,shinythemes,shinyBS,survival,ggplot2,MCMCpack,knitr,rmarkdown,parallel,MASS,arm
+
 setGeneric("bdpnormal",
            function(mu_t = NULL,
                     sigma_t = NULL,
