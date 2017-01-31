@@ -1,3 +1,14 @@
+#' @importFrom MCMCpack rinvgamma
+#' @importFrom ggplot2 aes
+#' @importFrom ggplot2 facet_wrap
+#' @importFrom ggplot2 geom_hline
+#' @importFrom ggplot2 geom_line
+#' @importFrom ggplot2 geom_vline
+#' @importFrom ggplot2 ggplot
+#' @importFrom ggplot2 theme_bw
+#' @importFrom ggplot2 xlab
+#' @importFrom ggplot2 ylab
+NULL
 #' This code is used for estimating posterior samples from a Gaussian outcome
 #' where an informative prior is used. The prior weight is determined using a
 #' loss function. In addition this code simulate many trials in order to get

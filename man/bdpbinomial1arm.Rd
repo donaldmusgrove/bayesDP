@@ -4,10 +4,9 @@
 \alias{bdpbinomial1arm}
 \title{bdpbinomial1arm: bdpbinomial1arm}
 \usage{
-bdpbinomial1arm(y_t = 1, N_t = 400, y0_t = 10, N0_t = 100,
+bdpbinomial1arm(y_t = NULL, N_t = NULL, y0_t = NULL, N0_t = NULL,
   alpha_max = 1, a0 = 1, b0 = 1, number_mcmc = 10000,
-  weibull_scale = 0.05, weibull_shape = 2, H0 = 10, two_side = 0,
-  inequality = "<")
+  weibull_scale = 0.135, weibull_shape = 3, two_side = 1)
 }
 \arguments{
 \item{y_t}{numeric}
@@ -30,17 +29,13 @@ bdpbinomial1arm(y_t = 1, N_t = 400, y0_t = 10, N0_t = 100,
 
 \item{weibull_shape}{numeric}
 
-\item{H0}{numeric}
-
 \item{two_side}{character}
-
-\item{inequality}{character}
 }
 \description{
 This code is used for estimating posterior samples from a binary outcome
 where an informative prior is used. The prior weight is determined using a
-loss function. In addition this code simulate many trials in order to get
-trial characteristics you must specify the parameters of the loss function
+discount function. In addition this code simulate many trials in order to get
+trial characteristics you must specify the parameters of the discount function
 as well as the maximum strength for the prior. This code assumes a
 non-adaptive trial.
 This code is modeled after the methodologies developed by the MDIC working

@@ -1,6 +1,6 @@
-#' bpdregression_linear
+#' bdpregression_linear
 #'
-#' bpdregression_linear
+#' bdpregression_linear
 #'
 #' @title bdpregression_linear: Post Estimate Gaussian
 #' @param data numeric number
@@ -39,8 +39,8 @@
 #' ### Main parameter of interest:
 #' fit$effect_est
 #'
-#' @rdname bpdregression_linear
-#' @export bpdregression_linear
+#' @rdname bdpregression_linear
+#' @export bdpregression_linear
 
 
 ############################################################################

@@ -7,41 +7,37 @@
 bdpbinomial(type = c("1arm", "2arm"), ...)
 }
 \arguments{
-\item{type}{numeric}
+\item{type}{One of "1arm" or "2arm", denoting an OPC trial or a randomized control trial(RCT), respectively.}
 
-\item{y_t}{numeric}
+\item{y_t}{Number of events for the current treatment group.}
 
-\item{N_t}{numeric}
+\item{N_t}{Sample size of the current treatment group.}
 
-\item{y_c}{numeric}
+\item{y_c}{Number of events for the current control group.}
 
-\item{N_c}{numeric}
+\item{N_c}{Sample size of the current control group.}
 
-\item{y0_t}{numeric}
+\item{y0_t}{Number of events for the historical treatment group.}
 
-\item{N0_t}{numeric}
+\item{N0_t}{Sample size of the historical treatment group.}
 
-\item{y0_c}{numeric}
+\item{y0_c}{Number of events for the historical control group.}
 
-\item{N0_c}{numeric}
+\item{N0_c}{Sample size of the historical control group.}
 
-\item{alpha_max}{numeric}
+\item{alpha_max}{Maximum weight the discount function can apply. Default is 1. For type="2arm", users may specify a vector of two values where the first value is used to weight the historical treatment group and the second value is used to weight the historical control group.}
 
-\item{a0}{numeric}
+\item{a0}{Prior value for the beta rate. Default is 1.}
 
-\item{b0}{numeric}
+\item{b0}{Prior value for the beta rate. Default is 1.}
 
-\item{number_mcmc}{numeric}
+\item{number_mcmc}{Number of Markov Chain Monte Carlo (MCMC) simulations. Default is 1e4.}
 
-\item{weibull_shape}{numeric}
+\item{weibull_shape}{Shape parameter of the Weibull discount function used to compute alpha, the weight parameter of the historical data. Default value is 3. For type="2arm", users may specify a vector of two values where the first value is used to estimate the weight of the historical treatment group and the second value is used to estimate the weight of the historical control group.}
 
-\item{weibull_scale}{numeric}
+\item{weibull_scale}{Scale parameter of the Weibull discount function used to compute alpha, the weight parameter of the historical data. Default value is 0.135. Two values have special treatment: 0 and Inf. For weibull_scale = 0, alpha is set to 0, i.e., no weight. For weibull_scale = Inf, alpha is set to 1, i.e., full weight. For type="2arm", users may specify a vector of two values where the first value is used to estimate the weight of the historical treatment group and the second value is used to estimate the weight of the historical control group.}
 
-\item{two_side}{character}
-
-\item{inequality}{character}
-
-\item{delta}{character}
+\item{two_side}{Indicator of two-sided test for the discount function. Default value is 1.}
 }
 \description{
 bdpbinomial

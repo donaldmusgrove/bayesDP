@@ -4,32 +4,34 @@
 \alias{bdpnormal}
 \title{bdpnormal: bdpnormal}
 \usage{
-bdpnormal(type = c("1arm", "2arm"), ...)
+bdpnormal(mu_t = NULL, sigma_t = NULL, N_t = NULL, mu_c = NULL,
+  sigma_c = NULL, N_c = NULL, mu0_t = NULL, sigma0_t = NULL,
+  N0_t = NULL, mu0_c = NULL, sigma0_c = NULL, N0_c = NULL,
+  alpha_max = 1, weibull_scale = 0.135, weibull_shape = 3,
+  number_mcmc = 10000, two_side = 1)
 }
 \arguments{
-\item{type}{character}
-
 \item{mu_t}{numeric}
 
-\item{sigma2_t}{numeric}
+\item{sigma_t}{numeric}
 
 \item{N_t}{numeric}
 
 \item{mu_c}{numeric}
 
-\item{sigma2_c}{numeric}
+\item{sigma_c}{numeric}
 
 \item{N_c}{numeric}
 
 \item{mu0_t}{numeric}
 
-\item{sigma02_t}{numeric}
+\item{sigma0_t}{numeric}
 
 \item{N0_t}{numeric}
 
 \item{mu0_c}{numeric}
 
-\item{sigma02_c}{numeric}
+\item{sigma0_c}{numeric}
 
 \item{N0_c}{numeric}
 
@@ -41,14 +43,20 @@ bdpnormal(type = c("1arm", "2arm"), ...)
 
 \item{number_mcmc}{numeric}
 
-\item{two_side}{character}
-
-\item{inequality}{character}
-
-\item{delta}{numeric}
+\item{two_side}{numeric}
 }
 \description{
-bdpnormal
+This code is used for estimating posterior samples from a Gaussian outcome
+where an informative prior is used. The prior weight is determined using a
+loss function. In addition this code simulate many trials in order to get
+trial characteristics you must specify the parameters of the loss function
+as well as the maximum strength for the prior. This code assumes a
+non-adaptive trial.
+This code is modeled after the methodologies developed by the MDIC working
+group: "Informing clinical trials using bench & simulations"
+Developer: Tarek Haddad
+Tarek.D.Haddad@Medtronic.com
+Last modified:1/26/2016
 }
 \details{
 bdpnormal
