@@ -92,6 +92,19 @@ setMethod("bdpnormal",
 
 
 ################################################################################
+# Check Input                                                                  #
+################################################################################
+
+if(length(mu_c + sigma_c + N_c + mu0_c  + sigma0_c + N0_c)!=0){
+  arm2 <- TRUE
+  print("Assuming 2 arm.")
+}else{
+  arm2 <- FALSE
+  print("Assuming 1 arm.")
+}
+
+
+################################################################################
 # Produce prior data weight (scalar between 0 and 1) assuming a mu outcome     #
 ################################################################################
 Loss_function <- function(mu, sigma, N, mu0, sigma0, N0, alpha_max, number_mcmc,
@@ -255,7 +268,7 @@ posterior_test <- mu_posterior(
   weibull_shape,       #Loss function parameter controlling the location of a weibull function
   two_side)            #Two or one sided hypothesis test?
 
-if (is.null(N0_c) == FALSE){
+if (arm2){
   posterior_control <- mu_posterior(
     mu      = mu_c,      #mean of current treatment
     sigma   = sigma_c,   #sd of current treatment
@@ -270,7 +283,7 @@ if (is.null(N0_c) == FALSE){
     two_side)            #Two or one sided hypothesis test?
 }
 
-if (is.null(N0_c) == FALSE){
+if (arm2){
   f1 <- final(posterior_control = posterior_control,
               posterior_test    = posterior_test)
 }
@@ -297,7 +310,7 @@ args1 <- list(mu_t = mu_t,
          number_mcmc  = number_mcmc,
          two_side = two_side)
 
-if (is.null(N0_c) == FALSE){
+if (arm2){
   me <- list(posterior_test = posterior_test,
              posterior_control = posterior_control,
              f1 = f1,
@@ -491,25 +504,26 @@ setMethod("print", signature(x = "bdpnormal"), function(x){
   #                      '\n', "We can accept H_a with a Probability of",
   #                      mean(f$TestMinusControl_post>delta))
   #}
-
-  if(posterior_test$N0==0){
-    prior_for_test_group <- "No Prior Supplied"
-  } else{
-    prior_for_test_group <- list("Sample size of prior (for test group)"          = posterior_test$N0,
-                                 "Effective sample size of prior(for test group)" = posterior_test$N0_effective,
-                                 "Bayesian p-value (new vs historical data)"      = posterior_test$pvalue,
-                                 "Loss function value"                            = posterior_test$alpha_loss)
+  if(is.null(posterior_test$N0) == FALSE){
+    if(posterior_test$N0==0){
+      prior_for_test_group <- "No Prior Supplied"
+    } else{
+      prior_for_test_group <- list("Sample size of prior (for test group)"          = posterior_test$N0,
+                                   "Effective sample size of prior(for test group)" = posterior_test$N0_effective,
+                                   "Bayesian p-value (new vs historical data)"      = posterior_test$pvalue,
+                                   "Loss function value"                            = posterior_test$alpha_loss)
+    }
   }
-
-  if(posterior_control$N0==0){
-    prior_for_control_group <- "No Prior Supplied"
-  } else{
-    prior_for_control_group <- list("Sample size of prior (for control group)"          = posterior_control$N0,
-                                    "Effective sample size of prior(for control group)" = posterior_control$N0_effective,
-                                    "Bayesian p-value (new vs historical data)"         = posterior_control$pvalue,
-                                    "Loss function value"                               = posterior_control$alpha_loss)
+  if(is.null(posterior_control$N0) == FALSE){
+    if(posterior_control$N0==0){
+      prior_for_control_group <- "No Prior Supplied"
+    } else{
+      prior_for_control_group <- list("Sample size of prior (for control group)"          = posterior_control$N0,
+                                      "Effective sample size of prior(for control group)" = posterior_control$N0_effective,
+                                      "Bayesian p-value (new vs historical data)"         = posterior_control$pvalue,
+                                      "Loss function value"                               = posterior_control$alpha_loss)
+    }
   }
-
   #print(cat(hypothesis))
   print(prior_for_test_group)
 })
@@ -555,25 +569,27 @@ setMethod("summary", signature(object = "bdpnormal"), function(object){
   #                      '\n', "We can accept H_a with a Probability of",
   #                      mean(f$TestMinusControl_post>delta))
   #}
-
-  if(posterior_test$N0==0){
-    prior_for_test_group <- "No Prior Supplied"
-  } else{
-    prior_for_test_group <- list("Sample size of prior (for test group)"          = posterior_test$N0,
-                                 "Effective sample size of prior(for test group)" = posterior_test$N0_effective,
-                                 "Bayesian p-value (new vs historical data)"      = posterior_test$pvalue,
-                                 "Loss function value"                            = posterior_test$alpha_loss)
+  if(is.null(posterior_test$N0) == FALSE){
+    if(posterior_test$N0==0){
+      prior_for_test_group <- "No Prior Supplied"
+    } else{
+      prior_for_test_group <- list("Sample size of prior (for test group)"          = posterior_test$N0,
+                                   "Effective sample size of prior(for test group)" = posterior_test$N0_effective,
+                                   "Bayesian p-value (new vs historical data)"      = posterior_test$pvalue,
+                                   "Loss function value"                            = posterior_test$alpha_loss)
+    }
   }
 
-  if(posterior_control$N0==0){
-    prior_for_control_group <- "No Prior Supplied"
-  } else{
-    prior_for_control_group <- list("Sample size of prior (for control group)"          = posterior_control$N0,
-                                    "Effective sample size of prior(for control group)" = posterior_control$N0_effective,
-                                    "Bayesian p-value (new vs historical data)"         = posterior_control$pvalue,
-                                    "Loss function value"                               = posterior_control$alpha_loss)
+  if(is.null(posterior_control$N0) == FALSE){
+    if(posterior_control$N0==0){
+      prior_for_control_group <- "No Prior Supplied"
+    } else{
+      prior_for_control_group <- list("Sample size of prior (for control group)"          = posterior_control$N0,
+                                      "Effective sample size of prior(for control group)" = posterior_control$N0_effective,
+                                      "Bayesian p-value (new vs historical data)"         = posterior_control$pvalue,
+                                      "Loss function value"                               = posterior_control$alpha_loss)
+    }
   }
-
   #print(cat(hypothesis))
   print(prior_for_test_group)
   argsdf <- data.frame(t(data.frame(object$args1)))
