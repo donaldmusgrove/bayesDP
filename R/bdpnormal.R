@@ -308,7 +308,8 @@ args1 <- list(mu_t = mu_t,
          weibull_scale = weibull_scale,
          weibull_shape = weibull_shape,
          number_mcmc  = number_mcmc,
-         two_side = two_side)
+         two_side = two_side,
+         arm2 = arm2)
 
 if (arm2){
   me <- list(posterior_test = posterior_test,
@@ -350,12 +351,12 @@ setMethod("plot", signature(x = "bdpnormal"), function(x){
   N0_t <- x$args1$N0_t
   N0_c <- x$args1$N0_c
   #delta <- x$args1$delta
-
-  D1 <- data.frame(information_sources='Posterior',
-                   group="Control",
-                   y=f$den_post_control$y,
-                   x=f$den_post_control$x)
-  if (is.null(N0_c) == FALSE){
+  arm2 = x$args1$arm2
+  if (arm2){
+    D1 <- data.frame(information_sources='Posterior',
+                     group="Control",
+                     y=f$den_post_control$y,
+                     x=f$den_post_control$x)
     D2 <- data.frame(information_sources="Current data",
                      group="Control",
                      y=f$den_flat_control$y,
@@ -364,11 +365,12 @@ setMethod("plot", signature(x = "bdpnormal"), function(x){
                      group="Control",
                      y=f$den_prior_control$y,
                      x=f$den_prior_control$x)
-    D4 <- data.frame(information_sources='Posterior',
-                     group="Test",
-                     y=f$den_post_test$y,
-                     x=f$den_post_test$x)
   }
+
+  D4 <- data.frame(information_sources='Posterior',
+                   group="Test",
+                   y=f$den_post_test$y,
+                   x=f$den_post_test$x)
   D5 <- data.frame(information_sources="Current data",
                    group="Test",
                    y=f$den_flat_test$y,
@@ -592,7 +594,8 @@ setMethod("summary", signature(object = "bdpnormal"), function(object){
   }
   #print(cat(hypothesis))
   print(prior_for_test_group)
+  object$args1[sapply(object$args1, is.null)] <- NULL
   argsdf <- data.frame(t(data.frame(object$args1)))
   names(argsdf) <- "args"
-  print(argsdf)
+  print(format(argsdf, scientific=F))
 })
