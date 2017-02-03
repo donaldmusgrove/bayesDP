@@ -27,12 +27,12 @@ NULL
 #' @param mu_t numeric
 #' @param sigma_t numeric
 #' @param N_t numeric
-#' @param mu_c numeric
-#' @param sigma_c numeric
-#' @param N_c numeric
 #' @param mu0_t numeric
 #' @param sigma0_t numeric
 #' @param N0_t numeric
+#' @param mu_c numeric
+#' @param sigma_c numeric
+#' @param N_c numeric
 #' @param mu0_c numeric
 #' @param sigma0_c numeric
 #' @param N0_c numeric
@@ -53,12 +53,12 @@ setGeneric("bdpnormal",
            function(mu_t = NULL,
                     sigma_t = NULL,
                     N_t = NULL,
-                    mu_c = NULL,
-                    sigma_c = NULL,
-                    N_c = NULL,
                     mu0_t = NULL,
                     sigma0_t = NULL,
                     N0_t = NULL,
+                    mu_c = NULL,
+                    sigma_c = NULL,
+                    N_c = NULL,
                     mu0_c = NULL,
                     sigma0_c = NULL,
                     N0_c = NULL,  # up to here null
@@ -75,12 +75,12 @@ setMethod("bdpnormal",
           function(mu_t = NULL,
                    sigma_t = NULL,
                    N_t = NULL,
-                   mu_c = NULL,
-                   sigma_c = NULL,
-                   N_c = NULL,
                    mu0_t = NULL,
                    sigma0_t = NULL,
                    N0_t = NULL,
+                   mu_c = NULL,
+                   sigma_c = NULL,
+                   N_c = NULL,
                    mu0_c = NULL,
                    sigma0_c = NULL,
                    N0_c = NULL,  # up to here null
@@ -216,7 +216,7 @@ mu_posterior <- function(mu, sigma, N, mu0, sigma0, N0, alpha_max, number_mcmc,
               N0_effective       = alpha_discount$alpha_discount * N0))
 }
 
-final <- function(posterior_control, posterior_test) {
+final <- function(posterior_test, posterior_control = NULL) {
   if (is.null(posterior_control) == FALSE){
     den_post_control  <- density(posterior_control$mu_posterior,
                                  adjust = 0.5)
@@ -284,12 +284,12 @@ if (arm2){
 }
 
 if (arm2){
-  f1 <- final(posterior_control = posterior_control,
-              posterior_test    = posterior_test)
+  f1 <- final(posterior_test = posterior_test,
+              posterior_control = posterior_control)
 }
 else{
-  f1 <- final(posterior_control = NULL,
-              posterior_test    = posterior_test)
+  f1 <- final(posterior_test = posterior_test,
+              posterior_control = NULL)
 }
 
 args1 <- list(mu_t = mu_t,
@@ -347,10 +347,8 @@ setMethod("plot", signature(x = "bdpnormal"), function(x){
   posterior_test <- x$posterior_test
   posterior_control <- x$posterior_control
   two_side <- x$args1$two_sid
-  #inequality <- x$args1$inequality
   N0_t <- x$args1$N0_t
   N0_c <- x$args1$N0_c
-  #delta <- x$args1$delta
   arm2 = x$args1$arm2
   if (arm2){
     D1 <- data.frame(information_sources='Posterior',
@@ -482,30 +480,9 @@ setMethod("print", signature(x = "bdpnormal"), function(x){
   posterior_test <- x$posterior_test
   posterior_control <- x$posterior_control
   two_side <- x$args1$two_sid
-  #inequality <- x$args1$inequality
   N0_t <- x$args1$N0_t
   N0_c <- x$args1$N0_c
-  #delta <- x$args1$delta
 
-  #if(inequality=="<"){
-  #  hypothesis <- paste('"We can define W as the difference between the means
-  #                      for the test group versus control group, i.e. W=test
-  #                      mean - control mean', '\n', 'Null Hypothesis (H_0): W>',
-  #                      delta, '\n', "Alternative Hypothesis (H_a): W<", delta,
-  #                      '\n', '\n', "P(W<",delta,"|data)=",
-  #                      mean(f$TestMinusControl_post<delta),
-  #                      '\n', "We can accept H_a with a Probability of",
-  #                      mean(f$TestMinusControl_post<delta))
-  #} else if(inequality==">"){
-  #  hypothesis <- paste('"We can define W as the difference between the means
-  #                      for the test group versus control group, i.e. W=test
-  #                      mean - control mean', '\n', 'Null Hypothesis (H_0): W<',
-  #                      delta, '\n', "Alternative Hypothesis (H_a): W>", delta,
-  #                      '\n', '\n', "P(W<",delta,"|data)=",
-  #                      mean(f$TestMinusControl_post>delta),
-  #                      '\n', "We can accept H_a with a Probability of",
-  #                      mean(f$TestMinusControl_post>delta))
-  #}
   if(is.null(posterior_test$N0) == FALSE){
     if(posterior_test$N0==0){
       prior_for_test_group <- "No Prior Supplied"
@@ -526,7 +503,6 @@ setMethod("print", signature(x = "bdpnormal"), function(x){
                                       "Discount function value"                               = posterior_control$alpha_discount)
     }
   }
-  #print(cat(hypothesis))
   print(prior_for_test_group)
 })
 
@@ -547,30 +523,9 @@ setMethod("summary", signature(object = "bdpnormal"), function(object){
   posterior_test <- object$posterior_test
   posterior_control <- object$posterior_control
   two_side <- object$args1$two_sid
-  #inequality <- object$args1$inequality
   N0_t <- object$args1$N0_t
   N0_c <- object$args1$N0_c
-  #delta <- object$args1$delta
 
-  #if(inequality=="<"){
-  #  hypothesis <- paste('"We can define W as the difference between the means
-  #                      for the test group versus control group, i.e. W=test
-  #                      mean - control mean', '\n', 'Null Hypothesis (H_0): W>',
-  #                      delta, '\n', "Alternative Hypothesis (H_a): W<", delta,
-  #                      '\n', '\n', "P(W<",delta,"|data)=",
-  #                      mean(f$TestMinusControl_post<delta),
-  #                      '\n', "We can accept H_a with a Probability of",
-  #                      mean(f$TestMinusControl_post<delta))
-  #} else if(inequality==">"){
-  #  hypothesis <- paste('"We can define W as the difference between the means
-  #                      for the test group versus control group, i.e. W=test
-  #                      mean - control mean', '\n', 'Null Hypothesis (H_0): W<',
-  #                      delta, '\n', "Alternative Hypothesis (H_a): W>", delta,
-  #                      '\n', '\n', "P(W<",delta,"|data)=",
-  #                      mean(f$TestMinusControl_post>delta),
-  #                      '\n', "We can accept H_a with a Probability of",
-  #                      mean(f$TestMinusControl_post>delta))
-  #}
   if(is.null(posterior_test$N0) == FALSE){
     if(posterior_test$N0==0){
       prior_for_test_group <- "No Prior Supplied"
@@ -592,7 +547,6 @@ setMethod("summary", signature(object = "bdpnormal"), function(object){
                                       "Discount function value"                               = posterior_control$alpha_discount)
     }
   }
-  #print(cat(hypothesis))
   print(prior_for_test_group)
   object$args1[sapply(object$args1, is.null)] <- NULL
   argsdf <- data.frame(t(data.frame(object$args1)))
