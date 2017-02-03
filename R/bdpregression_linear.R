@@ -18,8 +18,6 @@
 #' @param alpha_max alpha_max
 #' @param number_mcmc number_mcmc
 #' @param two_side numeric
-#' @param inequality character
-#' @param delta numeric
 #'
 #' @examples
 #' set.seed(42)
@@ -28,13 +26,13 @@
 #'                    treatment = c(rep(0,50),rep(1,50)))
 #'
 #' fit <- bdpregression_linear(data          = data,
-#'                          formula       = y ~ treatment + x,
-#'                          prior_mu      = 1,
-#'                          prior_sigma   = 0.1,
-#'                          weibull_scale = 1,
-#'                          weibull_shape = 1,
-#'                          alpha_max     = 1,
-#'                          N_mcmc        = 10000)
+#'                             formula       = y ~ treatment + x,
+#'                             prior_mu      = 1,
+#'                             prior_sigma   = 0.1,
+#'                             weibull_scale = 1,
+#'                             weibull_shape = 1,
+#'                             alpha_max     = 1,
+#'                             N_mcmc        = 10000)
 #'
 #' ### Main parameter of interest:
 #' fit$effect_est
@@ -46,8 +44,6 @@
 ############################################################################
 ### Need to fix plots: should not involve effective sample sizes, instead,
 ### weight of alpha from 0 --> 1
-
-
 
 setGeneric("bdpregression_linear",
            function(data,
@@ -64,9 +60,7 @@ setGeneric("bdpregression_linear",
                     weibull_shape = 1,
                     alpha_max = 1,
                     number_mcmc = 10000,
-                    two_side      = 0,
-                    inequality    = "<",
-                    delta         = 0){
+                    two_side      = 0){
              standardGeneric("bdpregression_linear")
            })
 
@@ -98,9 +92,7 @@ setMethod("bdpregression_linear",
                    weibull_shape = 1,
                    alpha_max = 1,
                    number_mcmc = 10000,
-                   two_side      = 0,
-                   inequality    = "<",
-                   delta         = 0){
+                   two_side      = 0){
 
   N_new        <- nrow(data)
 
@@ -154,7 +146,6 @@ setMethod("bdpregression_linear",
   } else{
     offset <- numeric(NROW(Y))
   }
-
 
 
   ################################################################################
@@ -367,9 +358,7 @@ setMethod("bdpregression_linear",
                 weibull_shape = weibull_shape,
                 alpha_max     = alpha_max,
                 number_mcmc   = number_mcmc,
-                two_side      = two_side,
-                inequality    = inequality,
-                delta         = delta)
+                two_side      = two_side)
 
   me <- list(est   = est,
              f1    = f1,
@@ -398,27 +387,7 @@ setMethod("print", signature(x = "bdpregression_linear"), function(x){
 
   f          <- x$f1
   posterior  <- x$est
-  inequality <- x$args1$inequality
-  delta      <- x$args1$delta
-
-  if (inequality == "<") {
-    hypothesis <- paste("\"We can define mu as the mean for the test", "\n",
-                        "Null Hypothesis (H_0): mu>", delta, "\n",
-                        "Alternative Hypothesis (H_a): mu<", delta, "\n", "\n",
-                        "P(mu<", delta, "|data)=", mean(f$post < delta), "\n",
-                        "We can accept H_a with a Probability of",
-                        mean(f$post < delta))
-  }
-
-  if (inequality == ">") {
-    hypothesis <- paste("\"Define mu as the mean of the data", "\n",
-                        "Null Hypothesis (H_0): mu<", delta, "\n",
-                        "Alternative Hypothesis (H_a): mu>", delta, "\n", "\n",
-                        "P(mu>", delta, "|data)=", mean(f$post > delta), "\n",
-                        "We can accept H_a with a Probability of",
-                        mean(f$post > delta))
-  }
-
+ 
   ### Print
   prior <- list(`Bayesian p-value (new vs historical data)`       = posterior$pvalue,
                 `Loss function value`                             = posterior$alpha_loss)
@@ -444,8 +413,6 @@ setMethod("plot", signature(x = "bdpregression_linear"), function(x){
   f          <- x$f1
   posterior  <- x$est
   two_side   <- x$args1$two_side
-  inequality <- x$args1$inequality
-  delta      <- x$args1$delta
 
   D4 <- data.frame(information_sources = "Posterior",
                    y                   = f$den_post$y,
