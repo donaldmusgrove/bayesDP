@@ -11,8 +11,8 @@
 NULL
 #' This code is used for estimating posterior samples from a Gaussian outcome
 #' where an informative prior is used. The prior weight is determined using a
-#' loss function. In addition this code simulate many trials in order to get
-#' trial characteristics you must specify the parameters of the loss function
+#' discount function. In addition this code simulate many trials in order to get
+#' trial characteristics you must specify the parameters of the discount function
 #' as well as the maximum strength for the prior. This code assumes a
 #' non-adaptive trial.
 #' This code is modeled after the methodologies developed by the MDIC working
@@ -107,7 +107,7 @@ if(length(mu_c + sigma_c + N_c + mu0_c  + sigma0_c + N0_c)!=0){
 ################################################################################
 # Produce prior data weight (scalar between 0 and 1) assuming a mu outcome     #
 ################################################################################
-Loss_function <- function(mu, sigma, N, mu0, sigma0, N0, alpha_max, number_mcmc,
+Discount_function <- function(mu, sigma, N, mu0, sigma0, N0, alpha_max, number_mcmc,
                           weibull_shape, weibull_scale, two_side){
 
   ### mu for using flat prior
@@ -121,15 +121,15 @@ Loss_function <- function(mu, sigma, N, mu0, sigma0, N0, alpha_max, number_mcmc,
   ### Test of model vs real
   p_test <- mean(mu_post_flat < mu_post_flat0)  # larger is higher failure
 
-  ### Number of effective sample size given shape and scale loss function
+  ### Number of effective sample size given shape and scale discount function
   if (two_side == 0) {
-    alpha_loss <- pweibull(p_test, shape = weibull_shape, scale = weibull_scale) * alpha_max
+    alpha_discount <- pweibull(p_test, shape = weibull_shape, scale = weibull_scale) * alpha_max
   } else if (two_side == 1){
     p_test1    <- ifelse(p_test > 0.5, 1 - p_test, p_test)
-    alpha_loss <- pweibull(p_test1, shape = weibull_shape, scale = weibull_scale) * alpha_max
+    alpha_discount <- pweibull(p_test1, shape = weibull_shape, scale = weibull_scale) * alpha_max
   }
 
-  return(list(alpha_loss   = alpha_loss,
+  return(list(alpha_discount   = alpha_discount,
               pvalue       = p_test,
               mu_post_flat = mu_post_flat,
               mu0          = mu_post_flat0))
@@ -137,12 +137,12 @@ Loss_function <- function(mu, sigma, N, mu0, sigma0, N0, alpha_max, number_mcmc,
 
 
 ################################################################################
-# Estimate posterior for mu given alpha_loss value                             #
+# Estimate posterior for mu given alpha_discount value                             #
 ################################################################################
-mu_post_aug <- function(mu, sigma, N, mu0, sigma0, N0, alpha_loss,
+mu_post_aug <- function(mu, sigma, N, mu0, sigma0, N0, alpha_discount,
                         number_mcmc) {
   if (is.null(N0) == FALSE){
-    effective_N0 <- N0 * alpha_loss
+    effective_N0 <- N0 * alpha_discount
     sigma2_post  <- rinvgamma(number_mcmc, (N-1)/2, ((N-1)*sigma^2)/2)
     sigma2_post0 <- rinvgamma(number_mcmc, (N0-1)/2, ((N0-1)*sigma0^2)/2)
 
@@ -161,12 +161,12 @@ mu_post_aug <- function(mu, sigma, N, mu0, sigma0, N0, alpha_loss,
 
 
 ################################################################################
-# Combine loss function and posterior estimation into one function             #
+# Combine discount function and posterior estimation into one function             #
 ################################################################################
 mu_posterior <- function(mu, sigma, N, mu0, sigma0, N0, alpha_max, number_mcmc,
                          weibull_shape, weibull_scale, two_side) {
   if (is.null(N0) == FALSE){
-    alpha_loss <- Loss_function(mu            = mu,
+    alpha_discount <- Discount_function(mu            = mu,
                                 sigma         = sigma,
                                 N             = N,
                                 mu0           = mu0,
@@ -184,7 +184,7 @@ mu_posterior <- function(mu, sigma, N, mu0, sigma0, N0, alpha_max, number_mcmc,
                                 mu0         = mu0,
                                 sigma0      = sigma0,
                                 N0          = N0,
-                                alpha_loss  = alpha_loss$alpha_loss,
+                                alpha_discount  = alpha_discount$alpha_discount,
                                 number_mcmc = number_mcmc)
   } else {
     mu_posterior <- mu_post_aug(mu          = mu,
@@ -193,27 +193,27 @@ mu_posterior <- function(mu, sigma, N, mu0, sigma0, N0, alpha_max, number_mcmc,
                                 mu0         = mu0,
                                 sigma0     = sigma0,
                                 N0          = N0,
-                                alpha_loss  = 0,
+                                alpha_discount  = 0,
                                 number_mcmc = number_mcmc)
 
-    alpha_loss <- list(alpha_loss   = 0,
+    alpha_discount <- list(alpha_discount   = 0,
                        pvalue       = 0,
                        mu0          = rnorm(100),
                        mu_post_flat = mu_posterior)
   }
 
-  return(list(alpha_loss         = alpha_loss$alpha_loss,
-              pvalue             = alpha_loss$pvalue,
+  return(list(alpha_discount         = alpha_discount$alpha_discount,
+              pvalue             = alpha_discount$pvalue,
               mu_posterior       = mu_posterior,
-              mu_posterior_flat  = alpha_loss$mu_post_flat,
-              mu_prior           = alpha_loss$mu0,
+              mu_posterior_flat  = alpha_discount$mu_post_flat,
+              mu_prior           = alpha_discount$mu0,
               weibull_scale      = weibull_scale,
               weibull_shape      = weibull_shape,
               mu                 = mu,
               N                  = N,
               mu0                = mu0,
               N0                 = N0,
-              N0_effective       = alpha_loss$alpha_loss * N0))
+              N0_effective       = alpha_discount$alpha_discount * N0))
 }
 
 final <- function(posterior_control, posterior_test) {
@@ -262,10 +262,10 @@ posterior_test <- mu_posterior(
   mu0     = mu0_t,     #mean of historical treatment
   sigma0  = sigma0_t,  #sd of historical treatment
   N0      = N0_t,      #n subjects historical treatment
-  alpha_max,           #Max loss function weight
-  number_mcmc,         #Number of simulations to estimate posterior and loss function
-  weibull_scale,       #Loss function parameter controlling the location of a weibull function
-  weibull_shape,       #Loss function parameter controlling the location of a weibull function
+  alpha_max,           #Max discount function weight
+  number_mcmc,         #Number of simulations to estimate posterior and discount function
+  weibull_scale,       #Discount function parameter controlling the location of a weibull function
+  weibull_shape,       #Discount function parameter controlling the location of a weibull function
   two_side)            #Two or one sided hypothesis test?
 
 if (arm2){
@@ -276,10 +276,10 @@ if (arm2){
     mu0     = mu0_c,     #mean of historical treatment
     sigma0  = sigma0_c,  #sd of historical treatment
     N0      = N0_c,      #n subjects historical treatment
-    alpha_max,           #Max loss function weight
-    number_mcmc,         #Number of simulations to estimate posterior and loss function
-    weibull_scale,       #Loss function parameter controlling the location of a weibull function
-    weibull_shape,       #Loss function parameter controlling the location of a weibull function
+    alpha_max,           #Max discount function weight
+    number_mcmc,         #Number of simulations to estimate posterior and discount function
+    weibull_scale,       #Discount function parameter controlling the location of a weibull function
+    weibull_shape,       #Discount function parameter controlling the location of a weibull function
     two_side)            #Two or one sided hypothesis test?
 }
 
@@ -419,39 +419,39 @@ setMethod("plot", signature(x = "bdpnormal"), function(x){
     p_value <- seq(0,1,,100)
   }
 
-  Loss_function_test <- pweibull(p_value,
+  Discount_function_test <- pweibull(p_value,
                                  shape=posterior_test$weibull_shape,
                                  scale=posterior_test$weibull_scale)*posterior_test$N0
 
-  Loss_function_control <- pweibull(p_value,
+  Discount_function_control <- pweibull(p_value,
                                     shape=posterior_control$weibull_shape,
                                     scale=posterior_control$weibull_scale)*posterior_control$N0
 
-  D1 <- data.frame(group="test",y=Loss_function_test,x=seq(0,1,,100))
+  D1 <- data.frame(group="test",y=Discount_function_test,x=seq(0,1,,100))
   D2 <- data.frame(group=c("test"),pvalue=c(posterior_test$pvalue))
   D3 <- data.frame(group=c("test"),pvalue=c(posterior_test$N0_effective))
 
 
-  D4 <- data.frame(group="control",y=Loss_function_control,x=seq(0,1,,100))
+  D4 <- data.frame(group="control",y=Discount_function_control,x=seq(0,1,,100))
   D5 <- data.frame(group=c("control"),pvalue=c(posterior_control$pvalue))
   D6 <- data.frame(group=c("control"),pvalue=c(posterior_control$N0_effective))
 
 
-  lossfun_plot <- ggplot()
+  discountfun_plot <- ggplot()
   if(N0_t!=0){
-    lossfun_plot <- lossfun_plot +
+    discountfun_plot <- discountfun_plot +
       geom_line(data=D1,aes(y=y,x=x,colour=group),size=1) +
       geom_vline(data=D2, aes(xintercept =pvalue,colour=group),lty=2) +
       geom_hline(data=D3, aes(yintercept =pvalue,colour=group),lty=2)
   }
   if(N0_c!=0){
-    lossfun_plot  <- lossfun_plot +
+    discountfun_plot  <- discountfun_plot +
       geom_line(data=D4,aes(y=y,x=x,colour=group),size=1) +
       geom_vline(data=D5, aes(xintercept =pvalue,colour=group),lty=2) +
       geom_hline(data=D6, aes(yintercept =pvalue,colour=group),lty=2)
   }
 
-  lossfun_plot <- lossfun_plot +
+  discountfun_plot <- discountfun_plot +
     facet_wrap(~group, ncol=1) +
     theme_bw() +
     ylab("Effective sample size for historical data") +
@@ -461,7 +461,7 @@ setMethod("plot", signature(x = "bdpnormal"), function(x){
   op <- par(ask=TRUE)
   plot(post_typeplot)
   plot(densityplot)
-  plot(lossfun_plot)
+  plot(discountfun_plot)
   par(op)
 })
 
@@ -513,7 +513,7 @@ setMethod("print", signature(x = "bdpnormal"), function(x){
       prior_for_test_group <- list("Sample size of prior (for test group)"          = posterior_test$N0,
                                    "Effective sample size of prior(for test group)" = posterior_test$N0_effective,
                                    "Bayesian p-value (new vs historical data)"      = posterior_test$pvalue,
-                                   "Loss function value"                            = posterior_test$alpha_loss)
+                                   "Discount function value"                            = posterior_test$alpha_discount)
     }
   }
   if(is.null(posterior_control$N0) == FALSE){
@@ -523,7 +523,7 @@ setMethod("print", signature(x = "bdpnormal"), function(x){
       prior_for_control_group <- list("Sample size of prior (for control group)"          = posterior_control$N0,
                                       "Effective sample size of prior(for control group)" = posterior_control$N0_effective,
                                       "Bayesian p-value (new vs historical data)"         = posterior_control$pvalue,
-                                      "Loss function value"                               = posterior_control$alpha_loss)
+                                      "Discount function value"                               = posterior_control$alpha_discount)
     }
   }
   #print(cat(hypothesis))
@@ -578,7 +578,7 @@ setMethod("summary", signature(object = "bdpnormal"), function(object){
       prior_for_test_group <- list("Sample size of prior (for test group)"          = posterior_test$N0,
                                    "Effective sample size of prior(for test group)" = posterior_test$N0_effective,
                                    "Bayesian p-value (new vs historical data)"      = posterior_test$pvalue,
-                                   "Loss function value"                            = posterior_test$alpha_loss)
+                                   "Discount function value"                            = posterior_test$alpha_discount)
     }
   }
 
@@ -589,7 +589,7 @@ setMethod("summary", signature(object = "bdpnormal"), function(object){
       prior_for_control_group <- list("Sample size of prior (for control group)"          = posterior_control$N0,
                                       "Effective sample size of prior(for control group)" = posterior_control$N0_effective,
                                       "Bayesian p-value (new vs historical data)"         = posterior_control$pvalue,
-                                      "Loss function value"                               = posterior_control$alpha_loss)
+                                      "Discount function value"                               = posterior_control$alpha_discount)
     }
   }
   #print(cat(hypothesis))
