@@ -2,12 +2,6 @@
 
 ## Installation
 
-Install release version from CRAN:
-
-```R
-install.packages("bayesDP")
-```
-
 Install development version from github:
 
 ```R
