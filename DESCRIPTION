@@ -1,6 +1,6 @@
 Package: bayesDP
 Type: Package
-Title: MDIC Tools for Survival Analysis
+Title: Tools for the Bayesian Discount Prior Function
 Version: 0.1-1
 Date: 2016-10-24
 Authors@R: c(person("Shawn", "Balcome", email = "sbalcome@mdic.org", role = c("aut", "cre")),person("Donnie", "Musgrove", email = "donald.r.musgrove@medtronic.com", role = c("aut", "cre")),person("Tarek", "Haddad", email = "tarek.d.haddad@medtronic.com", role = c("aut", "cre")))
