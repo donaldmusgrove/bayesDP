@@ -4,61 +4,90 @@
 \alias{bdpnormal}
 \title{bdpnormal: bdpnormal}
 \usage{
-bdpnormal(mu_t = NULL, sigma_t = NULL, N_t = NULL, mu_c = NULL,
-  sigma_c = NULL, N_c = NULL, mu0_t = NULL, sigma0_t = NULL,
-  N0_t = NULL, mu0_c = NULL, sigma0_c = NULL, N0_c = NULL,
+bdpnormal(mu_t = NULL, sigma_t = NULL, N_t = NULL, mu0_t = NULL,
+  sigma0_t = NULL, N0_t = NULL, mu_c = NULL, sigma_c = NULL,
+  N_c = NULL, mu0_c = NULL, sigma0_c = NULL, N0_c = NULL,
   alpha_max = 1, weibull_scale = 0.135, weibull_shape = 3,
   number_mcmc = 10000, two_side = 1)
 }
 \arguments{
-\item{mu_t}{numeric}
+\item{mu_t}{scalar. The mean of the current treatment group.}
 
-\item{sigma_t}{numeric}
+\item{sigma_t}{scalar. The standard deviation of the current treatment 
+group.}
 
-\item{N_t}{numeric}
+\item{N_t}{scalar. The number of observations of the current treatment 
+group.}
 
-\item{mu_c}{numeric}
+\item{mu0_t}{scalar. The mean of the historical treatment group. Required 
+for \code{type="1arm"} (OPC trials).}
 
-\item{sigma_c}{numeric}
+\item{sigma0_t}{scalar. The standard deviation of the historical treatment 
+group. Required for \code{type="1arm"} (OPC trials).}
 
-\item{N_c}{numeric}
+\item{N0_t}{scalar. The number of observations of the historical treatment 
+group. Required for \code{type="1arm"} (OPC trials).}
 
-\item{mu0_t}{numeric}
+\item{mu_c}{scalar. The mean of the current control group. Required for 
+\code{type="2arm"} (RCT trials).}
 
-\item{sigma0_t}{numeric}
+\item{sigma_c}{scalar. The standard deviation of the current control group. 
+Required for \code{type="2arm"} (RCT trials).}
 
-\item{N0_t}{numeric}
+\item{N_c}{scalar. The number of observations of the current control group. 
+Required for \code{type="2arm"} (RCT trials).}
 
-\item{mu0_c}{numeric}
+\item{mu0_c}{scalar. The mean of the historical control group.}
 
-\item{sigma0_c}{numeric}
+\item{sigma0_c}{scalar. The standard deviation of the historical control 
+group.}
 
-\item{N0_c}{numeric}
+\item{N0_c}{scalar. The number of observations of the historical control 
+group.}
 
-\item{alpha_max}{numeric}
+\item{alpha_max}{scalar. Maximum weight the discount function can apply. 
+Default is 1. For \code{type="2arm"}, users may optionally specify 
+a vector of two values where the first value is used to weight the 
+historical treatment group and the second value is used to weight 
+the historical control group.}
 
-\item{weibull_scale}{numeric}
+\item{weibull_scale}{scalar. Scale parameter of the Weibull discount 
+function used to compute alpha, the weight parameter of the historical 
+data. Default value is 0.135. Two values have special treatment: 
+\code{0} and \code{Inf}. For \code{weibull_scale = 0}, alpha is set 
+to 0, i.e., no weight. For \code{weibull_scale = Inf}, alpha is set 
+to 1, i.e., full weight. For \code{type="2arm"}, users may optionally 
+specify a vector of two values where the first value is used to 
+estimate the weight of the historical treatment group and the second 
+value is used to estimate the weight of the historical control group.}
 
-\item{weibull_shape}{numeric}
+\item{weibull_shape}{scalar. Shape parameter of the Weibull discount 
+function used to compute alpha, the weight parameter of the historical 
+data. Default value is 3. For \code{type="2arm"}, users may optionally 
+specify a vector of two values where the first value is used to 
+estimate the weight of the historical treatment group and the second 
+value is used to estimate the weight of the historical control group.}
 
-\item{number_mcmc}{numeric}
+\item{number_mcmc}{scalar. Number of Markov Chain Monte Carlo (MCMC) 
+simulations. Default is 1e4.}
 
-\item{two_side}{numeric}
+\item{two_side}{scalar. Indicator of two-sided test for the discount 
+function. Default value is 1.}
+
+\item{posterior_treatment}{a list of outputs including flat, prior, and 
+posterior samples of the (potentially) augmented treatment group.}
+
+\item{posterior_control}{a list of outputs including flat, prior, and 
+posterior samples of the (potentially) augmented control group.
+Not present if \code{type="1arm}.}
+
+\item{f1}{a list of posterior densities of the treatment and control
+groups, where the control group densities are present only if
+\code{type="1arm}.}
+
+\item{args1}{list of user inputs.}
 }
 \description{
-This code is used for estimating posterior samples from a Gaussian outcome
-where an informative prior is used. The prior weight is determined using a
-loss function. In addition this code simulate many trials in order to get
-trial characteristics you must specify the parameters of the loss function
-as well as the maximum strength for the prior. This code assumes a
-non-adaptive trial.
-This code is modeled after the methodologies developed by the MDIC working
-group: "Informing clinical trials using bench & simulations"
-Developer: Tarek Haddad
-Tarek.D.Haddad@Medtronic.com
-Last modified:1/26/2016
-}
-\details{
 bdpnormal
 }
 \examples{

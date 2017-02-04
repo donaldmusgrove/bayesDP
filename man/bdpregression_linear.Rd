@@ -8,7 +8,7 @@ bdpregression_linear(data, formula = y ~ treatment + x, family = "gaussian",
   treatment = "treatment", prior.dist = NULL, prior.mean = 0,
   prior.scale = 1000, prior.df = Inf, mu0 = 1, sigma02 = 0.1,
   weibull_scale = 1, weibull_shape = 1, alpha_max = 1,
-  number_mcmc = 10000, two_side = 0, inequality = "<", delta = 0)
+  number_mcmc = 10000, two_side = 0)
 }
 \arguments{
 \item{data}{numeric number}
@@ -40,10 +40,6 @@ bdpregression_linear(data, formula = y ~ treatment + x, family = "gaussian",
 \item{number_mcmc}{number_mcmc}
 
 \item{two_side}{numeric}
-
-\item{inequality}{character}
-
-\item{delta}{numeric}
 }
 \description{
 bdpregression_linear
@@ -58,13 +54,13 @@ data <- data.frame(y         = rnorm(100, 4, 0.1),
                    treatment = c(rep(0,50),rep(1,50)))
 
 fit <- bdpregression_linear(data          = data,
-                         formula       = y ~ treatment + x,
-                         prior_mu      = 1,
-                         prior_sigma   = 0.1,
-                         weibull_scale = 1,
-                         weibull_shape = 1,
-                         alpha_max     = 1,
-                         N_mcmc        = 10000)
+                            formula       = y ~ treatment + x,
+                            prior_mu      = 1,
+                            prior_sigma   = 0.1,
+                            weibull_scale = 1,
+                            weibull_shape = 1,
+                            alpha_max     = 1,
+                            N_mcmc        = 10000)
 
 ### Main parameter of interest:
 fit$effect_est

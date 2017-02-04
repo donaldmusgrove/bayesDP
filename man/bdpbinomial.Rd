@@ -46,6 +46,24 @@ bdpbinomial
 bdpbinomial
 }
 \examples{
+### OPC (1arm) example
+fit <- bdpbinomial(y_t           = 10,
+                   N_t           = 500,
+                   y0_t          = 25,
+                   N0_t          = 250,
+                   type          = "1arm",
+                   alpha_max     = 1,
+                   a0            = 1,
+                   b0            = 1,
+                   number_mcmc   = 10000,
+                   weibull_scale = 0.135,
+                   weibull_shape = 3,
+                   two_side      = 1)
+
+### Results
+summary(fit)
+print(fit)
+plot(fit)
 
 }
 
