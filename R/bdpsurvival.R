@@ -26,6 +26,11 @@
 #' @export bdpsurvival
 
 
+bdpsurvival <- setClass("bdpsurvival", slots = c(posterior_treatment = "list",
+                                                 f1 = "list",
+                                                 args1 = "list"))
+
+
 setGeneric("bdpsurvival",
   function(formula       = formula,
            data          = data,
@@ -251,8 +256,8 @@ setMethod("plot", signature(x = "bdpsurvival"), function(x){
                                       shape = posterior_treatment$weibull_shape,
                                       scale = posterior_treatment$weibull_scale)
 
-  D1 <- data.frame(group = "test", y = Loss_function_treatment, x = seq(0, 1, , 100))
-  D2 <- data.frame(group = c("test"), pvalue = c(posterior_treatment$pvalue))
+  D1 <- data.frame(group = "treatment", y = Loss_function_treatment, x = seq(0, 1, , 100))
+  D2 <- data.frame(group = c("treatment"), pvalue = c(posterior_treatment$pvalue))
 
   lossfun_plot <- ggplot() +
     geom_line(data = D1, aes(y = y, x = x, colour = group), size = 1) +
@@ -292,7 +297,7 @@ setMethod("summary", signature(object = "bdpsurvival"), function(object){
   surv_time           <- object$args1$surv_time
 
   ### Print
-  prior_for_test_group <- list(`Bayesian p-value (new vs historical data)`       = posterior_treatment$pvalue,
+  prior_for_treatment_group <- list(`Bayesian p-value (new vs historical data)`       = posterior_treatment$pvalue,
                                `Loss function value`                             = posterior_treatment$alpha_discount)
 
 
@@ -301,7 +306,7 @@ setMethod("summary", signature(object = "bdpsurvival"), function(object){
                     `Median survival probability` = median(f$treatmentpost))
 
   ### Text outputs
-  print(prior_for_test_group)
+  print(prior_for_treatment_group)
   print(surv_prob)
 })
 

@@ -41,6 +41,11 @@
 #' @export bdpregression_linear
 
 
+bdpregression_linear <- setClass("bdpregression_linear", slots = c(est = "list",
+                                                                   f1 = "list",
+                                                                   args1 = "list"))
+
+
 ############################################################################
 ### Need to fix plots: should not involve effective sample sizes, instead,
 ### weight of alpha from 0 --> 1
@@ -387,7 +392,7 @@ setMethod("print", signature(x = "bdpregression_linear"), function(x){
 
   f          <- x$f1
   posterior  <- x$est
- 
+
   ### Print
   prior <- list(`Bayesian p-value (new vs historical data)`       = posterior$pvalue,
                 `Loss function value`                             = posterior$alpha_loss)

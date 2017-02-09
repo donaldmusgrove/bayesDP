@@ -39,6 +39,12 @@
 #' @rdname bdpbinomial
 #' @export bdpbinomial
 
+
+bdpbinomial <- setClass("bdpbinomial", slots = c(posterior_test = "list",
+                                                 posterior_control = "list",
+                                                 f1 = "list",
+                                                 args1 = "list"))
+
 setGeneric("bdpbinomial",
            function(y_t           = NULL,
                     N_t           = NULL,
@@ -48,6 +54,8 @@ setGeneric("bdpbinomial",
                     N_c           = NULL,
                     y0_c          = NULL,
                     N0_c          = NULL,
+                    type = c("1arm","2arm"),
+                    subtype = c(NULL,"2tc","2t","2c"),
                     alpha_max     = 1,
                     a0            = 1,
                     b0            = 1,
@@ -68,6 +76,8 @@ setMethod("bdpbinomial",
                    N_c           = NULL,
                    y0_c          = NULL,
                    N0_c          = NULL,
+                   type = c("1arm","2arm"),
+                   subtype = c(NULL,"2tc","2t","2c"),
                    alpha_max     = 1,
                    a0            = 1,
                    b0            = 1,

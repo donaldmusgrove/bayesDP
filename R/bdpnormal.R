@@ -97,6 +97,11 @@ NULL
 
 # Depends: testthat,shiny,shinyFiles,shinythemes,shinyBS,survival,ggplot2,MCMCpack,knitr,rmarkdown,parallel,MASS,arm
 
+bdpnormal <- setClass("bdpnormal", slots = c(posterior_treatment = "list",
+                                            posterior_control = "list",
+                                            f1 = "list",
+                                            args1 = "list"))
+
 setGeneric("bdpnormal",
            function(mu_t = NULL,
                     sigma_t = NULL,
@@ -110,6 +115,8 @@ setGeneric("bdpnormal",
                     mu0_c = NULL,
                     sigma0_c = NULL,
                     N0_c = NULL,
+                    type = c("1arm","2arm"),
+                    subtype = c(NULL,"2tc","2t","2c"),
                     alpha_max = 1,
                     weibull_scale = 0.135,
                     weibull_shape = 3,
@@ -132,6 +139,8 @@ setMethod("bdpnormal",
                    mu0_c = NULL,
                    sigma0_c = NULL,
                    N0_c = NULL,
+                   type = c("1arm","2arm"),
+                   subtype = c(NULL,"2tc","2t","2c"),
                    alpha_max = 1,
                    weibull_scale = 0.135,
                    weibull_shape = 3,
@@ -281,7 +290,7 @@ setMethod("bdpnormal",
                 N0_effective       = alpha_discount$alpha_discount * N0))
   }
 
-  final <- function(posterior_test, posterior_control = NULL) {
+  final <- function(posterior_treatment, posterior_control = NULL) {
     if (is.null(posterior_control) == FALSE){
       den_post_control  <- density(posterior_control$mu_posterior,
                                    adjust = 0.5)
@@ -291,27 +300,27 @@ setMethod("bdpnormal",
                                    adjust = 0.5)
     }
 
-    den_post_test  <- density(posterior_test$mu_posterior,
+    den_post_treatment  <- density(posterior_treatment$mu_posterior,
                               adjust = 0.5)
-    den_flat_test  <- density(posterior_test$mu_posterior_flat,
+    den_flat_treatment  <- density(posterior_treatment$mu_posterior_flat,
                               adjust = 0.5)
-    den_prior_test <- density(posterior_test$mu_prior,
+    den_prior_treatment <- density(posterior_treatment$mu_prior,
                               adjust = 0.5)
 
-    TestMinusControl_post <- posterior_test$mu_posterior - posterior_control$mu_posterior
+    TestMinusControl_post <- posterior_treatment$mu_posterior - posterior_control$mu_posterior
     if (is.null(N0_c) == FALSE){
     return(list(den_post_control      = den_post_control,
                 den_flat_control      = den_flat_control,
                 den_prior_control     = den_prior_control,
-                den_post_test         = den_post_test,
-                den_flat_test         = den_flat_test,
-                den_prior_test        = den_prior_test,
+                den_post_treatment         = den_post_treatment,
+                den_flat_treatment         = den_flat_treatment,
+                den_prior_treatment        = den_prior_treatment,
                 TestMinusControl_post = TestMinusControl_post))
     }
     else{
-    return(list(den_post_test         = den_post_test,
-                den_flat_test         = den_flat_test,
-                den_prior_test        = den_prior_test,
+    return(list(den_post_treatment         = den_post_treatment,
+                den_flat_treatment         = den_flat_treatment,
+                den_prior_treatment        = den_prior_treatment,
                 TestMinusControl_post = TestMinusControl_post))
     }
   }
@@ -320,7 +329,7 @@ setMethod("bdpnormal",
   # Results                                                                      #
   ################################################################################
 
-  posterior_test <- mu_posterior(
+  posterior_treatment <- mu_posterior(
     mu      = mu_t,      #mean of current treatment
     sigma   = sigma_t,   #sd of current treatment
     N       = N_t,       #n subjects current treatment
@@ -349,11 +358,11 @@ setMethod("bdpnormal",
   }
 
   if (arm2){
-    f1 <- final(posterior_test = posterior_test,
+    f1 <- final(posterior_treatment = posterior_treatment,
                 posterior_control = posterior_control)
   }
   else{
-    f1 <- final(posterior_test = posterior_test,
+    f1 <- final(posterior_treatment = posterior_treatment,
                 posterior_control = NULL)
   }
 
@@ -377,13 +386,13 @@ setMethod("bdpnormal",
            arm2 = arm2)
 
   if (arm2){
-    me <- list(posterior_test = posterior_test,
+    me <- list(posterior_treatment = posterior_treatment,
                posterior_control = posterior_control,
                f1 = f1,
                args1 = args1)
   }
   else{
-    me <- list(posterior_test = posterior_test,
+    me <- list(posterior_treatment = posterior_treatment,
                f1 = f1,
                args1 = args1)
   }
@@ -409,7 +418,7 @@ setMethod("bdpnormal",
 setMethod("plot", signature(x = "bdpnormal"), function(x){
 
   f <- x$f1
-  posterior_test <- x$posterior_test
+  posterior_treatment <- x$posterior_treatment
   posterior_control <- x$posterior_control
   two_side <- x$args1$two_sid
   N0_t <- x$args1$N0_t
@@ -432,16 +441,16 @@ setMethod("plot", signature(x = "bdpnormal"), function(x){
 
   D4 <- data.frame(information_sources='Posterior',
                    group="Test",
-                   y=f$den_post_test$y,
-                   x=f$den_post_test$x)
+                   y=f$den_post_treatment$y,
+                   x=f$den_post_treatment$x)
   D5 <- data.frame(information_sources="Current data",
                    group="Test",
-                   y=f$den_flat_test$y,
-                   x=f$den_flat_test$x)
+                   y=f$den_flat_treatment$y,
+                   x=f$den_flat_treatment$x)
   D6 <- data.frame(information_sources="Prior",
                    group="Test",
-                   y=f$den_prior_test$y,
-                   x=f$den_prior_test$x)
+                   y=f$den_prior_treatment$y,
+                   x=f$den_prior_treatment$x)
 
   if(is.null(N0_t) == TRUE & is.null(N0_c) == TRUE){
     D <- as.data.frame(rbind(D4,D5,D1,D2))
@@ -482,17 +491,17 @@ setMethod("plot", signature(x = "bdpnormal"), function(x){
     p_value <- seq(0,1,,100)
   }
 
-  Discount_function_test <- pweibull(p_value,
-                                 shape=posterior_test$weibull_shape,
-                                 scale=posterior_test$weibull_scale)*posterior_test$N0
+  Discount_function_treatment <- pweibull(p_value,
+                                 shape=posterior_treatment$weibull_shape,
+                                 scale=posterior_treatment$weibull_scale)*posterior_treatment$N0
 
   Discount_function_control <- pweibull(p_value,
                                     shape=posterior_control$weibull_shape,
                                     scale=posterior_control$weibull_scale)*posterior_control$N0
 
-  D1 <- data.frame(group="test",y=Discount_function_test,x=seq(0,1,,100))
-  D2 <- data.frame(group=c("test"),pvalue=c(posterior_test$pvalue))
-  D3 <- data.frame(group=c("test"),pvalue=c(posterior_test$N0_effective))
+  D1 <- data.frame(group="treatment",y=Discount_function_treatment,x=seq(0,1,,100))
+  D2 <- data.frame(group=c("treatment"),pvalue=c(posterior_treatment$pvalue))
+  D3 <- data.frame(group=c("treatment"),pvalue=c(posterior_treatment$N0_effective))
 
 
   D4 <- data.frame(group="control",y=Discount_function_control,x=seq(0,1,,100))
@@ -542,20 +551,20 @@ setMethod("plot", signature(x = "bdpnormal"), function(x){
 setMethod("print", signature(x = "bdpnormal"), function(x){
 
   f <- x$f1
-  posterior_test <- x$posterior_test
+  posterior_treatment <- x$posterior_treatment
   posterior_control <- x$posterior_control
   two_side <- x$args1$two_sid
   N0_t <- x$args1$N0_t
   N0_c <- x$args1$N0_c
 
-  if(is.null(posterior_test$N0) == FALSE){
-    if(posterior_test$N0==0){
-      prior_for_test_group <- "No Prior Supplied"
+  if(is.null(posterior_treatment$N0) == FALSE){
+    if(posterior_treatment$N0==0){
+      prior_for_treatment_group <- "No Prior Supplied"
     } else{
-      prior_for_test_group <- list("Sample size of prior (for test group)"          = posterior_test$N0,
-                                   "Effective sample size of prior(for test group)" = posterior_test$N0_effective,
-                                   "Bayesian p-value (new vs historical data)"      = posterior_test$pvalue,
-                                   "Discount function value"                            = posterior_test$alpha_discount)
+      prior_for_treatment_group <- list("Sample size of prior (for treatment group)"          = posterior_treatment$N0,
+                                   "Effective sample size of prior(for treatment group)" = posterior_treatment$N0_effective,
+                                   "Bayesian p-value (new vs historical data)"      = posterior_treatment$pvalue,
+                                   "Discount function value"                            = posterior_treatment$alpha_discount)
     }
   }
   if(is.null(posterior_control$N0) == FALSE){
@@ -568,7 +577,7 @@ setMethod("print", signature(x = "bdpnormal"), function(x){
                                       "Discount function value"                               = posterior_control$alpha_discount)
     }
   }
-  print(prior_for_test_group)
+  print(prior_for_treatment_group)
 })
 
 #' summary
@@ -585,20 +594,20 @@ setMethod("print", signature(x = "bdpnormal"), function(x){
 setMethod("summary", signature(object = "bdpnormal"), function(object){
 
   f <- object$f1
-  posterior_test <- object$posterior_test
+  posterior_treatment <- object$posterior_treatment
   posterior_control <- object$posterior_control
   two_side <- object$args1$two_sid
   N0_t <- object$args1$N0_t
   N0_c <- object$args1$N0_c
 
-  if(is.null(posterior_test$N0) == FALSE){
-    if(posterior_test$N0==0){
-      prior_for_test_group <- "No Prior Supplied"
+  if(is.null(posterior_treatment$N0) == FALSE){
+    if(posterior_treatment$N0==0){
+      prior_for_treatment_group <- "No Prior Supplied"
     } else{
-      prior_for_test_group <- list("Sample size of prior (for test group)"          = posterior_test$N0,
-                                   "Effective sample size of prior(for test group)" = posterior_test$N0_effective,
-                                   "Bayesian p-value (new vs historical data)"      = posterior_test$pvalue,
-                                   "Discount function value"                            = posterior_test$alpha_discount)
+      prior_for_treatment_group <- list("Sample size of prior (for treatment group)"          = posterior_treatment$N0,
+                                   "Effective sample size of prior(for treatment group)" = posterior_treatment$N0_effective,
+                                   "Bayesian p-value (new vs historical data)"      = posterior_treatment$pvalue,
+                                   "Discount function value"                            = posterior_treatment$alpha_discount)
     }
   }
 
@@ -612,7 +621,7 @@ setMethod("summary", signature(object = "bdpnormal"), function(object){
                                       "Discount function value"                               = posterior_control$alpha_discount)
     }
   }
-  print(prior_for_test_group)
+  print(prior_for_treatment_group)
   object$args1[sapply(object$args1, is.null)] <- NULL
   argsdf <- data.frame(t(data.frame(object$args1)))
   names(argsdf) <- "args"
