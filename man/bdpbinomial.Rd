@@ -4,66 +4,65 @@
 \alias{bdpbinomial}
 \title{bdpbinomial: bdpbinomial}
 \usage{
-bdpbinomial(type = c("1arm", "2arm"), ...)
+bdpbinomial(y_t = NULL, N_t = NULL, y0_t = NULL, N0_t = NULL,
+  y_c = NULL, N_c = NULL, y0_c = NULL, N0_c = NULL, type = c("1arm",
+  "2arm"), subtype = c(NULL, "2tc", "2t", "2c"), alpha_max = 1, a0 = 1,
+  b0 = 1, number_mcmc = 10000, weibull_scale = 0.135, weibull_shape = 3,
+  two_side = 1)
 }
 \arguments{
-\item{type}{One of "1arm" or "2arm", denoting an OPC trial or a randomized control trial(RCT), respectively.}
+\item{y_t}{numeric}
 
-\item{y_t}{Number of events for the current treatment group.}
+\item{N_t}{numeric}
 
-\item{N_t}{Sample size of the current treatment group.}
+\item{y0_t}{numeric}
 
-\item{y_c}{Number of events for the current control group.}
+\item{N0_t}{numeric}
 
-\item{N_c}{Sample size of the current control group.}
+\item{y_c}{numeric}
 
-\item{y0_t}{Number of events for the historical treatment group.}
+\item{N_c}{numeric}
 
-\item{N0_t}{Sample size of the historical treatment group.}
+\item{y0_c}{numeric}
 
-\item{y0_c}{Number of events for the historical control group.}
+\item{N0_c}{numeric}
 
-\item{N0_c}{Sample size of the historical control group.}
+\item{alpha_max}{numeric}
 
-\item{alpha_max}{Maximum weight the discount function can apply. Default is 1. For type="2arm", users may specify a vector of two values where the first value is used to weight the historical treatment group and the second value is used to weight the historical control group.}
+\item{a0}{numeric}
 
-\item{a0}{Prior value for the beta rate. Default is 1.}
+\item{b0}{numeric}
 
-\item{b0}{Prior value for the beta rate. Default is 1.}
+\item{number_mcmc}{numeric}
 
-\item{number_mcmc}{Number of Markov Chain Monte Carlo (MCMC) simulations. Default is 1e4.}
+\item{weibull_scale}{numeric}
 
-\item{weibull_shape}{Shape parameter of the Weibull discount function used to compute alpha, the weight parameter of the historical data. Default value is 3. For type="2arm", users may specify a vector of two values where the first value is used to estimate the weight of the historical treatment group and the second value is used to estimate the weight of the historical control group.}
+\item{weibull_shape}{numeric}
 
-\item{weibull_scale}{Scale parameter of the Weibull discount function used to compute alpha, the weight parameter of the historical data. Default value is 0.135. Two values have special treatment: 0 and Inf. For weibull_scale = 0, alpha is set to 0, i.e., no weight. For weibull_scale = Inf, alpha is set to 1, i.e., full weight. For type="2arm", users may specify a vector of two values where the first value is used to estimate the weight of the historical treatment group and the second value is used to estimate the weight of the historical control group.}
-
-\item{two_side}{Indicator of two-sided test for the discount function. Default value is 1.}
+\item{two_side}{character}
 }
 \description{
-bdpbinomial
+This code is used for estimating posterior samples from a binary outcome
+where an informative prior is used. The prior weight is determined using a
+discount function. In addition this code simulate many trials in order to get
+trial characteristics you must specify the parameters of the discount function
+as well as the maximum strength for the prior. This code assumes a
+non-adaptive trial.
+This code is modeled after the methodologies developed by the MDIC working
+group: "Informing clinical trials using bench & simulations"
+Section 1: of the code defines functions needed
+Section 2: of the code estimates a posterior and the discount function value
+           given inputs
+Section 3: of the code simulates the trial many times to get trial
+           characteristics
+Developer: Tarek Haddad
+Tarek.D.Haddad@Medtronic.com
+Last modified:1/26/2016
 }
 \details{
 bdpbinomial
 }
 \examples{
-### OPC (1arm) example
-fit <- bdpbinomial(y_t           = 10,
-                   N_t           = 500,
-                   y0_t          = 25,
-                   N0_t          = 250,
-                   type          = "1arm",
-                   alpha_max     = 1,
-                   a0            = 1,
-                   b0            = 1,
-                   number_mcmc   = 10000,
-                   weibull_scale = 0.135,
-                   weibull_shape = 3,
-                   two_side      = 1)
-
-### Results
-summary(fit)
-print(fit)
-plot(fit)
 
 }
 

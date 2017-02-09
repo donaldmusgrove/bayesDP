@@ -7,77 +7,78 @@
 bdpnormal(mu_t = NULL, sigma_t = NULL, N_t = NULL, mu0_t = NULL,
   sigma0_t = NULL, N0_t = NULL, mu_c = NULL, sigma_c = NULL,
   N_c = NULL, mu0_c = NULL, sigma0_c = NULL, N0_c = NULL,
+  type = c("1arm", "2arm"), subtype = c(NULL, "2tc", "2t", "2c"),
   alpha_max = 1, weibull_scale = 0.135, weibull_shape = 3,
   number_mcmc = 10000, two_side = 1)
 }
 \arguments{
 \item{mu_t}{scalar. The mean of the current treatment group.}
 
-\item{sigma_t}{scalar. The standard deviation of the current treatment 
+\item{sigma_t}{scalar. The standard deviation of the current treatment
 group.}
 
-\item{N_t}{scalar. The number of observations of the current treatment 
+\item{N_t}{scalar. The number of observations of the current treatment
 group.}
 
-\item{mu0_t}{scalar. The mean of the historical treatment group. Required 
+\item{mu0_t}{scalar. The mean of the historical treatment group. Required
 for \code{type="1arm"} (OPC trials).}
 
-\item{sigma0_t}{scalar. The standard deviation of the historical treatment 
+\item{sigma0_t}{scalar. The standard deviation of the historical treatment
 group. Required for \code{type="1arm"} (OPC trials).}
 
-\item{N0_t}{scalar. The number of observations of the historical treatment 
+\item{N0_t}{scalar. The number of observations of the historical treatment
 group. Required for \code{type="1arm"} (OPC trials).}
 
-\item{mu_c}{scalar. The mean of the current control group. Required for 
+\item{mu_c}{scalar. The mean of the current control group. Required for
 \code{type="2arm"} (RCT trials).}
 
-\item{sigma_c}{scalar. The standard deviation of the current control group. 
+\item{sigma_c}{scalar. The standard deviation of the current control group.
 Required for \code{type="2arm"} (RCT trials).}
 
-\item{N_c}{scalar. The number of observations of the current control group. 
+\item{N_c}{scalar. The number of observations of the current control group.
 Required for \code{type="2arm"} (RCT trials).}
 
 \item{mu0_c}{scalar. The mean of the historical control group.}
 
-\item{sigma0_c}{scalar. The standard deviation of the historical control 
+\item{sigma0_c}{scalar. The standard deviation of the historical control
 group.}
 
-\item{N0_c}{scalar. The number of observations of the historical control 
+\item{N0_c}{scalar. The number of observations of the historical control
 group.}
 
-\item{alpha_max}{scalar. Maximum weight the discount function can apply. 
-Default is 1. For \code{type="2arm"}, users may optionally specify 
-a vector of two values where the first value is used to weight the 
-historical treatment group and the second value is used to weight 
+\item{alpha_max}{scalar. Maximum weight the discount function can apply.
+Default is 1. For \code{type="2arm"}, users may optionally specify
+a vector of two values where the first value is used to weight the
+historical treatment group and the second value is used to weight
 the historical control group.}
 
-\item{weibull_scale}{scalar. Scale parameter of the Weibull discount 
-function used to compute alpha, the weight parameter of the historical 
-data. Default value is 0.135. Two values have special treatment: 
-\code{0} and \code{Inf}. For \code{weibull_scale = 0}, alpha is set 
-to 0, i.e., no weight. For \code{weibull_scale = Inf}, alpha is set 
-to 1, i.e., full weight. For \code{type="2arm"}, users may optionally 
-specify a vector of two values where the first value is used to 
-estimate the weight of the historical treatment group and the second 
+\item{weibull_scale}{scalar. Scale parameter of the Weibull discount
+function used to compute alpha, the weight parameter of the historical
+data. Default value is 0.135. Two values have special treatment:
+\code{0} and \code{Inf}. For \code{weibull_scale = 0}, alpha is set
+to 0, i.e., no weight. For \code{weibull_scale = Inf}, alpha is set
+to 1, i.e., full weight. For \code{type="2arm"}, users may optionally
+specify a vector of two values where the first value is used to
+estimate the weight of the historical treatment group and the second
 value is used to estimate the weight of the historical control group.}
 
-\item{weibull_shape}{scalar. Shape parameter of the Weibull discount 
-function used to compute alpha, the weight parameter of the historical 
-data. Default value is 3. For \code{type="2arm"}, users may optionally 
-specify a vector of two values where the first value is used to 
-estimate the weight of the historical treatment group and the second 
+\item{weibull_shape}{scalar. Shape parameter of the Weibull discount
+function used to compute alpha, the weight parameter of the historical
+data. Default value is 3. For \code{type="2arm"}, users may optionally
+specify a vector of two values where the first value is used to
+estimate the weight of the historical treatment group and the second
 value is used to estimate the weight of the historical control group.}
 
-\item{number_mcmc}{scalar. Number of Markov Chain Monte Carlo (MCMC) 
+\item{number_mcmc}{scalar. Number of Markov Chain Monte Carlo (MCMC)
 simulations. Default is 1e4.}
 
-\item{two_side}{scalar. Indicator of two-sided test for the discount 
+\item{two_side}{scalar. Indicator of two-sided test for the discount
 function. Default value is 1.}
 
-\item{posterior_treatment}{a list of outputs including flat, prior, and 
+\item{posterior_treatment}{a list of outputs including flat, prior, and
 posterior samples of the (potentially) augmented treatment group.}
 
-\item{posterior_control}{a list of outputs including flat, prior, and 
+\item{posterior_control}{a list of outputs including flat, prior, and
 posterior samples of the (potentially) augmented control group.
 Not present if \code{type="1arm}.}
 
