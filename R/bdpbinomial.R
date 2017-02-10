@@ -5,10 +5,10 @@
 #' @title bdpbinomial: bdpbinomial
 #' @param y_t Number of events for the current treatment group.
 #' @param N_t Sample size of the current treatment group.
-#' @param y_c Number of events for the current control group.
-#' @param N_c Sample size of the current control group.
 #' @param y0_t Number of events for the historical treatment group.
 #' @param N0_t Sample size of the historical treatment group.
+#' @param y_c Number of events for the current control group.
+#' @param N_c Sample size of the current control group.
 #' @param y0_c Number of events for the historical control group.
 #' @param N0_c Sample size of the historical control group.
 #' @param type One of "1arm" or "2arm", denoting an OPC trial or a randomized control trial(RCT), respectively.
@@ -95,6 +95,36 @@ setMethod("bdpbinomial",
                    weibull_scale = 0.135,
                    weibull_shape = 3,
                    two_side      = 1){       #Difference margin
+
+  ################################################################################
+  # Check Input                                                                  #
+  ################################################################################
+
+  if(length(y_c + N_c + y0_c  + N0_c)!=0){
+    arm2 <- TRUE
+    print("Assuming 2 arm.")
+  }else{
+    arm2 <- FALSE
+    print("Assuming 1 arm.")
+  }
+
+
+  ##############################################################################
+  # Quick check, if alpha_max, weibull_scale, or weibull_shape have length 1,
+  # repeat input twice
+  ##############################################################################
+  if(length(alpha_max)==1){
+    alpha_max <- rep(alpha_max, 2)
+  }
+
+  if(length(weibull_scale)==1){
+    weibull_scale <- rep(weibull_scale, 2)
+  }
+
+  if(length(weibull_shape)==1){
+    weibull_shape <- rep(weibull_shape, 2)
+  }
+
 
   ################################################################################
   # Estimate weight for prior data assuming a binomial outcome                   #
@@ -242,36 +272,6 @@ setMethod("bdpbinomial",
                   comparison_posterior    = comparison_posterior))
     }
 
-  }
-
-
-  ################################################################################
-  # Check Input                                                                  #
-  ################################################################################
-
-  if(length(y_c + N_c + y0_c  + N0_c)!=0){
-    arm2 <- TRUE
-    print("Assuming 2 arm.")
-  }else{
-    arm2 <- FALSE
-    print("Assuming 1 arm.")
-  }
-
-
-  ##############################################################################
-  # Quick check, if alpha_max, weibull_scale, or weibull_shape have length 1,
-  # repeat input twice
-  ##############################################################################
-  if(length(alpha_max)==1){
-    alpha_max <- rep(alpha_max, 2)
-  }
-
-  if(length(weibull_scale)==1){
-    weibull_scale <- rep(weibull_scale, 2)
-  }
-
-  if(length(weibull_shape)==1){
-    weibull_shape <- rep(weibull_shape, 2)
   }
 
 
