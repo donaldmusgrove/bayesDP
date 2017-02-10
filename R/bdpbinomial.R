@@ -49,10 +49,11 @@
 #' @export bdpbinomial
 
 
-bdpbinomial <- setClass("bdpbinomial", slots = c(posterior_test = "list",
-                                                 posterior_control = "list",
-                                                 f1 = "list",
-                                                 args1 = "list"))
+bdpbinomial <- setClass("bdpbinomial",
+                        slots = c(posterior_test = "list",
+                                  posterior_control = "list",
+                                  f1 = "list",
+                                  args1 = "list"))
 
 setGeneric("bdpbinomial",
            function(y_t           = NULL,
@@ -145,7 +146,7 @@ setMethod("bdpbinomial",
 
     effective_N0 <- N0 * alpha_discount
 
-    if(N0==0){
+    if(is.null(N0) == FALSE){
       a_prior <- a0
       b_prior <- b0
     }else{
@@ -303,9 +304,14 @@ setMethod("bdpbinomial",
     weibull_shape = weibull_shape[2],
     two_side      = two_side)
 
-  f1 <- final_binomial(posterior_treatment = posterior_treatment,
-                       posterior_control   = posterior_control)
-
+  if (arm2){
+    f1 <- final_binomial(posterior_treatment = posterior_treatment,
+                posterior_control = posterior_control)
+  }
+  else{
+    f1 <- final_binomial(posterior_treatment = posterior_treatment,
+                posterior_control = NULL)
+  }
 
   args1 <- list(y_t           = y_t,
                 N_t           = N_t,
@@ -497,7 +503,7 @@ setMethod("print", signature(x = "bdpbinomial"), function(x){
       `Sample size of prior (for treatment group)`          = posterior_treatment$N0,
       `Effective sample size of prior(for treatment group)` = posterior_treatment$N0_effective,
       `Bayesian p-value (new vs historical data)`           = posterior_treatment$pvalue,
-      `Discount function value`                             = posterior_treatmentt$alpha_discount)
+      `Discount function value`                             = posterior_treatment$alpha_discount)
   }
 
   if(posterior_control$N0==0){
@@ -542,7 +548,7 @@ setMethod("summary", signature(object = "bdpbinomial"), function(object){
       `Sample size of prior (for treatment group)`          = posterior_treatment$N0,
       `Effective sample size of prior(for treatment group)` = posterior_treatment$N0_effective,
       `Bayesian p-value (new vs historical data)`           = posterior_treatment$pvalue,
-      `Discount function value`                             = posterior_treatmentt$alpha_discount)
+      `Discount function value`                             = posterior_treatment$alpha_discount)
   }
 
   if(posterior_control$N0==0){
@@ -559,5 +565,6 @@ setMethod("summary", signature(object = "bdpbinomial"), function(object){
   print(prior_for_control_group)
   argsdf <- data.frame(t(data.frame(object$args1)))
   names(argsdf) <- "args"
-  print(argsdf)
+  argsdf$"NA" <- NULL
+  print(round(argsdf))
 })

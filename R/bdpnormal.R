@@ -627,5 +627,6 @@ setMethod("summary", signature(object = "bdpnormal"), function(object){
   object$args1[sapply(object$args1, is.null)] <- NULL
   argsdf <- data.frame(t(data.frame(object$args1)))
   names(argsdf) <- "args"
-  print(format(argsdf, scientific=F))
+  argsdf$"NA" <- NULL
+  print(round(argsdf))
 })
