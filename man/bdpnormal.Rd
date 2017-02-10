@@ -46,6 +46,10 @@ group.}
 \item{N0_c}{scalar. The number of observations of the historical control
 group.}
 
+\item{type}{One of "1arm" or "2arm", denoting an OPC trial or a randomized control trial(RCT), respectively.}
+
+\item{subtype}{subtype}
+
 \item{alpha_max}{scalar. Maximum weight the discount function can apply.
 Default is 1. For \code{type="2arm"}, users may optionally specify
 a vector of two values where the first value is used to weight the
