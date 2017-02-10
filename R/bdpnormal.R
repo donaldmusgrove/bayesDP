@@ -425,7 +425,7 @@ setMethod("plot", signature(x = "bdpnormal"), function(x){
   two_side <- x$args1$two_sid
   N0_t <- x$args1$N0_t
   N0_c <- x$args1$N0_c
-  arm2 = x$args1$arm2
+  arm2 <- x$args1$arm2
   if (arm2){
     D1 <- data.frame(information_sources='Posterior',
                      group="Control",

@@ -321,6 +321,8 @@ setMethod("bdpbinomial",
                 N0_t          = N0_t,
                 y0_c          = y0_c,
                 N0_c          = N0_c,
+                type          = type,
+                subtype       = subtype,
                 alpha_max     = alpha_max,
                 a0            = a0,
                 b0            = b0,
@@ -360,6 +362,7 @@ setMethod("plot", signature(x = "bdpbinomial"), function(x){
   two_side            <- x$args1$two_side
   N0_t                <- x$args1$N0_t
   N0_c                <- x$args1$N0_c
+  arm2                <- x$args1$type
   if (arm2){
     D1 <- data.frame(information_sources='Posterior',
                      group="Control",
@@ -496,24 +499,30 @@ setMethod("print", signature(x = "bdpbinomial"), function(x){
   N0_c                <- x$args1$N0_c
 
 
-  if(posterior_treatment$N0==0){
-    prior_for_treatment_group <- "No Prior Supplied"
-  } else{
-    prior_for_treatment_group <- list(
-      `Sample size of prior (for treatment group)`          = posterior_treatment$N0,
-      `Effective sample size of prior(for treatment group)` = posterior_treatment$N0_effective,
-      `Bayesian p-value (new vs historical data)`           = posterior_treatment$pvalue,
-      `Discount function value`                             = posterior_treatment$alpha_discount)
+  if(is.null(posterior_treatment$N0) == FALSE){
+    if(posterior_treatment$N0==0){
+      prior_for_treatment_group <- "No Prior Supplied"
+    }
+    else{
+        prior_for_treatment_group <- list(
+          `Sample size of prior (for treatment group)`          = posterior_treatment$N0,
+          `Effective sample size of prior(for treatment group)` = posterior_treatment$N0_effective,
+          `Bayesian p-value (new vs historical data)`           = posterior_treatment$pvalue,
+          `Discount function value`                             = posterior_treatment$alpha_discount)
+    }
   }
 
-  if(posterior_control$N0==0){
-    prior_for_control_group <- "No Prior Supplied"
-  } else{
-    prior_for_control_group <- list(
-    `Sample size of prior (for control group)`          = posterior_control$N0,
-    `Effective sample size of prior(for control group)` = posterior_control$N0_effective,
-    `Bayesian p-value (new vs historical data)`         = posterior_control$pvalue,
-    `Discount function value`                           = posterior_control$alpha_discount)
+  if(is.null(posterior_treatment$N0) == FALSE){
+    if(posterior_treatment$N0==0){
+      prior_for_control_group <- "No Prior Supplied"
+    }
+    else{
+      prior_for_control_group <- list(
+      `Sample size of prior (for control group)`          = posterior_control$N0,
+      `Effective sample size of prior(for control group)` = posterior_control$N0_effective,
+      `Bayesian p-value (new vs historical data)`         = posterior_control$pvalue,
+      `Discount function value`                           = posterior_control$alpha_discount)
+    }
   }
 
   print(prior_for_treatment_group)
@@ -533,15 +542,15 @@ setMethod("print", signature(x = "bdpbinomial"), function(x){
 #' @export summary
 setMethod("summary", signature(object = "bdpbinomial"), function(object){
 
-  f                   <- x$f1
-  posterior_treatment <- x$posterior_treatment
-  posterior_control   <- x$posterior_control
-  two_side            <- x$args1$two_side
-  N0_t                <- x$args1$N0_t
-  N0_c                <- x$args1$N0_c
+  f                   <- object$f1
+  posterior_treatment <- object$posterior_treatment
+  posterior_control   <- object$posterior_control
+  two_side            <- object$args1$two_side
+  N0_t                <- object$args1$N0_t
+  N0_c                <- object$args1$N0_c
 
 
-  if(posterior_treatment$N0==0){
+  if(is.null(posterior_treatment$N0) == FALSE){
     prior_for_treatment_group <- "No Prior Supplied"
   } else{
     prior_for_treatment_group <- list(
@@ -551,7 +560,7 @@ setMethod("summary", signature(object = "bdpbinomial"), function(object){
       `Discount function value`                             = posterior_treatment$alpha_discount)
   }
 
-  if(posterior_control$N0==0){
+  if(is.null(posterior_treatment$N0) == FALSE){
     prior_for_control_group <- "No Prior Supplied"
   } else{
     prior_for_control_group <- list(
