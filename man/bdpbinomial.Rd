@@ -52,7 +52,6 @@ bdpbinomial
 bdpbinomial
 }
 \examples{
-...
 ### OPC (1arm) example
 fit <- bdpbinomial(y_t           = 10,
                    N_t           = 500,

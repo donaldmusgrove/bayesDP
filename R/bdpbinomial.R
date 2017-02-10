@@ -20,9 +20,9 @@
 #' @param weibull_shape Shape parameter of the Weibull discount function used to compute alpha, the weight parameter of the historical data. Default value is 3. For type="2arm", users may specify a vector of two values where the first value is used to estimate the weight of the historical treatment group and the second value is used to estimate the weight of the historical control group.
 #' @param weibull_scale Scale parameter of the Weibull discount function used to compute alpha, the weight parameter of the historical data. Default value is 0.135. Two values have special treatment: 0 and Inf. For weibull_scale = 0, alpha is set to 0, i.e., no weight. For weibull_scale = Inf, alpha is set to 1, i.e., full weight. For type="2arm", users may specify a vector of two values where the first value is used to estimate the weight of the historical treatment group and the second value is used to estimate the weight of the historical control group.
 #' @param two_side Indicator of two-sided test for the discount function. Default value is 1.
-#' @Description ...
-#' @Details ...
-#' @examples ...
+#' @Description insert something here!
+#' @Details insert something here!
+#' @examples
 #' ### OPC (1arm) example
 #' fit <- bdpbinomial(y_t           = 10,
 #'                    N_t           = 500,
