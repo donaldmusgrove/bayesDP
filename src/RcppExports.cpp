@@ -5,6 +5,18 @@
 
 using namespace Rcpp;
 
+// equalgreaterouterC
+LogicalVector equalgreaterouterC(int a, NumericVector b);
+RcppExport SEXP bayesDP_equalgreaterouterC(SEXP aSEXP, SEXP bSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type a(aSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type b(bSEXP);
+    rcpp_result_gen = Rcpp::wrap(equalgreaterouterC(a, b));
+    return rcpp_result_gen;
+END_RCPP
+}
 // rcpp_hello_world
 List rcpp_hello_world();
 RcppExport SEXP bayesDP_rcpp_hello_world() {
@@ -12,6 +24,17 @@ BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     rcpp_result_gen = Rcpp::wrap(rcpp_hello_world());
+    return rcpp_result_gen;
+END_RCPP
+}
+// rowSumsC
+NumericVector rowSumsC(NumericMatrix x);
+RcppExport SEXP bayesDP_rowSumsC(SEXP xSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type x(xSEXP);
+    rcpp_result_gen = Rcpp::wrap(rowSumsC(x));
     return rcpp_result_gen;
 END_RCPP
 }
