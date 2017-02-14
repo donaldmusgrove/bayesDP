@@ -22,14 +22,12 @@
  *	The distribution function of the exponential distribution.
  */
 
-/*
+
 #include "nmath.h"
 #include "dpq.h"
-*/
 
-#include "bdp.h"
 
-double pexp(double x, double scale, int lower_tail, int log_p)
+double pexpC(double x, double scale, int lower_tail, int log_p)
 {
 #ifdef IEEE_754
     if (ISNAN(x) || ISNAN(scale))
