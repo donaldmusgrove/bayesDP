@@ -1,4 +1,3 @@
-#test_check("bayesDP")
 library(testthat)
 library(bayesDP)
 
