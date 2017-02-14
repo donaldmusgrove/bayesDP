@@ -35,9 +35,11 @@ bdpsurvival(formula = formula, data = data, breaks = NULL, a0 = 0.1,
 \item{two_side}{Indicator of two-sided test for the discount function. Default value is 1.}
 }
 \description{
-bdpsurv
+
 }
 \details{
+bdpsurv
+
 bdpsurv
 }
 \examples{

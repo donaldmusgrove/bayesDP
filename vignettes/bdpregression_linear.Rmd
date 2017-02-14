@@ -1,13 +1,27 @@
-\name{post_est_gaussian}
-\alias{post_est_gaussian}
-\title{Post Estimate Gaussian}
-\usage{
-}
-\arguments{
-}
-\description{
-}
-\examples{
+---
+title: "bdpregression_linear"
+author: "Shawn Balcome"
+date: "12/22/2016"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## MDICtools
+
+Give a quick description, can be found at <https://github.com/balcomes/bayesDP>.
+
+```{r first}
+library(bayesDP)
+```
+
+## post_est_gaussian example
+
+example:
+
+```{r second}
 set.seed(42)
 data <- data.frame(y         = rnorm(100, 4, 0.1),
                    x         = c(rnorm(50,1,0.1), rnorm(50,3,0.1)),
@@ -24,4 +38,6 @@ fit <- post_est_gaussian(data          = data,
 
 ### Main parameter of interest:
 fit$effect_est
-}
+```
+
+Etc Etc

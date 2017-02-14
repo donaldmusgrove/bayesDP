@@ -46,10 +46,14 @@ bdpbinomial(y_t = NULL, N_t = NULL, y0_t = NULL, N0_t = NULL,
 \item{two_side}{Indicator of two-sided test for the discount function. Default value is 1.}
 }
 \description{
-bdpbinomial
+insert something here!
 }
 \details{
 bdpbinomial
+
+bdpbinomial
+
+insert something here!
 }
 \examples{
 ### OPC (1arm) example

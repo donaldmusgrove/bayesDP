@@ -92,8 +92,29 @@ groups, where the control group densities are present only if
 
 \item{args1}{list of user inputs.}
 }
+\value{
+\code{bdpnormal} returns an object of class "bdpnormal".
+
+The functions \code{summary} and \code{print} are used to obtain and
+print a summary of the results, including user inputs. The \code{plot}
+function displays visual outputs as well.
+
+An object of class "\code{bdpnormal} " is a list containing at least
+the following components:
+}
 \description{
+The pdpnormal function is used for estimating posterior samples from a
+Gaussian outcome where an informative prior is used. The prior weight
+is determined using a discount function. This code is modeled after
+the methodologies developed by the MDIC working group: "Informing
+clinical trials using bench & simulations."
+}
+\details{
 bdpnormal
+
+
+Many, many, many details to come. In fact, the best details. Believe
+me, I know a thing or two about building details.
 }
 \examples{
 
