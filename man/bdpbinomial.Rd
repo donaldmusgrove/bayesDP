@@ -5,10 +5,10 @@
 \title{bdpbinomial: bdpbinomial}
 \usage{
 bdpbinomial(y_t = NULL, N_t = NULL, y0_t = NULL, N0_t = NULL,
-  y_c = NULL, N_c = NULL, y0_c = NULL, N0_c = NULL, type = c("1arm",
-  "2arm"), subtype = c(NULL, "2tc", "2t", "2c"), alpha_max = 1, a0 = 1,
-  b0 = 1, number_mcmc = 10000, weibull_scale = 0.135, weibull_shape = 3,
-  two_side = 1)
+  y_c = NULL, N_c = NULL, y0_c = NULL, N0_c = NULL, alpha_max = 1,
+  a0 = 1, b0 = 1, number_mcmc = 10000, weibull_scale = 0.135,
+  weibull_shape = 3, two_side = 1, type = c("1arm", "2arm"),
+  subtype = c(NULL, "2tc", "2t", "2c"))
 }
 \arguments{
 \item{y_t}{Number of events for the current treatment group.}
@@ -27,10 +27,6 @@ bdpbinomial(y_t = NULL, N_t = NULL, y0_t = NULL, N0_t = NULL,
 
 \item{N0_c}{Sample size of the historical control group.}
 
-\item{type}{One of "1arm" or "2arm", denoting an OPC trial or a randomized control trial(RCT), respectively.}
-
-\item{subtype}{subtype}
-
 \item{alpha_max}{Maximum weight the discount function can apply. Default is 1. For type="2arm", users may specify a vector of two values where the first value is used to weight the historical treatment group and the second value is used to weight the historical control group.}
 
 \item{a0}{Prior value for the beta rate. Default is 1.}
@@ -44,6 +40,10 @@ bdpbinomial(y_t = NULL, N_t = NULL, y0_t = NULL, N0_t = NULL,
 \item{weibull_shape}{Shape parameter of the Weibull discount function used to compute alpha, the weight parameter of the historical data. Default value is 3. For type="2arm", users may specify a vector of two values where the first value is used to estimate the weight of the historical treatment group and the second value is used to estimate the weight of the historical control group.}
 
 \item{two_side}{Indicator of two-sided test for the discount function. Default value is 1.}
+
+\item{type}{One of "1arm" or "2arm", denoting an OPC trial or a randomized control trial(RCT), respectively.}
+
+\item{subtype}{subtype}
 }
 \description{
 insert something here!
