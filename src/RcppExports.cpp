@@ -5,6 +5,17 @@
 
 using namespace Rcpp;
 
+// cumsum2
+NumericVector cumsum2(NumericVector x);
+RcppExport SEXP bayesDP_cumsum2(SEXP xSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
+    rcpp_result_gen = Rcpp::wrap(cumsum2(x));
+    return rcpp_result_gen;
+END_RCPP
+}
 // equalgreaterouterC
 LogicalVector equalgreaterouterC(int a, NumericVector b);
 RcppExport SEXP bayesDP_equalgreaterouterC(SEXP aSEXP, SEXP bSEXP) {
@@ -14,6 +25,28 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< int >::type a(aSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type b(bSEXP);
     rcpp_result_gen = Rcpp::wrap(equalgreaterouterC(a, b));
+    return rcpp_result_gen;
+END_RCPP
+}
+// ppexp
+NumericVector ppexp(NumericVector x);
+RcppExport SEXP bayesDP_ppexp(SEXP xSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
+    rcpp_result_gen = Rcpp::wrap(ppexp(x));
+    return rcpp_result_gen;
+END_RCPP
+}
+// ppexpV
+NumericVector ppexpV(NumericVector x);
+RcppExport SEXP bayesDP_ppexpV(SEXP xSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
+    rcpp_result_gen = Rcpp::wrap(ppexpV(x));
     return rcpp_result_gen;
 END_RCPP
 }
