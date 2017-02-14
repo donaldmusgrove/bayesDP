@@ -95,9 +95,9 @@ test_that("Binomial Print", {
 
 test_that("Binomial Summary", {
   expect_true(class(try(summary(bdpbinomial(9,9,9,9,9,9)), silent = TRUE)) != "try-error",
-              "1arm Test Summary Error")
+              "1arm Binomial Test Summary Error")
   expect_true(class(try(summary(bdpbinomial(9,9,9,9,9,9,9,9,9,9,9,9)), silent = TRUE)) != "try-error",
-              "2arm Test/Control Summary Error")
+              "2arm Binomial Test/Control Summary Error")
   options(warn=2)
   expect_true(class(try(summary(bdpbinomial(9,9,9,9,9,9)), silent = TRUE)) != "try-error",
               "1arm Binomial Test Summary Warning")

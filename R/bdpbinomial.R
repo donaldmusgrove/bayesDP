@@ -99,10 +99,10 @@ setMethod("bdpbinomial",
 
   if(length(y_c + N_c + y0_c  + N0_c)!=0){
     arm2 <- TRUE
-    print("Assuming 2 arm.")
+    print("Assuming 2 arm binomial.")
   }else{
     arm2 <- FALSE
-    print("Assuming 1 arm.")
+    print("Assuming 1 arm binomial.")
   }
 
 
