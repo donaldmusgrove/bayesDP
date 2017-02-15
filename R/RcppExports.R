@@ -9,12 +9,8 @@ equalgreaterouterC <- function(a, b) {
     .Call('bayesDP_equalgreaterouterC', PACKAGE = 'bayesDP', a, b)
 }
 
-ppexpC <- function(x) {
-    .Call('bayesDP_ppexpC', PACKAGE = 'bayesDP', x)
-}
-
-ppexpCV <- function(x) {
-    .Call('bayesDP_ppexpCV', PACKAGE = 'bayesDP', x)
+ppexpC <- function(q, rate, t) {
+    .Call('bayesDP_ppexpC', PACKAGE = 'bayesDP', q, rate, t)
 }
 
 rcpp_hello_world <- function() {

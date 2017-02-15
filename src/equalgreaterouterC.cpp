@@ -16,7 +16,7 @@ LogicalVector equalgreaterouterC(int a, NumericVector b) {
   int n = b.size();
   LogicalVector out(n);
   for (int i = 0; i < n; i++) {
-    if(b[i] >= a) {
+    if(a >= b[i]) {
       out[i] = TRUE;
     }
     else{

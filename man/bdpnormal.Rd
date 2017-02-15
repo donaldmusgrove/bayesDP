@@ -7,7 +7,6 @@
 bdpnormal(mu_t = NULL, sigma_t = NULL, N_t = NULL, mu0_t = NULL,
   sigma0_t = NULL, N0_t = NULL, mu_c = NULL, sigma_c = NULL,
   N_c = NULL, mu0_c = NULL, sigma0_c = NULL, N0_c = NULL,
-  type = c("1arm", "2arm"), subtype = c(NULL, "2tc", "2t", "2c"),
   alpha_max = 1, weibull_scale = 0.135, weibull_shape = 3,
   number_mcmc = 10000, two_side = 1)
 }
@@ -45,10 +44,6 @@ group.}
 
 \item{N0_c}{scalar. The number of observations of the historical control
 group.}
-
-\item{type}{One of "1arm" or "2arm", denoting an OPC trial or a randomized control trial(RCT), respectively.}
-
-\item{subtype}{subtype}
 
 \item{alpha_max}{scalar. Maximum weight the discount function can apply.
 Default is 1. For \code{type="2arm"}, users may optionally specify

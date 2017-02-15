@@ -7,8 +7,7 @@
 bdpbinomial(y_t = NULL, N_t = NULL, y0_t = NULL, N0_t = NULL,
   y_c = NULL, N_c = NULL, y0_c = NULL, N0_c = NULL, alpha_max = 1,
   a0 = 1, b0 = 1, number_mcmc = 10000, weibull_scale = 0.135,
-  weibull_shape = 3, two_side = 1, type = c("1arm", "2arm"),
-  subtype = c(NULL, "2tc", "2t", "2c"))
+  weibull_shape = 3, two_side = 1)
 }
 \arguments{
 \item{y_t}{Number of events for the current treatment group.}
@@ -40,10 +39,6 @@ bdpbinomial(y_t = NULL, N_t = NULL, y0_t = NULL, N0_t = NULL,
 \item{weibull_shape}{Shape parameter of the Weibull discount function used to compute alpha, the weight parameter of the historical data. Default value is 3. For type="2arm", users may specify a vector of two values where the first value is used to estimate the weight of the historical treatment group and the second value is used to estimate the weight of the historical control group.}
 
 \item{two_side}{Indicator of two-sided test for the discount function. Default value is 1.}
-
-\item{type}{One of "1arm" or "2arm", denoting an OPC trial or a randomized control trial(RCT), respectively.}
-
-\item{subtype}{subtype}
 }
 \description{
 insert something here!
@@ -61,7 +56,6 @@ fit <- bdpbinomial(y_t           = 10,
                    N_t           = 500,
                    y0_t          = 25,
                    N0_t          = 250,
-                   type          = "1arm",
                    alpha_max     = 1,
                    a0            = 1,
                    b0            = 1,
