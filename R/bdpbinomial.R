@@ -11,15 +11,13 @@
 #' @param N_c Sample size of the current control group.
 #' @param y0_c Number of events for the historical control group.
 #' @param N0_c Sample size of the historical control group.
-#' @param type One of "1arm" or "2arm", denoting an OPC trial or a randomized control trial(RCT), respectively.
+#' @param alpha_max Maximum weight the discount function can apply. Default is 1. For type="2arm", users may specify a vector of two values where the first value is used to weight the historical treatment group and the second value is used to weight the historical control group.
 #' @param a0 Prior value for the beta rate. Default is 1.
 #' @param b0 Prior value for the beta rate. Default is 1.
 #' @param number_mcmc Number of Markov Chain Monte Carlo (MCMC) simulations. Default is 1e4.
 #' @param weibull_shape Shape parameter of the Weibull discount function used to compute alpha, the weight parameter of the historical data. Default value is 3. For type="2arm", users may specify a vector of two values where the first value is used to estimate the weight of the historical treatment group and the second value is used to estimate the weight of the historical control group.
 #' @param weibull_scale Scale parameter of the Weibull discount function used to compute alpha, the weight parameter of the historical data. Default value is 0.135. Two values have special treatment: 0 and Inf. For weibull_scale = 0, alpha is set to 0, i.e., no weight. For weibull_scale = Inf, alpha is set to 1, i.e., full weight. For type="2arm", users may specify a vector of two values where the first value is used to estimate the weight of the historical treatment group and the second value is used to estimate the weight of the historical control group.
 #' @param two_side Indicator of two-sided test for the discount function. Default value is 1.
-#' @param subtype subtype
-#' @param alpha_max Maximum weight the discount function can apply. Default is 1. For type="2arm", users may specify a vector of two values where the first value is used to weight the historical treatment group and the second value is used to weight the historical control group.
 #' @description insert something here!
 #' @details insert something here!
 #' @examples
@@ -28,7 +26,6 @@
 #'                    N_t           = 500,
 #'                    y0_t          = 25,
 #'                    N0_t          = 250,
-#'                    type          = "1arm",
 #'                    alpha_max     = 1,
 #'                    a0            = 1,
 #'                    b0            = 1,
@@ -67,9 +64,7 @@ setGeneric("bdpbinomial",
                     number_mcmc   = 10000,
                     weibull_scale = 0.135,
                     weibull_shape = 3,
-                    two_side      = 1,      #Difference margin
-                    type = c("1arm","2arm"),
-                    subtype = c(NULL,"2tc","2t","2c")){
+                    two_side      = 1){      #Difference margin
              standardGeneric("bdpbinomial")
            })
 
@@ -89,9 +84,8 @@ setMethod("bdpbinomial",
                    number_mcmc   = 10000,
                    weibull_scale = 0.135,
                    weibull_shape = 3,
-                   two_side      = 1,      #Difference margin
-                   type = c("1arm","2arm"),
-                   subtype = c(NULL,"2tc","2t","2c")){
+                   two_side      = 1){      #Difference margin
+
 
   ################################################################################
   # Check Input                                                                  #
@@ -301,7 +295,7 @@ setMethod("bdpbinomial",
     weibull_shape = weibull_shape[2],
     two_side      = two_side)
 
-  if (arm2){
+  if (arm2==TRUE){
     f1 <- final_binomial(posterior_treatment = posterior_treatment,
                 posterior_control = posterior_control)
   }
@@ -318,15 +312,14 @@ setMethod("bdpbinomial",
                 N0_t          = N0_t,
                 y0_c          = y0_c,
                 N0_c          = N0_c,
-                type          = type,
-                subtype       = subtype,
-                alpha_max     = alpha_max,
+                alpha_max     = alpha_max[1],
                 a0            = a0,
                 b0            = b0,
                 number_mcmc   = number_mcmc,
-                weibull_scale = weibull_scale,
-                weibull_shape = weibull_shape,
-                two_side      = two_side)
+                weibull_scale = weibull_scale[1],
+                weibull_shape = weibull_shape[1],
+                two_side      = two_side,
+                arm2          = arm2)
 
 me <- list(posterior_treatment = posterior_treatment,
            posterior_control   = posterior_control,
@@ -359,7 +352,7 @@ setMethod("plot", signature(x = "bdpbinomial"), function(x){
   two_side            <- x$args1$two_side
   N0_t                <- x$args1$N0_t
   N0_c                <- x$args1$N0_c
-  arm2                <- x$args1$type
+  arm2                <- x$args1$arm2
   if (arm2){
     D1 <- data.frame(information_sources='Posterior',
                      group="Control",
@@ -569,8 +562,9 @@ setMethod("summary", signature(object = "bdpbinomial"), function(object){
 
   print(prior_for_treatment_group)
   print(prior_for_control_group)
-  argsdf <- data.frame(t(data.frame(object$args1)))
-  names(argsdf) <- "args"
-  argsdf$"NA" <- NULL
+
+  argsdf <- suppressWarnings(data.frame(as.numeric(as.character(object$args1))))
+  rownames(argsdf) <- names(object$args1)
+  colnames(argsdf) <- "args"
   print(round(argsdf))
 })

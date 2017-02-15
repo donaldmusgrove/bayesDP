@@ -34,8 +34,6 @@ NULL
 #'        group.
 #' @param N0_c scalar. The number of observations of the historical control
 #'        group.
-#' @param type One of "1arm" or "2arm", denoting an OPC trial or a randomized control trial(RCT), respectively.
-#' @param subtype subtype
 #' @param alpha_max scalar. Maximum weight the discount function can apply.
 #'        Default is 1. For \code{type="2arm"}, users may optionally specify
 #'        a vector of two values where the first value is used to weight the
@@ -117,8 +115,6 @@ setGeneric("bdpnormal",
                     mu0_c = NULL,
                     sigma0_c = NULL,
                     N0_c = NULL,
-                    type = c("1arm","2arm"),
-                    subtype = c(NULL,"2tc","2t","2c"),
                     alpha_max = 1,
                     weibull_scale = 0.135,
                     weibull_shape = 3,
@@ -141,8 +137,6 @@ setMethod("bdpnormal",
                    mu0_c = NULL,
                    sigma0_c = NULL,
                    N0_c = NULL,
-                   type = c("1arm","2arm"),
-                   subtype = c(NULL,"2tc","2t","2c"),
                    alpha_max = 1,
                    weibull_scale = 0.135,
                    weibull_shape = 3,
@@ -278,7 +272,7 @@ setMethod("bdpnormal",
                          mu_post_flat = mu_posterior)
     }
 
-    return(list(alpha_discount         = alpha_discount$alpha_discount,
+    return(list(alpha_discount     = alpha_discount$alpha_discount,
                 pvalue             = alpha_discount$pvalue,
                 mu_posterior       = mu_posterior,
                 mu_posterior_flat  = alpha_discount$mu_post_flat,
@@ -344,7 +338,7 @@ setMethod("bdpnormal",
     weibull_shape,       #Discount function parameter controlling the location of a weibull function
     two_side)            #Two or one sided hypothesis test?
 
-  if (arm2){
+  if (arm2 == TRUE){
     posterior_control <- mu_posterior(
       mu      = mu_c,      #mean of current treatment
       sigma   = sigma_c,   #sd of current treatment
@@ -359,7 +353,7 @@ setMethod("bdpnormal",
       two_side)            #Two or one sided hypothesis test?
   }
 
-  if (arm2){
+  if (arm2 ==  TRUE){
     f1 <- final(posterior_treatment = posterior_treatment,
                 posterior_control = posterior_control)
   }
@@ -380,14 +374,14 @@ setMethod("bdpnormal",
            mu0_c = mu0_c,
            sigma0_c = sigma0_c,
            N0_c = N0_c,
-           alpha_max = alpha_max,
-           weibull_scale = weibull_scale,
-           weibull_shape = weibull_shape,
+           alpha_max = alpha_max[1],
+           weibull_scale = weibull_scale[1],
+           weibull_shape = weibull_shape[1],
            number_mcmc  = number_mcmc,
            two_side = two_side,
            arm2 = arm2)
 
-  if (arm2){
+  if (arm2 == TRUE){
     me <- list(posterior_treatment = posterior_treatment,
                posterior_control = posterior_control,
                f1 = f1,
@@ -426,7 +420,7 @@ setMethod("plot", signature(x = "bdpnormal"), function(x){
   N0_t <- x$args1$N0_t
   N0_c <- x$args1$N0_c
   arm2 <- x$args1$arm2
-  if (arm2){
+  if (arm2 == TRUE){
     D1 <- data.frame(information_sources='Posterior',
                      group="Control",
                      y=f$den_post_control$y,
@@ -624,9 +618,10 @@ setMethod("summary", signature(object = "bdpnormal"), function(object){
     }
   }
   print(prior_for_treatment_group)
-  object$args1[sapply(object$args1, is.null)] <- NULL
-  argsdf <- data.frame(t(data.frame(object$args1)))
-  names(argsdf) <- "args"
-  argsdf$"NA" <- NULL
+  print(prior_for_control_group)
+
+  argsdf <- suppressWarnings(data.frame(as.numeric(as.character(object$args1))))
+  rownames(argsdf) <- names(object$args1)
+  colnames(argsdf) <- "args"
   print(round(argsdf))
 })
