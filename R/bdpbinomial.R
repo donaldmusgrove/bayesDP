@@ -386,13 +386,13 @@ setMethod("plot", signature(x = "bdpbinomial"), function(x){
                    x=f$density_prior_treatment$x)
 
   if(is.null(N0_t) == TRUE & is.null(N0_c) == TRUE){
-    D <- as.data.frame(rbind(D4,D5,D1,D2))
+    D <- as.data.frame(rbind(D4,D5))
   }
   if(is.null(N0_t) == TRUE & is.null(N0_c) == FALSE){
     D <- as.data.frame(rbind(D4,D5,D1,D2,D3))
   }
   if(is.null(N0_t) == FALSE & is.null(N0_c) == TRUE){
-    D <- as.data.frame(rbind(D4,D5,D6,D1,D2))
+    D <- as.data.frame(rbind(D4,D5,D6))
   }
   if(is.null(N0_t) == FALSE & is.null(N0_c) == FALSE){
     D <- as.data.frame(rbind(D4,D5,D6,D1,D2,D3))
@@ -427,18 +427,20 @@ setMethod("plot", signature(x = "bdpbinomial"), function(x){
   discount_function_treatment <- pweibull(p_value,
     shape=posterior_treatment$weibull_shape,
     scale=posterior_treatment$weibull_scale)*posterior_treatment$N0
-
-  discount_function_control <- pweibull(p_value,
-    shape=posterior_control$weibull_shape,
-    scale=posterior_control$weibull_scale)*posterior_control$N0
+  if(arm2 == TRUE){
+    discount_function_control <- pweibull(p_value,
+      shape=posterior_control$weibull_shape,
+      scale=posterior_control$weibull_scale)*posterior_control$N0
+  }
 
   D1 <- data.frame(group="Treatment",y=discount_function_treatment,x=seq(0,1,,100))
   D2 <- data.frame(group="Treatment",pvalue=c(posterior_treatment$pvalue))
   D3 <- data.frame(group="Treatment",pvalue=c(posterior_treatment$N0_effective))
-
-  D4 <- data.frame(group="Control",y=discount_function_control,x=seq(0,1,,100))
-  D5 <- data.frame(group="Control",pvalue=c(posterior_control$pvalue))
-  D6 <- data.frame(group="Control",pvalue=c(posterior_control$N0_effective))
+  if (arm2 == TRUE){
+    D4 <- data.frame(group="Control",y=discount_function_control,x=seq(0,1,,100))
+    D5 <- data.frame(group="Control",pvalue=c(posterior_control$pvalue))
+    D6 <- data.frame(group="Control",pvalue=c(posterior_control$N0_effective))
+  }
 
 
   discountfun_plot <- ggplot()
@@ -448,7 +450,7 @@ setMethod("plot", signature(x = "bdpbinomial"), function(x){
       geom_vline(data=D2, aes(xintercept=pvalue,color=group),lty=2) +
       geom_hline(data=D3, aes(yintercept=pvalue,color=group),lty=2)
   }
-  if(N0_c!=0){
+  if(arm2 == TRUE){
     discountfun_plot  <- discountfun_plot +
       geom_line(data=D4,aes(y=y,x=x,color=group),size=1) +
       geom_vline(data=D5,aes(xintercept=pvalue,color=group),lty=2) +
@@ -561,7 +563,9 @@ setMethod("summary", signature(object = "bdpbinomial"), function(object){
   }
 
   print(prior_for_treatment_group)
-  print(prior_for_control_group)
+  if(is.null(posterior_control$N0) == FALSE){
+    print(prior_for_control_group)
+  }
 
   argsdf <- suppressWarnings(data.frame(as.numeric(as.character(object$args1))))
   rownames(argsdf) <- names(object$args1)
