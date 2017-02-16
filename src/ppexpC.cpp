@@ -1,10 +1,11 @@
 #include <Rcpp.h>
+#include <algorithm>
 
 using namespace Rcpp;
 
 
 // declare
-double pexpC(double x, double scale, int lower_tail, int log_p);
+extern "C" double pexpC(double x, double scale, int lower_tail, int log_p);
 LogicalVector equalgreaterouterC(int a, NumericVector b);
 NumericVector rowSumsC(NumericMatrix x);
 
@@ -23,8 +24,8 @@ int ppexpC(int q, NumericVector rate, NumericVector t){
     }
   }
 
-  //int ret = pexpC(q - t[ind], rate[ind],1,0);
-  //int mi = min(t.size(), max(ind));
+  double ret = pexpC(q - t[ind], rate[ind],1,0);
+  //int mi = min(t.size(), algorithm::max(ind));
 /*
   if (t.size() > 1) {
 
@@ -45,6 +46,6 @@ int ppexpC(int q, NumericVector rate, NumericVector t){
   }
 */
 
-  return ind;
+  return ret;
 }
 
