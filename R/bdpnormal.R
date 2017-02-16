@@ -628,5 +628,5 @@ setMethod("summary", signature(object = "bdpnormal"), function(object){
   argsdf <- suppressWarnings(data.frame(as.numeric(as.character(object$args1))))
   rownames(argsdf) <- names(object$args1)
   colnames(argsdf) <- "args"
-  print(argsdf)
+  print(format(argsdf, scientific = FALSE))
 })
