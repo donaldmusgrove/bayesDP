@@ -3,7 +3,7 @@
 using namespace Rcpp;
 using namespace arma;
 
-
+// [[Rcpp::export]]
 double ppexp(double q, const arma::vec& x, const arma::vec& cuts) {
 
   int nc = cuts.n_elem;

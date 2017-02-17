@@ -29,6 +29,19 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
+// ppexp
+double ppexp(double q, const arma::vec& x, const arma::vec& cuts);
+RcppExport SEXP bayesDP_ppexp(SEXP qSEXP, SEXP xSEXP, SEXP cutsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< double >::type q(qSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type x(xSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type cuts(cutsSEXP);
+    __result = Rcpp::wrap(ppexp(q, x, cuts));
+    return __result;
+END_RCPP
+}
 // ppexpC
 double ppexpC(int q, NumericVector rate, NumericVector t);
 RcppExport SEXP bayesDP_ppexpC(SEXP qSEXP, SEXP rateSEXP, SEXP tSEXP) {
