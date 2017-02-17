@@ -19,6 +19,6 @@ Author: Shawn Balcome [aut, cre], Donnie Musgrove [aut, cre], Tarek Haddad [aut,
 Maintainer: Shawn Balcome <sbalcome@mdic.org>
 Repository: CRAN
 Date/Publication: 2016-02-03 23:30:16
-Imports: Rcpp (>= 0.12.7)
-LinkingTo: Rcpp
+Imports: Rcpp (>= 0.12.7), RcppArmadillo
+LinkingTo: Rcpp, RcppArmadillo
 RoxygenNote: 5.0.1
