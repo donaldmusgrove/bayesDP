@@ -91,12 +91,72 @@ setMethod("bdpbinomial",
   # Check Input                                                                  #
   ################################################################################
 
+  intent <- c()
+  if(length(y_t + N_t) != 0){
+    intent <- c(intent,"current treatment")
+    print("Current Treatment")
+  }else{
+    if(is.null(y_t) == TRUE){
+      print("y_t missing")
+    }
+    if(is.null(N_t) == TRUE){
+      print("N_t missing")
+    }
+    stop("Current treatment not provided/incomplete.")
+  }
+
+  if(length(y0_t + N0_t) != 0){
+    intent <- c(intent,"historical treatment")
+    print("Historical Treatment")
+  }else{
+    if(length(c(y0_t, N0_t)) > 0){
+      if(is.null(y0_t) == TRUE){
+        print("y0_t missing")
+      }
+      if(is.null(N0_t) == TRUE){
+        print("N0_t missing")
+      }
+      stop("Historical treatment incomplete.")
+    }
+  }
+
+  if(length(y_c + N_c) != 0){
+    intent <- c(intent,"current control")
+    print("Current Control")
+  }else{
+    if(length(c(y_c, N_c)) > 0){
+      if(is.null(y_c) == TRUE){
+        print("y_c missing")
+      }
+      if(is.null(N_c) == TRUE){
+        print("N_c missing")
+      }
+      stop("Current control not provided/incomplete.")
+    }
+  }
+
+  if(length(y0_c + N0_c) != 0){
+    intent <- c(intent,"historical control")
+    print("Historical Control")
+  }else{
+    if(length(c(y0_c, N0_c)) > 0){
+      if(is.null(y0_c) == TRUE){
+        print("y0_c missing")
+      }
+      if(is.null(N0_c) == TRUE){
+        print("N0_c missing")
+      }
+      stop("Historical Control not provided/incomplete.")
+    }
+  }
+
+
   if(length(y_c + N_c + y0_c  + N0_c)!=0){
     arm2 <- TRUE
-    print("Assuming 2 arm binomial.")
+    #print("Assuming 2 arm binomial.")
   }else{
     arm2 <- FALSE
-    print("Assuming 1 arm binomial.")
+    #print("Assuming 1 arm binomial.")
   }
 
 
@@ -319,7 +379,8 @@ setMethod("bdpbinomial",
                 weibull_scale = weibull_scale[1],
                 weibull_shape = weibull_shape[1],
                 two_side      = two_side,
-                arm2          = arm2)
+                arm2          = arm2,
+                intent        = paste(intent,collapse=", "))
 
 me <- list(posterior_treatment = posterior_treatment,
            posterior_control   = posterior_control,
@@ -570,5 +631,8 @@ setMethod("summary", signature(object = "bdpbinomial"), function(object){
   argsdf <- suppressWarnings(data.frame(as.numeric(as.character(object$args1))))
   rownames(argsdf) <- names(object$args1)
   colnames(argsdf) <- "args"
-  print(format(argsdf, scientific = FALSE))
+  print(format(head(argsdf, -2), scientific = FALSE))
+  cat("\n")
+  cat("Submitted:")
+  cat(object$args1$intent)
 })

@@ -148,14 +148,6 @@ setMethod("bdpnormal",
   # Check Input                                                                  #
   ################################################################################
 
-  if(length(mu_c + sigma_c + N_c + mu0_c  + sigma0_c + N0_c)!=0){
-    arm2 <- TRUE
-    #print("Assuming 2 arm normal.")
-  }else{
-    arm2 <- FALSE
-    #print("Assuming 1 arm normal.")
-  }
-
   intent <- c()
   if(length(mu_t + sigma_t + N_t) != 0){
     intent <- c(intent,"current treatment")
@@ -225,6 +217,14 @@ setMethod("bdpnormal",
       }
       stop("Historical Control not provided/incomplete.")
     }
+  }
+
+  if(length(mu_c + sigma_c + N_c + mu0_c  + sigma0_c + N0_c)!=0){
+    arm2 <- TRUE
+    #print("Assuming 2 arm normal.")
+  }else{
+    arm2 <- FALSE
+    #print("Assuming 1 arm normal.")
   }
 
   ##############################################################################
@@ -449,7 +449,8 @@ setMethod("bdpnormal",
                 weibull_shape = weibull_shape[1],
                 number_mcmc   = number_mcmc,
                 two_side      = two_side,
-                arm2          = arm2)
+                arm2          = arm2,
+                intent        = paste(intent,collapse=", "))
 
   if (arm2 == TRUE){
     me <- list(posterior_treatment = posterior_treatment,
@@ -698,5 +699,8 @@ setMethod("summary", signature(object = "bdpnormal"), function(object){
   argsdf <- suppressWarnings(data.frame(as.numeric(as.character(object$args1))))
   rownames(argsdf) <- names(object$args1)
   colnames(argsdf) <- "args"
-  print(format(argsdf, scientific = FALSE))
+  print(format(head(argsdf, -2), scientific = FALSE))
+  cat("\n")
+  cat("Submitted:")
+  cat(object$args1$intent)
 })
