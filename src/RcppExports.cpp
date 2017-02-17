@@ -29,7 +29,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // ppexpC
-int ppexpC(int q, NumericVector rate, NumericVector t);
+NumericVector ppexpC(int q, NumericVector rate, NumericVector t);
 RcppExport SEXP bayesDP_ppexpC(SEXP qSEXP, SEXP rateSEXP, SEXP tSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;

@@ -26,7 +26,7 @@
 #include "nmath.h"
 #include "dpq.h"
 
-
+// [[Rcpp::export]]
 double pexpC(double x, double scale, int lower_tail, int log_p)
 {
 #ifdef IEEE_754
