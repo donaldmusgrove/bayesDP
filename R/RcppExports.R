@@ -13,6 +13,10 @@ ppexpC <- function(q, rate, t) {
     .Call('bayesDP_ppexpC', PACKAGE = 'bayesDP', q, rate, t)
 }
 
+ppexpCV <- function(q, rate, t) {
+    .Call('bayesDP_ppexpCV', PACKAGE = 'bayesDP', q, rate, t)
+}
+
 rcpp_hello_world <- function() {
     .Call('bayesDP_rcpp_hello_world', PACKAGE = 'bayesDP')
 }

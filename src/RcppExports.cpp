@@ -29,7 +29,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // ppexpC
-NumericVector ppexpC(int q, NumericVector rate, NumericVector t);
+double ppexpC(int q, NumericVector rate, NumericVector t);
 RcppExport SEXP bayesDP_ppexpC(SEXP qSEXP, SEXP rateSEXP, SEXP tSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -38,6 +38,19 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< NumericVector >::type rate(rateSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type t(tSEXP);
     rcpp_result_gen = Rcpp::wrap(ppexpC(q, rate, t));
+    return rcpp_result_gen;
+END_RCPP
+}
+// ppexpCV
+NumericVector ppexpCV(int q, NumericMatrix rate, NumericVector t);
+RcppExport SEXP bayesDP_ppexpCV(SEXP qSEXP, SEXP rateSEXP, SEXP tSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type q(qSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type rate(rateSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type t(tSEXP);
+    rcpp_result_gen = Rcpp::wrap(ppexpCV(q, rate, t));
     return rcpp_result_gen;
 END_RCPP
 }
