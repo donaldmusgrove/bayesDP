@@ -45,11 +45,8 @@ NumericVector ppexpC(int q, NumericVector rate, NumericVector t){
 
   if (tC.size() > 1) {
     //  dt <- t[-1] - t[-mi]
-    std::vector<double> t0, tmi = tC;
-    t0.erase(t0.begin());
-    int mi1 = mi - 1;
-    std::vector<double>::iterator i = std::find(tmi.begin(), tmi.end(), mi1);
-    tmi.erase(i);
+    std::vector<double> t0(tC.begin() + 1, tC.end());
+    std::vector<double> tmi(tC.begin(), tC.end() - mi - 1);
 
     //  pe <- pexp(dt, rate[-mi])
     /*  std::vector<double> pe = pexpC(dt, rate[-mi-1]);  */
@@ -59,10 +56,10 @@ NumericVector ppexpC(int q, NumericVector rate, NumericVector t){
     //  cp <- c(1, cumprod(1 - pe))
     std::vector<double> cp(50000);
     for(int i = 0; i < cp.size(); i++){
-      //cpi[i] = 1 - pe[i];
-      cp.push_back(1 - pe[i]);
+      cp[i] = 1 - pe[i];
+      //cp.push_back(1 - pe[i]);
     }
-    cp.insert(cp.begin(), 0);
+    cp.insert(cp.begin(), 1);
 
     //  ret <- c(0, cumsum(cp[-length(cp)] * pe))[ind] + ret * cp[ind]
     cp.pop_back();
@@ -76,6 +73,7 @@ NumericVector ppexpC(int q, NumericVector rate, NumericVector t){
     std::vector<double> cpsi = cps;
     cpsi.insert(cpsi.begin(), 0);
     result = cpsi[ind] + ret * cp[ind];
+    int result = 1;
   }
 
   return Rcpp::wrap(result);
