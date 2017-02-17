@@ -150,12 +150,82 @@ setMethod("bdpnormal",
 
   if(length(mu_c + sigma_c + N_c + mu0_c  + sigma0_c + N0_c)!=0){
     arm2 <- TRUE
-    print("Assuming 2 arm normal.")
+    #print("Assuming 2 arm normal.")
   }else{
     arm2 <- FALSE
-    print("Assuming 1 arm normal.")
+    #print("Assuming 1 arm normal.")
   }
 
+  intent <- c()
+  if(length(mu_t + sigma_t + N_t) != 0){
+    intent <- c(intent,"current treatment")
+    print("Current Treatment")
+  }else{
+    if(is.null(mu_t) == TRUE){
+      print("mu_t missing")
+    }
+    if(is.null(sigma_t) == TRUE){
+      print("sigma_t missing")
+    }
+    if(is.null(N_t) == TRUE){
+      print("N_t missing")
+    }
+    stop("Current treatment not provided/incomplete.")
+  }
+
+  if(length(mu0_t + sigma0_t + N0_t) != 0){
+    intent <- c(intent,"historical treatment")
+    print("Historical Treatment")
+  }else{
+    if(length(c(mu0_t, sigma0_t, N0_t)) > 0){
+      if(is.null(mu0_t) == TRUE){
+        print("mu0_t missing")
+      }
+      if(is.null(sigma0_t) == TRUE){
+        print("sigma0_t missing")
+      }
+      if(is.null(N0_t) == TRUE){
+        print("N0_t missing")
+      }
+      stop("Historical treatment incomplete.")
+    }
+  }
+
+  if(length(mu_c + sigma_c + N_c) != 0){
+    intent <- c(intent,"current control")
+    print("Current Control")
+  }else{
+    if(length(c(mu_c, sigma_c, N_c)) > 0){
+      if(is.null(mu_c) == TRUE){
+        print("mu_c missing")
+      }
+      if(is.null(sigma_c) == TRUE){
+        print("sigma_c missing")
+      }
+      if(is.null(N_c) == TRUE){
+        print("N_c missing")
+      }
+      stop("Current control not provided/incomplete.")
+    }
+  }
+
+  if(length(mu0_c + sigma0_c + N0_c) != 0){
+    intent <- c(intent,"historical control")
+    print("Historical Control")
+  }else{
+    if(length(c(mu0_c, sigma0_c, N0_c)) > 0){
+      if(is.null(mu0_c) == TRUE){
+        print("mu0_c missing")
+      }
+      if(is.null(sigma0_c) == TRUE){
+        print("sigma0_c missing")
+      }
+      if(is.null(N0_c) == TRUE){
+        print("N0_c missing")
+      }
+      stop("Historical Control not provided/incomplete.")
+    }
+  }
 
   ##############################################################################
   # Quick check, if alpha_max, weibull_scale, or weibull_shape have length 1,
