@@ -30,10 +30,10 @@ NumericVector ppexpC(int q, NumericVector rate, NumericVector t){
   //int mi = min(t.size(), max(ind));
   int mi = t.size();
   std::vector<double> dt;
-  std::vector<double> pe;
   std::vector<double> cpi;
   std::vector<double> cp;
   std::vector<double> tC = Rcpp::as<std::vector<double> >(t);
+  std::vector<double> pe(tC.size());
   double ret;
 
   if (tC.size() > 1) {
@@ -53,9 +53,10 @@ NumericVector ppexpC(int q, NumericVector rate, NumericVector t){
 
     //std::vector<double> pe = pexpC(dt, rate[-mi-1]);
 
-    //for(int i = 0; i < tC.size(); i++){
-    //  cpi[i] = 1 - pe[i];
-    //}
+    for(int i = 0; i < tC.size(); i++){
+      //cpi[i] = 1 - pe[i];
+      cpi.push_back(1 - pe[i]);
+    }
 
     //NumericVector cps = cumprod(1 - pe);
 
@@ -68,10 +69,10 @@ NumericVector ppexpC(int q, NumericVector rate, NumericVector t){
     //NumericVector cp = cp0.insert(0, 1);
 
   }
-
+  int ts = tC.size();
   //return Rcpp::wrap< std::vector<double> >( dt ) ;
   //NumericVector IntegerVector = as<NumericVector>( Rcpp::wrap(dt) ) ;
-  return Rcpp::wrap(tC);
+  return Rcpp::wrap(cpi);
 
 }
 
