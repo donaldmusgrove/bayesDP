@@ -5,14 +5,14 @@
 
 using namespace Rcpp;
 
-// cumsum2
-NumericVector cumsum2(NumericVector x);
-RcppExport SEXP bayesDP_cumsum2(SEXP xSEXP) {
+// cumsumC
+std::vector<double> cumsumC(std::vector<double> x);
+RcppExport SEXP bayesDP_cumsumC(SEXP xSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
-    rcpp_result_gen = Rcpp::wrap(cumsum2(x));
+    Rcpp::traits::input_parameter< std::vector<double> >::type x(xSEXP);
+    rcpp_result_gen = Rcpp::wrap(cumsumC(x));
     return rcpp_result_gen;
 END_RCPP
 }

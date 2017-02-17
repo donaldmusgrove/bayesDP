@@ -1,7 +1,9 @@
 #include <Rcpp.h>
 #include <algorithm>
-#include <Rcpp/sugar/functions/cumprod.h>
-#include <Rcpp/sugar/functions/cumsum.h>
+#include <vector>
+#include <numeric>
+#include <functional>
+
 
 using namespace Rcpp;
 
@@ -10,15 +12,23 @@ using namespace Rcpp;
 extern "C" double pexpC(double x, double scale, int lower_tail, int log_p);
 LogicalVector equalgreaterouterC(int a, NumericVector b);
 NumericVector rowSumsC(NumericMatrix x);
+std::vector<double> cumsumC(std::vector<double> x);
 
 // [[Rcpp::export]]
 NumericVector ppexpC(int q, NumericVector rate, NumericVector t){
+
+  std::vector<double> dt;
+  std::vector<double> tC = Rcpp::as<std::vector<double> >(t);
+  std::vector<double> pe(tC.size());
+  double result;
+
+    //  q[q < 0] <- 0
   if(q < 0){
     q = 0;
   }
 
+  //  ind <- rowSums(outer(q, t, ">="))
   LogicalVector eg = equalgreaterouterC(q,t);
-
   int ind = 0;
   for(int i = 0; i < t.size(); i++){
     if(eg[i]==TRUE){
@@ -26,53 +36,49 @@ NumericVector ppexpC(int q, NumericVector rate, NumericVector t){
     }
   }
 
-  //double ret = pexpC(q - t[ind], rate[ind],1,0);
-  //int mi = min(t.size(), max(ind));
-  int mi = t.size();
-  std::vector<double> dt;
-  std::vector<double> cpi;
-  std::vector<double> cp;
-  std::vector<double> tC = Rcpp::as<std::vector<double> >(t);
-  std::vector<double> pe(tC.size());
-  double ret;
+  //  ret <- pexp(q - t[ind], rate[ind])
+  /*  double ret = pexpC(q - tC[ind], rate[ind],1,0);  */
+  double ret = 0;
+
+  int tCs = tC.size();
+  int mi = std::min(tCs, ind);
 
   if (tC.size() > 1) {
-    std::vector<double> tC = Rcpp::as<std::vector<double> >(t);
-    //std::vector<double> t0 = tC;
-    //std::vector<double> tmi = tC;
-
+    //  dt <- t[-1] - t[-mi]
     std::vector<double> t0, tmi = tC;
-    //t0.erase(t0.begin());
-    //tmi.erase(mi-1);
+    t0.erase(t0.begin());
+    int mi1 = mi - 1;
+    std::vector<double>::iterator i = std::find(tmi.begin(), tmi.end(), mi1);
+    tmi.erase(i);
 
-    //for(int i = 0; i < t.size(); i++){
-    //  dt[i] = t0[i] - tmi[mi];
-    //}
-
+    //  pe <- pexp(dt, rate[-mi])
+    /*  std::vector<double> pe = pexpC(dt, rate[-mi-1]);  */
+    std::vector<double> pe(49999);
     std::fill(pe.begin(), pe.end(), 42);
 
-    //std::vector<double> pe = pexpC(dt, rate[-mi-1]);
-
-    for(int i = 0; i < tC.size(); i++){
+    //  cp <- c(1, cumprod(1 - pe))
+    std::vector<double> cp(50000);
+    for(int i = 0; i < cp.size(); i++){
       //cpi[i] = 1 - pe[i];
-      cpi.push_back(1 - pe[i]);
+      cp.push_back(1 - pe[i]);
+    }
+    cp.insert(cp.begin(), 0);
+
+    //  ret <- c(0, cumsum(cp[-length(cp)] * pe))[ind] + ret * cp[ind]
+    cp.pop_back();
+
+    std::vector<double> multeach(cp.size());
+    for(int i = 0; i < multeach.size(); i++){
+      multeach[i] = cp[i] * pe[i];
     }
 
-    //NumericVector cps = cumprod(1 - pe);
-
-    std::vector<double> cp;
-    cp.insert(cp.begin(), 0);
-    //ret <- c(0, cumsum(cp[-length(cp)] * pe))[ind] + ret * cp[ind]
-
-
-
-    //NumericVector cp = cp0.insert(0, 1);
-
+    std::vector<double> cps = cumsumC(multeach);
+    std::vector<double> cpsi = cps;
+    cpsi.insert(cpsi.begin(), 0);
+    result = cpsi[ind] + ret * cp[ind];
   }
-  int ts = tC.size();
-  //return Rcpp::wrap< std::vector<double> >( dt ) ;
-  //NumericVector IntegerVector = as<NumericVector>( Rcpp::wrap(dt) ) ;
-  return Rcpp::wrap(cpi);
+
+  return Rcpp::wrap(result);
 
 }
 
