@@ -45,4 +45,3 @@ bdpsurv
 \examples{
 
 }
-

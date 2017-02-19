@@ -114,4 +114,3 @@ me, I know a thing or two about building details.
 \examples{
 
 }
-

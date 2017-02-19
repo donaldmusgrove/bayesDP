@@ -354,7 +354,7 @@ discount_function_survival <- function(S, S0, alpha_max, a0, b0, number_mcmc,
     hazard_post_aug_t0[,i] <- rgamma(number_mcmc, a_post0[i], b_post0[i])+1e-12
   }
 
-  ### Weight historical data via (approximate) hazard ratio comparing 
+  ### Weight historical data via (approximate) hazard ratio comparing
   ### current vs historical
   R0     <- log(hazard_post_aug_t0)-log(hazard_post_aug_t)
   V0     <- 1/apply(R0,2,var)
@@ -418,9 +418,9 @@ posterior_augment_survival <- function(S, S0, alpha_discount, a0, b0,
  }
 
   ### Posterior of survival time (statistic of interest for 1arm)
-  pwe_cdf <- ppexp(surv_time = surv_time,
-                   hazard    = hazard_post_aug_t,
-                   breaks    = breaks)
+  pwe_cdf <- ppexp(q    = surv_time,
+                   x    = hazard_post_aug_t,
+                   cuts = breaks)
 
   surv_time_posterior <- 1-pwe_cdf
 
@@ -475,9 +475,9 @@ final_survival <- function(posterior_treatment, posterior_control, type="1arm"){
   density_prior_treatment <- density(posterior_treatment$prior,
                                    adjust = 0.5)
 
-  if(type == "1arm"){    
+  if(type == "1arm"){
     teatmentpost <- posterior_treatment$posterior$surv_time_posterior
-    
+
     return(list(density_post_treatment  = density_post_treatment,
                 density_flat_treatment  = density_flat_treatment,
                 density_prior_treatment = density_prior_treatment,
@@ -489,14 +489,14 @@ final_survival <- function(posterior_treatment, posterior_control, type="1arm"){
                                      adjust = 0.5)
     density_prior_control <- density(posterior_control$prior,
                                      adjust = 0.5)
-    
+
     ### Posterior hazard ratios at each interval
     R0     <- log(posterior_treatment$posterior$posterior)-log(posterior_control$posterior$posterior)
     V0     <- 1/apply(R0,2,var)
-    logHR0 <- R0%*%V0/sum(V0) 
-    
+    logHR0 <- R0%*%V0/sum(V0)
+
     treatmentpost <- logHR0
-    
+
     return(list(density_post_treatment  = density_post_treatment,
                 density_flat_treatment  = density_flat_treatment,
                 density_prior_treatment = density_prior_treatment,
