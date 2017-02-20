@@ -1,4 +1,3 @@
-#' @importFrom MCMCpack rinvgamma
 #' @importFrom ggplot2 aes
 #' @importFrom ggplot2 facet_wrap
 #' @importFrom ggplot2 geom_hline
@@ -251,11 +250,11 @@ setMethod("bdpnormal",
                             weibull_shape, weibull_scale, two_side){
 
     ### mu for using flat prior
-    sigma2_post_flat <- rinvgamma(number_mcmc, (N - 1)/2, ((N - 1) * sigma^2)/2)
+    sigma2_post_flat <- 1/rgamma(number_mcmc, (N - 1)/2, ((N - 1) * sigma^2)/2)
     mu_post_flat     <- rnorm(number_mcmc, mu, (sigma2_post_flat/((N-1)+1))^0.5)
 
     ### Prior model (flat priors)
-    sigma2_post_flat0 <- rinvgamma(number_mcmc, (N0-1)/2, ((N0-1)*sigma0^2)/2)
+    sigma2_post_flat0 <- 1/rgamma(number_mcmc, (N0-1)/2, ((N0-1)*sigma0^2)/2)
     mu_post_flat0     <- rnorm(number_mcmc, mu0, (sigma2_post_flat0/((N0-1)+1))^0.5)
 
     ### Test of model vs real
@@ -283,15 +282,15 @@ setMethod("bdpnormal",
                           number_mcmc) {
     if (is.null(N0) == FALSE){
       effective_N0 <- N0 * alpha_discount
-      sigma2_post  <- rinvgamma(number_mcmc, (N-1)/2, ((N-1)*sigma^2)/2)
-      sigma2_post0 <- rinvgamma(number_mcmc, (N0-1)/2, ((N0-1)*sigma0^2)/2)
+      sigma2_post  <- 1/rgamma(number_mcmc, (N-1)/2, ((N-1)*sigma^2)/2)
+      sigma2_post0 <- 1/rgamma(number_mcmc, (N0-1)/2, ((N0-1)*sigma0^2)/2)
 
       mu1 <- (sigma2_post0*N*mu + sigma2_post*effective_N0*mu0)/(N*sigma2_post0 +
                                                                    sigma2_post*effective_N0)
       var_mu <- (sigma2_post*sigma2_post0)/(N*sigma2_post0 +
                                               sigma2_post*effective_N0)
     } else {
-      var_mu <- rinvgamma(number_mcmc, (N - 1)/2, ((N - 1) * sigma^2)/2)
+      var_mu <- 1/rgamma(number_mcmc, (N - 1)/2, ((N - 1) * sigma^2)/2)
       mu1    <- mu
 
     }
