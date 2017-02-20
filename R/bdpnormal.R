@@ -103,45 +103,45 @@ bdpnormal <- setClass("bdpnormal", slots = c(posterior_treatment = "list",
                                             args1 = "list"))
 
 setGeneric("bdpnormal",
-           function(mu_t = NULL,
-                    sigma_t = NULL,
-                    N_t = NULL,
-                    mu0_t = NULL,
-                    sigma0_t = NULL,
-                    N0_t = NULL,
-                    mu_c = NULL,
-                    sigma_c = NULL,
-                    N_c = NULL,
-                    mu0_c = NULL,
-                    sigma0_c = NULL,
-                    N0_c = NULL,
-                    alpha_max = 1,
+           function(mu_t          = NULL,
+                    sigma_t       = NULL,
+                    N_t           = NULL,
+                    mu0_t         = NULL,
+                    sigma0_t      = NULL,
+                    N0_t          = NULL,
+                    mu_c          = NULL,
+                    sigma_c       = NULL,
+                    N_c           = NULL,
+                    mu0_c         = NULL,
+                    sigma0_c      = NULL,
+                    N0_c          = NULL,
+                    alpha_max     = 1,
                     weibull_scale = 0.135,
                     weibull_shape = 3,
-                    number_mcmc  = 10000,
-                    two_side = 1){
+                    number_mcmc   = 10000,
+                    two_side      = 1){
              standardGeneric("bdpnormal")
            })
 
 setMethod("bdpnormal",
           signature(),
-          function(mu_t = NULL,
-                   sigma_t = NULL,
-                   N_t = NULL,
-                   mu0_t = NULL,
-                   sigma0_t = NULL,
-                   N0_t = NULL,
-                   mu_c = NULL,
-                   sigma_c = NULL,
-                   N_c = NULL,
-                   mu0_c = NULL,
-                   sigma0_c = NULL,
-                   N0_c = NULL,
-                   alpha_max = 1,
+          function(mu_t          = NULL,
+                   sigma_t       = NULL,
+                   N_t           = NULL,
+                   mu0_t         = NULL,
+                   sigma0_t      = NULL,
+                   N0_t          = NULL,
+                   mu_c          = NULL,
+                   sigma_c       = NULL,
+                   N_c           = NULL,
+                   mu0_c         = NULL,
+                   sigma0_c      = NULL,
+                   N0_c          = NULL,
+                   alpha_max     = 1,
                    weibull_scale = 0.135,
                    weibull_shape = 3,
-                   number_mcmc  = 10000,
-                   two_side = 1){
+                   number_mcmc   = 10000,
+                   two_side      = 1){
 
 
   ################################################################################
@@ -318,42 +318,42 @@ setMethod("bdpnormal",
                                   weibull_scale = weibull_scale,
                                   two_side      = two_side)
 
-      mu_posterior <- mu_post_aug(mu          = mu,
-                                  sigma       = sigma,
-                                  N           = N,
-                                  mu0         = mu0,
-                                  sigma0      = sigma0,
-                                  N0          = N0,
-                                  alpha_discount  = alpha_discount$alpha_discount,
-                                  number_mcmc = number_mcmc)
+      mu_posterior <- mu_post_aug(mu             = mu,
+                                  sigma          = sigma,
+                                  N              = N,
+                                  mu0            = mu0,
+                                  sigma0         = sigma0,
+                                  N0             = N0,
+                                  alpha_discount = alpha_discount$alpha_discount,
+                                  number_mcmc    = number_mcmc)
     } else {
-      mu_posterior <- mu_post_aug(mu          = mu,
-                                  sigma       = sigma,
-                                  N           = N,
-                                  mu0         = mu0,
-                                  sigma0     = sigma0,
-                                  N0          = N0,
-                                  alpha_discount  = 0,
-                                  number_mcmc = number_mcmc)
+      mu_posterior <- mu_post_aug(mu             = mu,
+                                  sigma          = sigma,
+                                  N              = N,
+                                  mu0            = mu0,
+                                  sigma0         = sigma0,
+                                  N0             = N0,
+                                  alpha_discount = 0,
+                                  number_mcmc    = number_mcmc)
 
-      alpha_discount <- list(alpha_discount   = 0,
-                         pvalue       = 0,
-                         mu0          = rnorm(100),
-                         mu_post_flat = mu_posterior)
+      alpha_discount <- list(alpha_discount = 0,
+                         pvalue             = 0,
+                         mu0                = rnorm(100),
+                         mu_post_flat       = mu_posterior)
     }
 
-    return(list(alpha_discount     = alpha_discount$alpha_discount,
-                pvalue             = alpha_discount$pvalue,
-                mu_posterior       = mu_posterior,
-                mu_posterior_flat  = alpha_discount$mu_post_flat,
-                mu_prior           = alpha_discount$mu0,
-                weibull_scale      = weibull_scale,
-                weibull_shape      = weibull_shape,
-                mu                 = mu,
-                N                  = N,
-                mu0                = mu0,
-                N0                 = N0,
-                N0_effective       = alpha_discount$alpha_discount * N0))
+    return(list(alpha_discount    = alpha_discount$alpha_discount,
+                pvalue            = alpha_discount$pvalue,
+                mu_posterior      = mu_posterior,
+                mu_posterior_flat = alpha_discount$mu_post_flat,
+                mu_prior          = alpha_discount$mu0,
+                weibull_scale     = weibull_scale,
+                weibull_shape     = weibull_shape,
+                mu                = mu,
+                N                 = N,
+                mu0               = mu0,
+                N0                = N0,
+                N0_effective      = alpha_discount$alpha_discount * N0))
   }
 
   final <- function(posterior_treatment, posterior_control = NULL) {
@@ -378,15 +378,15 @@ setMethod("bdpnormal",
     return(list(den_post_control      = den_post_control,
                 den_flat_control      = den_flat_control,
                 den_prior_control     = den_prior_control,
-                den_post_treatment         = den_post_treatment,
-                den_flat_treatment         = den_flat_treatment,
-                den_prior_treatment        = den_prior_treatment,
+                den_post_treatment    = den_post_treatment,
+                den_flat_treatment    = den_flat_treatment,
+                den_prior_treatment   = den_prior_treatment,
                 TestMinusControl_post = TestMinusControl_post))
     }
     else{
-    return(list(den_post_treatment         = den_post_treatment,
-                den_flat_treatment         = den_flat_treatment,
-                den_prior_treatment        = den_prior_treatment,
+    return(list(den_post_treatment    = den_post_treatment,
+                den_flat_treatment    = den_flat_treatment,
+                den_prior_treatment   = den_prior_treatment,
                 TestMinusControl_post = TestMinusControl_post))
     }
   }

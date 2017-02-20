@@ -165,17 +165,17 @@ setMethod("bdpsurvival",
 
   f1 <- final_survival(posterior_treatment = posterior_treatment)
 
-  args1 <- list(S_t = S_t,
-                S_c = S_c,
-                S0_t = S0_t,
-                alpha_max = alpha_max,
-                a0 = a0,
-                b0 = b0,
-                surv_time   = surv_time,
-                number_mcmc = number_mcmc,
+  args1 <- list(S_t           = S_t,
+                S_c           = S_c,
+                S0_t          = S0_t,
+                alpha_max     = alpha_max,
+                a0            = a0,
+                b0            = b0,
+                surv_time     = surv_time,
+                number_mcmc   = number_mcmc,
                 weibull_scale = weibull_scale,
                 weibull_shape = weibull_shape,
-                two_side = two_side)
+                two_side      = two_side)
 
   me <- list(posterior_treatment = posterior_treatment,
              f1                  = f1,
@@ -371,10 +371,10 @@ discount_function_survival <- function(S, S0, alpha_max, a0, b0, number_mcmc,
     }
   }
 
-  return(list(alpha_discount  = alpha_discount,
-              pvalue          = p_test,
-              posterior_flat  = hazard_post_aug_t,
-              prior           = hazard_post_aug_t0))
+  return(list(alpha_discount = alpha_discount,
+              pvalue         = p_test,
+              posterior_flat = hazard_post_aug_t,
+              prior          = hazard_post_aug_t0))
 }
 
 
