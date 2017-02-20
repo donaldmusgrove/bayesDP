@@ -4,7 +4,7 @@ Title: Tools for the Bayesian Discount Prior Function
 Version: 0.1.1
 Date: 2017-02-03
 Authors@R: c(person("Shawn", "Balcome", email = "sbalcome@mdic.org", role = c("aut", "cre")),person("Donnie", "Musgrove", email = "donald.r.musgrove@medtronic.com", role = c("aut", "cre")),person("Tarek", "Haddad", email = "tarek.d.haddad@medtronic.com", role = c("aut", "cre")))
-Depends: RcppArmadillo, ggplot2, MCMCpack, testthat
+Depends: arm, RcppArmadillo, ggplot2, MCMCpack, testthat
 Suggests:
 Description: This package augments current data and historical data using the
     Bayesian discount prior function for 1 arm and 2 arm clinical trials.

@@ -25,14 +25,21 @@
 #'                    x         = c(rnorm(50,1,0.1), rnorm(50,3,0.1)),
 #'                    treatment = c(rep(0,50),rep(1,50)))
 #'
-#' fit <- bdpregression_linear(data          = data,
-#'                             formula       = y ~ treatment + x,
-#'                             prior_mu      = 1,
-#'                             prior_sigma   = 0.1,
-#'                             weibull_scale = 1,
-#'                             weibull_shape = 1,
-#'                             alpha_max     = 1,
-#'                             N_mcmc        = 10000)
+#' fit <- bdpregression_linear(data,
+#' formula       = y ~ treatment + x,
+#' family        = "gaussian",
+#' treatment     = "treatment",
+#' prior.dist    = NULL,
+#' prior.mean    = 0,
+#' prior.scale   = 1000,
+#' prior.df      = Inf,
+#' mu0           = 1,
+#' sigma02       = 0.1,
+#' weibull_scale = 1,
+#' weibull_shape = 1,
+#' alpha_max     = 1,
+#' number_mcmc   = 10000,
+#' two_side      = 0)
 #'
 #' ### Main parameter of interest:
 #' fit$effect_est
