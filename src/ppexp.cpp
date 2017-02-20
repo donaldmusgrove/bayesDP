@@ -4,7 +4,7 @@ using namespace Rcpp;
 using namespace arma;
 
 // [[Rcpp::export]]
-double ppexp(double q, const arma::vec& x, const arma::vec& cuts) {
+double ppexpV(double q, const arma::vec& x, const arma::vec& cuts) {
 
   int nc = cuts.n_elem;
   double ret;
@@ -52,6 +52,7 @@ double ppexp(double q, const arma::vec& x, const arma::vec& cuts) {
 }
 
 
+// [[Rcpp::export]]
 arma::vec ppexpM(double q, const arma::mat& x, const arma::vec& cuts) {
 
   arma::mat y = x.t();
@@ -59,7 +60,7 @@ arma::vec ppexpM(double q, const arma::mat& x, const arma::vec& cuts) {
   int ny = y.n_cols;
   arma::vec ret(ny);
   for(int i = 0; i < ny; i++){
-    ret(i) = ppexp(q, y.col(i), cuts);
+    ret(i) = ppexpV(q, y.col(i), cuts);
   }
   return(ret);
 }

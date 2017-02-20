@@ -70,4 +70,3 @@ print(fit)
 plot(fit)
 
 }
-

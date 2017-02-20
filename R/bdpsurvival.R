@@ -133,7 +133,7 @@ setMethod("bdpsurvival",
   } else if(type=="2arm"){
     if(nrow(S_t) == 0) return("Error: current treatment data missing or input incorrectly.")
     if(nrow(S_c) == 0) return("Error: current control data missing or input incorrectly.")
-    if(nrow(S0_t) == 0 & nrow(S0_c)) return("Error: historical data input incorrectly.")
+    if(nrow(S0_t) == 0 & nrow(S0_c)==0) return("Error: historical data input incorrectly.")
   }
 
   posterior_treatment <- survival_posterior(
@@ -150,8 +150,8 @@ setMethod("bdpsurvival",
 
   if(type=="2arm"){
     posterior_control <- survival_posterior(
-      S             = S_t,
-      S0            = S0_t,
+      S             = S_c,
+      S0            = S0_c,
       alpha_max     = alpha_max[2],
       a0            = a0,
       b0            = b0,
@@ -160,10 +160,13 @@ setMethod("bdpsurvival",
       weibull_shape = weibull_shape[2],
       weibull_scale = weibull_scale[2],
       two_side      = two_side)
+  } else{
+    posterior_control <- NULL
   }
 
 
-  f1 <- final_survival(posterior_treatment = posterior_treatment)
+  f1 <- final_survival(posterior_treatment = posterior_treatment,
+                       posterior_control   = posterior_control)
 
   args1 <- list(S_t           = S_t,
                 S_c           = S_c,
@@ -178,6 +181,7 @@ setMethod("bdpsurvival",
                 two_side      = two_side)
 
   me <- list(posterior_treatment = posterior_treatment,
+             posterior_control   = posterior_control,
              f1                  = f1,
              args1               = args1)
 
@@ -350,6 +354,8 @@ discount_function_survival <- function(S, S0, alpha_max, a0, b0, number_mcmc,
     hazard_post_aug_t0[,i] <- rgamma(number_mcmc, a_post0[i], b_post0[i])+1e-12
   }
 
+  ### Weight historical data via (approximate) hazard ratio comparing
+  ### current vs historical
   R0     <- log(hazard_post_aug_t0)-log(hazard_post_aug_t)
   V0     <- 1/apply(R0,2,var)
   logHR0 <- R0%*%V0/sum(V0)  #weighted average  of SE^2
@@ -379,7 +385,9 @@ discount_function_survival <- function(S, S0, alpha_max, a0, b0, number_mcmc,
 
 
 ### Posterior estimation for piecewise exponential distribution given
-### alpha_loss. Comparison is probability of survival at user input time
+### alpha_loss.
+### - For 1 arm (OPC), comparison is probability of survival at user input time
+### - For 2 arm (RCT), comparison is hazard ratio of treatment vs control
 posterior_augment_survival <- function(S, S0, alpha_discount, a0, b0,
                                        number_mcmc, surv_time){
 
@@ -409,9 +417,10 @@ posterior_augment_survival <- function(S, S0, alpha_discount, a0, b0,
                                      b_post[i]+b_post0[i]*alpha_discount) + 1e-12
  }
 
-  pwe_cdf <- ppexpV(surv_time = surv_time,
-                    hazard    = hazard_post_aug_t,
-                    breaks    = breaks)
+  ### Posterior of survival time (statistic of interest for 1arm)
+  pwe_cdf <- ppexp(q    = surv_time,
+                   x    = hazard_post_aug_t,
+                   cuts = breaks)
 
   surv_time_posterior <- 1-pwe_cdf
 
@@ -457,7 +466,8 @@ survival_posterior <- function(S, S0, alpha_max, a0, b0, surv_time,
 }
 
 ### Create final result class
-final_survival <- function(posterior_treatment){
+final_survival <- function(posterior_treatment, posterior_control, type="1arm"){
+
   density_post_treatment  <- density(posterior_treatment$Survival_posterior,
                                    adjust = 0.5)
   density_flat_treatment  <- density(posterior_treatment$posterior_flat,
@@ -465,37 +475,38 @@ final_survival <- function(posterior_treatment){
   density_prior_treatment <- density(posterior_treatment$prior,
                                    adjust = 0.5)
 
-  teatmentpost <- posterior_treatment$posterior$surv_time_posterior
+  if(type == "1arm"){
+    teatmentpost <- posterior_treatment$posterior$surv_time_posterior
 
-  return(list(density_post_treatment  = density_post_treatment,
-              density_flat_treatment  = density_flat_treatment,
-              density_prior_treatment = density_prior_treatment,
-              teatmentpost            = teatmentpost))
-}
+    return(list(density_post_treatment  = density_post_treatment,
+                density_flat_treatment  = density_flat_treatment,
+                density_prior_treatment = density_prior_treatment,
+                teatmentpost            = teatmentpost))
+  } else if(!is.null(posterior_control) & type=="2arm"){
+    density_post_control  <- density(posterior_control$posterior$posterior,
+                                     adjust = 0.5)
+    density_flat_control  <- density(posterior_control$posterior_flat,
+                                     adjust = 0.5)
+    density_prior_control <- density(posterior_control$prior,
+                                     adjust = 0.5)
 
+    ### Posterior hazard ratios at each interval
+    R0     <- log(posterior_treatment$posterior$posterior)-log(posterior_control$posterior$posterior)
+    V0     <- 1/apply(R0,2,var)
+    logHR0 <- R0%*%V0/sum(V0)
 
+    treatmentpost <- logHR0
 
-### Piecewise exponential cdf
-ppexp <- function (q, rate = 1, t = 0){
-  q[q < 0] <- 0
-  ind <- rowSums(outer(q, t, ">="))
-  ret <- pexp(q - t[ind], rate[ind])
-  mi <- min(length(t), max(ind))
-  if (length(t) > 1) {
-    dt <- t[-1] - t[-mi]
-    pe <- pexp(dt, rate[-mi])
-    cp <- c(1, cumprod(1 - pe))
-    ret <- c(0, cumsum(cp[-length(cp)] * pe))[ind] + ret * cp[ind]
+    return(list(density_post_treatment  = density_post_treatment,
+                density_flat_treatment  = density_flat_treatment,
+                density_prior_treatment = density_prior_treatment,
+                density_post_control    = density_post_control,
+                density_flat_control    = density_flat_control,
+                density_prior_control   = density_prior_control,
+                teatmentpost            = teatmentpost))
   }
-  ret
 }
 
-### Vectorized ppexp function over rates
-ppexpV <- function(q, rate, t){
-  nR  <- nrow(rate)
-  ret <- apply(rate, 1, ppexp, q=q, t=t)
-  ret
-}
 
 ### Transform posterior hazard density list into a data frame
 hazard_list_to_df <- function(hazard, starts, information_sources, group){

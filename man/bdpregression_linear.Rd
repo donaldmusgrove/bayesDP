@@ -66,4 +66,3 @@ fit <- bdpregression_linear(data          = data,
 fit$effect_est
 
 }
-

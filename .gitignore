@@ -5,3 +5,4 @@
 *.o
 *.dll
 *.so
+packrat/lib*/
