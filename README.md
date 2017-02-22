@@ -8,3 +8,4 @@ Install development version from github:
 # install.packages("devtools")
 devtools::install_github("balcomes/bayesDP")
 ```
+/play secret
