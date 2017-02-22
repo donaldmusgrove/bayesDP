@@ -9,3 +9,5 @@ Install development version from github:
 devtools::install_github("balcomes/bayesDP")
 ```
 /play secret
+
+"tada": "plays a fanfare :flags:"
