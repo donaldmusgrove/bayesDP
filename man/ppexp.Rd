@@ -35,3 +35,4 @@ x  <- matrix(rgamma(4*10, 0.1, 0.1), nrow=10)
 pp <- ppexp(q,x,cuts)
 
 }
+
