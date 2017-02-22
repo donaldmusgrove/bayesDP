@@ -55,53 +55,53 @@ test_that("Normal Summary", {
 
 
 test_that("Binomial", {
-  expect_true(class(try(bdpbinomiall(20,500,50,300), silent = TRUE)) != "try-error",
+  expect_true(class(try(bdpbinomial(20,500,50,300), silent = TRUE)) != "try-error",
               "1arm Binomial Test Error")
-  expect_true(class(try(bdpbinomiall(20,500,50,300,30,400,60,1000), silent = TRUE)) != "try-error",
+  expect_true(class(try(bdpbinomial(20,500,50,300,30,400,60,1000), silent = TRUE)) != "try-error",
               "2arm Binomial Test/Control Error")
   options(warn=2)
-  expect_true(class(try(bdpbinomiall(20,500,50,300), silent = TRUE)) != "try-error",
+  expect_true(class(try(bdpbinomial(20,500,50,300), silent = TRUE)) != "try-error",
               "1arm Binomial Test Warning")
-  expect_true(class(try(bdpbinomiall(20,500,50,300,30,400,60,1000), silent = TRUE)) != "try-error",
+  expect_true(class(try(bdpbinomial(20,500,50,300,30,400,60,1000), silent = TRUE)) != "try-error",
               "2arm Binomial Test/Control Warning")
   options(warn=0)
 })
 
 test_that("Binomial Plot", {
-  expect_true(class(try(plot(bdpbinomiall(20,500,50,300)), silent = TRUE)) != "try-error",
+  expect_true(class(try(plot(bdpbinomial(20,500,50,300)), silent = TRUE)) != "try-error",
               "1arm Binomial Test Plot Error")
-  expect_true(class(try(plot(bdpbinomiall(20,500,50,300,30,400,60,1000)), silent = TRUE)) != "try-error",
+  expect_true(class(try(plot(bdpbinomial(20,500,50,300,30,400,60,1000)), silent = TRUE)) != "try-error",
               "2arm Binomial Test/Control Plot Error")
   options(warn=2)
-  expect_true(class(try(plot(bdpbinomiall(20,500,50,300)), silent = TRUE)) != "try-error",
+  expect_true(class(try(plot(bdpbinomial(20,500,50,300)), silent = TRUE)) != "try-error",
               "1arm Binomial Test Plot Warning")
-  expect_true(class(try(plot(bdpbinomiall(20,500,50,300,30,400,60,1000)), silent = TRUE)) != "try-error",
+  expect_true(class(try(plot(bdpbinomial(20,500,50,300,30,400,60,1000)), silent = TRUE)) != "try-error",
               "2arm Binomial Test/Control Plot Warning")
   options(warn=0)
 })
 
 test_that("Binomial Print", {
-  expect_true(class(try(print(bdpbinomiall(20,500,50,300)), silent = TRUE)) != "try-error",
+  expect_true(class(try(print(bdpbinomial(20,500,50,300)), silent = TRUE)) != "try-error",
               "1arm Binomial Test Print Error")
-  expect_true(class(try(print(bdpbinomiall(20,500,50,300,30,400,60,1000)), silent = TRUE)) != "try-error",
+  expect_true(class(try(print(bdpbinomial(20,500,50,300,30,400,60,1000)), silent = TRUE)) != "try-error",
               "2arm Binomial Test/Control Print Error")
   options(warn=2)
-  expect_true(class(try(print(bdpbinomiall(20,500,50,300)), silent = TRUE)) != "try-error",
+  expect_true(class(try(print(bdpbinomial(20,500,50,300)), silent = TRUE)) != "try-error",
               "1arm Binomial Test Print Warning")
-  expect_true(class(try(print(bdpbinomiall(20,500,50,300,30,400,60,1000)), silent = TRUE)) != "try-error",
+  expect_true(class(try(print(bdpbinomial(20,500,50,300,30,400,60,1000)), silent = TRUE)) != "try-error",
               "2arm Binomial Test/Control Print Warning")
   options(warn=0)
 })
 
 test_that("Binomial Summary", {
-  expect_true(class(try(summary(bdpbinomiall(20,500,50,300)), silent = TRUE)) != "try-error",
+  expect_true(class(try(summary(bdpbinomial(20,500,50,300)), silent = TRUE)) != "try-error",
               "1arm Binomial Test Summary Error")
-  expect_true(class(try(summary(bdpbinomiall(20,500,50,300,30,400,60,1000)), silent = TRUE)) != "try-error",
+  expect_true(class(try(summary(bdpbinomial(20,500,50,300,30,400,60,1000)), silent = TRUE)) != "try-error",
               "2arm Binomial Test/Control Summary Error")
   options(warn=2)
-  expect_true(class(try(summary(bdpbinomiall(20,500,50,300)), silent = TRUE)) != "try-error",
+  expect_true(class(try(summary(bdpbinomial(20,500,50,300)), silent = TRUE)) != "try-error",
               "1arm Binomial Test Summary Warning")
-  expect_true(class(try(summary(bdpbinomiall(20,500,50,300,30,400,60,1000)), silent = TRUE)) != "try-error",
+  expect_true(class(try(summary(bdpbinomial(20,500,50,300,30,400,60,1000)), silent = TRUE)) != "try-error",
               "2arm Binomial Test/Control Summary Warning")
   options(warn=0)
 })
