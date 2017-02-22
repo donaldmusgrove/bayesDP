@@ -8,6 +8,5 @@ Install development version from github:
 # install.packages("devtools")
 devtools::install_github("balcomes/bayesDP")
 ```
-/play secret
 
-"tada": "plays a fanfare :flags:"
+:chart_with_downwards_trend:  :bar_chart:
