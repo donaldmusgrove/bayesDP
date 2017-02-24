@@ -1,9 +1,7 @@
 #' bdpsurv
-#'
 #' bdpsurv
-#'
 #' @title bdpsurv: bdpsurv
-#' @param formula an object of class "formula." Must have a survival object on the left side and exactly two inputs on the right side: treatment and historical. See ‘Details’ for more information.
+#' @param formula an object of class "formula." Must have a survival object on the left side and exactly two inputs on the right side: treatment and historical. See "Details" for more information.
 #' @param data a data frame containing columns time, status, treatment, and historical.
 #' @param breaks a vector of breaks used to compose the breaks of the piecewise exponential model.
 #' @param a0 prior value for the gamma shape. Default is 1.
@@ -15,22 +13,11 @@
 #' @param weibull_shape Shape parameter of the Weibull discount function used to compute alpha, the weight parameter of the historical data. Default value is 3. For type="2arm", users may specify a vector of two values where the first value is used to estimate the weight of the historical treatment group and the second value is used to estimate the weight of the historical control group.
 #' @param weibull_scale Scale parameter of the Weibull discount function used to compute alpha, the weight parameter of the historical data. Default value is 0.135. Two values have special treatment: 0 and Inf. For weibull_scale = 0, alpha is set to 0, i.e., no weight. For weibull_scale = Inf, alpha is set to 1, i.e., full weight. For type="2arm", users may specify a vector of two values where the first value is used to estimate the weight of the historical treatment group and the second value is used to estimate the weight of the historical control group.
 #' @param two_side Indicator of two-sided test for the discount function. Default value is 1.
-#'
-#' @description
-#'
-#' @details
-#'
-#' @examples
-#'
 #' @rdname bdpsurvival
 #' @export bdpsurvival
-
-
 bdpsurvival <- setClass("bdpsurvival", slots = c(posterior_treatment = "list",
                                                  f1 = "list",
                                                  args1 = "list"))
-
-
 setGeneric("bdpsurvival",
   function(formula       = formula,
            data          = data,
@@ -192,21 +179,12 @@ setMethod("bdpsurvival",
 
 
 #' plot
-#'
 #' plot
-#'
 #' @title plot: plot
 #' @param x bdpsurvival
-#'
-#' @examples
-#'
-#' @method plot
-#'
 #' @rdname plot
 #' @export plot
-
 setMethod("plot", signature(x = "bdpsurvival"), function(x){
-
   f                   <- x$f1
   posterior_treatment <- x$posterior_treatment
   two_side            <- x$args1$two_side
@@ -294,23 +272,13 @@ setMethod("plot", signature(x = "bdpsurvival"), function(x){
 })
 
 
-
-
 #' summary
-#'
 #' summary
-#'
 #' @title summary: summary
 #' @param object bdpsurvival
-#'
-#' @examples
-#'
-#' @method summary
-#'
 #' @rdname summary
 #' @export summary
 setMethod("summary", signature(object = "bdpsurvival"), function(object){
-
   f                   <- object$f1
   posterior_treatment <- object$posterior_treatment
   surv_time           <- object$args1$surv_time
@@ -328,11 +296,6 @@ setMethod("summary", signature(object = "bdpsurvival"), function(object){
   print(prior_for_treatment_group)
   print(surv_prob)
 })
-
-
-
-
-
 
 
 ################################################################################

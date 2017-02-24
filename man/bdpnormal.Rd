@@ -89,11 +89,9 @@ groups, where the control group densities are present only if
 }
 \value{
 \code{bdpnormal} returns an object of class "bdpnormal".
-
 The functions \code{summary} and \code{print} are used to obtain and
 print a summary of the results, including user inputs. The \code{plot}
 function displays visual outputs as well.
-
 An object of class "\code{bdpnormal} " is a list containing at least
 the following components:
 }
@@ -110,8 +108,5 @@ bdpnormal
 
 Many, many, many details to come. In fact, the best details. Believe
 me, I know a thing or two about building details.
-}
-\examples{
-
 }
 

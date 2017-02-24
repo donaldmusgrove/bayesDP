@@ -43,8 +43,6 @@ bdpregression_linear(data, formula = y ~ treatment + x, family = "gaussian",
 }
 \description{
 bdpregression_linear
-}
-\details{
 bdpregression_linear
 }
 \examples{
@@ -68,9 +66,7 @@ weibull_shape = 1,
 alpha_max     = 1,
 number_mcmc   = 10000,
 two_side      = 0)
-
 ### Main parameter of interest:
 fit$effect_est
-
 }
 

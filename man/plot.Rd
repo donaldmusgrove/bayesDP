@@ -27,26 +27,15 @@
 }
 \description{
 plot
-
 plot
 
 plot
-
-plot
-}
-\details{
 plot
 
 plot
-
 plot
 
 plot
-}
-\examples{
-
-
-
-
+plot
 }
 

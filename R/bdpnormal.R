@@ -9,7 +9,6 @@
 #' @importFrom ggplot2 ylab
 NULL
 #' bdpnormal
-#'
 #' @title bdpnormal: bdpnormal
 #' @param mu_t scalar. The mean of the current treatment group.
 #' @param sigma_t scalar. The standard deviation of the current treatment
@@ -57,27 +56,20 @@ NULL
 #'        simulations. Default is 1e4.
 #' @param two_side scalar. Indicator of two-sided test for the discount
 #'        function. Default value is 1.
-#'
-#' @examples
-#'
 #' @description
 #' The pdpnormal function is used for estimating posterior samples from a
 #' Gaussian outcome where an informative prior is used. The prior weight
 #' is determined using a discount function. This code is modeled after
 #' the methodologies developed by the MDIC working group: "Informing
 #' clinical trials using bench & simulations."
-#'
 #' @details
 #' Many, many, many details to come. In fact, the best details. Believe
 #' me, I know a thing or two about building details.
-#'
 #' @return
 #' \code{bdpnormal} returns an object of class "bdpnormal".
-#'
 #' The functions \code{summary} and \code{print} are used to obtain and
 #' print a summary of the results, including user inputs. The \code{plot}
 #' function displays visual outputs as well.
-#'
 #' An object of class "\code{bdpnormal} " is a list containing at least
 #' the following components:
 #' @param posterior_treatment a list of outputs including flat, prior, and
@@ -89,13 +81,8 @@ NULL
 #'        groups, where the control group densities are present only if
 #'        \code{type="1arm}.
 #' @param args1 list of user inputs.
-#'
-#'
 #' @rdname bdpnormal
 #' @export bdpnormal
-
-# Depends: testthat,shiny,shinyFiles,shinythemes,shinyBS,survival,ggplot2,MCMCpack,knitr,rmarkdown,parallel,MASS,arm
-
 bdpnormal <- setClass("bdpnormal", slots = c(posterior_treatment = "list",
                                             posterior_control = "list",
                                             f1 = "list",
@@ -471,18 +458,12 @@ setMethod("bdpnormal",
 
 
 #' plot
-#'
 #' plot
-#'
 #' @title plot: plot
 #' @param x bdpnormal
-#'
-#' @examples
-#'
 #' @rdname plot
 #' @export plot
 setMethod("plot", signature(x = "bdpnormal"), function(x){
-
   f <- x$f1
   posterior_treatment <- x$posterior_treatment
   posterior_control <- x$posterior_control
@@ -621,19 +602,14 @@ setMethod("plot", signature(x = "bdpnormal"), function(x){
   par(op)
 })
 
+
 #' print
-#'
 #' print
-#'
 #' @title print: print
 #' @param x bdpnormal
-#'
-#' @examples
-#'
 #' @rdname print
 #' @export print
 setMethod("print", signature(x = "bdpnormal"), function(x){
-
   f <- x$f1
   posterior_treatment <- x$posterior_treatment
   posterior_control <- x$posterior_control
@@ -664,19 +640,14 @@ setMethod("print", signature(x = "bdpnormal"), function(x){
   print(prior_for_treatment_group)
 })
 
+
 #' summary
-#'
 #' summary
-#'
 #' @title summary: summary
 #' @param object bdpnormal
-#'
-#' @examples
-#'
 #' @rdname summary
 #' @export summary
 setMethod("summary", signature(object = "bdpnormal"), function(object){
-
   f <- object$f1
   posterior_treatment <- object$posterior_treatment
   posterior_control <- object$posterior_control

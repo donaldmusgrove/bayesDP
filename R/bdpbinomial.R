@@ -1,7 +1,5 @@
 #' bdpbinomial
-#'
 #' bdpbinomial
-#'
 #' @title bdpbinomial: bdpbinomial
 #' @param y_t Number of events for the current treatment group.
 #' @param N_t Sample size of the current treatment group.
@@ -18,8 +16,6 @@
 #' @param weibull_shape Shape parameter of the Weibull discount function used to compute alpha, the weight parameter of the historical data. Default value is 3. For type="2arm", users may specify a vector of two values where the first value is used to estimate the weight of the historical treatment group and the second value is used to estimate the weight of the historical control group.
 #' @param weibull_scale Scale parameter of the Weibull discount function used to compute alpha, the weight parameter of the historical data. Default value is 0.135. Two values have special treatment: 0 and Inf. For weibull_scale = 0, alpha is set to 0, i.e., no weight. For weibull_scale = Inf, alpha is set to 1, i.e., full weight. For type="2arm", users may specify a vector of two values where the first value is used to estimate the weight of the historical treatment group and the second value is used to estimate the weight of the historical control group.
 #' @param two_side Indicator of two-sided test for the discount function. Default value is 1.
-#' @description insert something here!
-#' @details insert something here!
 #' @examples
 #' ### OPC (1arm) example
 #' fit <- bdpbinomial(y_t           = 10,
@@ -33,16 +29,12 @@
 #'                    weibull_scale = 0.135,
 #'                    weibull_shape = 3,
 #'                    two_side      = 1)
-#'
 #' ### Results
 #' summary(fit)
 #' print(fit)
 #' plot(fit)
-#'
 #' @rdname bdpbinomial
 #' @export bdpbinomial
-
-
 bdpbinomial <- setClass("bdpbinomial",
                         slots = c(posterior_test = "list",
                                   posterior_control = "list",
@@ -395,18 +387,12 @@ return(me)
 
 
 #' plot
-#'
 #' plot
-#'
 #' @title plot: plot
 #' @param x bdpbinomial
-#'
-#' @examples
-#'
 #' @rdname plot
 #' @export plot
 setMethod("plot", signature(x = "bdpbinomial"), function(x){
-
   f                   <- x$f1
   posterior_treatment <- x$posterior_treatment
   posterior_control   <- x$posterior_control
@@ -546,19 +532,14 @@ setMethod("plot", signature(x = "bdpbinomial"), function(x){
   par(op)
 })
 
+
 #' print
-#'
 #' print
-#'
 #' @title print: print
 #' @param x bdpbinomial
-#'
-#' @examples
-#'
 #' @rdname print
 #' @export print
 setMethod("print", signature(x = "bdpbinomial"), function(x){
-
   f                   <- x$f1
   posterior_treatment <- x$posterior_treatment
   posterior_control   <- x$posterior_control
@@ -597,19 +578,14 @@ setMethod("print", signature(x = "bdpbinomial"), function(x){
   print(prior_for_control_group)
 })
 
+
 #' summary
-#'
 #' summary
-#'
 #' @title summary: summary
 #' @param object bdpbinomial
-#'
-#' @examples
-#'
 #' @rdname summary
 #' @export summary
 setMethod("summary", signature(object = "bdpbinomial"), function(object){
-
   f                   <- object$f1
   posterior_treatment <- object$posterior_treatment
   posterior_control   <- object$posterior_control

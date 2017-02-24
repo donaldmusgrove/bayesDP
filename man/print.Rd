@@ -22,21 +22,12 @@
 }
 \description{
 print
-
 print
 
 print
-}
-\details{
 print
 
 print
-
 print
-}
-\examples{
-
-
-
 }
 

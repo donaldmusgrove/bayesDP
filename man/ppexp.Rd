@@ -19,6 +19,10 @@ should be 0, and cuts should be in increasing order.}
 The cumulative distribution function computed at time \code{q},
 hazard(s) \code{x}, and cut points \code{cuts}.
 }
+\description{
+ppexp
+ppexp
+}
 \details{
 The ppexp function is written in C++ and adapted from R code used
 in the \code{msm} package.
@@ -29,10 +33,8 @@ q    <- 12
 x    <- c(0.25,0.3,0.35,0.4)
 cuts <- c(0,6,12,18)
 pp   <- ppexp(q,x,cuts)
-
 # Matrix of multiple vectors of hazard rates. Returns 10 cdf values.
 x  <- matrix(rgamma(4*10, 0.1, 0.1), nrow=10)
 pp <- ppexp(q,x,cuts)
-
 }
 

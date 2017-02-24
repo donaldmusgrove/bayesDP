@@ -1,7 +1,5 @@
 #' bdpregression_linear
-#'
 #' bdpregression_linear
-#'
 #' @title bdpregression_linear: Post Estimate Gaussian
 #' @param data numeric number
 #' @param formula formula
@@ -18,7 +16,6 @@
 #' @param alpha_max alpha_max
 #' @param number_mcmc number_mcmc
 #' @param two_side numeric
-#'
 #' @examples
 #' set.seed(42)
 #' data <- data.frame(y         = rnorm(100, 4, 0.1),
@@ -40,18 +37,13 @@
 #' alpha_max     = 1,
 #' number_mcmc   = 10000,
 #' two_side      = 0)
-#'
 #' ### Main parameter of interest:
 #' fit$effect_est
-#'
 #' @rdname bdpregression_linear
 #' @export bdpregression_linear
-
-
 bdpregression_linear <- setClass("bdpregression_linear", slots = c(est = "list",
                                                                    f1 = "list",
                                                                    args1 = "list"))
-
 
 ############################################################################
 ### Need to fix plots: should not involve effective sample sizes, instead,
@@ -383,20 +375,13 @@ setMethod("bdpregression_linear",
 })
 
 
-
 #' print
-#'
 #' print
-#'
 #' @title print: print
 #' @param x bdpregression_linear
-#'
-#' @examples
-#'
 #' @rdname print
 #' @export print
 setMethod("print", signature(x = "bdpregression_linear"), function(x){
-
   f          <- x$f1
   posterior  <- x$est
 
@@ -410,18 +395,12 @@ setMethod("print", signature(x = "bdpregression_linear"), function(x){
 
 
 #' plot
-#'
 #' plot
-#'
 #' @title plot: plot
 #' @param x bdpregression_linear
-#'
-#' @examples
-#'
 #' @rdname plot
 #' @export plot
 setMethod("plot", signature(x = "bdpregression_linear"), function(x){
-
   f          <- x$f1
   posterior  <- x$est
   two_side   <- x$args1$two_side

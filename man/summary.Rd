@@ -22,21 +22,12 @@
 }
 \description{
 summary
-
 summary
 
 summary
-}
-\details{
 summary
 
 summary
-
 summary
-}
-\examples{
-
-
-
 }
 

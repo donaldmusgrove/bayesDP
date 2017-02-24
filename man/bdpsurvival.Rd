@@ -10,7 +10,7 @@ bdpsurvival(formula = formula, data = data, breaks = NULL, a0 = 0.1,
   two_side = 1)
 }
 \arguments{
-\item{formula}{an object of class "formula." Must have a survival object on the left side and exactly two inputs on the right side: treatment and historical. See ‘Details’ for more information.}
+\item{formula}{an object of class "formula." Must have a survival object on the left side and exactly two inputs on the right side: treatment and historical. See "Details" for more information.}
 
 \item{data}{a data frame containing columns time, status, treatment, and historical.}
 
@@ -35,14 +35,7 @@ bdpsurvival(formula = formula, data = data, breaks = NULL, a0 = 0.1,
 \item{two_side}{Indicator of two-sided test for the discount function. Default value is 1.}
 }
 \description{
-
-}
-\details{
 bdpsurv
-
 bdpsurv
-}
-\examples{
-
 }
 

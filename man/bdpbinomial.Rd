@@ -41,14 +41,8 @@ bdpbinomial(y_t = NULL, N_t = NULL, y0_t = NULL, N0_t = NULL,
 \item{two_side}{Indicator of two-sided test for the discount function. Default value is 1.}
 }
 \description{
-insert something here!
-}
-\details{
 bdpbinomial
-
 bdpbinomial
-
-insert something here!
 }
 \examples{
 ### OPC (1arm) example
@@ -63,11 +57,9 @@ fit <- bdpbinomial(y_t           = 10,
                    weibull_scale = 0.135,
                    weibull_shape = 3,
                    two_side      = 1)
-
 ### Results
 summary(fit)
 print(fit)
 plot(fit)
-
 }
 
