@@ -420,7 +420,7 @@ setMethod("plot", signature(x = "bdpbinomial"), function(x){
                      y=f$density_post_control$y,
                      x=f$density_post_control$x)
 
-    D2 <- data.frame(information_sources="Current data",
+    D2 <- data.frame(information_sources="Current Data",
                      group="Control",
                      y=f$density_flat_control$y,
                      x=f$density_flat_control$x)
@@ -436,7 +436,7 @@ setMethod("plot", signature(x = "bdpbinomial"), function(x){
                    y=f$density_post_treatment$y,
                    x=f$density_post_treatment$x)
 
-  D5 <- data.frame(information_sources="Current data",
+  D5 <- data.frame(information_sources="Current Data",
                    group="Treatment",
                    y=f$density_flat_treatment$y,
                    x=f$density_flat_treatment$x)
@@ -460,20 +460,20 @@ setMethod("plot", signature(x = "bdpbinomial"), function(x){
   }
 
   D$information_sources <- factor(D$information_sources,
-                                  levels = (c("Posterior","Current data","Prior")))
+                                  levels = (c("Posterior","Current Data","Prior")))
 
   post_typeplot <- ggplot(D,aes(x=x,y=y)) +
     geom_line(size=2,aes(color=information_sources,lty=information_sources)) +
     theme_bw() +
     facet_wrap(~group, ncol=1,scale='free') +
     ylab("Density (PDF)") +
-    xlab("values")
+    xlab("Values")
 
   densityplot <- ggplot(subset(D,information_sources=="Posterior"),
                         aes(x=x,y=y)) +
     geom_line(size=2,aes(color=group)) +
     ylab("Density (PDF)") +
-    xlab("values") +
+    xlab("Values") +
     theme_bw()
 
 
@@ -521,8 +521,20 @@ setMethod("plot", signature(x = "bdpbinomial"), function(x){
   discountfun_plot <- discountfun_plot +
     facet_wrap(~group, ncol=1) +
     theme_bw() +
-    ylab("Effective sample size for historical data") +
-    xlab("Bayesian p-value (new vs historical data)")
+    ylab("Effective Sample Size for Historical Data") +
+    xlab("Bayesian p-value (New vs Historical Data)")
+
+  post_typeplot <- post_typeplot + guides(fill=guide_legend(title=NULL))
+
+  post_typeplot <- post_typeplot + theme(legend.title=element_blank())
+
+  densityplot <- densityplot + guides(fill=guide_legend(title=NULL))
+
+  densityplot <- densityplot + theme(legend.title=element_blank())
+
+  discountfun_plot <- discountfun_plot + guides(fill=guide_legend(title=NULL))
+
+  discountfun_plot <- discountfun_plot + theme(legend.title=element_blank())
 
   op <- par(ask=TRUE)
   plot(post_typeplot)

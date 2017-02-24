@@ -495,7 +495,7 @@ setMethod("plot", signature(x = "bdpnormal"), function(x){
                      group="Control",
                      y=f$den_post_control$y,
                      x=f$den_post_control$x)
-    D2 <- data.frame(information_sources="Current data",
+    D2 <- data.frame(information_sources="Current Data",
                      group="Control",
                      y=f$den_flat_control$y,
                      x=f$den_flat_control$x)
@@ -509,7 +509,7 @@ setMethod("plot", signature(x = "bdpnormal"), function(x){
                    group="Test",
                    y=f$den_post_treatment$y,
                    x=f$den_post_treatment$x)
-  D5 <- data.frame(information_sources="Current data",
+  D5 <- data.frame(information_sources="Current Data",
                    group="Test",
                    y=f$den_flat_treatment$y,
                    x=f$den_flat_treatment$x)
@@ -532,20 +532,23 @@ setMethod("plot", signature(x = "bdpnormal"), function(x){
   }
 
   D$information_sources <- factor(D$information_sources,
-                                  levels = (c("Posterior","Current data","Prior")))
+                                  levels = (c("Posterior","Current Data","Prior")))
+
+  D$title <- "How do you put a grey box around me??"
+  #ggplot(mtcars, aes(cyl)) + geom_bar() + theme_bw() + facet_grid(. ~ title)
 
   post_typeplot <- ggplot(D,aes(x=x,y=y)) +
     geom_line(size=2,aes(colour=information_sources,lty=information_sources)) +
-    theme_bw() +
+    #theme_bw() + geom_bar() + facet_grid(. ~ title)
     facet_wrap(~group, ncol=1,scale='free') +
     ylab("Density (PDF)") +
-    xlab("values")
+    xlab("Values")
 
   densityplot <- ggplot(subset(D,information_sources=="Posterior"),
                         aes(x=x,y=y)) +
     geom_line(size=2,aes(colour=group)) +
     ylab("Density (PDF)") +
-    xlab("values") +
+    xlab("Values") +
     theme_bw()
 
 
@@ -566,14 +569,14 @@ setMethod("plot", signature(x = "bdpnormal"), function(x){
                                       scale=posterior_control$weibull_scale)*posterior_control$N0
   }
 
-  D1 <- data.frame(group="treatment",y=Discount_function_treatment,x=seq(0,1,,100))
-  D2 <- data.frame(group=c("treatment"),pvalue=c(posterior_treatment$pvalue))
-  D3 <- data.frame(group=c("treatment"),pvalue=c(posterior_treatment$N0_effective))
+  D1 <- data.frame(group="Treatment",y=Discount_function_treatment,x=seq(0,1,,100))
+  D2 <- data.frame(group=c("Treatment"),pvalue=c(posterior_treatment$pvalue))
+  D3 <- data.frame(group=c("Treatment"),pvalue=c(posterior_treatment$N0_effective))
 
   if(arm2 == TRUE){
-    D4 <- data.frame(group="control",y=Discount_function_control,x=seq(0,1,,100))
-    D5 <- data.frame(group=c("control"),pvalue=c(posterior_control$pvalue))
-    D6 <- data.frame(group=c("control"),pvalue=c(posterior_control$N0_effective))
+    D4 <- data.frame(group="Control",y=Discount_function_control,x=seq(0,1,,100))
+    D5 <- data.frame(group=c("Control"),pvalue=c(posterior_control$pvalue))
+    D6 <- data.frame(group=c("Control"),pvalue=c(posterior_control$N0_effective))
   }
 
 
@@ -594,9 +597,20 @@ setMethod("plot", signature(x = "bdpnormal"), function(x){
   discountfun_plot <- discountfun_plot +
     facet_wrap(~group, ncol=1) +
     theme_bw() +
-    ylab("Effective sample size for historical data") +
-    xlab("Bayesian p-value (new vs historical data)")
+    ylab("Effective Sample Size for Historical Data") +
+    xlab("Bayesian p-value (New vs Historical Data)")
 
+  post_typeplot <- post_typeplot + guides(fill=guide_legend(title=NULL))
+
+  post_typeplot <- post_typeplot + theme(legend.title=element_blank())
+
+  densityplot <- densityplot + guides(fill=guide_legend(title=NULL))
+
+  densityplot <- densityplot + theme(legend.title=element_blank())
+
+  discountfun_plot <- discountfun_plot + guides(fill=guide_legend(title=NULL))
+
+  discountfun_plot <- discountfun_plot + theme(legend.title=element_blank())
 
   op <- par(ask=TRUE)
   plot(post_typeplot)

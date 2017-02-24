@@ -430,7 +430,7 @@ setMethod("plot", signature(x = "bdpregression_linear"), function(x){
                    y                   = f$den_post$y,
                    x                   = f$den_post$x)
 
-  D5 <- data.frame(information_sources = "Current data",
+  D5 <- data.frame(information_sources = "Current Data",
                    y                   = f$den_flat$y,
                    x                   = f$den_flat$x)
 
@@ -441,19 +441,19 @@ setMethod("plot", signature(x = "bdpregression_linear"), function(x){
   D <- as.data.frame(rbind(D4, D5, D6))
 
   D$information_sources <- factor(D$information_sources,
-                                  levels = (c("Posterior", "Current data", "Prior")))
+                                  levels = (c("Posterior", "Current Data", "Prior")))
 
   post_typeplot <- ggplot(D, aes(x = x, y = y)) +
     geom_line(size = 2, aes(colour = information_sources, lty = information_sources)) +
     theme_bw() +
     ylab("Density (PDF)") +
-    xlab("values")
+    xlab("Values")
 
 
   densityplot <- ggplot(subset(D, information_sources == "Posterior"), aes(x = x, y = y)) +
     geom_line(size = 2) +
     ylab("Density (PDF)") +
-    xlab("values") +
+    xlab("Values") +
     theme_bw()
 
   if (two_side == 1) {
@@ -475,8 +475,20 @@ setMethod("plot", signature(x = "bdpregression_linear"), function(x){
     geom_line(data = D1, aes(y = y, x = x), size = 1) +
     geom_vline(data = D2, aes(xintercept = pvalue), lty = 2) +
     theme_bw() +
-    ylab("Effective sample size for historical data") +
-    xlab("Bayesian p-value (new vs historical data)")
+    ylab("Effective Sample Size for Historical Data") +
+    xlab("Bayesian p-value (New vs Historical Data)")
+
+  post_typeplot <- post_typeplot + guides(fill=guide_legend(title=NULL))
+
+  post_typeplot <- post_typeplot + theme(legend.title=element_blank())
+
+  densityplot <- densityplot + guides(fill=guide_legend(title=NULL))
+
+  densityplot <- densityplot + theme(legend.title=element_blank())
+
+  discountfun_plot <- discountfun_plot + guides(fill=guide_legend(title=NULL))
+
+  discountfun_plot <- discountfun_plot + theme(legend.title=element_blank())
 
   op <- par(ask=TRUE)
   plot(post_typeplot)

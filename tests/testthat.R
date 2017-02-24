@@ -1,1 +1,1 @@
-test_check("bayesDP")
+#test_check("bayesDP")
