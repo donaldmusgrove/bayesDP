@@ -239,13 +239,15 @@ setMethod("plot", signature(x = "bdpsurvival"), function(x){
     theme_bw() +
     facet_wrap(~group+start, ncol = 1, scale = "free") +
     ylab("Density (PDF)") +
-    xlab("Values")
+    xlab("Values") +
+    ggtitle("Posterior Type Plot")
 
   densityplot <- ggplot(subset(D, information_sources == "Posterior"), aes(x = x, y = y)) +
     geom_line(size = 2, aes(colour = group)) +
     ylab("Density (PDF)") +
     xlab("Values") +
-    theme_bw()
+    theme_bw() +
+    ggtitle("Density Plot")
 
 
   if (two_side == 1) {
@@ -269,7 +271,8 @@ setMethod("plot", signature(x = "bdpsurvival"), function(x){
     facet_wrap(~group, ncol = 1) +
     theme_bw() +
     ylab("Effective Sample Size for Historical Data") +
-    xlab("Bayesian p-value (New vs Historical Data)")
+    xlab("Bayesian p-value (New vs Historical Data)") +
+    ggtitle("Discount Function Plot")
 
   post_typeplot <- post_typeplot + guides(fill=guide_legend(title=NULL))
 

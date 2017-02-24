@@ -534,22 +534,23 @@ setMethod("plot", signature(x = "bdpnormal"), function(x){
   D$information_sources <- factor(D$information_sources,
                                   levels = (c("Posterior","Current Data","Prior")))
 
-  D$title <- "How do you put a grey box around me??"
-  #ggplot(mtcars, aes(cyl)) + geom_bar() + theme_bw() + facet_grid(. ~ title)
+  ggplot(mtcars, aes(cyl)) + geom_bar() + theme_bw() + facet_grid(. ~ title)
 
   post_typeplot <- ggplot(D,aes(x=x,y=y)) +
     geom_line(size=2,aes(colour=information_sources,lty=information_sources)) +
-    #theme_bw() + geom_bar() + facet_grid(. ~ title)
     facet_wrap(~group, ncol=1,scale='free') +
     ylab("Density (PDF)") +
-    xlab("Values")
+    xlab("Values") +
+    theme_bw() +
+    ggtitle("Posterior Type Plot")
 
   densityplot <- ggplot(subset(D,information_sources=="Posterior"),
                         aes(x=x,y=y)) +
     geom_line(size=2,aes(colour=group)) +
     ylab("Density (PDF)") +
     xlab("Values") +
-    theme_bw()
+    theme_bw() +
+    ggtitle("Density Plot")
 
 
   if(two_side==1){
@@ -598,7 +599,8 @@ setMethod("plot", signature(x = "bdpnormal"), function(x){
     facet_wrap(~group, ncol=1) +
     theme_bw() +
     ylab("Effective Sample Size for Historical Data") +
-    xlab("Bayesian p-value (New vs Historical Data)")
+    xlab("Bayesian p-value (New vs Historical Data)") +
+    ggtitle("Discount Function Plot")
 
   post_typeplot <- post_typeplot + guides(fill=guide_legend(title=NULL))
 
