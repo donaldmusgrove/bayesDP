@@ -1,13 +1,13 @@
 ## Test environments
 * OS X, Microsoft R Open 3.3.2
 * Arch Linux 2017.02.01, Microsoft R Open 3.3.2
-* windows 10, Microsoft R Open 3.3.2
+* Windows 10, Microsoft R Open 3.3.2
 
 ## R CMD check results
 There were no ERRORs
-There were 999 WARNINGs. 
+There were no WARNINGs. 
 
-There were 999 NOTE:
+There were 4 NOTEs:
 
 * Fill in!!!!
 

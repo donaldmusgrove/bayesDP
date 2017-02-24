@@ -484,11 +484,11 @@ setMethod("plot", signature(x = "bdpbinomial"), function(x){
 
   D1 <- data.frame(group="Treatment",y=discount_function_treatment,x=seq(0,1,,100))
   D2 <- data.frame(group="Treatment",pvalue=c(posterior_treatment$pvalue))
-  D3 <- data.frame(group="Treatment",pvalue=c(posterior_treatment$N0_effective))
+  D3 <- data.frame(group="Treatment",pvalue=c(posterior_treatment$alpha_discount))
   if (arm2 == TRUE){
     D4 <- data.frame(group="Control",y=discount_function_control,x=seq(0,1,,100))
     D5 <- data.frame(group="Control",pvalue=c(posterior_control$pvalue))
-    D6 <- data.frame(group="Control",pvalue=c(posterior_control$N0_effective))
+    D6 <- data.frame(group="Control",pvalue=c(posterior_control$alpha_discount))
   }
 
 
@@ -509,9 +509,10 @@ setMethod("plot", signature(x = "bdpbinomial"), function(x){
   discountfun_plot <- discountfun_plot +
     facet_wrap(~group, ncol=1) +
     theme_bw() +
-    ylab("Effective Sample Size for Historical Data") +
+    ylab("Alpha Discount Value") +
     xlab("Bayesian p-value (New vs Historical Data)") +
-    ggtitle("Discount Function Plot")
+    ggtitle("Discount Function") +
+    ylim(0,1)
 
   post_typeplot <- post_typeplot + guides(fill=guide_legend(title=NULL))
 
