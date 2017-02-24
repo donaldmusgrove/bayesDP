@@ -1,3 +1,4 @@
+
 #' @importFrom ggplot2 aes
 #' @importFrom ggplot2 facet_wrap
 #' @importFrom ggplot2 geom_hline
@@ -515,8 +516,6 @@ setMethod("plot", signature(x = "bdpnormal"), function(x){
   D$information_sources <- factor(D$information_sources,
                                   levels = (c("Posterior","Current Data","Prior")))
 
-  ggplot(mtcars, aes(cyl)) + geom_bar() + theme_bw() + facet_grid(. ~ title)
-
   post_typeplot <- ggplot(D,aes(x=x,y=y)) +
     geom_line(size=2,aes(colour=information_sources,lty=information_sources)) +
     facet_wrap(~group, ncol=1,scale='free') +
@@ -544,11 +543,11 @@ setMethod("plot", signature(x = "bdpnormal"), function(x){
 
   Discount_function_treatment <- pweibull(p_value,
                                  shape=posterior_treatment$weibull_shape,
-                                 scale=posterior_treatment$weibull_scale)*posterior_treatment$N0
+                                 scale=posterior_treatment$weibull_scale)
   if(arm2 == TRUE){
     Discount_function_control <- pweibull(p_value,
                                       shape=posterior_control$weibull_shape,
-                                      scale=posterior_control$weibull_scale)*posterior_control$N0
+                                      scale=posterior_control$weibull_scale)
   }
 
   D1 <- data.frame(group="Treatment",y=Discount_function_treatment,x=seq(0,1,,100))

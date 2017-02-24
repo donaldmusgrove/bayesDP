@@ -475,11 +475,11 @@ setMethod("plot", signature(x = "bdpbinomial"), function(x){
 
   discount_function_treatment <- pweibull(p_value,
     shape=posterior_treatment$weibull_shape,
-    scale=posterior_treatment$weibull_scale)*posterior_treatment$N0
+    scale=posterior_treatment$weibull_scale)
   if(arm2 == TRUE){
     discount_function_control <- pweibull(p_value,
       shape=posterior_control$weibull_shape,
-      scale=posterior_control$weibull_scale)*posterior_control$N0
+      scale=posterior_control$weibull_scale)
   }
 
   D1 <- data.frame(group="Treatment",y=discount_function_treatment,x=seq(0,1,,100))
