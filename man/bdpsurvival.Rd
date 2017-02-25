@@ -2,7 +2,7 @@
 % Please edit documentation in R/bdpsurvival.R
 \name{bdpsurvival}
 \alias{bdpsurvival}
-\title{bdpsurv: bdpsurv}
+\title{Bayesian Discount Prior: Survival Analysis}
 \usage{
 bdpsurvival(formula = formula, data = data, breaks = NULL, a0 = 0.1,
   b0 = 0.1, surv_time = NULL, type = NULL, alpha_max = 1,
@@ -10,32 +10,72 @@ bdpsurvival(formula = formula, data = data, breaks = NULL, a0 = 0.1,
   two_side = 1)
 }
 \arguments{
-\item{formula}{an object of class "formula." Must have a survival object on the left side and exactly two inputs on the right side: treatment and historical. See "Details" for more information.}
+\item{formula}{an object of class "formula." Must have a survival object on
+the left side and exactly two inputs on the right side: treatment and
+historical. See "Details" for more information.}
 
-\item{data}{a data frame containing columns time, status, treatment, and historical.}
+\item{data}{a data frame containing columns time, status, treatment, and
+historical. See "Details" for the required data structure.}
 
-\item{breaks}{a vector of breaks used to compose the breaks of the piecewise exponential model.}
+\item{breaks}{a vector of breaks used to compose the breaks of the piecewise
+exponential model.}
 
 \item{a0}{prior value for the gamma shape. Default is 1.}
 
 \item{b0}{prior value for the gamma rate. Default is 1.}
 
-\item{surv_time}{survival time of interest for computing the the probability of survival for a type="1arm", i.e., an OPC trial. Default is median survival time.}
+\item{surv_time}{survival time of interest for computing the the probability
+of survival for a single arm, i.e., an OPC trial. Default is median survival
+time.}
 
-\item{type}{One of "1arm" or "2arm", denoting an OPC trial or a randomized control trial(RCT), respectively.}
+\item{alpha_max}{Maximum weight the discount function can apply. Default is
+1. For a two-arm trial, users may specify a vector of two values where the
+first value is used to weight the historical treatment group and the second
+value is used to weight the historical control group.}
 
-\item{alpha_max}{Maximum weight the discount function can apply. Default is 1. For type="2arm", users may specify a vector of two values where the first value is used to weight the historical treatment group and the second value is used to weight the historical control group.}
+\item{number_mcmc}{Number of Markov Chain Monte Carlo (MCMC) simulations.
+Default is 10000.}
 
-\item{number_mcmc}{Number of Markov Chain Monte Carlo (MCMC) simulations. Default is 1e4.}
+\item{weibull_scale}{Scale parameter of the Weibull discount function used
+to compute alpha, the weight parameter of the historical data. Default value
+is 0.135. Two values have special treatment: 0 and Inf. For
+weibull_scale = 0, alpha is set to 0, i.e., no weight. For
+weibull_scale = Inf, alpha is set to 1, i.e., full weight. For a two-arm
+trial, users may specify a vector of two values where the first value is
+used to estimate the weight of the historical treatment group and the second
+value is used to estimate the weight of the historical control group.}
 
-\item{weibull_scale}{Scale parameter of the Weibull discount function used to compute alpha, the weight parameter of the historical data. Default value is 0.135. Two values have special treatment: 0 and Inf. For weibull_scale = 0, alpha is set to 0, i.e., no weight. For weibull_scale = Inf, alpha is set to 1, i.e., full weight. For type="2arm", users may specify a vector of two values where the first value is used to estimate the weight of the historical treatment group and the second value is used to estimate the weight of the historical control group.}
+\item{weibull_shape}{Shape parameter of the Weibull discount function used
+to compute alpha, the weight parameter of the historical data. Default
+value is 3. For a two-arm trial, users may specify a vector of two values
+where the first value is used to estimate the weight of the historical
+treatment group and the second value is used to estimate the weight of the
+historical control group.}
 
-\item{weibull_shape}{Shape parameter of the Weibull discount function used to compute alpha, the weight parameter of the historical data. Default value is 3. For type="2arm", users may specify a vector of two values where the first value is used to estimate the weight of the historical treatment group and the second value is used to estimate the weight of the historical control group.}
-
-\item{two_side}{Indicator of two-sided test for the discount function. Default value is 1.}
+\item{two_side}{Indicator of two-sided test for the discount function.
+Default value is 1.}
 }
 \description{
-bdpsurv
-bdpsurv
+\code{bdpsurvival} is used to estimate the survival probability
+(single arm trial; OPC) or hazard ratio (two-arm trial; RCT) using the
+survival analysis implementation of the Bayesian discount prior.
 }
+\examples{
+# One-arm trial (OPC) example
+# Simulate data for a single arm (OPC) trial
+time <- c(rexp(50, rate=1/20), rexp(50, rate=1/10))
+status   <- c(rexp(50, rate=1/30), rexp(50, rate=1/30))
+status   <- ifelse(exposure<status, 1, 0)
 
+# Collect data into a dataframe
+example_surv_1arm <- data.frame(status     = status,
+                                time       = time,
+                                historical = c(rep(1,50),rep(0,50)),
+                                treatment  = 1)
+
+fitSurv <- bdpsurvival(Surv(time, status) ~ historical + treatment,
+                       data = example_surv_1arm,
+                       type="1arm")
+
+
+}

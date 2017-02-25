@@ -9,8 +9,13 @@
 #' @importFrom ggplot2 xlab
 #' @importFrom ggplot2 ylab
 NULL
-#' bdpnormal
-#' @title bdpnormal: bdpnormal
+#' @title Bayesian Discount Prior: Gaussian mean values
+#' @description
+#' The pdpnormal function is used for estimating posterior samples from a
+#' Gaussian outcome where an informative prior is used. The prior weight
+#' is determined using a discount function. This code is modeled after
+#' the methodologies developed by the MDIC working group: "Informing
+#' clinical trials using bench & simulations."
 #' @param mu_t scalar. The mean of the current treatment group.
 #' @param sigma_t scalar. The standard deviation of the current treatment
 #'        group.
@@ -57,12 +62,6 @@ NULL
 #'        simulations. Default is 1e4.
 #' @param two_side scalar. Indicator of two-sided test for the discount
 #'        function. Default value is 1.
-#' @description
-#' The pdpnormal function is used for estimating posterior samples from a
-#' Gaussian outcome where an informative prior is used. The prior weight
-#' is determined using a discount function. This code is modeled after
-#' the methodologies developed by the MDIC working group: "Informing
-#' clinical trials using bench & simulations."
 #' @details
 #' Many, many, many details to come. In fact, the best details. Believe
 #' me, I know a thing or two about building details.
@@ -82,6 +81,13 @@ NULL
 #'        groups, where the control group densities are present only if
 #'        \code{type="1arm}.
 #' @param args1 list of user inputs.
+#'
+#' @examples
+#' # One-arm trial (OPC) example
+#' s
+#' s
+#' s
+#' s
 #' @rdname bdpnormal
 #' @export bdpnormal
 bdpnormal <- setClass("bdpnormal", slots = c(posterior_treatment = "list",

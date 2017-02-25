@@ -69,4 +69,3 @@ two_side      = 0)
 ### Main parameter of interest:
 fit$effect_est
 }
-

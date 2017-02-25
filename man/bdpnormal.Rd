@@ -109,4 +109,3 @@ bdpnormal
 Many, many, many details to come. In fact, the best details. Believe
 me, I know a thing or two about building details.
 }
-

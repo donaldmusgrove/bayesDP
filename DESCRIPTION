@@ -25,4 +25,4 @@ Repository: CRAN
 Date/Publication: 2016-02-03 23:30:16
 Imports: Rcpp
 LinkingTo: Rcpp, RcppArmadillo
-RoxygenNote: 5.0.1
+RoxygenNote: 6.0.1

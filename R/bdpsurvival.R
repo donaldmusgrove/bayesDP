@@ -1,18 +1,62 @@
-#' bdpsurv
-#' bdpsurv
-#' @title bdpsurv: bdpsurv
-#' @param formula an object of class "formula." Must have a survival object on the left side and exactly two inputs on the right side: treatment and historical. See "Details" for more information.
-#' @param data a data frame containing columns time, status, treatment, and historical.
-#' @param breaks a vector of breaks used to compose the breaks of the piecewise exponential model.
+#' @title Bayesian Discount Prior: Survival Analysis
+#' @description
+#' \code{bdpsurvival} is used to estimate the survival probability
+#' (single arm trial; OPC) or hazard ratio (two-arm trial; RCT) using the
+#' survival analysis implementation of the Bayesian discount prior.
+#'
+#' @param formula an object of class "formula." Must have a survival object on
+#'  the left side and exactly two inputs on the right side: treatment and
+#'  historical. See "Details" for more information.
+#' @param data a data frame containing columns time, status, treatment, and
+#' historical. See "Details" for the required data structure.
+#' @param breaks a vector of breaks used to compose the breaks of the piecewise
+#' exponential model.
 #' @param a0 prior value for the gamma shape. Default is 1.
 #' @param b0 prior value for the gamma rate. Default is 1.
-#' @param surv_time survival time of interest for computing the the probability of survival for a type="1arm", i.e., an OPC trial. Default is median survival time.
-#' @param type One of "1arm" or "2arm", denoting an OPC trial or a randomized control trial(RCT), respectively.
-#' @param alpha_max Maximum weight the discount function can apply. Default is 1. For type="2arm", users may specify a vector of two values where the first value is used to weight the historical treatment group and the second value is used to weight the historical control group.
-#' @param number_mcmc Number of Markov Chain Monte Carlo (MCMC) simulations. Default is 1e4.
-#' @param weibull_shape Shape parameter of the Weibull discount function used to compute alpha, the weight parameter of the historical data. Default value is 3. For type="2arm", users may specify a vector of two values where the first value is used to estimate the weight of the historical treatment group and the second value is used to estimate the weight of the historical control group.
-#' @param weibull_scale Scale parameter of the Weibull discount function used to compute alpha, the weight parameter of the historical data. Default value is 0.135. Two values have special treatment: 0 and Inf. For weibull_scale = 0, alpha is set to 0, i.e., no weight. For weibull_scale = Inf, alpha is set to 1, i.e., full weight. For type="2arm", users may specify a vector of two values where the first value is used to estimate the weight of the historical treatment group and the second value is used to estimate the weight of the historical control group.
-#' @param two_side Indicator of two-sided test for the discount function. Default value is 1.
+#' @param surv_time survival time of interest for computing the the probability
+#' of survival for a single arm, i.e., an OPC trial. Default is median survival
+#' time.
+#' @param alpha_max Maximum weight the discount function can apply. Default is
+#' 1. For a two-arm trial, users may specify a vector of two values where the
+#' first value is used to weight the historical treatment group and the second
+#' value is used to weight the historical control group.
+#' @param number_mcmc Number of Markov Chain Monte Carlo (MCMC) simulations.
+#' Default is 10000.
+#' @param weibull_shape Shape parameter of the Weibull discount function used
+#' to compute alpha, the weight parameter of the historical data. Default
+#' value is 3. For a two-arm trial, users may specify a vector of two values
+#' where the first value is used to estimate the weight of the historical
+#' treatment group and the second value is used to estimate the weight of the
+#' historical control group.
+#' @param weibull_scale Scale parameter of the Weibull discount function used
+#' to compute alpha, the weight parameter of the historical data. Default value
+#' is 0.135. Two values have special treatment: 0 and Inf. For
+#' weibull_scale = 0, alpha is set to 0, i.e., no weight. For
+#' weibull_scale = Inf, alpha is set to 1, i.e., full weight. For a two-arm
+#' trial, users may specify a vector of two values where the first value is
+#' used to estimate the weight of the historical treatment group and the second
+#' value is used to estimate the weight of the historical control group.
+#' @param two_side Indicator of two-sided test for the discount function.
+#' Default value is 1.
+#'
+#' @examples
+#' # One-arm trial (OPC) example
+#' # Simulate survival data for a single arm (OPC) trial
+#' time   <- c(rexp(50, rate=1/20), rexp(50, rate=1/10))
+#' status <- c(rexp(50, rate=1/30), rexp(50, rate=1/30))
+#' status <- ifelse(exposure<status, 1, 0)
+#'
+#' # Collect data into a dataframe
+#' example_surv_1arm <- data.frame(status     = status,
+#'                                 time       = time,
+#'                                 historical = c(rep(1,50),rep(0,50)),
+#'                                 treatment  = 1)
+#'
+#' fitSurv <- bdpsurvival(Surv(time, status) ~ historical + treatment,
+#'                        data = example_surv_1arm,
+#'                        type="1arm")
+#'
+#'
 #' @rdname bdpsurvival
 #' @export bdpsurvival
 bdpsurvival <- setClass("bdpsurvival", slots = c(posterior_treatment = "list",
@@ -133,7 +177,8 @@ setMethod("bdpsurvival",
     number_mcmc   = number_mcmc,
     weibull_shape = weibull_shape[1],
     weibull_scale = weibull_scale[1],
-    two_side      = two_side)
+    two_side      = two_side,
+    breaks        = breaks)
 
   if(type=="2arm"){
     posterior_control <- survival_posterior(
@@ -146,7 +191,8 @@ setMethod("bdpsurvival",
       number_mcmc   = number_mcmc,
       weibull_shape = weibull_shape[2],
       weibull_scale = weibull_scale[2],
-      two_side      = two_side)
+      two_side      = two_side,
+      breaks        = breaks)
   } else{
     posterior_control <- NULL
   }
@@ -165,7 +211,8 @@ setMethod("bdpsurvival",
                 number_mcmc   = number_mcmc,
                 weibull_scale = weibull_scale,
                 weibull_shape = weibull_shape,
-                two_side      = two_side)
+                two_side      = two_side,
+                breaks        = breaks)
 
   me <- list(posterior_treatment = posterior_treatment,
              posterior_control   = posterior_control,
@@ -260,9 +307,9 @@ setMethod("plot", signature(x = "bdpsurvival"), function(x){
 
   densityplot <- densityplot + theme(legend.title=element_blank())
 
-  discountfun_plot <- discountfun_plot + guides(fill=guide_legend(title=NULL))
+  lossfun_plot <- lossfun_plot + guides(fill=guide_legend(title=NULL))
 
-  discountfun_plot <- discountfun_plot + theme(legend.title=element_blank())
+  lossfun_plot <- lossfun_plot + theme(legend.title=element_blank())
 
   op <- par(ask=TRUE)
   plot(post_typeplot)
@@ -367,7 +414,7 @@ discount_function_survival <- function(S, S0, alpha_max, a0, b0, number_mcmc,
 ### - For 1 arm (OPC), comparison is probability of survival at user input time
 ### - For 2 arm (RCT), comparison is hazard ratio of treatment vs control
 posterior_augment_survival <- function(S, S0, alpha_discount, a0, b0,
-                                       number_mcmc, surv_time){
+                                       number_mcmc, surv_time, breaks){
 
   ### Extract intervals and count number of intervals
   ### - Below, S_int should equal S0_int
@@ -398,7 +445,7 @@ posterior_augment_survival <- function(S, S0, alpha_discount, a0, b0,
   ### Posterior of survival time (statistic of interest for 1arm)
   pwe_cdf <- ppexp(q    = surv_time,
                    x    = hazard_post_aug_t,
-                   cuts = breaks)
+                   cuts = c(0,breaks))
 
   surv_time_posterior <- 1-pwe_cdf
 
@@ -411,7 +458,7 @@ posterior_augment_survival <- function(S, S0, alpha_discount, a0, b0,
 ### Combine  loss function and posterior estimation into one function
 survival_posterior <- function(S, S0, alpha_max, a0, b0, surv_time,
                                number_mcmc, weibull_shape, weibull_scale,
-                               two_side){
+                               two_side, breaks){
 
   alpha_discount <- discount_function_survival(S             = S,
                                                S0            = S0,
@@ -430,7 +477,8 @@ survival_posterior <- function(S, S0, alpha_max, a0, b0, surv_time,
     a0             = a0,
     b0             = b0,
     number_mcmc    = number_mcmc,
-    surv_time      = surv_time)
+    surv_time      = surv_time,
+    breaks         = breaks)
 
     return(list(alpha_discount = alpha_discount$alpha_discount,
                 pvalue         = alpha_discount$pvalue,
@@ -446,7 +494,7 @@ survival_posterior <- function(S, S0, alpha_max, a0, b0, surv_time,
 ### Create final result class
 final_survival <- function(posterior_treatment, posterior_control, type="1arm"){
 
-  density_post_treatment  <- density(posterior_treatment$Survival_posterior,
+  density_post_treatment  <- density(posterior_treatment$posterior$posterior,
                                    adjust = 0.5)
   density_flat_treatment  <- density(posterior_treatment$posterior_flat,
                                    adjust = 0.5)
