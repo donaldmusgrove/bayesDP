@@ -72,15 +72,6 @@ NULL
 #' function displays visual outputs as well.
 #' An object of class "\code{bdpnormal} " is a list containing at least
 #' the following components:
-#' @param posterior_treatment a list of outputs including flat, prior, and
-#'        posterior samples of the (potentially) augmented treatment group.
-#' @param posterior_control a list of outputs including flat, prior, and
-#'        posterior samples of the (potentially) augmented control group.
-#'        Not present if \code{type="1arm}.
-#' @param f1 a list of posterior densities of the treatment and control
-#'        groups, where the control group densities are present only if
-#'        \code{type="1arm}.
-#' @param args1 list of user inputs.
 #'
 #' @examples
 #' # One-arm trial (OPC) example

@@ -28,6 +28,8 @@ exponential model.}
 of survival for a single arm, i.e., an OPC trial. Default is median survival
 time.}
 
+\item{type}{This is temporary}
+
 \item{alpha_max}{Maximum weight the discount function can apply. Default is
 1. For a two-arm trial, users may specify a vector of two values where the
 first value is used to weight the historical treatment group and the second
@@ -62,10 +64,10 @@ survival analysis implementation of the Bayesian discount prior.
 }
 \examples{
 # One-arm trial (OPC) example
-# Simulate data for a single arm (OPC) trial
-time <- c(rexp(50, rate=1/20), rexp(50, rate=1/10))
-status   <- c(rexp(50, rate=1/30), rexp(50, rate=1/30))
-status   <- ifelse(exposure<status, 1, 0)
+# Simulate survival data for a single arm (OPC) trial
+time   <- c(rexp(50, rate=1/20), rexp(50, rate=1/10))
+status <- c(rexp(50, rate=1/30), rexp(50, rate=1/30))
+status <- ifelse(exposure<status, 1, 0)
 
 # Collect data into a dataframe
 example_surv_1arm <- data.frame(status     = status,
@@ -79,3 +81,4 @@ fitSurv <- bdpsurvival(Surv(time, status) ~ historical + treatment,
 
 
 }
+

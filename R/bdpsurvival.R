@@ -38,6 +38,7 @@
 #' value is used to estimate the weight of the historical control group.
 #' @param two_side Indicator of two-sided test for the discount function.
 #' Default value is 1.
+#' @param type This is temporary
 #'
 #' @examples
 #' # One-arm trial (OPC) example

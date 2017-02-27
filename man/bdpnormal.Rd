@@ -2,7 +2,7 @@
 % Please edit documentation in R/bdpnormal.R
 \name{bdpnormal}
 \alias{bdpnormal}
-\title{bdpnormal: bdpnormal}
+\title{Bayesian Discount Prior: Gaussian mean values}
 \usage{
 bdpnormal(mu_t = NULL, sigma_t = NULL, N_t = NULL, mu0_t = NULL,
   sigma0_t = NULL, N0_t = NULL, mu_c = NULL, sigma_c = NULL,
@@ -73,19 +73,6 @@ simulations. Default is 1e4.}
 
 \item{two_side}{scalar. Indicator of two-sided test for the discount
 function. Default value is 1.}
-
-\item{posterior_treatment}{a list of outputs including flat, prior, and
-posterior samples of the (potentially) augmented treatment group.}
-
-\item{posterior_control}{a list of outputs including flat, prior, and
-posterior samples of the (potentially) augmented control group.
-Not present if \code{type="1arm}.}
-
-\item{f1}{a list of posterior densities of the treatment and control
-groups, where the control group densities are present only if
-\code{type="1arm}.}
-
-\item{args1}{list of user inputs.}
 }
 \value{
 \code{bdpnormal} returns an object of class "bdpnormal".
@@ -103,9 +90,14 @@ the methodologies developed by the MDIC working group: "Informing
 clinical trials using bench & simulations."
 }
 \details{
-bdpnormal
-
-
 Many, many, many details to come. In fact, the best details. Believe
 me, I know a thing or two about building details.
 }
+\examples{
+# One-arm trial (OPC) example
+s
+s
+s
+s
+}
+
