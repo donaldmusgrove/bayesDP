@@ -232,6 +232,7 @@ setMethod("bdpsurvival",
 #' @title plot: plot
 #' @param x bdpsurvival
 #' @rdname plot
+#' @aliases plot,bdpsurvival-method
 #' @export plot
 setMethod("plot", signature(x = "bdpsurvival"), function(x){
   f                   <- x$f1
@@ -326,6 +327,7 @@ setMethod("plot", signature(x = "bdpsurvival"), function(x){
 #' @title summary: summary
 #' @param object bdpsurvival
 #' @rdname summary
+#' @aliases summary,bdpsurvival-method
 #' @export summary
 setMethod("summary", signature(object = "bdpsurvival"), function(object){
   f                   <- object$f1

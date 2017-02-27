@@ -455,6 +455,7 @@ setMethod("bdpnormal",
 #' @title plot: plot
 #' @param x bdpnormal
 #' @rdname plot
+#' @aliases plot,bdpnormal-method
 #' @export plot
 setMethod("plot", signature(x = "bdpnormal"), function(x){
   f <- x$f1
@@ -600,6 +601,7 @@ setMethod("plot", signature(x = "bdpnormal"), function(x){
 #' @title print: print
 #' @param x bdpnormal
 #' @rdname print
+#' @aliases print,bdpnormal-method
 #' @export print
 setMethod("print", signature(x = "bdpnormal"), function(x){
   f <- x$f1
@@ -638,6 +640,7 @@ setMethod("print", signature(x = "bdpnormal"), function(x){
 #' @title summary: summary
 #' @param object bdpnormal
 #' @rdname summary
+#' @aliases summary,bdpnormal-method
 #' @export summary
 setMethod("summary", signature(object = "bdpnormal"), function(object){
   f <- object$f1

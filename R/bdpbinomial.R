@@ -392,6 +392,7 @@ return(me)
 #' @title plot: plot
 #' @param x bdpbinomial
 #' @rdname plot
+#' @aliases plot,bdpbinomial-method
 #' @export plot
 setMethod("plot", signature(x = "bdpbinomial"), function(x){
   f                   <- x$f1
@@ -540,6 +541,7 @@ setMethod("plot", signature(x = "bdpbinomial"), function(x){
 #' @title print: print
 #' @param x bdpbinomial
 #' @rdname print
+#' @aliases print,bdpbinomial-method
 #' @export print
 setMethod("print", signature(x = "bdpbinomial"), function(x){
   f                   <- x$f1
@@ -586,6 +588,7 @@ setMethod("print", signature(x = "bdpbinomial"), function(x){
 #' @title summary: summary
 #' @param object bdpbinomial
 #' @rdname summary
+#' @aliases summary,bdpbinomial-method
 #' @export summary
 setMethod("summary", signature(object = "bdpbinomial"), function(object){
   f                   <- object$f1

@@ -40,7 +40,7 @@
 #' ### Main parameter of interest:
 #' fit$effect_est
 #' @rdname bdpregression_linear
-#' @aliases bdpregression_linear,data.frame-method,missing-method
+#' @aliases bdpregression_linear,ANY-method
 #' @export bdpregression_linear
 bdpregression_linear <- setClass("bdpregression_linear", slots = c(est = "list",
                                                                    f1 = "list",
@@ -69,20 +69,8 @@ setGeneric("bdpregression_linear",
              standardGeneric("bdpregression_linear")
            })
 
-#setMethod("bdpregression_linear",
-#          signature(data = "list"),
-#          function(data){
-#            message("This is a case where the user doesn't have the data")
-#          })
-
 setMethod("bdpregression_linear",
-          signature(data = "missing"),
-          function(data){
-            message("Missing object")
-          })
-
-setMethod("bdpregression_linear",
-          signature(data = "data.frame"),
+          signature(),
           function(data,
                    formula       = y ~ treatment + x,
                    family        = "gaussian",
@@ -381,6 +369,7 @@ setMethod("bdpregression_linear",
 #' @title print: print
 #' @param x bdpregression_linear
 #' @rdname print
+#' @aliases print,bdpregression_linear-method
 #' @export print
 setMethod("print", signature(x = "bdpregression_linear"), function(x){
   f          <- x$f1
@@ -400,6 +389,7 @@ setMethod("print", signature(x = "bdpregression_linear"), function(x){
 #' @title plot: plot
 #' @param x bdpregression_linear
 #' @rdname plot
+#' @aliases plot,bdpregression_linear-method
 #' @export plot
 setMethod("plot", signature(x = "bdpregression_linear"), function(x){
   f          <- x$f1
