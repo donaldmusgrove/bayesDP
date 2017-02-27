@@ -2,6 +2,7 @@
 % Please edit documentation in R/bdpbinomial.R
 \name{bdpbinomial}
 \alias{bdpbinomial}
+\alias{bdpbinomial,ANY-method}
 \title{bdpbinomial: bdpbinomial}
 \usage{
 bdpbinomial(y_t = NULL, N_t = NULL, y0_t = NULL, N0_t = NULL,

@@ -34,6 +34,7 @@
 #' print(fit)
 #' plot(fit)
 #' @rdname bdpbinomial
+#' @aliases bdpbinomial,ANY-method
 #' @export bdpbinomial
 bdpbinomial <- setClass("bdpbinomial",
                         slots = c(posterior_test = "list",

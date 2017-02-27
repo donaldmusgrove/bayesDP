@@ -40,6 +40,7 @@
 #' ### Main parameter of interest:
 #' fit$effect_est
 #' @rdname bdpregression_linear
+#' @aliases bdpregression_linear,data.frame-method,missing-method
 #' @export bdpregression_linear
 bdpregression_linear <- setClass("bdpregression_linear", slots = c(est = "list",
                                                                    f1 = "list",

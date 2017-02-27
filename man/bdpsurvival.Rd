@@ -2,6 +2,7 @@
 % Please edit documentation in R/bdpsurvival.R
 \name{bdpsurvival}
 \alias{bdpsurvival}
+\alias{bdpsurvival,ANY-method}
 \title{Bayesian Discount Prior: Survival Analysis}
 \usage{
 bdpsurvival(formula = formula, data = data, breaks = NULL, a0 = 0.1,
@@ -67,7 +68,7 @@ survival analysis implementation of the Bayesian discount prior.
 # Simulate survival data for a single arm (OPC) trial
 time   <- c(rexp(50, rate=1/20), rexp(50, rate=1/10))
 status <- c(rexp(50, rate=1/30), rexp(50, rate=1/30))
-status <- ifelse(exposure<status, 1, 0)
+#status <- ifelse(exposure<status, 1, 0)
 
 # Collect data into a dataframe
 example_surv_1arm <- data.frame(status     = status,
@@ -75,9 +76,9 @@ example_surv_1arm <- data.frame(status     = status,
                                 historical = c(rep(1,50),rep(0,50)),
                                 treatment  = 1)
 
-fitSurv <- bdpsurvival(Surv(time, status) ~ historical + treatment,
-                       data = example_surv_1arm,
-                       type="1arm")
+#fitSurv <- bdpsurvival(Surv(time, status) ~ historical + treatment,
+#                       data = example_surv_1arm,
+#                       type="1arm")
 
 
 }

@@ -73,13 +73,8 @@ NULL
 #' An object of class "\code{bdpnormal} " is a list containing at least
 #' the following components:
 #'
-#' @examples
-#' # One-arm trial (OPC) example
-#' s
-#' s
-#' s
-#' s
 #' @rdname bdpnormal
+#' @aliases bdpnormal,ANY-method
 #' @export bdpnormal
 bdpnormal <- setClass("bdpnormal", slots = c(posterior_treatment = "list",
                                             posterior_control = "list",

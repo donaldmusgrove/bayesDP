@@ -2,6 +2,7 @@
 % Please edit documentation in R/bdpnormal.R
 \name{bdpnormal}
 \alias{bdpnormal}
+\alias{bdpnormal,ANY-method}
 \title{Bayesian Discount Prior: Gaussian mean values}
 \usage{
 bdpnormal(mu_t = NULL, sigma_t = NULL, N_t = NULL, mu0_t = NULL,
@@ -92,12 +93,5 @@ clinical trials using bench & simulations."
 \details{
 Many, many, many details to come. In fact, the best details. Believe
 me, I know a thing or two about building details.
-}
-\examples{
-# One-arm trial (OPC) example
-s
-s
-s
-s
 }
 

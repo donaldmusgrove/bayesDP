@@ -2,6 +2,7 @@
 % Please edit documentation in R/bdpregression_linear.R
 \name{bdpregression_linear}
 \alias{bdpregression_linear}
+\alias{bdpregression_linear,data.frame-method,missing-method}
 \title{bdpregression_linear: Post Estimate Gaussian}
 \usage{
 bdpregression_linear(data, formula = y ~ treatment + x, family = "gaussian",
