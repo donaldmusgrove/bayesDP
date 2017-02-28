@@ -2,6 +2,8 @@
 #' summary
 #' @title summary: summary
 #' @param object Results
+#' @importFrom utils head
+#' @importFrom stats density is.empty.model median model.offset model.response pweibull quantile rbeta rgamma rnorm var vcov
 #' @rdname summary
 setMethod("summary", signature(object = "bdpnormal"), function(object){
   f <- object$f1

@@ -2,6 +2,8 @@
 #' plot
 #' @title plot: plot
 #' @param x Results
+#' @importFrom graphics par
+#' @importFrom stats density is.empty.model median model.offset model.response pweibull quantile rbeta rgamma rnorm var vcov
 #' @rdname plot
 setMethod("plot", signature(x = "bdpnormal"), function(x){
   f <- x$f1
@@ -57,7 +59,7 @@ setMethod("plot", signature(x = "bdpnormal"), function(x){
 
   post_typeplot <- ggplot(D,aes(x=x,y=y)) +
     geom_line(size=2,aes(colour=information_sources,lty=information_sources)) +
-    facet_wrap(~group, ncol=1,scale='free') +
+    facet_wrap(~group, ncol=1,scales='free') +
     ylab("Density (PDF)") +
     xlab("Values") +
     theme_bw() +
@@ -201,7 +203,7 @@ setMethod("plot", signature(x = "bdpbinomial"), function(x){
   post_typeplot <- ggplot(D,aes(x=x,y=y)) +
     geom_line(size=2,aes(color=information_sources,lty=information_sources)) +
     theme_bw() +
-    facet_wrap(~group, ncol=1,scale='free') +
+    facet_wrap(~group, ncol=1,scales='free') +
     ylab("Density (PDF)") +
     xlab("Values") +
     ggtitle("Posterior Type Plot")
@@ -395,7 +397,7 @@ setMethod("plot", signature(x = "bdpsurvival"), function(x){
   post_typeplot <- ggplot(D, aes(x = x, y = y)) +
     geom_line(size = 2, aes(colour = information_sources, lty = information_sources)) +
     theme_bw() +
-    facet_wrap(~group+start, ncol = 1, scale = "free") +
+    facet_wrap(~group+start, ncol = 1, scales = "free") +
     ylab("Density (PDF)") +
     xlab("Values") +
     ggtitle("Posterior Type Plot")

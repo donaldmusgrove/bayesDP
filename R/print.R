@@ -2,6 +2,7 @@
 #' print
 #' @title print: print
 #' @param x Results
+#' @importFrom stats density is.empty.model median model.offset model.response pweibull quantile rbeta rgamma rnorm var vcov
 #' @rdname print
 setMethod("print", signature(x = "bdpnormal"), function(x){
   f <- x$f1

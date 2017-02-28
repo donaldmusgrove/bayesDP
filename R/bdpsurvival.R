@@ -59,6 +59,7 @@
 #'
 #'
 #' @rdname bdpsurvival
+#' @importFrom stats density is.empty.model median model.offset model.response pweibull quantile rbeta rgamma rnorm var vcov
 #' @aliases bdpsurvival,ANY-method
 #' @export bdpsurvival
 bdpsurvival <- setClass("bdpsurvival", slots = c(posterior_treatment = "list",

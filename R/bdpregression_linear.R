@@ -40,6 +40,7 @@
 #' ### Main parameter of interest:
 #' fit$effect_est
 #' @rdname bdpregression_linear
+#' @importFrom stats density is.empty.model median model.offset model.response pweibull quantile rbeta rgamma rnorm var vcov
 #' @aliases bdpregression_linear,ANY-method
 #' @export bdpregression_linear
 bdpregression_linear <- setClass("bdpregression_linear", slots = c(est = "list",
