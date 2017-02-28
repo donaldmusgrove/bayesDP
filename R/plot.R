@@ -5,6 +5,7 @@
 #' @importFrom graphics par
 #' @importFrom stats density is.empty.model median model.offset model.response pweibull quantile rbeta rgamma rnorm var vcov
 #' @rdname plot
+#' @export plot
 setMethod("plot", signature(x = "bdpnormal"), function(x){
   f <- x$f1
   posterior_treatment <- x$posterior_treatment

@@ -4,6 +4,7 @@
 #' @param x Results
 #' @importFrom stats density is.empty.model median model.offset model.response pweibull quantile rbeta rgamma rnorm var vcov
 #' @rdname print
+#' @export print
 setMethod("print", signature(x = "bdpnormal"), function(x){
   f <- x$f1
   posterior_treatment <- x$posterior_treatment

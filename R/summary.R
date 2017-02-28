@@ -5,6 +5,7 @@
 #' @importFrom utils head
 #' @importFrom stats density is.empty.model median model.offset model.response pweibull quantile rbeta rgamma rnorm var vcov
 #' @rdname summary
+#' @export summary
 setMethod("summary", signature(object = "bdpnormal"), function(object){
   f <- object$f1
   posterior_treatment <- object$posterior_treatment
