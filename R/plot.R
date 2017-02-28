@@ -1,10 +1,8 @@
 #' plot
 #' plot
 #' @title plot: plot
-#' @param x bdpnormal
+#' @param x Results
 #' @rdname plot
-#' @aliases plot,bdpnormal-method
-#' @export plot
 setMethod("plot", signature(x = "bdpnormal"), function(x){
   f <- x$f1
   posterior_treatment <- x$posterior_treatment
@@ -144,13 +142,6 @@ setMethod("plot", signature(x = "bdpnormal"), function(x){
 })
 
 
-#' plot
-#' plot
-#' @title plot: plot
-#' @param x bdpbinomial
-#' @rdname plot
-#' @aliases plot,bdpbinomial-method
-#' @export plot
 setMethod("plot", signature(x = "bdpbinomial"), function(x){
   f                   <- x$f1
   posterior_treatment <- x$posterior_treatment
@@ -293,13 +284,6 @@ setMethod("plot", signature(x = "bdpbinomial"), function(x){
 })
 
 
-#' plot
-#' plot
-#' @title plot: plot
-#' @param x bdpregression_linear
-#' @rdname plot
-#' @aliases plot,bdpregression_linear-method
-#' @export plot
 setMethod("plot", signature(x = "bdpregression_linear"), function(x){
   f          <- x$f1
   posterior  <- x$est
@@ -380,13 +364,6 @@ setMethod("plot", signature(x = "bdpregression_linear"), function(x){
 })
 
 
-#' plot
-#' plot
-#' @title plot: plot
-#' @param x bdpsurvival
-#' @rdname plot
-#' @aliases plot,bdpsurvival-method
-#' @export plot
 setMethod("plot", signature(x = "bdpsurvival"), function(x){
   f                   <- x$f1
   posterior_treatment <- x$posterior_treatment

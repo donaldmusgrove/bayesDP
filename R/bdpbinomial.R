@@ -32,7 +32,7 @@
 #' ### Results
 #' summary(fit)
 #' print(fit)
-#' plot(fit)
+#' #plot(fit)
 #' @rdname bdpbinomial
 #' @aliases bdpbinomial,ANY-method
 #' @export bdpbinomial

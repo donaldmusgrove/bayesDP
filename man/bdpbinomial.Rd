@@ -61,6 +61,6 @@ fit <- bdpbinomial(y_t           = 10,
 ### Results
 summary(fit)
 print(fit)
-plot(fit)
+#plot(fit)
 }
 
