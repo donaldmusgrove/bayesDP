@@ -130,33 +130,33 @@ setMethod("bdpnormal",
   intent <- c()
   if(length(mu_t + sigma_t + N_t) != 0){
     intent <- c(intent,"current treatment")
-    print("Current Treatment")
+    cat("Current Treatment\n")
   }else{
     if(is.null(mu_t) == TRUE){
-      print("mu_t missing")
+      cat("mu_t missing\n")
     }
     if(is.null(sigma_t) == TRUE){
-      print("sigma_t missing")
+      cat("sigma_t missing\n")
     }
     if(is.null(N_t) == TRUE){
-      print("N_t missing")
+      cat("N_t missing\n")
     }
     stop("Current treatment not provided/incomplete.")
   }
 
   if(length(mu0_t + sigma0_t + N0_t) != 0){
     intent <- c(intent,"historical treatment")
-    print("Historical Treatment")
+    cat("Historical Treatment\n")
   }else{
     if(length(c(mu0_t, sigma0_t, N0_t)) > 0){
       if(is.null(mu0_t) == TRUE){
-        print("mu0_t missing")
+        cat("mu0_t missing\n")
       }
       if(is.null(sigma0_t) == TRUE){
-        print("sigma0_t missing")
+        cat("sigma0_t missing\n")
       }
       if(is.null(N0_t) == TRUE){
-        print("N0_t missing")
+        cat("N0_t missing\n")
       }
       stop("Historical treatment incomplete.")
     }
@@ -164,17 +164,17 @@ setMethod("bdpnormal",
 
   if(length(mu_c + sigma_c + N_c) != 0){
     intent <- c(intent,"current control")
-    print("Current Control")
+    cat("Current Control\n")
   }else{
     if(length(c(mu_c, sigma_c, N_c)) > 0){
       if(is.null(mu_c) == TRUE){
-        print("mu_c missing")
+        cat("mu_c missing\n")
       }
       if(is.null(sigma_c) == TRUE){
-        print("sigma_c missing")
+        cat("sigma_c missing\n")
       }
       if(is.null(N_c) == TRUE){
-        print("N_c missing")
+        cat("N_c missing\n")
       }
       stop("Current control not provided/incomplete.")
     }
@@ -182,17 +182,17 @@ setMethod("bdpnormal",
 
   if(length(mu0_c + sigma0_c + N0_c) != 0){
     intent <- c(intent,"historical control")
-    print("Historical Control")
+    cat("Historical Contro\nl")
   }else{
     if(length(c(mu0_c, sigma0_c, N0_c)) > 0){
       if(is.null(mu0_c) == TRUE){
-        print("mu0_c missing")
+        cat("mu0_c missing\n")
       }
       if(is.null(sigma0_c) == TRUE){
-        print("sigma0_c missing")
+        cat("sigma0_c missing\n")
       }
       if(is.null(N0_c) == TRUE){
-        print("N0_c missing")
+        cat("N0_c missing\n")
       }
       stop("Historical Control not provided/incomplete.")
     }

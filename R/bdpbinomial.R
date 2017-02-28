@@ -87,27 +87,27 @@ setMethod("bdpbinomial",
   intent <- c()
   if(length(y_t + N_t) != 0){
     intent <- c(intent,"current treatment")
-    print("Current Treatment")
+    cat("Current Treatment\n")
   }else{
     if(is.null(y_t) == TRUE){
-      print("y_t missing")
+      cat("y_t missing\n")
     }
     if(is.null(N_t) == TRUE){
-      print("N_t missing")
+      cat("N_t missing\n")
     }
     stop("Current treatment not provided/incomplete.")
   }
 
   if(length(y0_t + N0_t) != 0){
     intent <- c(intent,"historical treatment")
-    print("Historical Treatment")
+    cat("Historical Treatment\n")
   }else{
     if(length(c(y0_t, N0_t)) > 0){
       if(is.null(y0_t) == TRUE){
-        print("y0_t missing")
+        cat("y0_t missing\n")
       }
       if(is.null(N0_t) == TRUE){
-        print("N0_t missing")
+        cat("N0_t missing\n")
       }
       stop("Historical treatment incomplete.")
     }
@@ -115,14 +115,14 @@ setMethod("bdpbinomial",
 
   if(length(y_c + N_c) != 0){
     intent <- c(intent,"current control")
-    print("Current Control")
+    cat("Current Control\n")
   }else{
     if(length(c(y_c, N_c)) > 0){
       if(is.null(y_c) == TRUE){
-        print("y_c missing")
+        cat("y_c missing\n")
       }
       if(is.null(N_c) == TRUE){
-        print("N_c missing")
+        cat("N_c missing\n")
       }
       stop("Current control not provided/incomplete.")
     }
@@ -130,14 +130,14 @@ setMethod("bdpbinomial",
 
   if(length(y0_c + N0_c) != 0){
     intent <- c(intent,"historical control")
-    print("Historical Control")
+    cat("Historical Control\n")
   }else{
     if(length(c(y0_c, N0_c)) > 0){
       if(is.null(y0_c) == TRUE){
-        print("y0_c missing")
+        cat("y0_c missing\n")
       }
       if(is.null(N0_c) == TRUE){
-        print("N0_c missing")
+        cat("N0_c missing\n")
       }
       stop("Historical Control not provided/incomplete.")
     }
