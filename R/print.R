@@ -4,7 +4,6 @@
 #' @param x bdpnormal
 #' @rdname print
 #' @aliases print,bdpnormal-method
-#' @export print
 setMethod("print", signature(x = "bdpnormal"), function(x){
   f <- x$f1
   posterior_treatment <- x$posterior_treatment
@@ -43,7 +42,6 @@ setMethod("print", signature(x = "bdpnormal"), function(x){
 #' @param x bdpbinomial
 #' @rdname print
 #' @aliases print,bdpbinomial-method
-#' @export print
 setMethod("print", signature(x = "bdpbinomial"), function(x){
   f                   <- x$f1
   posterior_treatment <- x$posterior_treatment
@@ -90,7 +88,6 @@ setMethod("print", signature(x = "bdpbinomial"), function(x){
 #' @param x bdpregression_linear
 #' @rdname print
 #' @aliases print,bdpregression_linear-method
-#' @export print
 setMethod("print", signature(x = "bdpregression_linear"), function(x){
   f          <- x$f1
   posterior  <- x$est
@@ -110,7 +107,6 @@ setMethod("print", signature(x = "bdpregression_linear"), function(x){
 #' @param x bdpsurvival
 #' @rdname print
 #' @aliases print,bdpsurvival-method
-#' @export print
 setMethod("print", signature(x = "bdpsurvival"), function(x){
   f                   <- x$f1
   posterior_treatment <- x$posterior_treatment

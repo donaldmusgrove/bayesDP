@@ -4,7 +4,6 @@
 #' @param object bdpnormal
 #' @rdname summary
 #' @aliases summary,bdpnormal-method
-#' @export summary
 setMethod("summary", signature(object = "bdpnormal"), function(object){
   f <- object$f1
   posterior_treatment <- object$posterior_treatment
@@ -56,7 +55,6 @@ setMethod("summary", signature(object = "bdpnormal"), function(object){
 #' @param object bdpbinomial
 #' @rdname summary
 #' @aliases summary,bdpbinomial-method
-#' @export summary
 setMethod("summary", signature(object = "bdpbinomial"), function(object){
   f                   <- object$f1
   posterior_treatment <- object$posterior_treatment
@@ -107,7 +105,6 @@ setMethod("summary", signature(object = "bdpbinomial"), function(object){
 #' @param object bdpregression_linear
 #' @rdname summary
 #' @aliases summary,bdpregression_linear-method
-#' @export summary
 setMethod("summary", signature(object = "bdpregression_linear"), function(object){
   f          <- object$f1
   posterior  <- object$est
@@ -127,7 +124,6 @@ setMethod("summary", signature(object = "bdpregression_linear"), function(object
 #' @param object bdpsurvival
 #' @rdname summary
 #' @aliases summary,bdpsurvival-method
-#' @export summary
 setMethod("summary", signature(object = "bdpsurvival"), function(object){
   f                   <- object$f1
   posterior_treatment <- object$posterior_treatment
