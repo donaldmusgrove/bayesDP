@@ -10,68 +10,77 @@
 #' @importFrom ggplot2 ylab
 NULL
 #' @title Bayesian Discount Prior: Gaussian mean values
-#' @description
-#' The pdpnormal function is used for estimating posterior samples from a
-#' Gaussian outcome where an informative prior is used. The prior weight
-#' is determined using a discount function. This code is modeled after
-#' the methodologies developed by the MDIC working group: "Informing
-#' clinical trials using bench & simulations."
-#' @param mu_t scalar. The mean of the current treatment group.
-#' @param sigma_t scalar. The standard deviation of the current treatment
-#'        group.
-#' @param N_t scalar. The number of observations of the current treatment
-#'        group.
-#' @param mu0_t scalar. The mean of the historical treatment group. Required
-#'        for \code{type="1arm"} (OPC trials).
-#' @param sigma0_t scalar. The standard deviation of the historical treatment
-#'        group. Required for \code{type="1arm"} (OPC trials).
-#' @param N0_t scalar. The number of observations of the historical treatment
-#'        group. Required for \code{type="1arm"} (OPC trials).
-#' @param mu_c scalar. The mean of the current control group. Required for
-#'        \code{type="2arm"} (RCT trials).
-#' @param sigma_c scalar. The standard deviation of the current control group.
-#'        Required for \code{type="2arm"} (RCT trials).
-#' @param N_c scalar. The number of observations of the current control group.
-#'        Required for \code{type="2arm"} (RCT trials).
-#' @param mu0_c scalar. The mean of the historical control group.
-#' @param sigma0_c scalar. The standard deviation of the historical control
-#'        group.
-#' @param N0_c scalar. The number of observations of the historical control
-#'        group.
+#' @description \code{bdpnormal} is used for estimating posterior samples from a
+#'   Gaussian outcome where an informative prior is used. The prior weight
+#'   is determined using a discount function. This code is modeled after
+#'   the methodologies developed by the MDIC working group: "Informing
+#'   clinical trials using bench & simulations."
+#' @param mu_t scalar. Mean of the current treatment group.
+#' @param sigma_t scalar. Standard deviation of the current treatment group.
+#' @param N_t scalar. Number of observations of the current treatment group.
+#' @param mu0_t scalar. Mean of the historical treatment group. Required
+#'   for single arm (OPC) trials.
+#' @param sigma0_t scalar. Standard deviation of the historical treatment
+#'  group. Required for single arm (OPC) trials.
+#' @param N0_t scalar. Number of observations of the historical treatment
+#'  group. Required for single arm (OPC) trials.
+#' @param mu_c scalar. Mean of the current control group. Required for
+#'  two arm (RCT) trials.
+#' @param sigma_c scalar. Standard deviation of the current control group.
+#'  Required for two arm (RCT) trials.
+#' @param N_c scalar. Number of observations of the current control group.
+#'  Required for two arm (RCT) trials.
+#' @param mu0_c scalar. Mean of the historical control group.
+#' @param sigma0_c scalar. Standard deviation of the historical control group.
+#' @param N0_c scalar. Number of observations of the historical control group.
 #' @param alpha_max scalar. Maximum weight the discount function can apply.
-#'        Default is 1. For \code{type="2arm"}, users may optionally specify
-#'        a vector of two values where the first value is used to weight the
-#'        historical treatment group and the second value is used to weight
-#'        the historical control group.
-#' @param weibull_shape scalar. Shape parameter of the Weibull discount
-#'        function used to compute alpha, the weight parameter of the historical
-#'        data. Default value is 3. For \code{type="2arm"}, users may optionally
-#'        specify a vector of two values where the first value is used to
-#'        estimate the weight of the historical treatment group and the second
-#'        value is used to estimate the weight of the historical control group.
-#' @param weibull_scale scalar. Scale parameter of the Weibull discount
-#'        function used to compute alpha, the weight parameter of the historical
-#'        data. Default value is 0.135. Two values have special treatment:
-#'        \code{0} and \code{Inf}. For \code{weibull_scale = 0}, alpha is set
-#'        to 0, i.e., no weight. For \code{weibull_scale = Inf}, alpha is set
-#'        to 1, i.e., full weight. For \code{type="2arm"}, users may optionally
-#'        specify a vector of two values where the first value is used to
-#'        estimate the weight of the historical treatment group and the second
-#'        value is used to estimate the weight of the historical control group.
+#'   Default is 1. For a two-arm trial, users may specify a vector of two values
+#'   where the first value is used to weight the historical treatment group and
+#'   the second value is used to weight the historical control group.
+#' @param weibull_shape scalar. Shape parameter of the Weibull discount function
+#'   used to compute alpha, the weight parameter of the historical data. Default
+#'   value is 3. For a two-arm trial, users may specify a vector of two values
+#'   where the first value is used to estimate the weight of the historical
+#'   treatment group and the second value is used to estimate the weight of the
+#'   historical control group.
+#' @param weibull_scale scalar. Scale parameter of the Weibull discount function
+#'   used to compute alpha, the weight parameter of the historical data. Default
+#'   value is 0.135. Two values have special treatment: 0 and Inf. For
+#'   weibull_scale = 0, alpha is set to 0, i.e., no weight. For
+#'   weibull_scale = Inf, alpha is set to 1, i.e., full weight. For a two-arm
+#'   trial, users may specify a vector of two values where the first value is
+#'   used to estimate the weight of the historical treatment group and the
+#'   second value is used to estimate the weight of the historical control
+#'   group.
 #' @param number_mcmc scalar. Number of Markov Chain Monte Carlo (MCMC)
-#'        simulations. Default is 1e4.
+#'   simulations. Default is 10000.
 #' @param two_side scalar. Indicator of two-sided test for the discount
-#'        function. Default value is 1.
-#' @details
-#' Many, many, many details to come. In fact, the best details. Believe
+#'   function. Default value is 1.
+#'
+#' @details Many, many, many details to come. In fact, the best details. Believe
 #' me, I know a thing or two about building details.
-#' @return
-#' \code{bdpnormal} returns an object of class "bdpnormal".
+#'
+#' @return \code{bdpnormal} returns an object of class "bdpnormal".
 #' The functions \code{summary} and \code{print} are used to obtain and
 #' print a summary of the results, including user inputs. The \code{plot}
 #' function displays visual outputs as well.
 #' An object of class "\code{bdpnormal} " is a list containing at least
 #' the following components:
+#'
+#' @examples
+#' # One-arm trial (OPC) example
+#' fit <- bdpnormal(mu_t = 30, sigma_t = 10, N_t = 250,
+#'                  mu0_t = 50, sigma0_t = 5, N0_t = 250)
+#' summary(fit)
+#' plot(fit)
+#'
+#' # Two-arm (RCT) example
+#' fit2 <- bdpnormal(mu_t = 30, sigma_t = 10, N_t = 250,
+#'                  mu0_t = 50, sigma0_t = 5, N0_t = 250,
+#'                  mu_c = 25, sigma_c = 10, N_c = 250,
+#'                  mu0_c = 50, sigma0_c = 5, N0_c = 250)
+#' summary(fit2)
+#' plot(fit2)
 #'
 #' @rdname bdpnormal
 #' @importFrom stats density is.empty.model median model.offset model.response pweibull quantile rbeta rgamma rnorm var vcov

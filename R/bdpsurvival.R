@@ -41,6 +41,14 @@
 #' @details Many, many, many details to come. In fact, the best details. Believe
 #' me, I know a thing or two about building details.
 #'
+#' @return \code{bdpsurvival} returns an object of class "bdpsurvival".
+#' The functions \code{summary} and \code{print} are used to obtain and
+#' print a summary of the results, including user inputs. The \code{plot}
+#' function displays visual outputs as well.
+#' An object of class "\code{bdpsurvival}" is a list containing at least
+#' the following components:
+#'
+#'
 #' @examples
 #' # One-arm trial (OPC) example
 #' # Simulate survival data for a single arm (OPC) trial
