@@ -385,31 +385,35 @@ setMethod("bdpnormal",
   ################################################################################
 
   posterior_treatment <- mu_posterior(
-    mu      = mu_t,      #mean of current treatment
-    sigma   = sigma_t,   #sd of current treatment
-    N       = N_t,       #n subjects current treatment
-    mu0     = mu0_t,     #mean of historical treatment
-    sigma0  = sigma0_t,  #sd of historical treatment
-    N0      = N0_t,      #n subjects historical treatment
-    alpha_max,           #Max discount function weight
-    number_mcmc,         #Number of simulations to estimate posterior and discount function
-    weibull_scale,       #Discount function parameter controlling the location of a weibull function
-    weibull_shape,       #Discount function parameter controlling the location of a weibull function
-    two_side)            #Two or one sided hypothesis test?
+    mu            = mu_t,
+    sigma         = sigma_t,
+    N             = N_t,
+    mu0           = mu0_t,
+    sigma0        = sigma0_t,
+    N0            = N0_t,
+    alpha_max     = alpha_max[1],
+    number_mcmc   = number_mcmc,
+    weibull_scale = weibull_scale[1],
+    weibull_shape = weibull_shape[1],
+    two_side      = two_side)
+
+  #mu_posterior(mu, sigma, N, mu0, sigma0, N0, alpha_max, number_mcmc,
+  #             weibull_shape, weibull_scale, two_side)
+
 
   if (arm2 == TRUE){
     posterior_control <- mu_posterior(
-      mu      = mu_c,      #mean of current treatment
-      sigma   = sigma_c,   #sd of current treatment
-      N       = N_c,       #n subjects current treatment
-      mu0     = mu0_c,     #mean of historical treatment
-      sigma0  = sigma0_c,  #sd of historical treatment
-      N0      = N0_c,      #n subjects historical treatment
-      alpha_max,           #Max discount function weight
-      number_mcmc,         #Number of simulations to estimate posterior and discount function
-      weibull_scale,       #Discount function parameter controlling the location of a weibull function
-      weibull_shape,       #Discount function parameter controlling the location of a weibull function
-      two_side)            #Two or one sided hypothesis test?
+      mu            = mu_c,
+      sigma         = sigma_c,
+      N             = N_c,
+      mu0           = mu0_c,
+      sigma0        = sigma0_c,
+      N0            = N0_c,
+      alpha_max     = alpha_max[2],
+      number_mcmc   = number_mcmc,
+      weibull_scale = weibull_scale[2],
+      weibull_shape = weibull_shape[2],
+      two_side      = two_side)
   }
 
   if (arm2 ==  TRUE){
@@ -418,7 +422,7 @@ setMethod("bdpnormal",
   }
   else{
     f1 <- final(posterior_treatment = posterior_treatment,
-                posterior_control = NULL)
+                posterior_control   = NULL)
   }
 
   args1 <- list(mu_t          = mu_t,
@@ -443,14 +447,14 @@ setMethod("bdpnormal",
 
   if (arm2 == TRUE){
     me <- list(posterior_treatment = posterior_treatment,
-               posterior_control = posterior_control,
-               f1 = f1,
-               args1 = args1)
+               posterior_control   = posterior_control,
+               f1                  = f1,
+               args1               = args1)
   }
   else{
     me <- list(posterior_treatment = posterior_treatment,
-               f1 = f1,
-               args1 = args1)
+               f1                  = f1,
+               args1               = args1)
   }
 
   class(me) <- "bdpnormal"

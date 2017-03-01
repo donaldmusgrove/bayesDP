@@ -122,7 +122,7 @@ setMethod("plot", signature(x = "bdpnormal"), function(x){
     facet_wrap(~group, ncol=1) +
     theme_bw() +
     ylab("Alpha Discount Value") +
-    xlab("Bayesian p-value (New vs Historical Data)") +
+    xlab("Stochastic comparison (New vs Historical Data)") +
     ggtitle("Discount Function") +
     ylim(0,1)
 
@@ -264,7 +264,7 @@ setMethod("plot", signature(x = "bdpbinomial"), function(x){
     facet_wrap(~group, ncol=1) +
     theme_bw() +
     ylab("Alpha Discount Value") +
-    xlab("Bayesian p-value (New vs Historical Data)") +
+    xlab("Stochastic comparison (New vs Historical Data)") +
     ggtitle("Discount Function") +
     ylim(0,1)
 
@@ -433,7 +433,7 @@ setMethod("plot", signature(x = "bdpsurvival"), function(x){
     facet_wrap(~group, ncol = 1) +
     theme_bw() +
     ylab("Effective Sample Size for Historical Data") +
-    xlab("Bayesian p-value (New vs Historical Data)") +
+    xlab("Stochastic comparison (New vs Historical Data)") +
     ggtitle("Discount Function Plot")
 
   post_typeplot <- post_typeplot + guides(fill=guide_legend(title=NULL))
