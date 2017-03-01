@@ -3,7 +3,7 @@
 \name{bdpbinomial}
 \alias{bdpbinomial}
 \alias{bdpbinomial,ANY-method}
-\title{bdpbinomial: bdpbinomial}
+\title{Bayesian Discount Prior: Binomial counts}
 \usage{
 bdpbinomial(y_t = NULL, N_t = NULL, y0_t = NULL, N0_t = NULL,
   y_c = NULL, N_c = NULL, y0_c = NULL, N0_c = NULL, alpha_max = 1,
@@ -11,56 +11,94 @@ bdpbinomial(y_t = NULL, N_t = NULL, y0_t = NULL, N0_t = NULL,
   weibull_shape = 3, two_side = 1)
 }
 \arguments{
-\item{y_t}{Number of events for the current treatment group.}
+\item{y_t}{scalar. Number of events for the current treatment group.}
 
-\item{N_t}{Sample size of the current treatment group.}
+\item{N_t}{scalar. Sample size of the current treatment group.}
 
-\item{y0_t}{Number of events for the historical treatment group.}
+\item{y0_t}{scalar. Number of events for the historical treatment group.}
 
-\item{N0_t}{Sample size of the historical treatment group.}
+\item{N0_t}{scalar. Sample size of the historical treatment group.}
 
-\item{y_c}{Number of events for the current control group.}
+\item{y_c}{scalar. Number of events for the current control group.}
 
-\item{N_c}{Sample size of the current control group.}
+\item{N_c}{scalar. Sample size of the current control group.}
 
-\item{y0_c}{Number of events for the historical control group.}
+\item{y0_c}{scalar. Number of events for the historical control group.}
 
-\item{N0_c}{Sample size of the historical control group.}
+\item{N0_c}{scalar. Sample size of the historical control group.}
 
-\item{alpha_max}{Maximum weight the discount function can apply. Default is 1. For type="2arm", users may specify a vector of two values where the first value is used to weight the historical treatment group and the second value is used to weight the historical control group.}
+\item{alpha_max}{scalar. Maximum weight the discount function can apply.
+Default is 1. For a two-arm trial, users may specify a vector of two values
+where the first value is used to weight the historical treatment group and
+the second value is used to weight the historical control group.}
 
-\item{a0}{Prior value for the beta rate. Default is 1.}
+\item{a0}{scalar. Prior value for the beta rate. Default is 1.}
 
-\item{b0}{Prior value for the beta rate. Default is 1.}
+\item{b0}{scalar. Prior value for the beta rate. Default is 1.}
 
-\item{number_mcmc}{Number of Markov Chain Monte Carlo (MCMC) simulations. Default is 1e4.}
+\item{number_mcmc}{scalar. Number of Markov Chain Monte Carlo (MCMC)
+simulations. Default is 10000.}
 
-\item{weibull_scale}{Scale parameter of the Weibull discount function used to compute alpha, the weight parameter of the historical data. Default value is 0.135. Two values have special treatment: 0 and Inf. For weibull_scale = 0, alpha is set to 0, i.e., no weight. For weibull_scale = Inf, alpha is set to 1, i.e., full weight. For type="2arm", users may specify a vector of two values where the first value is used to estimate the weight of the historical treatment group and the second value is used to estimate the weight of the historical control group.}
+\item{weibull_scale}{scalar. Scale parameter of the Weibull discount function
+used to compute alpha, the weight parameter of the historical data. Default
+value is 0.135. Two values have special treatment: 0 and Inf. For
+weibull_scale = 0, alpha is set to 0, i.e., no weight. For
+weibull_scale = Inf, alpha is set to 1, i.e., full weight. For a two-arm
+trial, users may specify a vector of two values where the first value is
+used to estimate the weight of the historical treatment group and the
+second value is used to estimate the weight of the historical control
+group.}
 
-\item{weibull_shape}{Shape parameter of the Weibull discount function used to compute alpha, the weight parameter of the historical data. Default value is 3. For type="2arm", users may specify a vector of two values where the first value is used to estimate the weight of the historical treatment group and the second value is used to estimate the weight of the historical control group.}
+\item{weibull_shape}{scalar. Shape parameter of the Weibull discount function
+used to compute alpha, the weight parameter of the historical data. Default
+value is 3. For a two-arm trial, users may specify a vector of two values
+where the first value is used to estimate the weight of the historical
+treatment group and the second value is used to estimate the weight of the
+historical control group.}
 
-\item{two_side}{Indicator of two-sided test for the discount function. Default value is 1.}
+\item{two_side}{scalar. Indicator of two-sided test for the discount
+function. Default value is 1.}
+}
+\value{
+\code{bdpbinomial} returns an object of class "bdpbinomial".
+The functions \code{summary} and \code{print} are used to obtain and
+print a summary of the results, including user inputs. The \code{plot}
+function displays visual outputs as well.
+An object of class "\code{bdpbinomial} " is a list containing at least
+the following components:
 }
 \description{
-bdpbinomial
-bdpbinomial
+\code{bdpbinomial} is used for estimating posterior samples from a
+  Binomial outcome where an informative prior is used. The prior weight
+  is determined using a discount function. This code is modeled after
+  the methodologies developed by the MDIC working group: "Informing
+  clinical trials using bench & simulations."
+}
+\details{
+Many, many, many details to come. In fact, the best details. Believe
+me, I know a thing or two about building details.
 }
 \examples{
-### OPC (1arm) example
+# One-arm trial (OPC) example
 fit <- bdpbinomial(y_t           = 10,
                    N_t           = 500,
                    y0_t          = 25,
-                   N0_t          = 250,
-                   alpha_max     = 1,
-                   a0            = 1,
-                   b0            = 1,
-                   number_mcmc   = 10000,
-                   weibull_scale = 0.135,
-                   weibull_shape = 3,
-                   two_side      = 1)
-### Results
+                   N0_t          = 250)
 summary(fit)
 print(fit)
 #plot(fit)
-}
 
+# Two-arm (RCT) example
+fit2 <- bdpbinomial(y_t = 10,
+                    N_t = 500,
+                    y0_t = 25,
+                    N0_t = 250,
+                    y_c = 8,
+                    N_c = 500,
+                    y0_c = 20,
+                    N0_c = 250)
+summary(fit2)
+print(fit2)
+#plot(fit2)
+
+}
