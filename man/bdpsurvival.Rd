@@ -86,8 +86,9 @@ example_surv_1arm <- data.frame(status     = status,
                                 historical = c(rep(1,50),rep(0,50)),
                                 treatment  = 1)
 
-#fitSurv <- bdpsurvival(Surv(time, status) ~ historical + treatment,
-#                       data = example_surv_1arm)
+fitSurv <- bdpsurvival(Surv(time, status) ~ historical + treatment,
+                       data = example_surv_1arm)
 
 
 }
+

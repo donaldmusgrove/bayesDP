@@ -8,7 +8,8 @@ Depends:
     arm,
     ggplot2,
     testthat,
-    MASS
+    MASS,
+    survival
 Suggests:
 Description: This package augments current data and historical data using the
     Bayesian discount prior function for 1 arm and 2 arm clinical trials.

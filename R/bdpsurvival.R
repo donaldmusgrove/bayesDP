@@ -62,12 +62,13 @@
 #'                                 historical = c(rep(1,50),rep(0,50)),
 #'                                 treatment  = 1)
 #'
-#' #fitSurv <- bdpsurvival(Surv(time, status) ~ historical + treatment,
-#' #                       data = example_surv_1arm)
+#' fitSurv <- bdpsurvival(Surv(time, status) ~ historical + treatment,
+#'                        data = example_surv_1arm)
 #'
 #'
 #' @rdname bdpsurvival
 #' @importFrom stats density is.empty.model median model.offset model.response pweibull quantile rbeta rgamma rnorm var vcov
+#' @importFrom survival Surv survSplit
 #' @aliases bdpsurvival,ANY-method
 #' @export bdpsurvival
 bdpsurvival <- setClass("bdpsurvival", slots = c(posterior_treatment = "list",
