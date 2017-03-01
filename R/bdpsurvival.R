@@ -1,51 +1,52 @@
 #' @title Bayesian Discount Prior: Survival Analysis
-#' @description
-#' \code{bdpsurvival} is used to estimate the survival probability
-#' (single arm trial; OPC) or hazard ratio (two-arm trial; RCT) using the
-#' survival analysis implementation of the Bayesian discount prior.
-#'
+#' @description \code{bdpsurvival} is used to estimate the survival probability
+#'   (single arm trial; OPC) or hazard ratio (two-arm trial; RCT) using the
+#'   survival analysis implementation of the Bayesian discount prior.
 #' @param formula an object of class "formula." Must have a survival object on
-#'  the left side and exactly two inputs on the right side: treatment and
-#'  historical. See "Details" for more information.
-#' @param data a data frame containing columns time, status, treatment, and
-#' historical. See "Details" for the required data structure.
-#' @param breaks a vector of breaks used to compose the breaks of the piecewise
-#' exponential model.
-#' @param a0 prior value for the gamma shape. Default is 1.
-#' @param b0 prior value for the gamma rate. Default is 1.
-#' @param surv_time survival time of interest for computing the the probability
-#' of survival for a single arm, i.e., an OPC trial. Default is median survival
-#' time.
-#' @param alpha_max Maximum weight the discount function can apply. Default is
-#' 1. For a two-arm trial, users may specify a vector of two values where the
-#' first value is used to weight the historical treatment group and the second
-#' value is used to weight the historical control group.
-#' @param number_mcmc Number of Markov Chain Monte Carlo (MCMC) simulations.
-#' Default is 10000.
-#' @param weibull_shape Shape parameter of the Weibull discount function used
-#' to compute alpha, the weight parameter of the historical data. Default
-#' value is 3. For a two-arm trial, users may specify a vector of two values
-#' where the first value is used to estimate the weight of the historical
-#' treatment group and the second value is used to estimate the weight of the
-#' historical control group.
-#' @param weibull_scale Scale parameter of the Weibull discount function used
-#' to compute alpha, the weight parameter of the historical data. Default value
-#' is 0.135. Two values have special treatment: 0 and Inf. For
-#' weibull_scale = 0, alpha is set to 0, i.e., no weight. For
-#' weibull_scale = Inf, alpha is set to 1, i.e., full weight. For a two-arm
-#' trial, users may specify a vector of two values where the first value is
-#' used to estimate the weight of the historical treatment group and the second
-#' value is used to estimate the weight of the historical control group.
-#' @param two_side Indicator of two-sided test for the discount function.
-#' Default value is 1.
-#' @param type This is temporary
+#'   the left side and exactly two inputs on the right side: treatment and
+#'   historical. See "Details" for more information.
+#' @param data data frame. A data frame with columns 'time', 'status',
+#'   'treatment', and historical.' See "Details" for required structure.
+#' @param breaks vector. Breaks (intervals) used to compose the breaks of the
+#'   piecewise exponential model.
+#' @param a0 scalar. Prior value for the gamma shape. Default is 1.
+#' @param b0 scalar. Prior value for the gamma rate. Default is 1.
+#' @param surv_time scalar. Survival time of interest for computing the the
+#'   probability of survival for a single arm, i.e., an OPC trial. Default is
+#'   median survival time.
+#' @param alpha_max scalar. Maximum weight the discount function can apply.
+#'   Default is 1. For a two-arm trial, users may specify a vector of two values
+#'   where the first value is used to weight the historical treatment group and
+#'   the second value is used to weight the historical control group.
+#' @param number_mcmc scalar. Number of Markov Chain Monte Carlo (MCMC)
+#'   simulations. Default is 10000.
+#' @param weibull_shape scalar. Shape parameter of the Weibull discount function
+#'   used to compute alpha, the weight parameter of the historical data. Default
+#'   value is 3. For a two-arm trial, users may specify a vector of two values
+#'   where the first value is used to estimate the weight of the historical
+#'   treatment group and the second value is used to estimate the weight of the
+#'   historical control group.
+#' @param weibull_scale scalar. Scale parameter of the Weibull discount function
+#'   used to compute alpha, the weight parameter of the historical data. Default
+#'   value is 0.135. Two values have special treatment: 0 and Inf. For
+#'   weibull_scale = 0, alpha is set to 0, i.e., no weight. For
+#'   weibull_scale = Inf, alpha is set to 1, i.e., full weight. For a two-arm
+#'   trial, users may specify a vector of two values where the first value is
+#'   used to estimate the weight of the historical treatment group and the
+#'   second value is used to estimate the weight of the historical control
+#'   group.
+#' @param two_side scalar. Indicator of two-sided test for the discount
+#'   function. Default value is 1.
+#'
+#' @details Many, many, many details to come. In fact, the best details. Believe
+#' me, I know a thing or two about building details.
 #'
 #' @examples
 #' # One-arm trial (OPC) example
 #' # Simulate survival data for a single arm (OPC) trial
 #' time   <- c(rexp(50, rate=1/20), rexp(50, rate=1/10))
 #' status <- c(rexp(50, rate=1/30), rexp(50, rate=1/30))
-#' #status <- ifelse(exposure<status, 1, 0)
+#' status <- ifelse(time < status, 1, 0)
 #'
 #' # Collect data into a dataframe
 #' example_surv_1arm <- data.frame(status     = status,
@@ -54,8 +55,7 @@
 #'                                 treatment  = 1)
 #'
 #' #fitSurv <- bdpsurvival(Surv(time, status) ~ historical + treatment,
-#' #                       data = example_surv_1arm,
-#' #                       type="1arm")
+#' #                       data = example_surv_1arm)
 #'
 #'
 #' @rdname bdpsurvival
@@ -72,7 +72,6 @@ setGeneric("bdpsurvival",
            a0            = 0.1,
            b0            = 0.1,
            surv_time     = NULL,
-           type          = NULL,
            alpha_max     = 1,
            number_mcmc   = 10000,
            weibull_scale = 0.135,
@@ -89,16 +88,34 @@ setMethod("bdpsurvival",
            a0            = 0.1,
            b0            = 0.1,
            surv_time     = NULL,
-           type          = NULL,
            alpha_max     = 1,
            number_mcmc   = 10000,
            weibull_scale = 0.135,
            weibull_shape = 3,
            two_side      = 1){
 
-  if(type=="2arm"){
-    return("Error: currently, only 1 arm (OPC) analyses are supported.")
+  ### Check dataframe and ensure it has the correct column names
+  namesData <- tolower(names(data))
+  namesDiff <- setdiff(c("status", "time", "historical", "treatment"), namesData)
+  if(length(namesDiff)>0){
+    nDiff <- length(namesDiff)
+    if(nDiff == 1){
+      errorMsg <- paste0("Error: column ",
+                         namesDiff,
+                         " is missing from the input dataframe.")
+      return(errorMsg)
+    } else if(nDiff>1){
+      errorNames <- paste0(namesDiff, collapse = ", ")
+      errorMsg <- paste0("Error: columns are missing from input dataframe: ",
+                         errorNames)
+    }
   }
+
+
+
+  ### Set internal arm2 value to FALSE. Currently, only single arm trial is
+  ### supported for survival data
+  arm2 <- FALSE
 
 
   ##############################################################################
@@ -161,10 +178,13 @@ setMethod("bdpsurvival",
   S0_t <- subset(dataSplit, historical==1 & treatment == 1)
   S0_c <- subset(dataSplit, historical==1 & treatment == 0)
 
-  if(type=="1arm"){
+  ### Check inputs
+  if(!arm2){
     if(nrow(S_t) == 0) return("Error: current treatment data missing or input incorrectly.")
     if(nrow(S0_t) == 0) return("Error: historical treatment data missing or input incorrectly.")
-  } else if(type=="2arm"){
+    if(nrow(S_c) > 0) return("Error: current control data present. Two arm analysis not supported.")
+    if(nrow(S0_c) > 0) return("Error: historical control data present. Two arm analysis not supported.")
+  } else if(arm2){
     if(nrow(S_t) == 0) return("Error: current treatment data missing or input incorrectly.")
     if(nrow(S_c) == 0) return("Error: current control data missing or input incorrectly.")
     if(nrow(S0_t) == 0 & nrow(S0_c)==0) return("Error: historical data input incorrectly.")
@@ -183,7 +203,7 @@ setMethod("bdpsurvival",
     two_side      = two_side,
     breaks        = breaks)
 
-  if(type=="2arm"){
+  if(arm2){
     posterior_control <- survival_posterior(
       S             = S_c,
       S0            = S0_c,
@@ -202,7 +222,8 @@ setMethod("bdpsurvival",
 
 
   f1 <- final_survival(posterior_treatment = posterior_treatment,
-                       posterior_control   = posterior_control)
+                       posterior_control   = posterior_control,
+                       arm2                = arm2)
 
   args1 <- list(S_t           = S_t,
                 S_c           = S_c,
@@ -226,6 +247,19 @@ setMethod("bdpsurvival",
 
   return(me)
 })
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 ################################################################################
@@ -375,7 +409,7 @@ survival_posterior <- function(S, S0, alpha_max, a0, b0, surv_time,
 }
 
 ### Create final result class
-final_survival <- function(posterior_treatment, posterior_control, type="1arm"){
+final_survival <- function(posterior_treatment, posterior_control, arm2=FALSE){
 
   density_post_treatment  <- density(posterior_treatment$posterior$posterior,
                                    adjust = 0.5)
@@ -384,14 +418,14 @@ final_survival <- function(posterior_treatment, posterior_control, type="1arm"){
   density_prior_treatment <- density(posterior_treatment$prior,
                                    adjust = 0.5)
 
-  if(type == "1arm"){
+  if(arm2){
     teatmentpost <- posterior_treatment$posterior$surv_time_posterior
 
     return(list(density_post_treatment  = density_post_treatment,
                 density_flat_treatment  = density_flat_treatment,
                 density_prior_treatment = density_prior_treatment,
                 teatmentpost            = teatmentpost))
-  } else if(!is.null(posterior_control) & type=="2arm"){
+  } else if(!is.null(posterior_control) & arm2){
     density_post_control  <- density(posterior_control$posterior$posterior,
                                      adjust = 0.5)
     density_flat_control  <- density(posterior_control$posterior_flat,

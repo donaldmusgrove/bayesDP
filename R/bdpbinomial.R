@@ -1,15 +1,16 @@
-#' bdpbinomial
-#' bdpbinomial
-#' @title bdpbinomial: bdpbinomial
-#' @param y_t Number of events for the current treatment group.
-#' @param N_t Sample size of the current treatment group.
-#' @param y0_t Number of events for the historical treatment group.
-#' @param N0_t Sample size of the historical treatment group.
-#' @param y_c Number of events for the current control group.
-#' @param N_c Sample size of the current control group.
-#' @param y0_c Number of events for the historical control group.
-#' @param N0_c Sample size of the historical control group.
-#' @param alpha_max Maximum weight the discount function can apply. Default is 1. For type="2arm", users may specify a vector of two values where the first value is used to weight the historical treatment group and the second value is used to weight the historical control group.
+#' @title Bayesian Discount Prior: Binomial counts
+#' @param y_t scalar. Number of events for the current treatment group.
+#' @param N_t scalar. Sample size of the current treatment group.
+#' @param y0_t scalar. Number of events for the historical treatment group.
+#' @param N0_t scalar. Sample size of the historical treatment group.
+#' @param y_c scalar. Number of events for the current control group.
+#' @param N_c scalar. Sample size of the current control group.
+#' @param y0_c scalar. Number of events for the historical control group.
+#' @param N0_c scalar. Sample size of the historical control group.
+#' @param alpha_max Maximum weight the discount function can apply. Default is
+#' 1. For a two-arm trial, users may specify a vector of two values where the
+#' first value is used to weight the historical treatment group and the second
+#' value is used to weight the historical control group.
 #' @param a0 Prior value for the beta rate. Default is 1.
 #' @param b0 Prior value for the beta rate. Default is 1.
 #' @param number_mcmc Number of Markov Chain Monte Carlo (MCMC) simulations. Default is 1e4.
