@@ -2,6 +2,11 @@
 % Please edit documentation in R/print.R
 \docType{methods}
 \name{print,bdpnormal-method}
+\alias{bdpbinomial,}
+\alias{bdpnormal,}
+\alias{bdpregression_linear,}
+\alias{bdpsurvival}
+\alias{print,}
 \alias{print,bdpnormal-method}
 \title{print: print}
 \usage{

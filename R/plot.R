@@ -5,6 +5,7 @@
 #' @importFrom graphics par
 #' @importFrom stats density is.empty.model median model.offset model.response pweibull quantile rbeta rgamma rnorm var vcov
 #' @rdname plot
+#' @aliases plot, bdpnormal, bdpbinomial, bdpregression_linear, bdpsurvival
 #' @export plot
 setMethod("plot", signature(x = "bdpnormal"), function(x){
   f <- x$f1
