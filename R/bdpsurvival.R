@@ -410,11 +410,7 @@ survival_posterior <- function(S, S0, alpha_max, a0, b0, surv_time,
                 pvalue         = alpha_discount$pvalue,
                 posterior      = posterior,
                 posterior_flat = alpha_discount$posterior_flat,
-                prior          = alpha_discount$prior,
-                weibull_scale  = weibull_scale,
-                weibull_shape  = weibull_shape,
-                S              = S,
-                S0             = S0))
+                prior          = alpha_discount$prior))
 }
 
 ### Create final result class

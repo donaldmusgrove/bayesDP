@@ -429,17 +429,20 @@ setMethod("plot", signature(x = "bdpsurvival"), function(x){
   }
 
   Loss_function_treatment <- pweibull(p_value,
-                                      shape = posterior_treatment$weibull_shape[1],
-                                      scale = posterior_treatment$weibull_scale[1])
+                                      shape = x$args1$weibull_shape[1],
+                                      scale = x$args1$weibull_scale[1])
 
-  D1 <- data.frame(group = "treatment",
+  D1 <- data.frame(group = "Treatment",
                    y     = Loss_function_treatment,
                    x     = seq(0, 1, length.out=100))
-  D2 <- data.frame(group = c("treatment"), pvalue = c(posterior_treatment$pvalue))
+  D2 <- data.frame(group = "Treatment", pvalue = posterior_treatment$pvalue)
+  D3 <- data.frame(group = "Treatment", pvalue = posterior_treatment$alpha_discount)
 
-  lossfun_plot <- ggplot() +
+
+  discountfun_plot <- ggplot() +
     geom_line(data = D1, aes(y = y, x = x, colour = group), size = 1) +
     geom_vline(data = D2, aes(xintercept = pvalue, colour = group), lty = 2) +
+    geom_hline(data=D3, aes(yintercept =pvalue,colour=group),lty=2) +
     facet_wrap(~group, ncol = 1) +
     theme_bw() +
     ylab("Effective Sample Size for Historical Data") +
@@ -454,14 +457,14 @@ setMethod("plot", signature(x = "bdpsurvival"), function(x){
     guides(fill=guide_legend(title=NULL)) +
     theme(legend.title=element_blank())
 
-  lossfun_plot <- lossfun_plot +
+  discountfun_plot <- discountfun_plot +
     guides(fill=guide_legend(title=NULL)) +
     theme(legend.title=element_blank())
 
   op <- par(ask=TRUE)
   plot(post_typeplot)
   plot(densityplot)
-  plot(lossfun_plot)
+  plot(discountfun_plot)
   par(op)
 })
 
