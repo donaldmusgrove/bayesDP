@@ -9,24 +9,25 @@ ppexp(q, x, cuts)
 \arguments{
 \item{q}{scalar. The time point at which the cdf is to be computed.}
 
-\item{x}{vector of hazard rates.}
+\item{x}{vector or matrix. The hazard rate(s).}
 
-\item{cuts}{vector of the same length as x, giving the times at which the
-rate changes, i.e., the interval cut points. The first element of cuts
-should be 0, and cuts should be in increasing order.}
+\item{cuts}{vector. Times at which the rate changes, i.e., the interval cut
+points. The first element of cuts should be 0, and cuts should be in
+increasing order. Must be the same length as \code{x} (vector) or have the
+same number of columns as \code{x} (matrix)}
 }
 \value{
 The cumulative distribution function computed at time \code{q},
-hazard(s) \code{x}, and cut points \code{cuts}.
+  hazard(s) \code{x}, and cut points \code{cuts}.
 }
 \description{
 \code{ppexp} is used to compute the cumulative distribution
-function of the piecewise exponential distribution. The function is ported from
-R to C++ via code adapted from the \code{msm} package.
+  function of the piecewise exponential distribution. The function is ported
+  from R to C++ via code adapted from the \code{msm} package.
 }
 \details{
-The ppexp function is written in C++ and adapted from R code used
-in the \code{msm} package.
+The code underlying \code{ppexp} is written in C++ and adapted from
+  R code used in the \code{msm} package.
 }
 \examples{
 # Single vector of hazard rates. Returns a single cdf value.
