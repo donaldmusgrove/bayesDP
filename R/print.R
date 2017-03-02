@@ -7,31 +7,27 @@
 #' @aliases print, bdpnormal, bdpbinomial, bdpregression_linear, bdpsurvival
 #' @export print
 setMethod("print", signature(x = "bdpnormal"), function(x){
-  f <- x$f1
   posterior_treatment <- x$posterior_treatment
-  posterior_control <- x$posterior_control
-  two_side <- x$args1$two_sid
-  N0_t <- x$args1$N0_t
-  N0_c <- x$args1$N0_c
+  posterior_control   <- x$posterior_control
+  N0_t                <- x$args1$N0_t
+  N0_c                <- x$args1$N0_c
 
   if(is.null(posterior_treatment$N0) == FALSE){
     if(posterior_treatment$N0==0){
       prior_for_treatment_group <- "No Prior Supplied"
     } else{
-      prior_for_treatment_group <- list("Sample size of prior (for treatment group)"          = posterior_treatment$N0,
-                                        "Effective sample size of prior(for treatment group)" = posterior_treatment$N0_effective,
-                                        "Bayesian p-value (new vs historical data)"      = posterior_treatment$pvalue,
-                                        "Discount function value"                            = posterior_treatment$alpha_discount)
+      prior_for_treatment_group <- list("Sample size of prior (for treatment group)" = N0_t,
+                                        "Bayesian p-value (new vs historical data)"  = posterior_treatment$pvalue,
+                                        "Discount function value"                    = posterior_treatment$alpha_discount)
     }
   }
   if(is.null(posterior_control$N0) == FALSE){
     if(posterior_control$N0==0){
       prior_for_control_group <- "No Prior Supplied"
     } else{
-      prior_for_control_group <- list("Sample size of prior (for control group)"          = posterior_control$N0,
-                                      "Effective sample size of prior(for control group)" = posterior_control$N0_effective,
-                                      "Bayesian p-value (new vs historical data)"         = posterior_control$pvalue,
-                                      "Discount function value"                               = posterior_control$alpha_discount)
+      prior_for_control_group <- list("Sample size of prior (for control group)"  = N0_c,
+                                      "Bayesian p-value (new vs historical data)" = posterior_control$pvalue,
+                                      "Discount function value"                   = posterior_control$alpha_discount)
     }
   }
   print(prior_for_treatment_group)

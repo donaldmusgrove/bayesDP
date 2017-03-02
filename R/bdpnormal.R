@@ -13,8 +13,7 @@ NULL
 #' @description \code{bdpnormal} is used for estimating posterior samples from a
 #'   Gaussian outcome where an informative prior is used. The prior weight
 #'   is determined using a discount function. This code is modeled after
-#'   the methodologies developed by the MDIC working group: "Informing
-#'   clinical trials using bench & simulations."
+#'   the methodologies developed in Haddad (2017).
 #' @param mu_t scalar. Mean of the current treatment group.
 #' @param sigma_t scalar. Standard deviation of the current treatment group.
 #' @param N_t scalar. Number of observations of the current treatment group.
@@ -61,11 +60,76 @@ NULL
 #' me, I know a thing or two about building details.
 #'
 #' @return \code{bdpnormal} returns an object of class "bdpnormal".
-#' The functions \code{summary} and \code{print} are used to obtain and
-#' print a summary of the results, including user inputs. The \code{plot}
+#' The functions \code{\link{summary}} and \code{\link{print}} are used to obtain and
+#' print a summary of the results, including user inputs. The \code{\link{plot}}
 #' function displays visual outputs as well.
+#'
 #' An object of class "\code{bdpnormal} " is a list containing at least
 #' the following components:
+#' \describe{
+#'  \item{\code{posterior_treatment}}{
+#'    list. Entries contain values related to the treatment group:}
+#'    \itemize{
+#'      \item{\code{alpha_discount}}{
+#'        numeric. Alpha value, the weighting parameter of the historical data.}
+#'      \item{\code{pvalue}}{
+#'        numeric. The posterior probability of the stochastic comparison
+#'        between the current and historical data.}
+#'      \item{\code{mu_posterior}}{
+#'        vector. The posterior of the treatment group, incorporating the
+#'        weighted historical data.}
+#'      \item{\code{mu_posterior_flat}}{
+#'        vector. The distribution of the current treatment group, i.e., no
+#'        incorporation of the historical data.}
+#'      \item{\code{mu_prior}}{
+#'        vector. The distribution of the historical treatment group.}
+#'   }
+#'  \item{\code{posterior_control}}{
+#'    list. Similar entries as \code{posterior_treament}. Only present if
+#'    control group is specified.}
+#'  \item{\code{f1}}{
+#'    list. Entries contain values related to the posterior effect:}
+#'    \itemize{
+#'      \item{\code{density_post_treatment}}{
+#'        object of class \code{density}. Used internally to plot the density of
+#'        the treatment group posterior.}
+#'      \item{\code{density_flat_treatment}}{
+#'        object of class \code{density}. Used internally to plot the density of
+#'        the treatment group "flat" distribution.}
+#'      \item{\code{density_prior_treatment}}{
+#'        object of class \code{density}. Used internally to plot the density of
+#'        the treatment group prior.}
+#'      \item{\code{density_post_control}}{
+#'        object of class \code{density}. Used internally to plot the density of
+#'        the control group (if present) posterior.}
+#'      \item{\code{density_flat_control}}{
+#'        object of class \code{density}. Used internally to plot the density of
+#'        the control group (if present) "flat" distribution.}
+#'      \item{\code{density_prior_control}}{
+#'        object of class \code{density}. Used internally to plot the density of
+#'        the control group (if present) prior.}
+#'      \item{\code{TestMinusControl_post}}{
+#'        vector. If control group is present, vector contains posterior
+#'        distribution of the effect estimate of treatment vs. control.
+#'        control groups.}
+#'   }
+#'  \item{\code{args1}}{
+#'    list. Entries contain user inputs. In addition, the following elements
+#'    are ouput:}
+#'    \itemize{
+#'      \item{\code{arm2}}{
+#'        binary indicator. Used internally to indicate one-arm or two-arm
+#'        analysis.}
+#'      \item{\code{intent}}{
+#'        character. Denotes current/historical status of treatment and
+#'        control groups.}
+#'   }
+#' }
+#'
+#' @references
+#' Haddad, T. (2017) Incorporation of stochastic engineering models as prior
+#'   information in Bayesian medical device trials.
+#'   \emph{Journal of Biopharmaceutical Statistics}. To Appear.
 #'
 #' @examples
 #' # One-arm trial (OPC) example
@@ -76,9 +140,9 @@ NULL
 #'
 #' # Two-arm (RCT) example
 #' fit2 <- bdpnormal(mu_t = 30, sigma_t = 10, N_t = 250,
-#'                  mu0_t = 50, sigma0_t = 5, N0_t = 250,
-#'                  mu_c = 25, sigma_c = 10, N_c = 250,
-#'                  mu0_c = 50, sigma0_c = 5, N0_c = 250)
+#'                   mu0_t = 50, sigma0_t = 5, N0_t = 250,
+#'                   mu_c = 25, sigma_c = 10, N_c = 250,
+#'                   mu0_c = 50, sigma0_c = 5, N0_c = 250)
 #' summary(fit2)
 #' plot(fit2)
 #'
@@ -335,47 +399,41 @@ setMethod("bdpnormal",
                 pvalue            = alpha_discount$pvalue,
                 mu_posterior      = mu_posterior,
                 mu_posterior_flat = alpha_discount$mu_post_flat,
-                mu_prior          = alpha_discount$mu0,
-                weibull_scale     = weibull_scale,
-                weibull_shape     = weibull_shape,
-                mu                = mu,
-                N                 = N,
-                mu0               = mu0,
-                N0                = N0,
-                N0_effective      = alpha_discount$alpha_discount * N0))
+                mu_prior          = alpha_discount$mu0))
   }
 
   final <- function(posterior_treatment, posterior_control = NULL) {
     if (is.null(posterior_control) == FALSE){
-      den_post_control  <- density(posterior_control$mu_posterior,
+      density_post_control  <- density(posterior_control$mu_posterior,
                                    adjust = 0.5)
-      den_flat_control  <- density(posterior_control$mu_posterior_flat,
+      density_flat_control  <- density(posterior_control$mu_posterior_flat,
                                    adjust = 0.5)
-      den_prior_control <- density(posterior_control$mu_prior,
+      density_prior_control <- density(posterior_control$mu_prior,
                                    adjust = 0.5)
     }
 
-    den_post_treatment  <- density(posterior_treatment$mu_posterior,
+    density_post_treatment  <- density(posterior_treatment$mu_posterior,
                               adjust = 0.5)
-    den_flat_treatment  <- density(posterior_treatment$mu_posterior_flat,
+    density_flat_treatment  <- density(posterior_treatment$mu_posterior_flat,
                               adjust = 0.5)
-    den_prior_treatment <- density(posterior_treatment$mu_prior,
+    density_prior_treatment <- density(posterior_treatment$mu_prior,
                               adjust = 0.5)
 
     TestMinusControl_post <- posterior_treatment$mu_posterior - posterior_control$mu_posterior
+
     if (is.null(N0_c) == FALSE){
-    return(list(den_post_control      = den_post_control,
-                den_flat_control      = den_flat_control,
-                den_prior_control     = den_prior_control,
-                den_post_treatment    = den_post_treatment,
-                den_flat_treatment    = den_flat_treatment,
-                den_prior_treatment   = den_prior_treatment,
-                TestMinusControl_post = TestMinusControl_post))
+    return(list(density_post_control    = density_post_control,
+                density_flat_control    = density_flat_control,
+                density_prior_control   = density_prior_control,
+                density_post_treatment  = density_post_treatment,
+                density_flat_treatment  = density_flat_treatment,
+                density_prior_treatment = density_prior_treatment,
+                TestMinusControl_post   = TestMinusControl_post))
     }
     else{
-    return(list(den_post_treatment    = den_post_treatment,
-                den_flat_treatment    = den_flat_treatment,
-                den_prior_treatment   = den_prior_treatment,
+    return(list(density_post_treatment    = density_post_treatment,
+                density_flat_treatment    = density_flat_treatment,
+                density_prior_treatment   = density_prior_treatment,
                 TestMinusControl_post = TestMinusControl_post))
     }
   }
@@ -396,9 +454,6 @@ setMethod("bdpnormal",
     weibull_scale = weibull_scale[1],
     weibull_shape = weibull_shape[1],
     two_side      = two_side)
-
-  #mu_posterior(mu, sigma, N, mu0, sigma0, N0, alpha_max, number_mcmc,
-  #             weibull_shape, weibull_scale, two_side)
 
 
   if (arm2 == TRUE){
@@ -438,8 +493,8 @@ setMethod("bdpnormal",
                 sigma0_c      = sigma0_c,
                 N0_c          = N0_c,
                 alpha_max     = alpha_max[1],
-                weibull_scale = weibull_scale[1],
-                weibull_shape = weibull_shape[1],
+                weibull_scale = weibull_scale,
+                weibull_shape = weibull_shape,
                 number_mcmc   = number_mcmc,
                 two_side      = two_side,
                 arm2          = arm2,

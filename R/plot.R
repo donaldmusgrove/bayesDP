@@ -18,30 +18,30 @@ setMethod("plot", signature(x = "bdpnormal"), function(x){
   if (arm2 == TRUE){
     D1 <- data.frame(information_sources='Posterior',
                      group="Control",
-                     y=f$den_post_control$y,
-                     x=f$den_post_control$x)
+                     y=f$density_post_control$y,
+                     x=f$density_post_control$x)
     D2 <- data.frame(information_sources="Current Data",
                      group="Control",
-                     y=f$den_flat_control$y,
-                     x=f$den_flat_control$x)
+                     y=f$density_flat_control$y,
+                     x=f$density_flat_control$x)
     D3 <- data.frame(information_sources="Prior",
                      group="Control",
-                     y=f$den_prior_control$y,
-                     x=f$den_prior_control$x)
+                     y=f$density_prior_control$y,
+                     x=f$density_prior_control$x)
   }
 
   D4 <- data.frame(information_sources='Posterior',
-                   group="Test",
-                   y=f$den_post_treatment$y,
-                   x=f$den_post_treatment$x)
+                   group="Treatment",
+                   y=f$density_post_treatment$y,
+                   x=f$density_post_treatment$x)
   D5 <- data.frame(information_sources="Current Data",
-                   group="Test",
-                   y=f$den_flat_treatment$y,
-                   x=f$den_flat_treatment$x)
+                   group="Treatment",
+                   y=f$density_flat_treatment$y,
+                   x=f$density_flat_treatment$x)
   D6 <- data.frame(information_sources="Prior",
-                   group="Test",
-                   y=f$den_prior_treatment$y,
-                   x=f$den_prior_treatment$x)
+                   group="Treatment",
+                   y=f$density_prior_treatment$y,
+                   x=f$density_prior_treatment$x)
 
   if(is.null(N0_t) == TRUE & is.null(N0_c) == TRUE){
     D <- as.data.frame(rbind(D4,D5))
@@ -85,12 +85,12 @@ setMethod("plot", signature(x = "bdpnormal"), function(x){
   }
 
   Discount_function_treatment <- pweibull(p_value,
-                                          shape=posterior_treatment$weibull_shape,
-                                          scale=posterior_treatment$weibull_scale)
+                                          shape=x$args1$weibull_shape[1],
+                                          scale=x$args1$weibull_scale[1])
   if(arm2 == TRUE){
     Discount_function_control <- pweibull(p_value,
-                                          shape=posterior_control$weibull_shape,
-                                          scale=posterior_control$weibull_scale)
+                                          shape=x$args1$weibull_shape[2],
+                                          scale=x$args1$weibull_scale[2])
   }
 
   D1 <- data.frame(group="Treatment",y=Discount_function_treatment,x=seq(0,1,,100))

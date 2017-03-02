@@ -2,12 +2,12 @@
 % Please edit documentation in R/print.R
 \docType{methods}
 \name{print,bdpnormal-method}
-\alias{bdpbinomial,}
+\alias{print,bdpnormal-method}
+\alias{print,}
 \alias{bdpnormal,}
+\alias{bdpbinomial,}
 \alias{bdpregression_linear,}
 \alias{bdpsurvival}
-\alias{print,}
-\alias{print,bdpnormal-method}
 \title{print: print}
 \usage{
 \S4method{print}{bdpnormal}(x)
@@ -19,4 +19,3 @@
 print
 print
 }
-

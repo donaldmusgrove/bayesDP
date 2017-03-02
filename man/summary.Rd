@@ -2,12 +2,12 @@
 % Please edit documentation in R/summary.R
 \docType{methods}
 \name{summary,bdpnormal-method}
-\alias{bdpbinomial,}
+\alias{summary,bdpnormal-method}
+\alias{summary,}
 \alias{bdpnormal,}
+\alias{bdpbinomial,}
 \alias{bdpregression_linear,}
 \alias{bdpsurvival}
-\alias{summary,}
-\alias{summary,bdpnormal-method}
 \title{summary: summary}
 \usage{
 \S4method{summary}{bdpnormal}(object)
@@ -19,4 +19,3 @@
 summary
 summary
 }
-
