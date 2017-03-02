@@ -77,11 +77,11 @@ setMethod("plot", signature(x = "bdpnormal"), function(x){
 
 
   if(two_side==1){
-    p_value <- seq(0,1,,100)
+    p_value <- seq(0,1,length.out=100)
     p_value <- ifelse(p_value>.5,1-p_value,p_value)
   }
   if(two_side==0){
-    p_value <- seq(0,1,,100)
+    p_value <- seq(0,1,length.out=100)
   }
 
   Discount_function_treatment <- pweibull(p_value,
@@ -93,12 +93,16 @@ setMethod("plot", signature(x = "bdpnormal"), function(x){
                                           scale=x$args1$weibull_scale[2])
   }
 
-  D1 <- data.frame(group="Treatment",y=Discount_function_treatment,x=seq(0,1,,100))
+  D1 <- data.frame(group = "Treatment",
+                   y     = Discount_function_treatment,
+                   x     = seq(0,1,length.out=100))
   D2 <- data.frame(group=c("Treatment"),pvalue=c(posterior_treatment$pvalue))
   D3 <- data.frame(group=c("Treatment"),pvalue=c(posterior_treatment$alpha_discount))
 
   if(arm2 == TRUE){
-    D4 <- data.frame(group="Control",y=Discount_function_control,x=seq(0,1,,100))
+    D4 <- data.frame(group = "Control",
+                     y     = Discount_function_control,
+                     x     = seq(0,1,length.out=100))
     D5 <- data.frame(group=c("Control"),pvalue=c(posterior_control$pvalue))
     D6 <- data.frame(group=c("Control"),pvalue=c(posterior_control$alpha_discount))
   }
@@ -126,17 +130,17 @@ setMethod("plot", signature(x = "bdpnormal"), function(x){
     ggtitle("Discount Function") +
     ylim(0,1)
 
-  post_typeplot <- post_typeplot + guides(fill=guide_legend(title=NULL))
+  post_typeplot <- post_typeplot +
+    guides(fill=guide_legend(title=NULL)) +
+    theme(legend.title=element_blank())
 
-  post_typeplot <- post_typeplot + theme(legend.title=element_blank())
+  densityplot <- densityplot +
+    guides(fill=guide_legend(title=NULL)) +
+    theme(legend.title=element_blank())
 
-  densityplot <- densityplot + guides(fill=guide_legend(title=NULL))
-
-  densityplot <- densityplot + theme(legend.title=element_blank())
-
-  discountfun_plot <- discountfun_plot + guides(fill=guide_legend(title=NULL))
-
-  discountfun_plot <- discountfun_plot + theme(legend.title=element_blank())
+  discountfun_plot <- discountfun_plot +
+    guides(fill=guide_legend(title=NULL)) +
+    theme(legend.title=element_blank())
 
   op <- par(ask=TRUE)
   plot(post_typeplot)
@@ -220,27 +224,31 @@ setMethod("plot", signature(x = "bdpbinomial"), function(x){
 
 
   if(two_side==1){
-    p_value <- seq(0,1,,100)
+    p_value <- seq(0,1,length.out=100)
     p_value <- ifelse(p_value>.5,1-p_value,p_value)
   }
   if(two_side==0){
-    p_value <- seq(0,1,,100)
+    p_value <- seq(0,1,length.out=100)
   }
 
   discount_function_treatment <- pweibull(p_value,
-                                          shape=posterior_treatment$weibull_shape,
-                                          scale=posterior_treatment$weibull_scale)
+                                          shape=posterior_treatment$weibull_shape[1],
+                                          scale=posterior_treatment$weibull_scale[1])
   if(arm2 == TRUE){
     discount_function_control <- pweibull(p_value,
-                                          shape=posterior_control$weibull_shape,
-                                          scale=posterior_control$weibull_scale)
+                                          shape=posterior_control$weibull_shape[2],
+                                          scale=posterior_control$weibull_scale[2])
   }
 
-  D1 <- data.frame(group="Treatment",y=discount_function_treatment,x=seq(0,1,,100))
-  D2 <- data.frame(group="Treatment",pvalue=c(posterior_treatment$pvalue))
-  D3 <- data.frame(group="Treatment",pvalue=c(posterior_treatment$alpha_discount))
+  D1 <- data.frame(group = "Treatment",
+                   y     = discount_function_treatment,
+                   x     = seq(0,1,length.out=100))
+  D2 <- data.frame(group="Treatment", pvalue=c(posterior_treatment$pvalue))
+  D3 <- data.frame(group="Treatment", pvalue=c(posterior_treatment$alpha_discount))
   if (arm2 == TRUE){
-    D4 <- data.frame(group="Control",y=discount_function_control,x=seq(0,1,,100))
+    D4 <- data.frame(group = "Control",
+                     y     = discount_function_control,
+                     x     = seq(0,1,length.out=100))
     D5 <- data.frame(group="Control",pvalue=c(posterior_control$pvalue))
     D6 <- data.frame(group="Control",pvalue=c(posterior_control$alpha_discount))
   }
@@ -268,17 +276,17 @@ setMethod("plot", signature(x = "bdpbinomial"), function(x){
     ggtitle("Discount Function") +
     ylim(0,1)
 
-  post_typeplot <- post_typeplot + guides(fill=guide_legend(title=NULL))
+  post_typeplot <- post_typeplot +
+    guides(fill=guide_legend(title=NULL)) +
+    theme(legend.title=element_blank())
 
-  post_typeplot <- post_typeplot + theme(legend.title=element_blank())
+  densityplot <- densityplot +
+    guides(fill=guide_legend(title=NULL)) +
+    theme(legend.title=element_blank())
 
-  densityplot <- densityplot + guides(fill=guide_legend(title=NULL))
-
-  densityplot <- densityplot + theme(legend.title=element_blank())
-
-  discountfun_plot <- discountfun_plot + guides(fill=guide_legend(title=NULL))
-
-  discountfun_plot <- discountfun_plot + theme(legend.title=element_blank())
+  discountfun_plot <- discountfun_plot +
+    guides(fill=guide_legend(title=NULL)) +
+    theme(legend.title=element_blank())
 
   op <- par(ask=TRUE)
   plot(post_typeplot)
@@ -326,18 +334,18 @@ setMethod("plot", signature(x = "bdpregression_linear"), function(x){
     ggtitle("Density Plot")
 
   if (two_side == 1) {
-    p_value = seq(0, 1, , 100)
+    p_value = seq(0, 1, length.out=100)
     p_value = ifelse(p_value > 0.5, 1 - p_value, p_value)
   }
   if (two_side == 0) {
-    p_value = seq(0, 1, , 100)
+    p_value = seq(0, 1, length.out=100)
   }
 
   Loss_function <- pweibull(p_value,
                             shape = posterior$weibull_shape,
                             scale = posterior$weibull_scale)
 
-  D1 <- data.frame(y = Loss_function, x = seq(0, 1, , 100))
+  D1 <- data.frame(y = Loss_function, x = seq(0, 1, length.out=100))
   D2 <- data.frame(pvalue = c(posterior$pvalue))
 
   lossfun_plot <- ggplot() +
@@ -348,17 +356,17 @@ setMethod("plot", signature(x = "bdpregression_linear"), function(x){
     xlab("Bayesian p-value (New vs Historical Data)") +
     ggtitle("Discount Function Plot")
 
-  post_typeplot <- post_typeplot + guides(fill=guide_legend(title=NULL))
+  post_typeplot <- post_typeplot +
+    guides(fill=guide_legend(title=NULL)) +
+    theme(legend.title=element_blank())
 
-  post_typeplot <- post_typeplot + theme(legend.title=element_blank())
+  densityplot <- densityplot +
+    guides(fill=guide_legend(title=NULL)) +
+    theme(legend.title=element_blank())
 
-  densityplot <- densityplot + guides(fill=guide_legend(title=NULL))
-
-  densityplot <- densityplot + theme(legend.title=element_blank())
-
-  discountfun_plot <- discountfun_plot + guides(fill=guide_legend(title=NULL))
-
-  discountfun_plot <- discountfun_plot + theme(legend.title=element_blank())
+  discountfun_plot <- discountfun_plot +
+    guides(fill=guide_legend(title=NULL)) +
+    theme(legend.title=element_blank())
 
   op <- par(ask=TRUE)
   plot(post_typeplot)
@@ -413,18 +421,20 @@ setMethod("plot", signature(x = "bdpsurvival"), function(x){
 
 
   if (two_side == 1) {
-    p_value = seq(0, 1, , 100)
+    p_value = seq(0, 1, length.out=100)
     p_value = ifelse(p_value > 0.5, 1 - p_value, p_value)
   }
   if (two_side == 0) {
-    p_value = seq(0, 1, , 100)
+    p_value = seq(0, 1, length.out=100)
   }
 
   Loss_function_treatment <- pweibull(p_value,
-                                      shape = posterior_treatment$weibull_shape,
-                                      scale = posterior_treatment$weibull_scale)
+                                      shape = posterior_treatment$weibull_shape[1],
+                                      scale = posterior_treatment$weibull_scale[1])
 
-  D1 <- data.frame(group = "treatment", y = Loss_function_treatment, x = seq(0, 1, , 100))
+  D1 <- data.frame(group = "treatment",
+                   y     = Loss_function_treatment,
+                   x     = seq(0, 1, length.out=100))
   D2 <- data.frame(group = c("treatment"), pvalue = c(posterior_treatment$pvalue))
 
   lossfun_plot <- ggplot() +
@@ -436,17 +446,17 @@ setMethod("plot", signature(x = "bdpsurvival"), function(x){
     xlab("Stochastic comparison (New vs Historical Data)") +
     ggtitle("Discount Function Plot")
 
-  post_typeplot <- post_typeplot + guides(fill=guide_legend(title=NULL))
+  post_typeplot <- post_typeplot +
+    guides(fill=guide_legend(title=NULL)) +
+    theme(legend.title=element_blank())
 
-  post_typeplot <- post_typeplot + theme(legend.title=element_blank())
+  densityplot <- densityplot +
+    guides(fill=guide_legend(title=NULL)) +
+    theme(legend.title=element_blank())
 
-  densityplot <- densityplot + guides(fill=guide_legend(title=NULL))
-
-  densityplot <- densityplot + theme(legend.title=element_blank())
-
-  lossfun_plot <- lossfun_plot + guides(fill=guide_legend(title=NULL))
-
-  lossfun_plot <- lossfun_plot + theme(legend.title=element_blank())
+  lossfun_plot <- lossfun_plot +
+    guides(fill=guide_legend(title=NULL)) +
+    theme(legend.title=element_blank())
 
   op <- par(ask=TRUE)
   plot(post_typeplot)

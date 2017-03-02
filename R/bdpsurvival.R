@@ -427,7 +427,7 @@ final_survival <- function(posterior_treatment, posterior_control, arm2=FALSE){
   density_prior_treatment <- density(posterior_treatment$prior,
                                    adjust = 0.5)
 
-  if(arm2){
+  if(!arm2){
     teatmentpost <- posterior_treatment$posterior$surv_time_posterior
 
     return(list(density_post_treatment  = density_post_treatment,
