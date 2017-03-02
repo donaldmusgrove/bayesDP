@@ -2,12 +2,12 @@
 % Please edit documentation in R/plot.R
 \docType{methods}
 \name{plot,bdpnormal-method}
-\alias{plot,bdpnormal-method}
-\alias{plot,}
-\alias{bdpnormal,}
 \alias{bdpbinomial,}
+\alias{bdpnormal,}
 \alias{bdpregression_linear,}
 \alias{bdpsurvival}
+\alias{plot,}
+\alias{plot,bdpnormal-method}
 \title{plot: plot}
 \usage{
 \S4method{plot}{bdpnormal}(x)
@@ -19,3 +19,4 @@
 plot
 plot
 }
+
