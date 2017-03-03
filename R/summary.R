@@ -99,27 +99,6 @@ setMethod("summary", signature(object = "bdpbinomial"), function(object){
 #' @importFrom stats density is.empty.model median model.offset model.response pweibull quantile rbeta rgamma rnorm var vcov
 #' @export
 #' @rdname summary-methods
-#' @aliases summary,bdpregression_linear,bdpregression_linear-method
-setMethod("summary", signature(object = "bdpregression_linear"), function(object){
-  f          <- object$f1
-  posterior  <- object$est
-
-  ### summary
-  prior <- list(`Bayesian p-value (new vs historical data)`       = posterior$pvalue,
-                `Loss function value`                             = posterior$alpha_loss)
-
-  print(cat(hypothesis))
-  print(prior)
-})
-
-
-#' summary
-#' summary
-#' @title summary: summary
-#' @importFrom utils head
-#' @importFrom stats density is.empty.model median model.offset model.response pweibull quantile rbeta rgamma rnorm var vcov
-#' @export
-#' @rdname summary-methods
 #' @aliases summary,bdpsurvival,bdpsurvival-method
 setMethod("summary", signature(object = "bdpsurvival"), function(object){
   f                   <- object$f1

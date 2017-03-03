@@ -73,27 +73,6 @@ setMethod("print", signature(x = "bdpbinomial"), function(x){
 #' @importFrom stats density is.empty.model median model.offset model.response pweibull quantile rbeta rgamma rnorm var vcov
 #' @export
 #' @rdname print-methods
-#' @aliases print,bdpregression_linear,bdpregression_linear-method
-setMethod("print", signature(x = "bdpregression_linear"), function(x){
-  f          <- x$f1
-  posterior  <- x$est
-
-  ### Print
-  prior <- list(`Bayesian p-value (new vs historical data)`       = posterior$pvalue,
-                `Loss function value`                             = posterior$alpha_loss)
-
-  print(cat(hypothesis))
-  print(prior)
-})
-
-
-#' print
-#' print
-#' @title print: print
-#' @importFrom utils head
-#' @importFrom stats density is.empty.model median model.offset model.response pweibull quantile rbeta rgamma rnorm var vcov
-#' @export
-#' @rdname print-methods
 #' @aliases print,bdpsurvival,bdpsurvival-method
 setMethod("print", signature(x = "bdpsurvival"), function(x){
   f                   <- x$f1

@@ -244,39 +244,39 @@ setMethod("plot", signature(x = "bdpbinomial"), function(x){
   discount_function_treatment <- pweibull(p_value,
                                           shape=posterior_treatment$weibull_shape[1],
                                           scale=posterior_treatment$weibull_scale[1])
-  if(arm2 == TRUE){
-    discount_function_control <- pweibull(p_value,
-                                          shape=posterior_control$weibull_shape[2],
-                                          scale=posterior_control$weibull_scale[2])
-  }
-
   D1 <- data.frame(group = "Treatment",
                    y     = discount_function_treatment,
                    x     = seq(0,1,length.out=100))
   D2 <- data.frame(group="Treatment", pvalue=c(posterior_treatment$pvalue))
   D3 <- data.frame(group="Treatment", pvalue=c(posterior_treatment$alpha_discount))
-  if (arm2 == TRUE){
-    D4 <- data.frame(group = "Control",
-                     y     = discount_function_control,
-                     x     = seq(0,1,length.out=100))
-    D5 <- data.frame(group="Control",pvalue=c(posterior_control$pvalue))
-    D6 <- data.frame(group="Control",pvalue=c(posterior_control$alpha_discount))
-  }
 
 
   discountfun_plot <- ggplot()
-  if(N0_t!=0){
+  if(N0_t != 0){
     discountfun_plot <- discountfun_plot +
       geom_line(data=D1,aes(y=y,x=x,color=group),size=1) +
       geom_vline(data=D2, aes(xintercept=pvalue,color=group),lty=2) +
       geom_hline(data=D3, aes(yintercept=pvalue,color=group),lty=2)
   }
+
+
   if(arm2 == TRUE){
+    discount_function_control <- pweibull(p_value,
+                                          shape=posterior_control$weibull_shape[2],
+                                          scale=posterior_control$weibull_scale[2])
+
+    D4 <- data.frame(group = "Control",
+                     y     = discount_function_control,
+                     x     = seq(0,1,length.out=100))
+    D5 <- data.frame(group="Control",pvalue=c(posterior_control$pvalue))
+    D6 <- data.frame(group="Control",pvalue=c(posterior_control$alpha_discount))
+
     discountfun_plot  <- discountfun_plot +
       geom_line(data=D4,aes(y=y,x=x,color=group),size=1) +
       geom_vline(data=D5,aes(xintercept=pvalue,color=group),lty=2) +
       geom_hline(data=D6,aes(yintercept=pvalue,color=group),lty=2)
   }
+
 
   discountfun_plot <- discountfun_plot +
     facet_wrap(~group, ncol=1) +
@@ -302,95 +302,6 @@ setMethod("plot", signature(x = "bdpbinomial"), function(x){
   plot(post_typeplot)
   plot(densityplot)
   plot(discountfun_plot)
-  par(op)
-})
-
-
-#' plot
-#' plot
-#' @title plot: plot
-#' @importFrom utils head
-#' @importFrom graphics par
-#' @importFrom stats density is.empty.model median model.offset model.response pweibull quantile rbeta rgamma rnorm var vcov
-#' @export
-#' @rdname plot-methods
-#' @aliases plot,bdpregression_linear,bdpregression_linear-method
-setMethod("plot", signature(x = "bdpregression_linear"), function(x){
-  f          <- x$f1
-  posterior  <- x$est
-  two_side   <- x$args1$two_side
-
-  D4 <- data.frame(information_sources = "Posterior",
-                   y                   = f$den_post$y,
-                   x                   = f$den_post$x)
-
-  D5 <- data.frame(information_sources = "Current Data",
-                   y                   = f$den_flat$y,
-                   x                   = f$den_flat$x)
-
-  D6 <- data.frame(information_sources = "Prior",
-                   y                   = f$den_prior$y,
-                   x                   = f$den_prior$x)
-
-  D <- as.data.frame(rbind(D4, D5, D6))
-
-  D$information_sources <- factor(D$information_sources,
-                                  levels = (c("Posterior", "Current Data", "Prior")))
-
-  post_typeplot <- ggplot(D, aes(x = x, y = y)) +
-    geom_line(size = 2, aes(colour = information_sources, lty = information_sources)) +
-    theme_bw() +
-    ylab("Density (PDF)") +
-    xlab("Values") +
-    ggtitle("Posterior Type Plot")
-
-
-  densityplot <- ggplot(subset(D, information_sources == "Posterior"), aes(x = x, y = y)) +
-    geom_line(size = 2) +
-    ylab("Density (PDF)") +
-    xlab("Values") +
-    theme_bw() +
-    ggtitle("Density Plot")
-
-  if (two_side == 1) {
-    p_value = seq(0, 1, length.out=100)
-    p_value = ifelse(p_value > 0.5, 1 - p_value, p_value)
-  }
-  if (two_side == 0) {
-    p_value = seq(0, 1, length.out=100)
-  }
-
-  Loss_function <- pweibull(p_value,
-                            shape = posterior$weibull_shape,
-                            scale = posterior$weibull_scale)
-
-  D1 <- data.frame(y = Loss_function, x = seq(0, 1, length.out=100))
-  D2 <- data.frame(pvalue = c(posterior$pvalue))
-
-  lossfun_plot <- ggplot() +
-    geom_line(data = D1, aes(y = y, x = x), size = 1) +
-    geom_vline(data = D2, aes(xintercept = pvalue), lty = 2) +
-    theme_bw() +
-    ylab("Effective Sample Size for Historical Data") +
-    xlab("Bayesian p-value (New vs Historical Data)") +
-    ggtitle("Discount Function Plot")
-
-  post_typeplot <- post_typeplot +
-    guides(fill=guide_legend(title=NULL)) +
-    theme(legend.title=element_blank())
-
-  densityplot <- densityplot +
-    guides(fill=guide_legend(title=NULL)) +
-    theme(legend.title=element_blank())
-
-  discountfun_plot <- discountfun_plot +
-    guides(fill=guide_legend(title=NULL)) +
-    theme(legend.title=element_blank())
-
-  op <- par(ask=TRUE)
-  plot(post_typeplot)
-  plot(densityplot)
-  plot(lossfun_plot)
   par(op)
 })
 
