@@ -5,7 +5,6 @@ Version: 0.1.1
 Date: 2017-02-03
 Authors@R: c(person("Shawn", "Balcome", email = "sbalcome@mdic.org", role = c("aut", "cre")), person("Donnie", "Musgrove", email = "donald.r.musgrove@medtronic.com", role = c("aut")), person("Tarek", "Haddad", email = "tarek.d.haddad@medtronic.com", role = c("aut")), person("Christopher", "Jackson", email = "chris.jackson@mrc-bsu.cam.ac.uk", role = "ctb", comment="For the ppexp R code that was ported to C++."))
 Depends:
-    arm,
     ggplot2,
     testthat,
     MASS,

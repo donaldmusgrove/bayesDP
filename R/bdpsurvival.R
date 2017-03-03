@@ -141,6 +141,8 @@
 #' fitSurv <- bdpsurvival(Surv(time, status) ~ historical + treatment,
 #'                        data = example_surv_1arm)
 #'
+#' summary(fitSurv)
+#'
 #'
 #' @rdname bdpsurvival
 #' @importFrom stats density is.empty.model median model.offset model.response pweibull quantile rbeta rgamma rnorm var vcov
