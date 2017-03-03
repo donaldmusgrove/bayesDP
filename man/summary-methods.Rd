@@ -2,21 +2,17 @@
 % Please edit documentation in R/summary.R
 \docType{methods}
 \name{summary,bdpnormal-method}
-\alias{summary,bdpbinomial,bdpbinomial-method}
-\alias{summary,bdpbinomial-method}
-\alias{summary,bdpnormal,bdpnormal-method}
 \alias{summary,bdpnormal-method}
-\alias{summary,bdpregression_linear,bdpregression_linear-method}
-\alias{summary,bdpregression_linear-method}
-\alias{summary,bdpsurvival,bdpsurvival-method}
+\alias{summary,bdpnormal,bdpnormal-method}
+\alias{summary,bdpbinomial-method}
+\alias{summary,bdpbinomial,bdpbinomial-method}
 \alias{summary,bdpsurvival-method}
+\alias{summary,bdpsurvival,bdpsurvival-method}
 \title{summary: summary}
 \usage{
 \S4method{summary}{bdpnormal}(object)
 
 \S4method{summary}{bdpbinomial}(object)
-
-\S4method{summary}{bdpregression_linear}(object)
 
 \S4method{summary}{bdpsurvival}(object)
 }
@@ -32,8 +28,4 @@ summary
 
 summary
 summary
-
-summary
-summary
 }
-
