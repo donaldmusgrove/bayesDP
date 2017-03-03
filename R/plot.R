@@ -1,12 +1,12 @@
 #' plot
 #' plot
 #' @title plot: plot
-#' @param x Results
-#' @importFrom graphics par
+#' @importFrom utils head
 #' @importFrom stats density is.empty.model median model.offset model.response pweibull quantile rbeta rgamma rnorm var vcov
-#' @rdname plot
-#' @aliases plot, bdpnormal, bdpbinomial, bdpregression_linear, bdpsurvival
-#' @export plot
+#' @param x Result
+#' @export
+#' @rdname plot-methods
+#' @aliases plot,bdpnormal,bdpnormal-method
 setMethod("plot", signature(x = "bdpnormal"), function(x){
   f <- x$f1
   posterior_treatment <- x$posterior_treatment
@@ -150,6 +150,14 @@ setMethod("plot", signature(x = "bdpnormal"), function(x){
 })
 
 
+#' plot
+#' plot
+#' @title plot: plot
+#' @importFrom utils head
+#' @importFrom stats density is.empty.model median model.offset model.response pweibull quantile rbeta rgamma rnorm var vcov
+#' @export
+#' @rdname plot-methods
+#' @aliases plot,bdpbinomial,bdpbinomial-method
 setMethod("plot", signature(x = "bdpbinomial"), function(x){
   f                   <- x$f1
   posterior_treatment <- x$posterior_treatment
@@ -296,6 +304,14 @@ setMethod("plot", signature(x = "bdpbinomial"), function(x){
 })
 
 
+#' plot
+#' plot
+#' @title plot: plot
+#' @importFrom utils head
+#' @importFrom stats density is.empty.model median model.offset model.response pweibull quantile rbeta rgamma rnorm var vcov
+#' @export
+#' @rdname plot-methods
+#' @aliases plot,bdpregression_linear,bdpregression_linear-method
 setMethod("plot", signature(x = "bdpregression_linear"), function(x){
   f          <- x$f1
   posterior  <- x$est
@@ -376,6 +392,14 @@ setMethod("plot", signature(x = "bdpregression_linear"), function(x){
 })
 
 
+#' plot
+#' plot
+#' @title plot: plot
+#' @importFrom utils head
+#' @importFrom stats density is.empty.model median model.offset model.response pweibull quantile rbeta rgamma rnorm var vcov
+#' @export
+#' @rdname plot-methods
+#' @aliases plot,bdpsurvival,bdpsurvival-method
 setMethod("plot", signature(x = "bdpsurvival"), function(x){
   f                   <- x$f1
   posterior_treatment <- x$posterior_treatment

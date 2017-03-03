@@ -1,11 +1,12 @@
 #' print
 #' print
 #' @title print: print
-#' @param x Results
+#' @importFrom utils head
 #' @importFrom stats density is.empty.model median model.offset model.response pweibull quantile rbeta rgamma rnorm var vcov
-#' @rdname print
-#' @aliases print, bdpnormal, bdpbinomial, bdpregression_linear, bdpsurvival
-#' @export print
+#' @param x Result
+#' @export
+#' @rdname print-methods
+#' @aliases print,bdpnormal,bdpnormal-method
 setMethod("print", signature(x = "bdpnormal"), function(x){
   posterior_treatment <- x$posterior_treatment
   posterior_control   <- x$posterior_control
@@ -33,6 +34,15 @@ setMethod("print", signature(x = "bdpnormal"), function(x){
   print(prior_for_treatment_group)
 })
 
+
+#' print
+#' print
+#' @title print: print
+#' @importFrom utils head
+#' @importFrom stats density is.empty.model median model.offset model.response pweibull quantile rbeta rgamma rnorm var vcov
+#' @export
+#' @rdname print-methods
+#' @aliases print,bdpbinomial,bdpbinomial-method
 setMethod("print", signature(x = "bdpbinomial"), function(x){
   f                   <- x$f1
   posterior_treatment <- x$posterior_treatment
@@ -72,6 +82,15 @@ setMethod("print", signature(x = "bdpbinomial"), function(x){
   print(prior_for_control_group)
 })
 
+
+#' print
+#' print
+#' @title print: print
+#' @importFrom utils head
+#' @importFrom stats density is.empty.model median model.offset model.response pweibull quantile rbeta rgamma rnorm var vcov
+#' @export
+#' @rdname print-methods
+#' @aliases print,bdpregression_linear,bdpregression_linear-method
 setMethod("print", signature(x = "bdpregression_linear"), function(x){
   f          <- x$f1
   posterior  <- x$est
@@ -84,6 +103,15 @@ setMethod("print", signature(x = "bdpregression_linear"), function(x){
   print(prior)
 })
 
+
+#' print
+#' print
+#' @title print: print
+#' @importFrom utils head
+#' @importFrom stats density is.empty.model median model.offset model.response pweibull quantile rbeta rgamma rnorm var vcov
+#' @export
+#' @rdname print-methods
+#' @aliases print,bdpsurvival,bdpsurvival-method
 setMethod("print", signature(x = "bdpsurvival"), function(x){
   f                   <- x$f1
   posterior_treatment <- x$posterior_treatment

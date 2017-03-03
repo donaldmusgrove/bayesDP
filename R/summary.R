@@ -1,12 +1,12 @@
 #' summary
 #' summary
 #' @title summary: summary
-#' @param object Results
 #' @importFrom utils head
 #' @importFrom stats density is.empty.model median model.offset model.response pweibull quantile rbeta rgamma rnorm var vcov
-#' @rdname summary
-#' @aliases summary, bdpnormal, bdpbinomial, bdpregression_linear, bdpsurvival
-#' @export summary
+#' @param object Result
+#' @export
+#' @rdname summary-methods
+#' @aliases summary,bdpnormal,bdpnormal-method
 setMethod("summary", signature(object = "bdpnormal"), function(object){
   f <- object$f1
   posterior_treatment <- object$posterior_treatment
@@ -50,6 +50,14 @@ setMethod("summary", signature(object = "bdpnormal"), function(object){
 })
 
 
+#' summary
+#' summary
+#' @title summary: summary
+#' @importFrom utils head
+#' @importFrom stats density is.empty.model median model.offset model.response pweibull quantile rbeta rgamma rnorm var vcov
+#' @export
+#' @rdname summary-methods
+#' @aliases summary,bdpbinomial,bdpbinomial-method
 setMethod("summary", signature(object = "bdpbinomial"), function(object){
   f                   <- object$f1
   posterior_treatment <- object$posterior_treatment
@@ -94,6 +102,14 @@ setMethod("summary", signature(object = "bdpbinomial"), function(object){
 })
 
 
+#' summary
+#' summary
+#' @title summary: summary
+#' @importFrom utils head
+#' @importFrom stats density is.empty.model median model.offset model.response pweibull quantile rbeta rgamma rnorm var vcov
+#' @export
+#' @rdname summary-methods
+#' @aliases summary,bdpregression_linear,bdpregression_linear-method
 setMethod("summary", signature(object = "bdpregression_linear"), function(object){
   f          <- object$f1
   posterior  <- object$est
@@ -107,6 +123,14 @@ setMethod("summary", signature(object = "bdpregression_linear"), function(object
 })
 
 
+#' summary
+#' summary
+#' @title summary: summary
+#' @importFrom utils head
+#' @importFrom stats density is.empty.model median model.offset model.response pweibull quantile rbeta rgamma rnorm var vcov
+#' @export
+#' @rdname summary-methods
+#' @aliases summary,bdpsurvival,bdpsurvival-method
 setMethod("summary", signature(object = "bdpsurvival"), function(object){
   f                   <- object$f1
   posterior_treatment <- object$posterior_treatment
