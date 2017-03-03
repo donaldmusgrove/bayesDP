@@ -1,7 +1,8 @@
 #' @title Bayesian Discount Prior: Survival Analysis
 #' @description \code{bdpsurvival} is used to estimate the survival probability
-#'   (single arm trial; OPC) or hazard ratio (two-arm trial; RCT) using the
-#'   survival analysis implementation of the Bayesian discount prior.
+#'   (single arm trial; OPC) or hazard ratio (two-arm trial; RCT) for
+#'   right-censored data using the survival analysis implementation of the
+#'   Bayesian discount prior.
 #' @param formula an object of class "formula." Must have a survival object on
 #'   the left side and exactly two inputs on the right side: treatment and
 #'   historical. See "Details" for more information.
@@ -38,16 +39,91 @@
 #' @param two_side scalar. Indicator of two-sided test for the discount
 #'   function. Default value is 1.
 #'
-#' @details Many, many, many details to come. In fact, the best details. Believe
-#' me, I know a thing or two about building details.
+#' @details \code{bdpsurvival} uses a two-stage approach for determining the
+#'   strength of historical data in estimation of a survival probability outcome.
+#'   In the first stage, a Weibull distribution function is used as a
+#'   \emph{discount function} that defines the maximum strength of the
+#'   historical data (via \code{weibull_shape}, \code{weibull_scale}, and
+#'   \code{alpha_max}) and discounts based on disagreement with the current data.
+#'   Disagreement between current and historical data is determined by stochastically
+#'   comparing the respective posterior distributions under noninformative priors.
+#'   With a single arm survival data analysis, the comparison is the
+#'   proability (\code{p}) that the current survial is less than the historical
+#'   survival. The comparison metric \code{p} is then
+#'   input into the Weibull discount function and the final strength of the
+#'   historical data is returned (alpha).
+#'
+#' In the second stage, posterior estimation is performed where the discount
+#'   function parameter, \code{alpha}, is used as a fixed value for all posterior
+#'   estimation procedures.
+#'
+#'  To carry out a single arm (OPC) analysis, data for the current and
+#'  historical treatments are specified in a dataframe. The dataframe must have
+#'  columns with names 'time', 'status', 'treatment', and 'historical.' Column
+#'  'time' is the survival (censor) time of the event and 'status' is the
+#'  event indicator. The column 'treatment' is used to indicate which observations
+#'  are in the treatment and control group. A value of 1 indicates that the
+#'  observation is in the treatment group. The column 'historical' indicates
+#'  whether the observation is from the historical data (1) or current data (0).
+#'  The results are then based on the posterior distribution of the current data
+#'  augmented by the historical data.
+#'
+#'  Two-arm (RCT) analyses are not available with this release.
 #'
 #' @return \code{bdpsurvival} returns an object of class "bdpsurvival".
 #' The functions \code{summary} and \code{print} are used to obtain and
 #' print a summary of the results, including user inputs. The \code{plot}
 #' function displays visual outputs as well.
+#'
 #' An object of class "\code{bdpsurvival}" is a list containing at least
 #' the following components:
-#'
+#' \describe{
+#'  \item{\code{posterior_treatment}}{
+#'    list. Entries contain values related to the treatment group:}
+#'    \itemize{
+#'      \item{\code{alpha_discount}}{
+#'        numeric. Alpha value, the weighting parameter of the historical data.}
+#'      \item{\code{pvalue}}{
+#'        numeric. The posterior probability of the stochastic comparison
+#'        between the current and historical data.}
+#'      \item{\code{posterior}}{
+#'        list. Entries contain \code{cdf}, a vector of the posterior cdf of the
+#'        piecewise exponentialdistribution; \code{surv_time_posterior}, a
+#'        vector with the posterior of the survival probability; and
+#'        \code{posterior}, a matrix of the posteriors of each of the piecewise
+#'        hazards.}
+#'      \item{\code{posterior_flat}}{
+#'        matrix. The distributions of the current treatment group piecewise
+#'        hazard rates.}
+#'      \item{\code{prior}}{
+#'        matrix. The distributions of the historical treatment group piecewise
+#'        hazard rates.}
+#'   }
+#'  \item{\code{f1}}{
+#'    list. Entries contain values related to the posterior effect:}
+#'    \itemize{
+#'      \item{\code{density_post_treatment}}{
+#'        object of class \code{density}. Used internally to plot the density of
+#'        the treatment group posterior.}
+#'      \item{\code{density_flat_treatment}}{
+#'        object of class \code{density}. Used internally to plot the density of
+#'        the treatment group "flat" distribution.}
+#'      \item{\code{density_prior_treatment}}{
+#'        object of class \code{density}. Used internally to plot the density of
+#'        the treatment group prior.}
+#'      \item{\code{treatmentpost}}{
+#'        vector. Used internally to plot the posterior distribution of the
+#'        survival probability.}
+#'   }
+#'  \item{\code{args1}}{
+#'    list. Entries contain user inputs. In addition, the following elements
+#'    are ouput:}
+#'    \itemize{
+#'      \item{\code{S_t} and \code{S0_t}}{
+#'        survival objects. Used internally pass survival data between
+#'        functions.}
+#'   }
+#' }
 #'
 #' @examples
 #' # One-arm trial (OPC) example

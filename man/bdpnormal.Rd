@@ -144,6 +144,37 @@ the following components:
   is determined using a discount function. This code is modeled after
   the methodologies developed in Haddad et al. (2017).
 }
+\details{
+\code{bdpnormal} uses a two-stage approach for determining the
+  strength of historical data in estimation of a mean outcome.  In the first
+  stage, a Weibull distribution function is used as a
+  \emph{discount function} that defines the maximum strength of the
+  historical data (via \code{weibull_shape}, \code{weibull_scale}, and
+  \code{alpha_max}) and discounts based on disagreement with the current data.
+  Disagreement between current and historical data is determined by stochastically
+  comparing the respective posterior distributions under noninformative priors.
+  With Gaussian data, the comparison is the proability (\code{p}) that the current
+  mean is less than the historical mean. The comparison metric \code{p} is then
+  input into the Weibull discount function and the final strength of the
+  historical data is returned (alpha).
+
+ In the second stage, posterior estimation is performed where the discount
+ function parameter, \code{alpha}, is used as a fixed value for all posterior
+ estimation procedures.
+
+ To carry out a single arm (OPC) analysis, data for the current treatment
+ (\code{mu_t}, \code{sigma_t}, and \code{N_t}) and historical treatment
+ (\code{mu0_t}, \code{sigma0_t}, and \code{N0_t}) must be input. The results
+ are then based on the posterior distribution of the current data augmented
+ by the historical data.
+
+ To carry our a two-arm (RCT) analysis, data for the current treatment and
+ current control (\code{mu_c}, \code{sigma_c}, and \code{N_c}) must be input,
+ as well as at least one of the historical treatment and historical control
+ (\code{mu0_c}, \code{sigma0_c}, and \code{N0_c}). The results
+ are then based on the posterior distribution of the difference between
+ current treatment and control, augmented by available historical data.
+}
 \examples{
 # One-arm trial (OPC) example
 fit <- bdpnormal(mu_t = 30, sigma_t = 10, N_t = 250,
@@ -166,4 +197,3 @@ Haddad, T., Himes, A., Thompson, L., Irony, T., Nair, R. MDIC Computer
   engineering models as prior information in Bayesian medical device trials.
   \emph{Journal of Biopharmaceutical Statistics}. To Appear.
 }
-

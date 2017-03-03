@@ -2,12 +2,12 @@
 % Please edit documentation in R/summary.R
 \docType{methods}
 \name{summary,bdpnormal-method}
-\alias{summary,bdpbinomial,bdpbinomial-method}
-\alias{summary,bdpbinomial-method}
-\alias{summary,bdpnormal,bdpnormal-method}
 \alias{summary,bdpnormal-method}
-\alias{summary,bdpsurvival,bdpsurvival-method}
+\alias{summary,bdpnormal,bdpnormal-method}
+\alias{summary,bdpbinomial-method}
+\alias{summary,bdpbinomial,bdpbinomial-method}
 \alias{summary,bdpsurvival-method}
+\alias{summary,bdpsurvival,bdpsurvival-method}
 \title{summary: summary}
 \usage{
 \S4method{summary}{bdpnormal}(object)
@@ -29,4 +29,3 @@ summary
 summary
 summary
 }
-
