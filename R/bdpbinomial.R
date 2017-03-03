@@ -502,13 +502,19 @@ setMethod("bdpbinomial",
                 arm2          = arm2,
                 intent        = paste(intent,collapse=", "))
 
-me <- list(posterior_treatment = posterior_treatment,
-           posterior_control   = posterior_control,
-           f1                  = f1,
-           args1               = args1)
+  if(arm2==TRUE){
+    me <- list(posterior_treatment = posterior_treatment,
+               posterior_control   = posterior_control,
+               f1                  = f1,
+               args1               = args1)
+  } else{
+      me <- list(posterior_treatment = posterior_treatment,
+                 f1                  = f1,
+                 args1               = args1)
+  }
 
-class(me) <- "bdpbinomial"
+  class(me) <- "bdpbinomial"
 
-return(me)
+  return(me)
 
 })
