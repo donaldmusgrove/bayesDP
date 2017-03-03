@@ -40,6 +40,7 @@ setMethod("summary", signature(object = "bdpnormal"), function(object){
   cat("\n")
   cat("Submitted:")
   cat(object$args1$intent)
+  cat("\n")
 })
 
 
@@ -87,6 +88,7 @@ setMethod("summary", signature(object = "bdpbinomial"), function(object){
   print(format(head(argsdf, -2), scientific = FALSE))
   cat("Submitted:")
   cat(object$args1$intent)
+  cat("\n")
 })
 
 
