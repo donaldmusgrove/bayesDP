@@ -2,6 +2,7 @@
 #' plot
 #' @title plot: plot
 #' @importFrom utils head
+#' @importFrom graphics par
 #' @importFrom stats density is.empty.model median model.offset model.response pweibull quantile rbeta rgamma rnorm var vcov
 #' @param x Result
 #' @export
@@ -154,6 +155,7 @@ setMethod("plot", signature(x = "bdpnormal"), function(x){
 #' plot
 #' @title plot: plot
 #' @importFrom utils head
+#' @importFrom graphics par
 #' @importFrom stats density is.empty.model median model.offset model.response pweibull quantile rbeta rgamma rnorm var vcov
 #' @export
 #' @rdname plot-methods
@@ -308,6 +310,7 @@ setMethod("plot", signature(x = "bdpbinomial"), function(x){
 #' plot
 #' @title plot: plot
 #' @importFrom utils head
+#' @importFrom graphics par
 #' @importFrom stats density is.empty.model median model.offset model.response pweibull quantile rbeta rgamma rnorm var vcov
 #' @export
 #' @rdname plot-methods
@@ -396,6 +399,7 @@ setMethod("plot", signature(x = "bdpregression_linear"), function(x){
 #' plot
 #' @title plot: plot
 #' @importFrom utils head
+#' @importFrom graphics par
 #' @importFrom stats density is.empty.model median model.offset model.response pweibull quantile rbeta rgamma rnorm var vcov
 #' @export
 #' @rdname plot-methods
