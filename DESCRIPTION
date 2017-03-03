@@ -10,7 +10,6 @@ Depends:
     testthat,
     MASS,
     survival
-Suggests:
 Description: This package augments current data and historical data using the
     Bayesian discount prior function for 1 arm and 2 arm clinical trials.
 LazyLoad: yes
@@ -27,4 +26,4 @@ Date/Publication: 2016-02-03 23:30:16
 Imports:
     Rcpp
 LinkingTo: Rcpp, RcppArmadillo
-RoxygenNote: 6.0.1
+RoxygenNote: 5.0.1
