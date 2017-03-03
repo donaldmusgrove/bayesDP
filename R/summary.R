@@ -85,7 +85,6 @@ setMethod("summary", signature(object = "bdpbinomial"), function(object){
   rownames(argsdf) <- names(object$args1)
   colnames(argsdf) <- "args"
   print(format(head(argsdf, -2), scientific = FALSE))
-  cat("\n")
   cat("Submitted:")
   cat(object$args1$intent)
 })
@@ -125,7 +124,7 @@ setMethod("summary", signature(object = "bdpsurvival"), function(object){
   posterior_treatment <- object$posterior_treatment
   surv_time           <- object$args1$surv_time
 
-  ### Print
+  ### print
   prior_for_treatment_group <- list(`Bayesian p-value (new vs historical data)`       = posterior_treatment$pvalue,
                                     `Loss function value`                             = posterior_treatment$alpha_discount)
 
