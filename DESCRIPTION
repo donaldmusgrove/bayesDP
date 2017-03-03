@@ -3,7 +3,7 @@ Type: Package
 Title: Tools for the Bayesian Discount Prior Function
 Version: 0.1.1
 Date: 2017-02-03
-Authors@R: c(person("Shawn", "Balcome", email = "sbalcome@mdic.org", role = c("aut", "cre")), person("Donnie", "Musgrove", email = "donald.r.musgrove@medtronic.com", role = c("aut", "cre")), person("Tarek", "Haddad", email = "tarek.d.haddad@medtronic.com", role = c("aut", "cre")), person("Christopher", "Jackson", email = "chris.jackson@mrc-bsu.cam.ac.uk", role = "ctb", comment="For the ppexp R code that was ported to C++."))
+Authors@R: c(person("Shawn", "Balcome", email = "sbalcome@mdic.org", role = c("aut", "cre")), person("Donnie", "Musgrove", email = "donald.r.musgrove@medtronic.com", role = c("aut")), person("Tarek", "Haddad", email = "tarek.d.haddad@medtronic.com", role = c("aut")), person("Christopher", "Jackson", email = "chris.jackson@mrc-bsu.cam.ac.uk", role = "ctb", comment="For the ppexp R code that was ported to C++."))
 Depends:
     arm,
     ggplot2,
@@ -18,7 +18,7 @@ License: GPL-3
 URL: https://github.com/balcomes/bayesDP
 BugReports: https://github.com/balcomes/bayesDP/issues
 NeedsCompilation: yes
-Packaged: 
+Packaged:
 Author: Shawn Balcome [aut, cre], Donnie Musgrove [aut, cre], Tarek Haddad [aut,
     cre]
 Maintainer: Shawn Balcome <sbalcome@mdic.org>
@@ -27,4 +27,4 @@ Date/Publication: 2016-02-03 23:30:16
 Imports:
     Rcpp
 LinkingTo: Rcpp, RcppArmadillo
-RoxygenNote: 6.0.1
+RoxygenNote: 5.0.1
