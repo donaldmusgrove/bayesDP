@@ -232,7 +232,9 @@ setMethod("bdpsurvival",
 
   f1 <- final_survival(posterior_treatment = posterior_treatment,
                        posterior_control   = posterior_control,
-                       arm2                = arm2)
+                       arm2                = arm2,
+                       surv_time           = surv_time,
+                       breaks              = breaks)
 
   args1 <- list(S_t           = S_t,
                 S_c           = S_c,
@@ -256,19 +258,6 @@ setMethod("bdpsurvival",
 
   return(me)
 })
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 ################################################################################
@@ -414,23 +403,30 @@ survival_posterior <- function(S, S0, alpha_max, a0, b0, surv_time,
 }
 
 ### Create final result class
-final_survival <- function(posterior_treatment, posterior_control, arm2=FALSE){
+final_survival <- function(posterior_treatment, posterior_control, arm2=FALSE,
+                           surv_time, breaks){
 
-  density_post_treatment  <- density(posterior_treatment$posterior$posterior,
-                                   adjust = 0.5)
-  density_flat_treatment  <- density(posterior_treatment$posterior_flat,
-                                   adjust = 0.5)
-  density_prior_treatment <- density(posterior_treatment$prior,
-                                   adjust = 0.5)
+  ### if(opc) plot survival prob.
+  treatment_posterior      <- posterior_treatment$posterior$surv_time_posterior
+  treatment_posterior_flat <- ppexp(surv_time, posterior_treatment$posterior_flat, c(0,breaks))
+  treatment_prior          <- ppexp(surv_time, posterior_treatment$prior, c(0,breaks))
+
+  density_post_treatment  <- density(treatment_posterior,
+                                     adjust = 0.5)
+  density_flat_treatment  <- density(treatment_posterior_flat,
+                                     adjust = 0.5)
+  density_prior_treatment <- density(treatment_prior,
+                                     adjust = 0.5)
 
   if(!arm2){
-    teatmentpost <- posterior_treatment$posterior$surv_time_posterior
+    treatmentpost <- posterior_treatment$posterior$surv_time_posterior
 
     return(list(density_post_treatment  = density_post_treatment,
                 density_flat_treatment  = density_flat_treatment,
                 density_prior_treatment = density_prior_treatment,
-                teatmentpost            = teatmentpost))
+                treatmentpost           = treatmentpost))
   } else if(!is.null(posterior_control) & arm2){
+    ### TODO: finalize below code
     density_post_control  <- density(posterior_control$posterior$posterior,
                                      adjust = 0.5)
     density_flat_control  <- density(posterior_control$posterior_flat,
@@ -451,7 +447,7 @@ final_survival <- function(posterior_treatment, posterior_control, arm2=FALSE){
                 density_post_control    = density_post_control,
                 density_flat_control    = density_flat_control,
                 density_prior_control   = density_prior_control,
-                teatmentpost            = teatmentpost))
+                treatmentpost           = treatmentpost))
   }
 }
 

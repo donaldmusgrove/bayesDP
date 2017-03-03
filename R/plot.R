@@ -408,14 +408,14 @@ setMethod("plot", signature(x = "bdpsurvival"), function(x){
   f                   <- x$f1
   posterior_treatment <- x$posterior_treatment
   two_side            <- x$args1$two_side
-  starts              <- c(0,x$args1$breaks)
+
 
   D4 <- data.frame(information_sources = "Posterior",
                    group               = "Treatment",
                    y                   = f$density_post_treatment$y,
                    x                   = f$density_post_treatment$x)
 
-  D5 <- data.frame(information_sources = "Current data",
+  D5 <- data.frame(information_sources = "Current Data",
                    group               = "Treatment",
                    y                   = f$density_flat_treatment$y,
                    x                   = f$density_flat_treatment$x)
@@ -430,12 +430,10 @@ setMethod("plot", signature(x = "bdpsurvival"), function(x){
   D$information_sources <- factor(D$information_sources,
                                   levels = (c("Posterior", "Current Data", "Prior")))
 
-  D$start <- paste0("Interval start: ", D$start)
-
   post_typeplot <- ggplot(D, aes(x = x, y = y)) +
     geom_line(size = 2, aes(colour = information_sources, lty = information_sources)) +
     theme_bw() +
-    facet_wrap(~group+start, ncol = 1, scales = "free") +
+    facet_wrap(~group, ncol = 1, scales = "free") +
     ylab("Density (PDF)") +
     xlab("Values") +
     ggtitle("Posterior Type Plot")
@@ -470,12 +468,15 @@ setMethod("plot", signature(x = "bdpsurvival"), function(x){
   discountfun_plot <- ggplot() +
     geom_line(data = D1, aes(y = y, x = x, colour = group), size = 1) +
     geom_vline(data = D2, aes(xintercept = pvalue, colour = group), lty = 2) +
-    geom_hline(data=D3, aes(yintercept =pvalue,colour=group),lty=2) +
+    geom_hline(data=D3, aes(yintercept =pvalue, colour=group),lty=2)
+
+  discountfun_plot <- discountfun_plot +
     facet_wrap(~group, ncol = 1) +
     theme_bw() +
-    ylab("Effective Sample Size for Historical Data") +
+    ylab("Alpha Discount Value") +
     xlab("Stochastic comparison (New vs Historical Data)") +
-    ggtitle("Discount Function Plot")
+    ggtitle("Discount Function") +
+    ylim(0,1)
 
   post_typeplot <- post_typeplot +
     guides(fill=guide_legend(title=NULL)) +

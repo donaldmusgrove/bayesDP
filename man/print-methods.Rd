@@ -2,14 +2,14 @@
 % Please edit documentation in R/print.R
 \docType{methods}
 \name{print,bdpnormal-method}
-\alias{print,bdpbinomial,bdpbinomial-method}
-\alias{print,bdpbinomial-method}
-\alias{print,bdpnormal,bdpnormal-method}
 \alias{print,bdpnormal-method}
-\alias{print,bdpregression_linear,bdpregression_linear-method}
+\alias{print,bdpnormal,bdpnormal-method}
+\alias{print,bdpbinomial-method}
+\alias{print,bdpbinomial,bdpbinomial-method}
 \alias{print,bdpregression_linear-method}
-\alias{print,bdpsurvival,bdpsurvival-method}
+\alias{print,bdpregression_linear,bdpregression_linear-method}
 \alias{print,bdpsurvival-method}
+\alias{print,bdpsurvival,bdpsurvival-method}
 \title{print: print}
 \usage{
 \S4method{print}{bdpnormal}(x)
@@ -36,4 +36,3 @@ print
 print
 print
 }
-
