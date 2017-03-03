@@ -2,8 +2,7 @@
 #' @description \code{bdpbinomial} is used for estimating posterior samples from a
 #'   Binomial outcome where an informative prior is used. The prior weight
 #'   is determined using a discount function. This code is modeled after
-#'   the methodologies developed by the MDIC working group: "Informing
-#'   clinical trials using bench & simulations."
+#'   the methodologies developed in Haddad et al. (2017).
 #' @param y_t scalar. Number of events for the current treatment group.
 #' @param N_t scalar. Sample size of the current treatment group.
 #' @param y0_t scalar. Number of events for the historical treatment group.
@@ -38,15 +37,102 @@
 #' @param two_side scalar. Indicator of two-sided test for the discount
 #'   function. Default value is 1.
 #'
-#' @details Many, many, many details to come. In fact, the best details. Believe
-#' me, I know a thing or two about building details.
+#' @details \code{bdpbinomial} uses a two-stage approach for determining the
+#'   strength of historical data in estimation of a binomial count mean outcome.
+#'   In the first stage, a Weibull distribution function is used as a
+#'   \emph{discount function} that defines the maximum strength of the
+#'   historical data (via \code{weibull_shape}, \code{weibull_scale}, and
+#'   \code{alpha_max}) and discounts based on disagreement with the current data.
+#'   Disagreement between current and historical data is determined by stochastically
+#'   comparing the respective posterior distributions under noninformative priors.
+#'   With binomial data, the comparison is the proability (\code{p) that the current
+#'   count is less than the historical count. The comparison metric \code{p} is then
+#'   input into the Weibull discount function and the final strength of the
+#'   historical data is returned (alpha).
+#'
+#'  In the second stage, posterior estimation is performed where the discount
+#'  function parameter, \code{alpha}, is used as a fixed value for all posterior
+#'  estimation procedures.
+#'
+#'  To carry out a single arm (OPC) analysis, data for the current treatment
+#'  (\code{y_t} and \code{N_t}) and historical treatment (\code{y0_t} and
+#'  \code{N0_t}) must be input. The results are then based on the posterior
+#'  distribution of the current data augmented by the historical data.
+#'
+#'  To carry our a two-arm (RCT) analysis, data for the current treatment and
+#'  current control (\code{y_c} and \code{N_c}) must be input,
+#'  as well as at least one of the historical treatment and historical control
+#'  (\code{y0_c} and \code{N0_c}). The results
+#'  are then based on the posterior distribution of the difference between
+#'  current treatment and control, augmented by available historical data.
 #'
 #' @return \code{bdpbinomial} returns an object of class "bdpbinomial".
 #' The functions \code{summary} and \code{print} are used to obtain and
 #' print a summary of the results, including user inputs. The \code{plot}
 #' function displays visual outputs as well.
-#' An object of class "\code{bdpbinomial} " is a list containing at least
+#'
+#' An object of class \code{bdpbinomial} is a list containing at least
 #' the following components:
+#'
+#' \describe{
+#'  \item{\code{posterior_treatment}}{
+#'    list. Entries contain values related to the treatment group:}
+#'    \itemize{
+#'      \item{\code{alpha_discount}}{
+#'        numeric. Alpha value, the weighting parameter of the historical data.}
+#'      \item{\code{pvalue}}{
+#'        numeric. The posterior probability of the stochastic comparison
+#'        between the current and historical data.}
+#'      \item{\code{posterior}}{
+#'        vector. The posterior of the treatment group, incorporating the
+#'        weighted historical data.}
+#'      \item{\code{posterior_flat}}{
+#'        vector. The distribution of the current treatment group, i.e., no
+#'        incorporation of the historical data.}
+#'      \item{\code{prior}}{
+#'        vector. The distribution of the historical treatment group.}
+#'   }
+#'  \item{\code{posterior_control}}{
+#'    list. Similar entries as \code{posterior_treament}. Only present if
+#'    control group is specified.}
+#'  \item{\code{f1}}{
+#'    list. Entries contain values related to the posterior effect:}
+#'    \itemize{
+#'      \item{\code{density_post_treatment}}{
+#'        object of class \code{density}. Used internally to plot the density of
+#'        the treatment group posterior.}
+#'      \item{\code{density_flat_treatment}}{
+#'        object of class \code{density}. Used internally to plot the density of
+#'        the treatment group "flat" distribution.}
+#'      \item{\code{density_prior_treatment}}{
+#'        object of class \code{density}. Used internally to plot the density of
+#'        the treatment group prior.}
+#'      \item{\code{density_post_control}}{
+#'        object of class \code{density}. Used internally to plot the density of
+#'        the control group (if present) posterior.}
+#'      \item{\code{density_flat_control}}{
+#'        object of class \code{density}. Used internally to plot the density of
+#'        the control group (if present) "flat" distribution.}
+#'      \item{\code{density_prior_control}}{
+#'        object of class \code{density}. Used internally to plot the density of
+#'        the control group (if present) prior.}
+#'      \item{\code{TestMinusControl_post}}{
+#'        vector. If control group is present, vector contains posterior
+#'        distribution of the effect estimate of treatment vs. control.
+#'        control groups.}
+#'   }
+#'  \item{\code{args1}}{
+#'    list. Entries contain user inputs. In addition, the following elements
+#'    are ouput:}
+#'    \itemize{
+#'      \item{\code{arm2}}{
+#'        binary indicator. Used internally to indicate one-arm or two-arm
+#'        analysis.}
+#'      \item{\code{intent}}{
+#'        character. Denotes current/historical status of treatment and
+#'        control groups.}
+#'   }
+#' }
 #'
 #' @examples
 #' # One-arm trial (OPC) example
@@ -374,26 +460,28 @@ setMethod("bdpbinomial",
     weibull_shape = weibull_shape[1],
     two_side      = two_side)
 
-  posterior_control <- binomial_posterior(
-    y             = y_c,
-    N             = N_c,
-    y0            = y0_c,
-    N0            = N0_c,
-    alpha_max     = alpha_max[2],
-    a0            = a0,
-    b0            = b0,
-    number_mcmc   = number_mcmc,
-    weibull_scale = weibull_scale[2],
-    weibull_shape = weibull_shape[2],
-    two_side      = two_side)
+  if (arm2==TRUE){
+    posterior_control <- binomial_posterior(
+      y             = y_c,
+      N             = N_c,
+      y0            = y0_c,
+      N0            = N0_c,
+      alpha_max     = alpha_max[2],
+      a0            = a0,
+      b0            = b0,
+      number_mcmc   = number_mcmc,
+      weibull_scale = weibull_scale[2],
+      weibull_shape = weibull_shape[2],
+      two_side      = two_side)
+  }
 
   if (arm2==TRUE){
     f1 <- final_binomial(posterior_treatment = posterior_treatment,
-                posterior_control = posterior_control)
+                         posterior_control   = posterior_control)
   }
   else{
     f1 <- final_binomial(posterior_treatment = posterior_treatment,
-                posterior_control = NULL)
+                         posterior_control   = NULL)
   }
 
   args1 <- list(y_t           = y_t,

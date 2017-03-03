@@ -64,19 +64,75 @@ function. Default value is 1.}
 The functions \code{summary} and \code{print} are used to obtain and
 print a summary of the results, including user inputs. The \code{plot}
 function displays visual outputs as well.
-An object of class "\code{bdpbinomial} " is a list containing at least
+
+An object of class \code{bdpbinomial} is a list containing at least
 the following components:
+
+\describe{
+ \item{\code{posterior_treatment}}{
+   list. Entries contain values related to the treatment group:}
+   \itemize{
+     \item{\code{alpha_discount}}{
+       numeric. Alpha value, the weighting parameter of the historical data.}
+     \item{\code{pvalue}}{
+       numeric. The posterior probability of the stochastic comparison
+       between the current and historical data.}
+     \item{\code{posterior}}{
+       vector. The posterior of the treatment group, incorporating the
+       weighted historical data.}
+     \item{\code{posterior_flat}}{
+       vector. The distribution of the current treatment group, i.e., no
+       incorporation of the historical data.}
+     \item{\code{prior}}{
+       vector. The distribution of the historical treatment group.}
+  }
+ \item{\code{posterior_control}}{
+   list. Similar entries as \code{posterior_treament}. Only present if
+   control group is specified.}
+ \item{\code{f1}}{
+   list. Entries contain values related to the posterior effect:}
+   \itemize{
+     \item{\code{density_post_treatment}}{
+       object of class \code{density}. Used internally to plot the density of
+       the treatment group posterior.}
+     \item{\code{density_flat_treatment}}{
+       object of class \code{density}. Used internally to plot the density of
+       the treatment group "flat" distribution.}
+     \item{\code{density_prior_treatment}}{
+       object of class \code{density}. Used internally to plot the density of
+       the treatment group prior.}
+     \item{\code{density_post_control}}{
+       object of class \code{density}. Used internally to plot the density of
+       the control group (if present) posterior.}
+     \item{\code{density_flat_control}}{
+       object of class \code{density}. Used internally to plot the density of
+       the control group (if present) "flat" distribution.}
+     \item{\code{density_prior_control}}{
+       object of class \code{density}. Used internally to plot the density of
+       the control group (if present) prior.}
+     \item{\code{TestMinusControl_post}}{
+       vector. If control group is present, vector contains posterior
+       distribution of the effect estimate of treatment vs. control.
+       control groups.}
+  }
+ \item{\code{args1}}{
+   list. Entries contain user inputs. In addition, the following elements
+   are ouput:}
+   \itemize{
+     \item{\code{arm2}}{
+       binary indicator. Used internally to indicate one-arm or two-arm
+       analysis.}
+     \item{\code{intent}}{
+       character. Denotes current/historical status of treatment and
+       control groups.}
+  }
+}
 }
 \description{
 \code{bdpbinomial} is used for estimating posterior samples from a
   Binomial outcome where an informative prior is used. The prior weight
   is determined using a discount function. This code is modeled after
-  the methodologies developed by the MDIC working group: "Informing
-  clinical trials using bench & simulations."
-}
-\details{
-Many, many, many details to come. In fact, the best details. Believe
-me, I know a thing or two about building details.
+  the methodologies developed in Haddad et al. (2017).
 }
 \examples{
 # One-arm trial (OPC) example
@@ -102,4 +158,3 @@ print(fit2)
 #plot(fit2)
 
 }
-
