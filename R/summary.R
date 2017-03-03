@@ -15,25 +15,18 @@ setMethod("summary", signature(object = "bdpnormal"), function(object){
   N0_t <- object$args1$N0_t
   N0_c <- object$args1$N0_c
 
-  if(is.null(posterior_treatment$N0) == FALSE){
-    if(posterior_treatment$N0==0){
-      prior_for_treatment_group <- "No Prior Supplied"
-    } else{
+  if(is.null(N0_t) == FALSE){
+
       prior_for_treatment_group <- list("Sample size of prior (for treatment group)" = N0_t,
                                         "Bayesian p-value (new vs historical data)"  = posterior_treatment$pvalue,
                                         "Discount function value"                    = posterior_treatment$alpha_discount)
-    }
-  }
+      }
 
   if(is.null(N0_c) == FALSE){
-    if(N0_c==0){
-      prior_for_control_group <- "No Prior Supplied"
-    } else{
       prior_for_control_group <- list("Sample size of prior (for control group)"  = N0_c,
                                       "Bayesian p-value (new vs historical data)" = posterior_control$pvalue,
                                       "Discount function value"                   = posterior_control$alpha_discount)
-    }
-  }
+      }
 
   print(prior_for_treatment_group)
   if(is.null(N0_c) == FALSE){
@@ -67,9 +60,7 @@ setMethod("summary", signature(object = "bdpbinomial"), function(object){
   N0_c                <- object$args1$N0_c
 
 
-  if(is.null(posterior_treatment$N0) == FALSE){
-    prior_for_treatment_group <- "No Prior Supplied"
-  } else{
+  if(is.null(N0_t) == FALSE){
     prior_for_treatment_group <- list(
       `Sample size of prior (for treatment group)`          = posterior_treatment$N0,
       `Effective sample size of prior(for treatment group)` = posterior_treatment$N0_effective,
@@ -77,9 +68,7 @@ setMethod("summary", signature(object = "bdpbinomial"), function(object){
       `Discount function value`                             = posterior_treatment$alpha_discount)
   }
 
-  if(is.null(posterior_treatment$N0) == FALSE){
-    prior_for_control_group <- "No Prior Supplied"
-  } else{
+  if(is.null(N0_t) == FALSE){
     prior_for_control_group <- list(
       `Sample size of prior (for control group)`          = posterior_control$N0,
       `Effective sample size of prior(for control group)` = posterior_control$N0_effective,
