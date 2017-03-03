@@ -18,17 +18,20 @@ setMethod("print", signature(x = "bdpnormal"), function(x){
                                         "Bayesian p-value (new vs historical data)"  = posterior_treatment$pvalue,
                                         "Discount function value"                    = posterior_treatment$alpha_discount)
       }
-  if(is.null(posterior_control$N0) == FALSE){
+  if(is.null(N0_c) == FALSE){
       prior_for_control_group <- list("Sample size of prior (for control group)"  = N0_c,
                                       "Bayesian p-value (new vs historical data)" = posterior_control$pvalue,
                                       "Discount function value"                   = posterior_control$alpha_discount)
       }
-  print(prior_for_treatment_group)
+  pp(prior_for_treatment_group)
+  if(is.null(N0_c) == FALSE){
+    pp(prior_for_control_group)
+  }
 
   argsdf <- suppressWarnings(data.frame(as.numeric(as.character(x$args1))))
   rownames(argsdf) <- names(x$args1)
   colnames(argsdf) <- "args"
-  print(format(head(argsdf, -2), scientific = FALSE))
+  #print(format(head(argsdf, -2), scientific = FALSE))
   cat("\n")
   cat("Submitted:")
   cat(x$args1$intent)
@@ -61,7 +64,7 @@ setMethod("print", signature(x = "bdpbinomial"), function(x){
         `Discount function value`                             = posterior_treatment$alpha_discount)
       }
 
-  if(is.null(N0_t) == FALSE){
+  if(is.null(N0_c) == FALSE){
 
       prior_for_control_group <- list(
         `Sample size of prior (for control group)`          = posterior_control$N0,
@@ -70,8 +73,10 @@ setMethod("print", signature(x = "bdpbinomial"), function(x){
         `Discount function value`                           = posterior_control$alpha_discount)
       }
 
-  print(prior_for_treatment_group)
-  print(prior_for_control_group)
+  pp(prior_for_treatment_group)
+  if(is.null(N0_c) == FALSE){
+    pp(prior_for_control_group)
+  }
 
   argsdf <- suppressWarnings(data.frame(as.numeric(as.character(x$args1))))
   rownames(argsdf) <- names(x$args1)
@@ -107,6 +112,13 @@ setMethod("print", signature(x = "bdpsurvival"), function(x){
                     `Median survival probability` = median(f$treatmentpost))
 
   ### Text outputs
-  print(prior_for_treatment_group)
-  print(surv_prob)
+  pp(prior_for_treatment_group)
+  pp(surv_prob)
 })
+
+# Helper functions:
+
+pp <- function(m){
+  write.table(format(m, justify="right"),
+              row.names=T, col.names=F, quote=F)
+}

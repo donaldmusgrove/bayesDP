@@ -28,9 +28,9 @@ setMethod("summary", signature(object = "bdpnormal"), function(object){
                                       "Discount function value"                   = posterior_control$alpha_discount)
       }
 
-  print(prior_for_treatment_group)
+  pp(prior_for_treatment_group)
   if(is.null(N0_c) == FALSE){
-    print(prior_for_control_group)
+    pp(prior_for_control_group)
   }
 })
 
@@ -67,9 +67,9 @@ setMethod("summary", signature(object = "bdpbinomial"), function(object){
       `Discount function value`                           = posterior_control$alpha_discount)
   }
 
-  print(prior_for_treatment_group)
+  pp(prior_for_treatment_group)
   if(is.null(posterior_control$N0) == FALSE){
-    print(prior_for_control_group)
+    pp(prior_for_control_group)
   }
 })
 
@@ -96,3 +96,11 @@ setMethod("summary", signature(object = "bdpsurvival"), function(object){
   ### Text outputs
   return(prior_for_treatment_group)
 })
+
+# Helper functions:
+
+pp <- function(m){
+  write.table(format(m, justify="right"),
+              row.names=T, col.names=F, quote=F)
+}
+
