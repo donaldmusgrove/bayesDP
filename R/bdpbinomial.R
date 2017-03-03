@@ -45,7 +45,7 @@
 #'   \code{alpha_max}) and discounts based on disagreement with the current data.
 #'   Disagreement between current and historical data is determined by stochastically
 #'   comparing the respective posterior distributions under noninformative priors.
-#'   With binomial data, the comparison is the proability (\code{p) that the current
+#'   With binomial data, the comparison is the proability (\code{p}) that the current
 #'   count is less than the historical count. The comparison metric \code{p} is then
 #'   input into the Weibull discount function and the final strength of the
 #'   historical data is returned (alpha).

@@ -61,8 +61,54 @@ function. Default value is 1.}
 The functions \code{summary} and \code{print} are used to obtain and
 print a summary of the results, including user inputs. The \code{plot}
 function displays visual outputs as well.
+
 An object of class "\code{bdpsurvival}" is a list containing at least
 the following components:
+\describe{
+ \item{\code{posterior_treatment}}{
+   list. Entries contain values related to the treatment group:}
+   \itemize{
+     \item{\code{alpha_discount}}{
+       numeric. Alpha value, the weighting parameter of the historical data.}
+     \item{\code{pvalue}}{
+       numeric. The posterior probability of the stochastic comparison
+       between the current and historical data.}
+     \item{\code{posterior}}{
+       vector. The posterior of the treatment group, incorporating the
+       weighted historical data.}
+     \item{\code{posterior_flat}}{
+       vector. The distribution of the current treatment group, i.e., no
+       incorporation of the historical data.}
+     \item{\code{prior}}{
+       vector. The distribution of the historical treatment group.}
+  }
+ \item{\code{f1}}{
+   list. Entries contain values related to the posterior effect:}
+   \itemize{
+     \item{\code{density_post_treatment}}{
+       object of class \code{density}. Used internally to plot the density of
+       the treatment group posterior.}
+     \item{\code{density_flat_treatment}}{
+       object of class \code{density}. Used internally to plot the density of
+       the treatment group "flat" distribution.}
+     \item{\code{density_prior_treatment}}{
+       object of class \code{density}. Used internally to plot the density of
+       the treatment group prior.}
+     \item{\code{treatmentpost}}{
+       vector. Contains posterior distribution of the survival probability.}
+  }
+ \item{\code{args1}}{
+   list. Entries contain user inputs. In addition, the following elements
+   are ouput:}
+   \itemize{
+     \item{\code{arm2}}{
+       binary indicator. Used internally to indicate one-arm or two-arm
+       analysis.}
+     \item{\code{intent}}{
+       character. Denotes current/historical status of treatment and
+       control groups.}
+  }
+}
 }
 \description{
 \code{bdpsurvival} is used to estimate the survival probability
@@ -70,8 +116,29 @@ the following components:
   survival analysis implementation of the Bayesian discount prior.
 }
 \details{
-Many, many, many details to come. In fact, the best details. Believe
-me, I know a thing or two about building details.
+\code{bdpsurvival} uses a two-stage approach for determining the
+  strength of historical data in estimation of a binomial count mean outcome.
+  In the first stage, a Weibull distribution function is used as a
+  \emph{discount function} that defines the maximum strength of the
+  historical data (via \code{weibull_shape}, \code{weibull_scale}, and
+  \code{alpha_max}) and discounts based on disagreement with the current data.
+  Disagreement between current and historical data is determined by stochastically
+  comparing the respective posterior distributions under noninformative priors.
+  With single arm survival data, the comparison is the proability (\code{p}) of
+  survival at a specified timepoint. The comparison metric \code{p} is then
+  input into the Weibull discount function and the final strength of the
+  historical data is returned (alpha).
+
+ In the second stage, posterior estimation is performed where the discount
+ function parameter, \code{alpha}, is used as a fixed value for all posterior
+ estimation procedures.
+
+ To carry out a single arm (OPC) analysis, data for the current treatment
+ (\code{y_t} and \code{N_t}) and historical treatment (\code{y0_t} and
+ \code{N0_t}) must be input. The results are then based on the posterior
+ distribution of the current data augmented by the historical data.
+
+ Currently, a two arm (RCT) analysis is not implemented.
 }
 \examples{
 # One-arm trial (OPC) example
