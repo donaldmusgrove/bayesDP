@@ -168,6 +168,7 @@ setMethod("plot", signature(x = "bdpbinomial"), function(x){
   N0_t                <- x$args1$N0_t
   N0_c                <- x$args1$N0_c
   arm2                <- x$args1$arm2
+
   if (arm2){
     D1 <- data.frame(information_sources='Posterior',
                      group="Control",
@@ -242,8 +243,8 @@ setMethod("plot", signature(x = "bdpbinomial"), function(x){
   }
 
   discount_function_treatment <- pweibull(p_value,
-                                          shape=posterior_treatment$weibull_shape[1],
-                                          scale=posterior_treatment$weibull_scale[1])
+                                          shape=x$args1$weibull_shape[1],
+                                          scale=x$args1$weibull_scale[1])
   D1 <- data.frame(group = "Treatment",
                    y     = discount_function_treatment,
                    x     = seq(0,1,length.out=100))
@@ -262,8 +263,8 @@ setMethod("plot", signature(x = "bdpbinomial"), function(x){
 
   if(arm2 == TRUE){
     discount_function_control <- pweibull(p_value,
-                                          shape=posterior_control$weibull_shape[2],
-                                          scale=posterior_control$weibull_scale[2])
+                                          shape=x$args1$weibull_shape[2],
+                                          scale=x$args1$weibull_scale[2])
 
     D4 <- data.frame(group = "Control",
                      y     = discount_function_control,
