@@ -126,16 +126,12 @@ setMethod("summary", signature(object = "bdpsurvival"), function(object){
   posterior_treatment <- object$posterior_treatment
   surv_time           <- object$args1$surv_time
 
-  ### print
+  ### Output list
   prior_for_treatment_group <- list("Bayesian p-value (new vs historical data)" = posterior_treatment$pvalue,
-                                    "Discount function value"                   = posterior_treatment$alpha_discount)
-
-
-  ### Output survival probability at requested time
-  surv_prob <- list("Survival time"               = surv_time,
-                    "Median survival probability" = median(f$treatmentpost))
+                                    "Discount function value"                   = posterior_treatment$alpha_discount,
+                                    "Survival time"                             = surv_time,
+                                    "Median survival probability"               = median(f$treatmentpost))
 
   ### Text outputs
-  print(prior_for_treatment_group)
-  print(surv_prob)
+  return(prior_for_treatment_group)
 })
