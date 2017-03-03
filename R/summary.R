@@ -32,15 +32,6 @@ setMethod("summary", signature(object = "bdpnormal"), function(object){
   if(is.null(N0_c) == FALSE){
     print(prior_for_control_group)
   }
-
-  argsdf <- suppressWarnings(data.frame(as.numeric(as.character(object$args1))))
-  rownames(argsdf) <- names(object$args1)
-  colnames(argsdf) <- "args"
-  print(format(head(argsdf, -2), scientific = FALSE))
-  cat("\n")
-  cat("Submitted:")
-  cat(object$args1$intent)
-  cat("\n")
 })
 
 
@@ -59,7 +50,6 @@ setMethod("summary", signature(object = "bdpbinomial"), function(object){
   two_side            <- object$args1$two_side
   N0_t                <- object$args1$N0_t
   N0_c                <- object$args1$N0_c
-
 
   if(is.null(N0_t) == FALSE){
     prior_for_treatment_group <- list(
@@ -81,14 +71,6 @@ setMethod("summary", signature(object = "bdpbinomial"), function(object){
   if(is.null(posterior_control$N0) == FALSE){
     print(prior_for_control_group)
   }
-
-  argsdf <- suppressWarnings(data.frame(as.numeric(as.character(object$args1))))
-  rownames(argsdf) <- names(object$args1)
-  colnames(argsdf) <- "args"
-  print(format(head(argsdf, -2), scientific = FALSE))
-  cat("Submitted:")
-  cat(object$args1$intent)
-  cat("\n")
 })
 
 

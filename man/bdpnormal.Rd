@@ -169,3 +169,4 @@ Haddad, T. (2017) Incorporation of stochastic engineering models as prior
   information in Bayesian medical device trials.
   \emph{Journal of Biopharmaceutical Statistics}. To Appear.
 }
+

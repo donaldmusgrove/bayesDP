@@ -91,3 +91,4 @@ fitSurv <- bdpsurvival(Surv(time, status) ~ historical + treatment,
 
 
 }
+

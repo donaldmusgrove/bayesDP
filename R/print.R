@@ -24,6 +24,15 @@ setMethod("print", signature(x = "bdpnormal"), function(x){
                                       "Discount function value"                   = posterior_control$alpha_discount)
       }
   print(prior_for_treatment_group)
+
+  argsdf <- suppressWarnings(data.frame(as.numeric(as.character(x$args1))))
+  rownames(argsdf) <- names(x$args1)
+  colnames(argsdf) <- "args"
+  print(format(head(argsdf, -2), scientific = FALSE))
+  cat("\n")
+  cat("Submitted:")
+  cat(x$args1$intent)
+  cat("\n")
 })
 
 
@@ -63,6 +72,15 @@ setMethod("print", signature(x = "bdpbinomial"), function(x){
 
   print(prior_for_treatment_group)
   print(prior_for_control_group)
+
+  argsdf <- suppressWarnings(data.frame(as.numeric(as.character(x$args1))))
+  rownames(argsdf) <- names(x$args1)
+  colnames(argsdf) <- "args"
+  print(format(head(argsdf, -2), scientific = FALSE))
+  cat("\n")
+  cat("Submitted:")
+  cat(x$args1$intent)
+  cat("\n")
 })
 
 
