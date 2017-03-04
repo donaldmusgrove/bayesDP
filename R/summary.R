@@ -2,6 +2,7 @@
 #' summary
 #' @title summary: summary
 #' @importFrom utils head
+#' @importFrom utils write.table
 #' @importFrom stats density is.empty.model median model.offset model.response pweibull quantile rbeta rgamma rnorm var vcov
 #' @param object Result
 #' @export

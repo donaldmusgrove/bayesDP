@@ -1,3 +1,2 @@
-# bayesDP 0.1.1
-
-* Added rtcnormal, rtcbinomial, opcnormal, opcbinomial methods
+# bayesDP 1.0.0
+* Initial CRAN release with normal, binomial and survival functions.
