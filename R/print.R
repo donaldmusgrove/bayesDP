@@ -98,23 +98,26 @@ setMethod("print", signature(x = "bdpbinomial"), function(x){
 #' @rdname print-methods
 #' @aliases print,bdpsurvival,bdpsurvival-method
 setMethod("print", signature(x = "bdpsurvival"), function(x){
-  f                   <- x$f1
-  posterior_treatment <- x$posterior_treatment
-  surv_time           <- x$args1$surv_time
-
-  ### Print
-  prior_for_treatment_group <- list(`Bayesian p-value (new vs historical data)`       = posterior_treatment$pvalue,
-                                    `Loss function value`                             = posterior_treatment$alpha_discount)
+  f                   <- object$f1
+  posterior_treatment <- object$posterior_treatment
+  surv_time           <- object$args1$surv_time
 
 
-  ### Output survival probability at requested time
-  surv_prob <- list(`Survival time` = surv_time,
-                    `Median survival probability` = median(f$treatmentpost))
+  ### Format surv_time output
+  surv_CI    <- round(quantile(f$treatmentpost, prob=c(0.025, 0.975)),4)
+  surv_est   <- round(median(f$treatmentpost),4)
+  surv_print <- paste0(surv_est, " (",surv_CI[1], ", ", surv_CI[2],")")
+
+  ### Output list
+  prior_for_treatment_group <- list(`Stochastic comparison (new vs historical data):  ` = posterior_treatment$pvalue,
+                                    `Discount function value:  `                        = posterior_treatment$alpha_discount,
+                                    `Survival time:  `                                  = surv_time,
+                                    `Median survival probability (95% CI):  `           = surv_print)
 
   ### Text outputs
-  pp(prior_for_treatment_group)
-  pp(surv_prob)
+  return(pp(prior_for_treatment_group))
 })
+
 
 # Helper functions:
 

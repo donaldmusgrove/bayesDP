@@ -16,7 +16,7 @@ License: GPL-3
 URL: https://github.com/balcomes/bayesDP
 BugReports: https://github.com/balcomes/bayesDP/issues
 NeedsCompilation: yes
-Packaged:
+Packaged: 
 Author: Shawn Balcome [aut, cre], Donnie Musgrove [aut, cre], Tarek Haddad [aut,
     cre]
 Maintainer: Shawn Balcome <sbalcome@mdic.org>
@@ -25,4 +25,4 @@ Date/Publication: 2016-02-03 23:30:16
 Imports:
     Rcpp
 LinkingTo: Rcpp, RcppArmadillo
-RoxygenNote: 6.0.1
+RoxygenNote: 5.0.1
