@@ -164,7 +164,7 @@ NULL
 #' fit <- bdpnormal(mu_t = 30, sigma_t = 10, N_t = 250,
 #'                  mu0_t = 50, sigma0_t = 5, N0_t = 250)
 #' summary(fit)
-#' plot(fit)
+#' #plot(fit)
 #'
 #' # Two-arm (RCT) example
 #' fit2 <- bdpnormal(mu_t = 30, sigma_t = 10, N_t = 250,
@@ -172,7 +172,7 @@ NULL
 #'                   mu_c = 25, sigma_c = 10, N_c = 250,
 #'                   mu0_c = 50, sigma0_c = 5, N0_c = 250)
 #' summary(fit2)
-#' plot(fit2)
+#' #plot(fit2)
 #'
 #' @rdname bdpnormal
 #' @import methods

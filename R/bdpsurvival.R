@@ -205,6 +205,9 @@ setMethod("bdpsurvival",
   ### supported for survival data
   arm2 <- FALSE
 
+  historical <- NULL
+  treatment <- NULL
+
 
   ##############################################################################
   # Quick check, if alpha_max, weibull_scale, or weibull_shape have length 1,
@@ -354,6 +357,8 @@ discount_function_survival <- function(S, S0, alpha_max, a0, b0, number_mcmc,
   nInt   <- length(S_int)
   n0Int  <- length(S0_int)
 
+  interval <- NULL
+
   ### Compute posterior of hazard rate comparing current and historical
   a_post <- b_post <- numeric(nInt)
   a_post0 <- b_post0 <- numeric(n0Int)
@@ -416,6 +421,8 @@ posterior_augment_survival <- function(S, S0, alpha_discount, a0, b0,
   S0_int <- levels(S0$interval)
   nInt   <- length(S_int)
   n0Int  <- length(S0_int)
+
+  interval <- NULL
 
   ### Compute posterior of hazard rate comparing current and historical
   a_post <- b_post <- numeric(nInt)

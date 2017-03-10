@@ -18,6 +18,9 @@ setMethod("plot", signature(x = "bdpnormal"), function(x){
   N0_t <- x$args1$N0_t
   N0_c <- x$args1$N0_c
   arm2 <- x$args1$arm2
+
+  information_sources <- NULL
+
   if (arm2 == TRUE){
     D1 <- data.frame(information_sources="Posterior",
                      group="Control",
@@ -171,6 +174,8 @@ setMethod("plot", signature(x = "bdpbinomial"), function(x){
   N0_c                <- x$args1$N0_c
   arm2                <- x$args1$arm2
 
+  information_sources <- NULL
+
   if (arm2){
     D1 <- data.frame(information_sources='Posterior',
                      group="Control",
@@ -322,6 +327,8 @@ setMethod("plot", signature(x = "bdpsurvival"), function(x){
   f                   <- x$f1
   posterior_treatment <- x$posterior_treatment
   two_side            <- x$args1$two_side
+
+  information_sources <- NULL
 
 
   D4 <- data.frame(information_sources = "Posterior",

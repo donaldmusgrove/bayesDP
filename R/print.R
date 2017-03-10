@@ -104,6 +104,8 @@ setMethod("print", signature(x = "bdpsurvival"), function(x){
   posterior_treatment <- object$posterior_treatment
   surv_time           <- object$args1$surv_time
 
+  object <- NULL
+
 
   ### Format surv_time output
   surv_CI    <- round(quantile(f$treatmentpost, prob=c(0.025, 0.975)),4)
