@@ -1,6 +1,7 @@
 #' print
 #' print
 #' @title print: print
+#' @import methods
 #' @importFrom utils head
 #' @importFrom utils write.table
 #' @importFrom stats density is.empty.model median model.offset model.response pweibull quantile rbeta rgamma rnorm var vcov

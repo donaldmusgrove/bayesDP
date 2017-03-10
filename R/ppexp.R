@@ -25,6 +25,7 @@
 #' # Matrix of multiple vectors of hazard rates. Returns 10 cdf values.
 #' x  <- matrix(rgamma(4*10, 0.1, 0.1), nrow=10)
 #' pp <- ppexp(q,x,cuts)
+#' @import methods
 #' @useDynLib bayesDP
 #' @export
 ppexp <- function(q, x, cuts){

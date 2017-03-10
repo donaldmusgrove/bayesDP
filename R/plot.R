@@ -1,6 +1,7 @@
 #' plot
 #' plot
 #' @title plot: plot
+#' @import methods
 #' @importFrom utils head
 #' @importFrom ggplot2 aes_string ggtitle ylim guides guide_legend theme element_blank
 #' @importFrom graphics par
