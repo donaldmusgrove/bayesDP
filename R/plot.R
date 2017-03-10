@@ -2,6 +2,7 @@
 #' plot
 #' @title plot: plot
 #' @importFrom utils head
+#' @importFrom ggplot2 aes_string ggtitle ylim guides guide_legend theme element_blank
 #' @importFrom graphics par
 #' @importFrom stats density is.empty.model median model.offset model.response pweibull quantile rbeta rgamma rnorm var vcov
 #' @param x Result
@@ -17,7 +18,7 @@ setMethod("plot", signature(x = "bdpnormal"), function(x){
   N0_c <- x$args1$N0_c
   arm2 <- x$args1$arm2
   if (arm2 == TRUE){
-    D1 <- data.frame(information_sources='Posterior',
+    D1 <- data.frame(information_sources="Posterior",
                      group="Control",
                      y=f$density_post_control$y,
                      x=f$density_post_control$x)
@@ -31,7 +32,7 @@ setMethod("plot", signature(x = "bdpnormal"), function(x){
                      x=f$density_prior_control$x)
   }
 
-  D4 <- data.frame(information_sources='Posterior',
+  D4 <- data.frame(information_sources="Posterior",
                    group="Treatment",
                    y=f$density_post_treatment$y,
                    x=f$density_post_treatment$x)
@@ -60,8 +61,8 @@ setMethod("plot", signature(x = "bdpnormal"), function(x){
   D$information_sources <- factor(D$information_sources,
                                   levels = (c("Posterior","Current Data","Prior")))
 
-  post_typeplot <- ggplot(D,aes(x=x,y=y)) +
-    geom_line(size=2,aes(colour=information_sources,lty=information_sources)) +
+  post_typeplot <- ggplot(D,aes_string(x="x",y="y")) +
+    geom_line(size=2,aes_string(colour="information_sources",lty="information_sources")) +
     facet_wrap(~group, ncol=1,scales='free') +
     ylab("Density (PDF)") +
     xlab("Values") +
@@ -69,8 +70,8 @@ setMethod("plot", signature(x = "bdpnormal"), function(x){
     ggtitle("Posterior Type Plot")
 
   densityplot <- ggplot(subset(D,information_sources=="Posterior"),
-                        aes(x=x,y=y)) +
-    geom_line(size=2,aes(colour=group)) +
+                        aes_string(x="x",y="y")) +
+    geom_line(size=2,aes_string(colour="group")) +
     ylab("Density (PDF)") +
     xlab("Values") +
     theme_bw() +
@@ -112,15 +113,15 @@ setMethod("plot", signature(x = "bdpnormal"), function(x){
   discountfun_plot <- ggplot()
   if(N0_t!=0){
     discountfun_plot <- discountfun_plot +
-      geom_line(data=D1,aes(y=y,x=x,colour=group),size=1) +
-      geom_vline(data=D2, aes(xintercept =pvalue,colour=group),lty=2) +
-      geom_hline(data=D3, aes(yintercept =pvalue,colour=group),lty=2)
+      geom_line(data=D1,aes_string(y="y",x="x",colour="group"),size=1) +
+      geom_vline(data=D2, aes_string(xintercept="pvalue",colour="group"),lty=2) +
+      geom_hline(data=D3, aes_string(yintercept="pvalue",colour="group"),lty=2)
   }
   if(arm2 == TRUE){
     discountfun_plot  <- discountfun_plot +
-      geom_line(data=D4,aes(y=y,x=x,colour=group),size=1) +
-      geom_vline(data=D5, aes(xintercept =pvalue,colour=group),lty=2) +
-      geom_hline(data=D6, aes(yintercept =pvalue,colour=group),lty=2)
+      geom_line(data=D4,aes_string(y="y",x="x",colour="group"),size=1) +
+      geom_vline(data=D5, aes_string(xintercept="pvalue",colour="group"),lty=2) +
+      geom_hline(data=D6, aes_string(yintercept="pvalue",colour="group"),lty=2)
   }
 
   discountfun_plot <- discountfun_plot +
@@ -217,8 +218,8 @@ setMethod("plot", signature(x = "bdpbinomial"), function(x){
   D$information_sources <- factor(D$information_sources,
                                   levels = (c("Posterior","Current Data","Prior")))
 
-  post_typeplot <- ggplot(D,aes(x=x,y=y)) +
-    geom_line(size=2,aes(color=information_sources,lty=information_sources)) +
+  post_typeplot <- ggplot(D,aes_string(x="x",y="y")) +
+    geom_line(size=2,aes_string(color="information_sources",lty="information_sources")) +
     theme_bw() +
     facet_wrap(~group, ncol=1,scales='free') +
     ylab("Density (PDF)") +
@@ -226,8 +227,8 @@ setMethod("plot", signature(x = "bdpbinomial"), function(x){
     ggtitle("Posterior Type Plot")
 
   densityplot <- ggplot(subset(D,information_sources=="Posterior"),
-                        aes(x=x,y=y)) +
-    geom_line(size=2,aes(color=group)) +
+                        aes_string(x="x",y="y")) +
+    geom_line(size=2,aes_string(color="group")) +
     ylab("Density (PDF)") +
     xlab("Values") +
     theme_bw() +
@@ -255,9 +256,9 @@ setMethod("plot", signature(x = "bdpbinomial"), function(x){
   discountfun_plot <- ggplot()
   if(N0_t != 0){
     discountfun_plot <- discountfun_plot +
-      geom_line(data=D1,aes(y=y,x=x,color=group),size=1) +
-      geom_vline(data=D2, aes(xintercept=pvalue,color=group),lty=2) +
-      geom_hline(data=D3, aes(yintercept=pvalue,color=group),lty=2)
+      geom_line(data=D1,aes_string(y="y",x="x",color="group"),size=1) +
+      geom_vline(data=D2, aes_string(xintercept="pvalue",color="group"),lty=2) +
+      geom_hline(data=D3, aes_string(yintercept="pvalue",color="group"),lty=2)
   }
 
 
@@ -273,9 +274,9 @@ setMethod("plot", signature(x = "bdpbinomial"), function(x){
     D6 <- data.frame(group="Control",pvalue=c(posterior_control$alpha_discount))
 
     discountfun_plot  <- discountfun_plot +
-      geom_line(data=D4,aes(y=y,x=x,color=group),size=1) +
-      geom_vline(data=D5,aes(xintercept=pvalue,color=group),lty=2) +
-      geom_hline(data=D6,aes(yintercept=pvalue,color=group),lty=2)
+      geom_line(data=D4,aes_string(y="y",x="x",color="group"),size=1) +
+      geom_vline(data=D5,aes_string(xintercept="pvalue",color="group"),lty=2) +
+      geom_hline(data=D6,aes_string(yintercept="pvalue",color="group"),lty=2)
   }
 
 
@@ -342,16 +343,16 @@ setMethod("plot", signature(x = "bdpsurvival"), function(x){
   D$information_sources <- factor(D$information_sources,
                                   levels = (c("Posterior", "Current Data", "Prior")))
 
-  post_typeplot <- ggplot(D, aes(x = x, y = y)) +
-    geom_line(size = 2, aes(colour = information_sources, lty = information_sources)) +
+  post_typeplot <- ggplot(D, aes_string(x = "x", y = "y")) +
+    geom_line(size = 2, aes_string(colour = "information_sources", lty = "information_sources")) +
     theme_bw() +
     facet_wrap(~group, ncol = 1, scales = "free") +
     ylab("Density (PDF)") +
     xlab("Values") +
     ggtitle("Posterior Type Plot")
 
-  densityplot <- ggplot(subset(D, information_sources == "Posterior"), aes(x = x, y = y)) +
-    geom_line(size = 2, aes(colour = group)) +
+  densityplot <- ggplot(subset(D, information_sources == "Posterior"), aes_string(x = "x", y = "y")) +
+    geom_line(size = 2, aes_string(colour = "group")) +
     ylab("Density (PDF)") +
     xlab("Values") +
     theme_bw() +
@@ -378,9 +379,9 @@ setMethod("plot", signature(x = "bdpsurvival"), function(x){
 
 
   discountfun_plot <- ggplot() +
-    geom_line(data = D1, aes(y = y, x = x, colour = group), size = 1) +
-    geom_vline(data = D2, aes(xintercept = pvalue, colour = group), lty = 2) +
-    geom_hline(data=D3, aes(yintercept =pvalue, colour=group),lty=2)
+    geom_line(data = D1, aes_string(y = "y", x = "x", colour = "group"), size = 1) +
+    geom_vline(data = D2, aes_string(xintercept = "pvalue", colour = "group"), lty = 2) +
+    geom_hline(data=D3, aes_string(yintercept ="pvalue", colour="group"),lty=2)
 
   discountfun_plot <- discountfun_plot +
     facet_wrap(~group, ncol = 1) +
