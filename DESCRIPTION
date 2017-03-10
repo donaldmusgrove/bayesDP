@@ -12,7 +12,7 @@ License: GPL-3
 URL: https://github.com/balcomes/bayesDP
 BugReports: https://github.com/balcomes/bayesDP/issues
 NeedsCompilation: yes
-Author: Shawn Balcome [aut, cre], Donnie Musgrove [aut, cre], Tarek Haddad [aut, cre], Christopher Jackson [ctb]
+Author: Shawn Balcome [aut, cre], Donnie Musgrove [aut], Tarek Haddad [aut], Christopher Jackson [ctb]
 Maintainer: Shawn Balcome <sbalcome@mdic.org>
 Repository: CRAN
 Imports: Rcpp
