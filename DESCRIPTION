@@ -20,7 +20,7 @@ Author: Shawn Balcome [aut, cre], Donnie Musgrove [aut, cre], Tarek Haddad [aut,
     cre]
 Maintainer: Shawn Balcome <sbalcome@mdic.org>
 Repository: CRAN
-Date/Publication: 2016-02-03 23:30:16
+Date/Publication: 2016-03-09 23:00:00
 Imports:
     Rcpp
 LinkingTo: Rcpp, RcppArmadillo
