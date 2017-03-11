@@ -3,7 +3,7 @@ Type: Package
 Title: Tools for the Bayesian Discount Prior Function
 Version: 1.0.0
 Date: 2017-03-09
-Authors@R: c(person("Shawn", "Balcome", email = "sbalcome@mdic.org", role = c("aut", "cre")), person("Donnie", "Musgrove", email = "donald.r.musgrove@medtronic.com", role = c("aut")), person("Tarek", "Haddad", email = "tarek.d.haddad@medtronic.com", role = c("aut")), person("Christopher", "Jackson", email = "chris.jackson@mrc-bsu.cam.ac.uk", role = "ctb", comment="For the ppexp R code that was ported to C++."))
+Authors@R: c(person("Shawn", "Balcome", email = "sbalcome@mdic.org", role = c("cre")), person("Donnie", "Musgrove", email = "donald.r.musgrove@medtronic.com", role = c("aut")), person("Tarek", "Haddad", email = "tarek.d.haddad@medtronic.com", role = c("aut")), person("Christopher", "Jackson", email = "chris.jackson@mrc-bsu.cam.ac.uk", role = "ctb", comment="For the ppexp R code that was ported to C++."))
 Depends: ggplot2, survival, methods
 Description: Functions for augmenting data with historical controls using the
     Bayesian discount prior function for 1 arm and 2 arm clinical trials.
@@ -12,9 +12,9 @@ License: GPL-3
 URL: https://github.com/balcomes/bayesDP
 BugReports: https://github.com/balcomes/bayesDP/issues
 NeedsCompilation: yes
-Author: Shawn Balcome [aut, cre], Donnie Musgrove [aut], Tarek Haddad [aut], Christopher Jackson [ctb]
+Author: Shawn Balcome [cre], Donnie Musgrove [aut], Tarek Haddad [aut], Christopher Jackson [ctb]
 Maintainer: Shawn Balcome <sbalcome@mdic.org>
 Repository: CRAN
 Imports: Rcpp
 LinkingTo: Rcpp, RcppArmadillo
-RoxygenNote: 5.0.1
+RoxygenNote: 6.0.1
