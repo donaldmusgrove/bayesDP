@@ -38,3 +38,7 @@ ppexp <- function(q, x, cuts){
   }
   return(ppout)
 }
+
+.onUnload <- function (libpath) {
+  library.dynam.unload("bayesDP", libpath)
+}
