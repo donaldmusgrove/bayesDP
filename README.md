@@ -8,7 +8,7 @@
 [![Test Coverage](https://codeclimate.com/github/balcomes/bayesDP/badges/coverage.svg)](https://codeclimate.com/github/balcomes/bayesDP/coverage)
 [![Issue Count](https://codeclimate.com/github/balcomes/bayesDP/badges/issue_count.svg)](https://codeclimate.com/github/balcomes/bayesDP)
 
-[![Find me on Slack!](http://slack-badge.herokuapp.com/users/balcomes.png)](https://fullscreen.slack.com/messages/@balcomes)
+[![Find me on Slack!](http://slack-badge.herokuapp.com/users/balcomes.png)](https://obsidianfarm.slack.com/messages/@balcomes)
 
 ## Installation
 
