@@ -17,4 +17,4 @@ Install development version from github:
 devtools::install_github("balcomes/bayesDP")
 ```
 
-:chart_with_downwards_trend:  :bar_chart:
+:apple: :tangerine: :lemon: :cherries:  [:watermelon:](http://ghv.artzub.com/#repo=bayesDP&user=balcomes)  :strawberry:  :peach: :pear:  :green_apple:
