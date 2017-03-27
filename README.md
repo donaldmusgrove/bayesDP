@@ -1,4 +1,8 @@
-# bayesDP
+# bayesDP: Tools for the Bayesian Discount Prior Function
+
+Functions for augmenting data with historical controls using the Bayesian discount prior function for 1 arm and 2 arm clinical trials.
+
+https://cran.r-project.org/package=bayesDP
 
 [![Travis-CI Build Status](https://travis-ci.org/balcomes/bayesDP.svg?branch=master)](https://travis-ci.org/balcomes/bayesDP)
 [![Issue Count](https://codeclimate.com/github/balcomes/bayesDP/badges/issue_count.svg)](https://codeclimate.com/github/balcomes/bayesDP)
@@ -8,12 +12,20 @@
 [![Join the chat at https://gitter.im/balcomes/bayesDP](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/bayesDP?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![Find me on Slack!](https://img.shields.io/badge/Slack-join%20chat-ff69b4.svg)](https://bayesdp.slack.com/messages/@balcomes)
 
-## Installation
 
-Install development version from github:
+### CRAN Installation
+
+Install release version from CRAN:
 
 ```R
-# install.packages("devtools")
+install.packages("bayesDP")
+```
+
+### GitHub Installation
+
+Install development version from GitHub:
+
+```R
 devtools::install_github("balcomes/bayesDP")
 ```
 
