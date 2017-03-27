@@ -3,6 +3,10 @@
 [![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/balcomes/bayesDP/issues)
 [![Build Status](https://travis-ci.org/balcomes/bayesDP.png?branch=master)](https://travis-ci.org/balcomes/bayesDP)
 
+[![Code Climate](https://codeclimate.com/github/balcomes/bayesDP/badges/gpa.svg)](https://codeclimate.com/github/balcomes/bayesDP)
+[![Test Coverage](https://codeclimate.com/github/balcomes/bayesDP/badges/coverage.svg)](https://codeclimate.com/github/balcomes/bayesDP/coverage)
+[![Issue Count](https://codeclimate.com/github/balcomes/bayesDP/badges/issue_count.svg)](https://codeclimate.com/github/balcomes/bayesDP)
+
 ## Installation
 
 Install development version from github:
