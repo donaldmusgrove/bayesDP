@@ -8,7 +8,7 @@ https://cran.r-project.org/package=bayesDP
 [![Travis-CI Build Status](https://travis-ci.org/balcomes/bayesDP.svg?branch=master)](https://travis-ci.org/balcomes/bayesDP)
 [![Issue Count](https://codeclimate.com/github/balcomes/bayesDP/badges/issue_count.svg)](https://codeclimate.com/github/balcomes/bayesDP)
 [![Inline docs](http://inch-ci.org/github/balcomes/bayesDP.svg?branch=master)](http://inch-ci.org/github/balcomes/bayesDP)
-[![License](http://img.shields.io/badge/license-GPL%20%28%3E=%202%29-brightgreen.svg?style=flat)](http://www.gnu.org/licenses/gpl-3.0.html)
+[![License](https://img.shields.io/badge/license-GPL%20%28%3E=%203%29-brightgreen.svg?style=flat)](http://www.gnu.org/licenses/gpl-3.0.html)
 [![CRAN](http://www.r-pkg.org/badges/version/bayesDP)](https://cran.r-project.org/package=bayesDP)
 [![Downloads](http://cranlogs.r-pkg.org/badges/bayesDP?color=brightgreen)](http://www.r-pkg.org/pkg/Rcpp)
 [![Coverage Status](https://img.shields.io/codecov/c/github/balcomes/bayesDP/master.svg)](https://codecov.io/github/balcomes/bayesDP?branch=master)
