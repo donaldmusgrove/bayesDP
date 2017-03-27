@@ -7,12 +7,18 @@ language: r
 sudo: false
 cache: packages
 
+r_packages:
+  - covr
+
 after_failure:
   - ./travis-tool.sh dump_logs
 
 after_script:
   - ./travis-tool.sh dump_logs_by_extension "timings"
   - ./travis-tool.sh dump_sysinfo
+
+after_success:
+  - Rscript -e 'library(covr); codecov()'
 
 notifications:
   email:
@@ -25,3 +31,4 @@ env:
     - R_CHECK_TIME="TRUE"
     - R_CHECK_TESTS="TRUE"
     - _R_CHECK_TIMINGS_="0"
+    
