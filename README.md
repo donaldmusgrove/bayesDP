@@ -36,7 +36,7 @@ devtools::install_github("balcomes/bayesDP")
 
 ### Documentation 
 
-See manuals in within package.
+See manuals within package.
 
 ### Authors
 
