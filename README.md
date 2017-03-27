@@ -34,4 +34,17 @@ Install development version from GitHub:
 devtools::install_github("balcomes/bayesDP")
 ```
 
+### Documentation 
+
+See manuals in within package.
+
+### Authors
+
+Shawn Balcome, Donnie Musgrove, Tarek Haddad
+and Christopher Jackson (For the ppexp R code that was ported to C++.)
+
+### License
+
+GPL (>= 3)
+
 :apple: :tangerine: :lemon: :cherries:  [:watermelon:](http://ghv.artzub.com/#repo=bayesDP&user=balcomes)  :strawberry:  :peach: :pear:  :green_apple:
