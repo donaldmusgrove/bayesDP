@@ -512,7 +512,7 @@ final_survival <- function(posterior_treatment, posterior_control, arm2=FALSE,
                 density_prior_treatment = density_prior_treatment,
                 treatmentpost           = treatmentpost))
   } else if(!is.null(posterior_control) & arm2){
-    ### TODO: finalize below code
+    ### Finalize below code
     density_post_control  <- density(posterior_control$posterior$posterior,
                                      adjust = 0.5)
     density_flat_control  <- density(posterior_control$posterior_flat,
