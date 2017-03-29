@@ -38,6 +38,7 @@ setMethod("print", signature(x = "bdpnormal"), function(x){
   cat("Submitted:")
   cat(x$args1$intent)
   cat("\n")
+  invisible(x)
 })
 
 
@@ -88,6 +89,7 @@ setMethod("print", signature(x = "bdpbinomial"), function(x){
   cat("Submitted:")
   cat(x$args1$intent)
   cat("\n")
+  invisible(x)
 })
 
 
@@ -100,11 +102,11 @@ setMethod("print", signature(x = "bdpbinomial"), function(x){
 #' @rdname print-methods
 #' @aliases print,bdpsurvival,bdpsurvival-method
 setMethod("print", signature(x = "bdpsurvival"), function(x){
-  f                   <- object$f1
-  posterior_treatment <- object$posterior_treatment
-  surv_time           <- object$args1$surv_time
+  f                   <- x$f1
+  posterior_treatment <- x$posterior_treatment
+  surv_time           <- x$args1$surv_time
 
-  object <- NULL
+  x <- NULL
 
 
   ### Format surv_time output
@@ -119,7 +121,8 @@ setMethod("print", signature(x = "bdpsurvival"), function(x){
                                     `Median survival probability (95% CI):  `           = surv_print)
 
   ### Text outputs
-  return(pp(prior_for_treatment_group))
+  cat(pp(prior_for_treatment_group))
+  invisible(x)
 })
 
 
