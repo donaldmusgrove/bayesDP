@@ -346,7 +346,7 @@ setMethod("bdpbinomial",
 
     effective_N0 <- N0 * alpha_discount
 
-    if(is.null(N0) == FALSE){
+    if(is.null(N0) == TRUE){
       a_prior <- a0
       b_prior <- b0
     }else{
