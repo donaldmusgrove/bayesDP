@@ -19,6 +19,7 @@
 #'   Default is 1. For a two-arm trial, users may specify a vector of two values
 #'   where the first value is used to weight the historical treatment group and
 #'   the second value is used to weight the historical control group.
+#' @param fix_alpha logical. Fix alpha at alpha_max? Default value is FALSE.
 #' @param number_mcmc scalar. Number of Markov Chain Monte Carlo (MCMC)
 #'   simulations. Default is 10000.
 #' @param weibull_shape scalar. Shape parameter of the Weibull discount function
@@ -29,13 +30,10 @@
 #'   historical control group.
 #' @param weibull_scale scalar. Scale parameter of the Weibull discount function
 #'   used to compute alpha, the weight parameter of the historical data. Default
-#'   value is 0.135. Two values have special treatment: 0 and Inf. For
-#'   weibull_scale = 0, alpha is set to 0, i.e., no weight. For
-#'   weibull_scale = Inf, alpha is set to 1, i.e., full weight. For a two-arm
-#'   trial, users may specify a vector of two values where the first value is
-#'   used to estimate the weight of the historical treatment group and the
-#'   second value is used to estimate the weight of the historical control
-#'   group.
+#'   value is 0.135. For a two-arm trial, users may specify a vector of two
+#'   values where the first value is used to estimate the weight of the
+#'   historical treatment group and the second value is used to estimate the
+#'   weight of the historical control group.
 #' @param two_side scalar. Indicator of two-sided test for the discount
 #'   function. Default value is 1.
 #'
@@ -161,6 +159,7 @@ setGeneric("bdpsurvival",
            b0            = 0.1,
            surv_time     = NULL,
            alpha_max     = 1,
+           fix_alpha     = FALSE,
            number_mcmc   = 10000,
            weibull_scale = 0.135,
            weibull_shape = 3,
@@ -177,6 +176,7 @@ setMethod("bdpsurvival",
            b0            = 0.1,
            surv_time     = NULL,
            alpha_max     = 1,
+           fix_alpha     = FALSE,
            number_mcmc   = 10000,
            weibull_scale = 0.135,
            weibull_shape = 3,
@@ -285,6 +285,7 @@ setMethod("bdpsurvival",
     S             = S_t,
     S0            = S0_t,
     alpha_max     = alpha_max[1],
+    fix_alpha     = fix_alpha,
     a0            = a0,
     b0            = b0,
     surv_time     = surv_time,
@@ -299,6 +300,7 @@ setMethod("bdpsurvival",
       S             = S_c,
       S0            = S0_c,
       alpha_max     = alpha_max[2],
+      fix_alpha     = fix_alpha,
       a0            = a0,
       b0            = b0,
       surv_time     = surv_time,
@@ -322,6 +324,7 @@ setMethod("bdpsurvival",
                 S_c           = S_c,
                 S0_t          = S0_t,
                 alpha_max     = alpha_max,
+                fix_alpha     = fix_alpha,
                 a0            = a0,
                 b0            = b0,
                 surv_time     = surv_time,
@@ -347,8 +350,9 @@ setMethod("bdpsurvival",
 ################################################################################
 ### Estimate discount function weight for prior data assuming survival outcome
 ### - Use approximation to the hazard ratio
-discount_function_survival <- function(S, S0, alpha_max, a0, b0, number_mcmc,
-                                       weibull_shape, weibull_scale, two_side){
+discount_function_survival <- function(S, S0, alpha_max, fix_alpha, a0, b0,
+                                       number_mcmc, weibull_shape, weibull_scale,
+                                       two_side){
 
   ### Extract intervals and count number of intervals
   ### - Below, S_int should equal S0_int
@@ -386,12 +390,8 @@ discount_function_survival <- function(S, S0, alpha_max, a0, b0, number_mcmc,
 
   p_test <- mean(logHR0 > 0)   #larger is higher failure
 
-  if(weibull_shape %in% c(0,Inf)){
-    if(weibull_shape == 0){
-      alpha_discount <- 0
-    } else{
-      alpha_discount <- 1
-    }
+  if(fix_alpha == TRUE){
+    alpha_discount <- alpha_max
   } else{
     if (two_side == 0) {
       alpha_discount <- pweibull(p_test, shape=weibull_shape, scale=weibull_scale)*alpha_max
@@ -457,13 +457,14 @@ posterior_augment_survival <- function(S, S0, alpha_discount, a0, b0,
 
 
 ### Combine  loss function and posterior estimation into one function
-survival_posterior <- function(S, S0, alpha_max, a0, b0, surv_time,
+survival_posterior <- function(S, S0, alpha_max, fix_alpha, a0, b0, surv_time,
                                number_mcmc, weibull_shape, weibull_scale,
                                two_side, breaks){
 
   alpha_discount <- discount_function_survival(S             = S,
                                                S0            = S0,
                                                alpha_max     = alpha_max,
+                                               fix_alpha     = fix_alpha,
                                                a0            = a0,
                                                b0            = b0,
                                                number_mcmc   = number_mcmc,

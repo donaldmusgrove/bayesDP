@@ -317,8 +317,8 @@ setMethod("bdpbinomial",
     p_test <- mean(posterior_flat < prior)   # larger is higher failure
 
     ### Number of effective sample size given shape and scale discount function
-    if(fix_alpha){
-      alpha_discount <- 1
+    if(fix_alpha == TRUE){
+      alpha_discount <- alpha_max
     } else{
       if (two_side == 0) {
         alpha_discount <- pweibull(p_test, shape=weibull_shape, scale=weibull_scale)*alpha_max

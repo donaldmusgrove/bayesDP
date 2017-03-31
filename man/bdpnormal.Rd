@@ -8,8 +8,8 @@
 bdpnormal(mu_t = NULL, sigma_t = NULL, N_t = NULL, mu0_t = NULL,
   sigma0_t = NULL, N0_t = NULL, mu_c = NULL, sigma_c = NULL,
   N_c = NULL, mu0_c = NULL, sigma0_c = NULL, N0_c = NULL,
-  alpha_max = 1, weibull_scale = 0.135, weibull_shape = 3,
-  number_mcmc = 10000, two_side = 1)
+  alpha_max = 1, fix_alpha = FALSE, weibull_scale = 0.135,
+  weibull_shape = 3, number_mcmc = 10000, two_side = 1)
 }
 \arguments{
 \item{mu_t}{scalar. Mean of the current treatment group.}
@@ -47,15 +47,14 @@ Default is 1. For a two-arm trial, users may specify a vector of two values
 where the first value is used to weight the historical treatment group and
 the second value is used to weight the historical control group.}
 
+\item{fix_alpha}{logical. Fix alpha at alpha_max? Default value is FALSE.}
+
 \item{weibull_scale}{scalar. Scale parameter of the Weibull discount function
 used to compute alpha, the weight parameter of the historical data. Default
-value is 0.135. Two values have special treatment: 0 and Inf. For
-weibull_scale = 0, alpha is set to 0, i.e., no weight. For
-weibull_scale = Inf, alpha is set to 1, i.e., full weight. For a two-arm
-trial, users may specify a vector of two values where the first value is
-used to estimate the weight of the historical treatment group and the
-second value is used to estimate the weight of the historical control
-group.}
+value is 0.135. For a two-arm trial, users may specify a vector of two values
+where the first value is used to estimate the weight of the historical
+treatment group and the second value is used to estimate the weight of the
+historical control group.}
 
 \item{weibull_shape}{scalar. Shape parameter of the Weibull discount function
 used to compute alpha, the weight parameter of the historical data. Default

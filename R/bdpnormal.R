@@ -36,6 +36,7 @@ NULL
 #'   Default is 1. For a two-arm trial, users may specify a vector of two values
 #'   where the first value is used to weight the historical treatment group and
 #'   the second value is used to weight the historical control group.
+#' @param fix_alpha logical. Fix alpha at alpha_max? Default value is FALSE.
 #' @param weibull_shape scalar. Shape parameter of the Weibull discount function
 #'   used to compute alpha, the weight parameter of the historical data. Default
 #'   value is 3. For a two-arm trial, users may specify a vector of two values
@@ -44,13 +45,10 @@ NULL
 #'   historical control group.
 #' @param weibull_scale scalar. Scale parameter of the Weibull discount function
 #'   used to compute alpha, the weight parameter of the historical data. Default
-#'   value is 0.135. Two values have special treatment: 0 and Inf. For
-#'   weibull_scale = 0, alpha is set to 0, i.e., no weight. For
-#'   weibull_scale = Inf, alpha is set to 1, i.e., full weight. For a two-arm
-#'   trial, users may specify a vector of two values where the first value is
-#'   used to estimate the weight of the historical treatment group and the
-#'   second value is used to estimate the weight of the historical control
-#'   group.
+#'   value is 0.135. For a two-arm trial, users may specify a vector of two values
+#'   where the first value is used to estimate the weight of the historical
+#'   treatment group and the second value is used to estimate the weight of the
+#'   historical control group.
 #' @param number_mcmc scalar. Number of Markov Chain Monte Carlo (MCMC)
 #'   simulations. Default is 10000.
 #' @param two_side scalar. Indicator of two-sided test for the discount
@@ -198,6 +196,7 @@ setGeneric("bdpnormal",
                     sigma0_c      = NULL,
                     N0_c          = NULL,
                     alpha_max     = 1,
+                    fix_alpha     = FALSE,
                     weibull_scale = 0.135,
                     weibull_shape = 3,
                     number_mcmc   = 10000,
@@ -220,6 +219,7 @@ setMethod("bdpnormal",
                    sigma0_c      = NULL,
                    N0_c          = NULL,
                    alpha_max     = 1,
+                   fix_alpha     = FALSE,
                    weibull_scale = 0.135,
                    weibull_shape = 3,
                    number_mcmc   = 10000,
@@ -329,8 +329,8 @@ setMethod("bdpnormal",
   ################################################################################
   # Produce prior data weight (scalar between 0 and 1) assuming a mu outcome     #
   ################################################################################
-  Discount_function <- function(mu, sigma, N, mu0, sigma0, N0, alpha_max, number_mcmc,
-                            weibull_shape, weibull_scale, two_side){
+  Discount_function <- function(mu, sigma, N, mu0, sigma0, N0, alpha_max, fix_alpha,
+                                number_mcmc, weibull_shape, weibull_scale, two_side){
 
     ### mu for using flat prior
     sigma2_post_flat <- 1/rgamma(number_mcmc, (N - 1)/2, ((N - 1) * sigma^2)/2)
@@ -344,12 +344,8 @@ setMethod("bdpnormal",
     p_test <- mean(mu_post_flat < mu_post_flat0)  # larger is higher failure
 
     ### Number of effective sample size given shape and scale discount function
-    if(weibull_shape %in% c(0,Inf)){
-      if(weibull_shape == 0){
-        alpha_discount <- 0
-      } else{
-        alpha_discount <- 1
-      }
+    if(fix_alpha == TRUE){
+      alpha_discount <- alpha_max
     } else{
       if (two_side == 0) {
         alpha_discount <- pweibull(p_test, shape=weibull_shape, scale=weibull_scale)*alpha_max
@@ -393,16 +389,17 @@ setMethod("bdpnormal",
   ################################################################################
   # Combine discount function and posterior estimation into one function             #
   ################################################################################
-  mu_posterior <- function(mu, sigma, N, mu0, sigma0, N0, alpha_max, number_mcmc,
-                           weibull_shape, weibull_scale, two_side) {
+  mu_posterior <- function(mu, sigma, N, mu0, sigma0, N0, alpha_max, fix_alpha,
+                           number_mcmc, weibull_shape, weibull_scale, two_side) {
     if (is.null(N0) == FALSE){
-      alpha_discount <- Discount_function(mu            = mu,
+      alpha_discount <- Discount_function(mu    = mu,
                                   sigma         = sigma,
                                   N             = N,
                                   mu0           = mu0,
                                   sigma0        = sigma0,
                                   N0            = N0,
                                   alpha_max     = alpha_max,
+                                  fix_alpha     = fix_alpha,
                                   number_mcmc   = number_mcmc,
                                   weibull_shape = weibull_shape,
                                   weibull_scale = weibull_scale,
@@ -487,6 +484,7 @@ setMethod("bdpnormal",
     sigma0        = sigma0_t,
     N0            = N0_t,
     alpha_max     = alpha_max[1],
+    fix_alpha     = fix_alpha,
     number_mcmc   = number_mcmc,
     weibull_scale = weibull_scale[1],
     weibull_shape = weibull_shape[1],
@@ -502,6 +500,7 @@ setMethod("bdpnormal",
       sigma0        = sigma0_c,
       N0            = N0_c,
       alpha_max     = alpha_max[2],
+      fix_alpha     = fix_alpha,
       number_mcmc   = number_mcmc,
       weibull_scale = weibull_scale[2],
       weibull_shape = weibull_shape[2],
@@ -529,7 +528,8 @@ setMethod("bdpnormal",
                 mu0_c         = mu0_c,
                 sigma0_c      = sigma0_c,
                 N0_c          = N0_c,
-                alpha_max     = alpha_max[1],
+                alpha_max     = alpha_max,
+                fix_alpha     = fix_alpha,
                 weibull_scale = weibull_scale,
                 weibull_shape = weibull_shape,
                 number_mcmc   = number_mcmc,
