@@ -7,8 +7,8 @@
 \usage{
 bdpbinomial(y_t = NULL, N_t = NULL, y0_t = NULL, N0_t = NULL,
   y_c = NULL, N_c = NULL, y0_c = NULL, N0_c = NULL, alpha_max = 1,
-  a0 = 1, b0 = 1, number_mcmc = 10000, weibull_scale = 0.135,
-  weibull_shape = 3, two_side = 1)
+  fix_alpha = FALSE, a0 = 1, b0 = 1, number_mcmc = 10000,
+  weibull_scale = 0.135, weibull_shape = 3, two_side = 1)
 }
 \arguments{
 \item{y_t}{scalar. Number of events for the current treatment group.}
@@ -32,6 +32,8 @@ Default is 1. For a two-arm trial, users may specify a vector of two values
 where the first value is used to weight the historical treatment group and
 the second value is used to weight the historical control group.}
 
+\item{fix_alpha}{logical. Fix alpha at alpha_max? Default value is FALSE.}
+
 \item{a0}{scalar. Prior value for the beta rate. Default is 1.}
 
 \item{b0}{scalar. Prior value for the beta rate. Default is 1.}
@@ -41,13 +43,10 @@ simulations. Default is 10000.}
 
 \item{weibull_scale}{scalar. Scale parameter of the Weibull discount function
 used to compute alpha, the weight parameter of the historical data. Default
-value is 0.135. Two values have special treatment: 0 and Inf. For
-weibull_scale = 0, alpha is set to 0, i.e., no weight. For
-weibull_scale = Inf, alpha is set to 1, i.e., full weight. For a two-arm
-trial, users may specify a vector of two values where the first value is
-used to estimate the weight of the historical treatment group and the
-second value is used to estimate the weight of the historical control
-group.}
+value is 0.135. For a two-arm trial, users may specify a vector of two values
+where the first value is used to estimate the weight of the historical
+treatment group and the second value is used to estimate the weight of the
+historical control group.}
 
 \item{weibull_shape}{scalar. Shape parameter of the Weibull discount function
 used to compute alpha, the weight parameter of the historical data. Default

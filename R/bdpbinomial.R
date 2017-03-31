@@ -15,6 +15,7 @@
 #'   Default is 1. For a two-arm trial, users may specify a vector of two values
 #'   where the first value is used to weight the historical treatment group and
 #'   the second value is used to weight the historical control group.
+#' @param fix_alpha logical. Fix alpha at alpha_max? Default value is FALSE.
 #' @param weibull_shape scalar. Shape parameter of the Weibull discount function
 #'   used to compute alpha, the weight parameter of the historical data. Default
 #'   value is 3. For a two-arm trial, users may specify a vector of two values
@@ -23,13 +24,10 @@
 #'   historical control group.
 #' @param weibull_scale scalar. Scale parameter of the Weibull discount function
 #'   used to compute alpha, the weight parameter of the historical data. Default
-#'   value is 0.135. Two values have special treatment: 0 and Inf. For
-#'   weibull_scale = 0, alpha is set to 0, i.e., no weight. For
-#'   weibull_scale = Inf, alpha is set to 1, i.e., full weight. For a two-arm
-#'   trial, users may specify a vector of two values where the first value is
-#'   used to estimate the weight of the historical treatment group and the
-#'   second value is used to estimate the weight of the historical control
-#'   group.
+#'   value is 0.135. For a two-arm trial, users may specify a vector of two values
+#'   where the first value is used to estimate the weight of the historical
+#'   treatment group and the second value is used to estimate the weight of the
+#'   historical control group.
 #' @param number_mcmc scalar. Number of Markov Chain Monte Carlo (MCMC)
 #'   simulations. Default is 10000.
 #' @param a0 scalar. Prior value for the beta rate. Default is 1.
@@ -178,6 +176,7 @@ setGeneric("bdpbinomial",
                     y0_c          = NULL,
                     N0_c          = NULL,
                     alpha_max     = 1,
+                    fix_alpha     = FALSE,
                     a0            = 1,
                     b0            = 1,
                     number_mcmc   = 10000,
@@ -198,6 +197,7 @@ setMethod("bdpbinomial",
                    y0_c          = NULL,
                    N0_c          = NULL,
                    alpha_max     = 1,
+                   fix_alpha     = FALSE,
                    a0            = 1,
                    b0            = 1,
                    number_mcmc   = 10000,
@@ -299,8 +299,9 @@ setMethod("bdpbinomial",
   ################################################################################
   # Estimate weight for prior data assuming a binomial outcome                   #
   ################################################################################
-  discount_function_binomial <- function(y, N, y0, N0, alpha_max, a0, b0, number_mcmc,
-                                         weibull_shape, weibull_scale, two_side){
+  discount_function_binomial <- function(y, N, y0, N0, alpha_max, fix_alpha, a0,
+                                         b0, number_mcmc, weibull_shape,
+                                         weibull_scale, two_side){
 
     ### Theta for using flat prior
     a_post_flat     <- y + a0
@@ -316,12 +317,8 @@ setMethod("bdpbinomial",
     p_test <- mean(posterior_flat < prior)   # larger is higher failure
 
     ### Number of effective sample size given shape and scale discount function
-    if(weibull_shape %in% c(0,Inf)){
-      if(weibull_shape == 0){
-        alpha_discount <- 0
-      } else{
-        alpha_discount <- 1
-      }
+    if(fix_alpha){
+      alpha_discount <- 1
     } else{
       if (two_side == 0) {
         alpha_discount <- pweibull(p_test, shape=weibull_shape, scale=weibull_scale)*alpha_max
@@ -346,7 +343,7 @@ setMethod("bdpbinomial",
 
     effective_N0 <- N0 * alpha_discount
 
-    if(is.null(N0) == TRUE){
+    if(is.null(N0)){
       a_prior <- a0
       b_prior <- b0
     }else{
@@ -364,7 +361,7 @@ setMethod("bdpbinomial",
   ################################################################################
   # Combine discount function and posterior estimation into one function
   ################################################################################
-  binomial_posterior <- function(y, N, y0, N0, alpha_max, a0, b0, number_mcmc,
+  binomial_posterior <- function(y, N, y0, N0, alpha_max, fix_alpha, a0, b0, number_mcmc,
                                  weibull_shape, weibull_scale, two_side){
 
     alpha_discount <- discount_function_binomial(y             = y,
@@ -372,6 +369,7 @@ setMethod("bdpbinomial",
                                                  y0            = y0,
                                                  N0            = N0,
                                                  alpha_max     = alpha_max,
+                                                 fix_alpha     = fix_alpha,
                                                  a0            = a0,
                                                  b0            = b0,
                                                  number_mcmc   = number_mcmc,
@@ -454,6 +452,7 @@ setMethod("bdpbinomial",
     y0            = y0_t,
     N0            = N0_t,
     alpha_max     = alpha_max[1],
+    fix_alpha     = fix_alpha,
     a0            = a0,
     b0            = b0,
     number_mcmc   = number_mcmc,
@@ -468,6 +467,7 @@ setMethod("bdpbinomial",
       y0            = y0_c,
       N0            = N0_c,
       alpha_max     = alpha_max[2],
+      fix_alpha     = fix_alpha,
       a0            = a0,
       b0            = b0,
       number_mcmc   = number_mcmc,
@@ -493,7 +493,8 @@ setMethod("bdpbinomial",
                 N_c           = N_c,
                 y0_c          = y0_c,
                 N0_c          = N0_c,
-                alpha_max     = alpha_max[1],
+                alpha_max     = alpha_max,
+                fix_alpha     = fix_alpha,
                 a0            = a0,
                 b0            = b0,
                 number_mcmc   = number_mcmc,
