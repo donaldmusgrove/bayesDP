@@ -1,7 +1,7 @@
 # bayesDP:
 ## Tools for the Bayesian Discount Prior Function
 
-Functions for augmenting data with historical controls using the Bayesian discount prior function for 1 arm and 2 arm clinical trials.
+Functions for data augmentation using the Bayesian discount prior function for 1 arm and 2 arm clinical trials.
 
 https://cran.r-project.org/package=bayesDP
 
