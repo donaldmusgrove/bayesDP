@@ -1,8 +1,8 @@
 Package: bayesDP
 Type: Package
 Title: Tools for the Bayesian Discount Prior Function
-Version: 1.0.0
-Date: 2017-03-20
+Version: 1.0.1
+Date: 2017-03-31
 Authors@R: c(person("Shawn", "Balcome", email = "sbalcome@mdic.org", role = c("cre")), person("Donnie", "Musgrove", email = "donald.r.musgrove@medtronic.com", role = c("aut")), person("Tarek", "Haddad", email = "tarek.d.haddad@medtronic.com", role = c("aut")), person("Christopher", "Jackson", email = "chris.jackson@mrc-bsu.cam.ac.uk", role = "ctb", comment="For the ppexp R code that was ported to C++."))
 Depends: ggplot2, survival, methods
 Description: Functions for augmenting data with historical controls using the
