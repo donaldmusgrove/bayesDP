@@ -8,7 +8,7 @@
 \alias{plot,bdpnormal-method}
 \alias{plot,bdpsurvival,bdpsurvival-method}
 \alias{plot,bdpsurvival-method}
-\title{plot: normal plot method}
+\title{plot}
 \usage{
 \S4method{plot}{bdpnormal}(x)
 
@@ -18,5 +18,12 @@
 }
 \arguments{
 \item{x}{Result}
+}
+\description{
+normal plot method
+
+binomial plot method
+
+survival plot method
 }
 

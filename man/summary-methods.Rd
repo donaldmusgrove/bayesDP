@@ -8,7 +8,7 @@
 \alias{summary,bdpnormal-method}
 \alias{summary,bdpsurvival}
 \alias{summary,bdpsurvival-method}
-\title{summary: normal summary method}
+\title{summary}
 \usage{
 \S4method{summary}{bdpnormal}(object)
 
@@ -18,5 +18,12 @@
 }
 \arguments{
 \item{object}{Result}
+}
+\description{
+normal summary method
+
+binomial summary method
+
+survival summary method
 }
 

@@ -1,4 +1,5 @@
-#' @title summary: normal summary method
+#' @title summary
+#' @description normal summary method
 #' @import methods
 #' @importFrom utils head
 #' @importFrom utils write.table
@@ -56,7 +57,8 @@ setMethod("summary", signature(object = "bdpnormal"), function(object){
 })
 
 
-#' @title summary: binomial summary method
+#' @title summary
+#' @description binomial summary method
 #' @importFrom utils head
 #' @importFrom stats density is.empty.model median model.offset model.response pweibull quantile rbeta rgamma rnorm var vcov
 #' @export
@@ -110,7 +112,8 @@ setMethod("summary", signature(object = "bdpbinomial"), function(object){
 })
 
 
-#' @title summary: survival summary method
+#' @title summary
+#' @description survival summary method
 #' @importFrom utils head
 #' @importFrom stats density is.empty.model median model.offset model.response pweibull quantile rbeta rgamma rnorm var vcov
 #' @export

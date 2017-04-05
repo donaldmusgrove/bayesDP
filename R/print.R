@@ -1,4 +1,5 @@
-#' @title print: print method
+#' @title print
+#' @description normal print method
 #' @import methods
 #' @importFrom utils head
 #' @importFrom utils write.table
@@ -40,7 +41,8 @@ setMethod("print", signature(x = "bdpnormal"), function(x){
 })
 
 
-#' @title print: print method
+#' @title print
+#' @description binomial print method
 #' @importFrom utils head
 #' @importFrom stats density is.empty.model median model.offset model.response pweibull quantile rbeta rgamma rnorm var vcov
 #' @export
@@ -89,7 +91,8 @@ setMethod("print", signature(x = "bdpbinomial"), function(x){
 })
 
 
-#' @title print: print method
+#' @title print
+#' @description survival print method
 #' @importFrom utils head
 #' @importFrom stats density is.empty.model median model.offset model.response pweibull quantile rbeta rgamma rnorm var vcov
 #' @export

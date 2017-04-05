@@ -8,7 +8,7 @@
 \alias{print,bdpnormal-method}
 \alias{print,bdpsurvival}
 \alias{print,bdpsurvival-method}
-\title{print: print method}
+\title{print}
 \usage{
 \S4method{print}{bdpnormal}(x)
 
@@ -18,5 +18,12 @@
 }
 \arguments{
 \item{x}{Result}
+}
+\description{
+normal print method
+
+binomial print method
+
+survival print method
 }
 
