@@ -1,6 +1,4 @@
-#' summary
-#' summary
-#' @title summary: summary
+#' @title summary: normal summary method
 #' @import methods
 #' @importFrom utils head
 #' @importFrom utils write.table
@@ -8,7 +6,7 @@
 #' @param object Result
 #' @export
 #' @rdname summary-methods
-#' @aliases summary,bdpnormal,bdpnormal-method
+#' @aliases summary,bdpnormal
 setMethod("summary", signature(object = "bdpnormal"), function(object){
   f <- object$f1
   posterior_treatment <- object$posterior_treatment
@@ -58,14 +56,12 @@ setMethod("summary", signature(object = "bdpnormal"), function(object){
 })
 
 
-#' summary
-#' summary
-#' @title summary: summary
+#' @title summary: binomial summary method
 #' @importFrom utils head
 #' @importFrom stats density is.empty.model median model.offset model.response pweibull quantile rbeta rgamma rnorm var vcov
 #' @export
 #' @rdname summary-methods
-#' @aliases summary,bdpbinomial,bdpbinomial-method
+#' @aliases summary,bdpbinomial
 setMethod("summary", signature(object = "bdpbinomial"), function(object){
   f                   <- object$f1
   posterior_treatment <- object$posterior_treatment
@@ -114,14 +110,12 @@ setMethod("summary", signature(object = "bdpbinomial"), function(object){
 })
 
 
-#' summary
-#' summary
-#' @title summary: summary
+#' @title summary: survival summary method
 #' @importFrom utils head
 #' @importFrom stats density is.empty.model median model.offset model.response pweibull quantile rbeta rgamma rnorm var vcov
 #' @export
 #' @rdname summary-methods
-#' @aliases summary,bdpsurvival,bdpsurvival-method
+#' @aliases summary,bdpsurvival
 setMethod("summary", signature(object = "bdpsurvival"), function(object){
   f                   <- object$f1
   posterior_treatment <- object$posterior_treatment

@@ -2,13 +2,13 @@
 % Please edit documentation in R/print.R
 \docType{methods}
 \name{print,bdpnormal-method}
-\alias{print,bdpnormal-method}
-\alias{print,bdpnormal,bdpnormal-method}
+\alias{print,bdpbinomial}
 \alias{print,bdpbinomial-method}
-\alias{print,bdpbinomial,bdpbinomial-method}
+\alias{print,bdpnormal}
+\alias{print,bdpnormal-method}
+\alias{print,bdpsurvival}
 \alias{print,bdpsurvival-method}
-\alias{print,bdpsurvival,bdpsurvival-method}
-\title{print: print}
+\title{print: print method}
 \usage{
 \S4method{print}{bdpnormal}(x)
 
@@ -19,13 +19,4 @@
 \arguments{
 \item{x}{Result}
 }
-\description{
-print
-print
 
-print
-print
-
-print
-print
-}

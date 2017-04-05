@@ -2,13 +2,13 @@
 % Please edit documentation in R/plot.R
 \docType{methods}
 \name{plot,bdpnormal-method}
-\alias{plot,bdpnormal-method}
-\alias{plot,bdpnormal,bdpnormal-method}
-\alias{plot,bdpbinomial-method}
 \alias{plot,bdpbinomial,bdpbinomial-method}
-\alias{plot,bdpsurvival-method}
+\alias{plot,bdpbinomial-method}
+\alias{plot,bdpnormal,bdpnormal-method}
+\alias{plot,bdpnormal-method}
 \alias{plot,bdpsurvival,bdpsurvival-method}
-\title{plot: plot}
+\alias{plot,bdpsurvival-method}
+\title{plot: normal plot method}
 \usage{
 \S4method{plot}{bdpnormal}(x)
 
@@ -19,13 +19,4 @@
 \arguments{
 \item{x}{Result}
 }
-\description{
-plot
-plot
 
-plot
-plot
-
-plot
-plot
-}

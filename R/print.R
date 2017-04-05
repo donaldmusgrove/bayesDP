@@ -1,6 +1,4 @@
-#' print
-#' print
-#' @title print: print
+#' @title print: print method
 #' @import methods
 #' @importFrom utils head
 #' @importFrom utils write.table
@@ -8,7 +6,7 @@
 #' @param x Result
 #' @export
 #' @rdname print-methods
-#' @aliases print,bdpnormal,bdpnormal-method
+#' @aliases print,bdpnormal
 setMethod("print", signature(x = "bdpnormal"), function(x){
   posterior_treatment <- x$posterior_treatment
   posterior_control   <- x$posterior_control
@@ -42,14 +40,12 @@ setMethod("print", signature(x = "bdpnormal"), function(x){
 })
 
 
-#' print
-#' print
-#' @title print: print
+#' @title print: print method
 #' @importFrom utils head
 #' @importFrom stats density is.empty.model median model.offset model.response pweibull quantile rbeta rgamma rnorm var vcov
 #' @export
 #' @rdname print-methods
-#' @aliases print,bdpbinomial,bdpbinomial-method
+#' @aliases print,bdpbinomial
 setMethod("print", signature(x = "bdpbinomial"), function(x){
   f                   <- x$f1
   posterior_treatment <- x$posterior_treatment
@@ -93,14 +89,12 @@ setMethod("print", signature(x = "bdpbinomial"), function(x){
 })
 
 
-#' print
-#' print
-#' @title print: print
+#' @title print: print method
 #' @importFrom utils head
 #' @importFrom stats density is.empty.model median model.offset model.response pweibull quantile rbeta rgamma rnorm var vcov
 #' @export
 #' @rdname print-methods
-#' @aliases print,bdpsurvival,bdpsurvival-method
+#' @aliases print,bdpsurvival
 setMethod("print", signature(x = "bdpsurvival"), function(x){
   f                   <- x$f1
   posterior_treatment <- x$posterior_treatment

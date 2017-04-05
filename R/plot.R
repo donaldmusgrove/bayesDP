@@ -1,6 +1,4 @@
-#' plot
-#' plot
-#' @title plot: plot
+#' @title plot: normal plot method
 #' @import methods
 #' @importFrom utils head
 #' @importFrom ggplot2 aes_string ggtitle ylim guides guide_legend theme element_blank
@@ -156,9 +154,7 @@ setMethod("plot", signature(x = "bdpnormal"), function(x){
 })
 
 
-#' plot
-#' plot
-#' @title plot: plot
+#' @title plot: binomial plot method
 #' @importFrom utils head
 #' @importFrom graphics par
 #' @importFrom stats density is.empty.model median model.offset model.response pweibull quantile rbeta rgamma rnorm var vcov
@@ -314,9 +310,7 @@ setMethod("plot", signature(x = "bdpbinomial"), function(x){
 })
 
 
-#' plot
-#' plot
-#' @title plot: plot
+#' @title plot: survival plot method
 #' @importFrom utils head
 #' @importFrom graphics par
 #' @importFrom stats density is.empty.model median model.offset model.response pweibull quantile rbeta rgamma rnorm var vcov
