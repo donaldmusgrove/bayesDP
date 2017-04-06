@@ -3,26 +3,14 @@
 \docType{methods}
 \name{summary,bdpnormal-method}
 \alias{summary,bdpnormal-method}
-\alias{summary,bdpnormal}
-\alias{summary,bdpbinomial-method}
-\alias{summary,bdpbinomial}
-\alias{summary,bdpsurvival-method}
-\alias{summary,bdpsurvival}
 \title{summary}
 \usage{
 \S4method{summary}{bdpnormal}(object)
-
-\S4method{summary}{bdpbinomial}(object)
-
-\S4method{summary}{bdpsurvival}(object)
 }
 \arguments{
 \item{object}{Result}
 }
 \description{
 normal summary method
-
-binomial summary method
-
-survival summary method
 }
+

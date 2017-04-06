@@ -6,8 +6,6 @@
 #' @importFrom stats density is.empty.model median model.offset model.response pweibull quantile rbeta rgamma rnorm var vcov
 #' @param x Result
 #' @export
-#' @rdname print-methods
-#' @aliases print,bdpnormal
 setMethod("print", signature(x = "bdpnormal"), function(x){
   posterior_treatment <- x$posterior_treatment
   posterior_control   <- x$posterior_control
@@ -43,11 +41,12 @@ setMethod("print", signature(x = "bdpnormal"), function(x){
 
 #' @title print
 #' @description binomial print method
+#' @import methods
 #' @importFrom utils head
+#' @importFrom utils write.table
 #' @importFrom stats density is.empty.model median model.offset model.response pweibull quantile rbeta rgamma rnorm var vcov
+#' @param x Result
 #' @export
-#' @rdname print-methods
-#' @aliases print,bdpbinomial
 setMethod("print", signature(x = "bdpbinomial"), function(x){
   f                   <- x$f1
   posterior_treatment <- x$posterior_treatment
@@ -93,11 +92,12 @@ setMethod("print", signature(x = "bdpbinomial"), function(x){
 
 #' @title print
 #' @description survival print method
+#' @import methods
 #' @importFrom utils head
+#' @importFrom utils write.table
 #' @importFrom stats density is.empty.model median model.offset model.response pweibull quantile rbeta rgamma rnorm var vcov
+#' @param x Result
 #' @export
-#' @rdname print-methods
-#' @aliases print,bdpsurvival
 setMethod("print", signature(x = "bdpsurvival"), function(x){
   f                   <- x$f1
   posterior_treatment <- x$posterior_treatment
