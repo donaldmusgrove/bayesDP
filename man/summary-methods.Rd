@@ -2,12 +2,12 @@
 % Please edit documentation in R/summary.R
 \docType{methods}
 \name{summary,bdpnormal-method}
-\alias{summary,bdpbinomial}
-\alias{summary,bdpbinomial-method}
-\alias{summary,bdpnormal}
 \alias{summary,bdpnormal-method}
-\alias{summary,bdpsurvival}
+\alias{summary,bdpnormal}
+\alias{summary,bdpbinomial-method}
+\alias{summary,bdpbinomial}
 \alias{summary,bdpsurvival-method}
+\alias{summary,bdpsurvival}
 \title{summary}
 \usage{
 \S4method{summary}{bdpnormal}(object)
@@ -26,4 +26,3 @@ binomial summary method
 
 survival summary method
 }
-

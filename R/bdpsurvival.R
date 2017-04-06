@@ -8,8 +8,8 @@
 #'   historical. See "Details" for more information.
 #' @param data data frame. A data frame with columns 'time', 'status',
 #'   'treatment', and historical.' See "Details" for required structure.
-#' @param breaks vector. Breaks (intervals) used to compose the breaks of the
-#'   piecewise exponential model.
+#' @param breaks vector. Breaks (interval starts) used to compose the breaks of the
+#'   piecewise exponential model. Do not include zero.
 #' @param a0 scalar. Prior value for the gamma shape. Default is 1.
 #' @param b0 scalar. Prior value for the gamma rate. Default is 1.
 #' @param surv_time scalar. Survival time of interest for computing the the
@@ -34,8 +34,8 @@
 #'   values where the first value is used to estimate the weight of the
 #'   historical treatment group and the second value is used to estimate the
 #'   weight of the historical control group.
-#' @param two_side scalar. Indicator of two-sided test for the discount
-#'   function. Default value is 1.
+#' @param two_side logical. Indicator of two-sided test for the discount
+#'   function. Default value is TRUE.
 #'
 #' @details \code{bdpsurvival} uses a two-stage approach for determining the
 #'   strength of historical data in estimation of a survival probability outcome.
@@ -163,7 +163,7 @@ setGeneric("bdpsurvival",
            number_mcmc   = 10000,
            weibull_scale = 0.135,
            weibull_shape = 3,
-           two_side      = 1){
+           two_side      = TRUE){
              standardGeneric("bdpsurvival")
            })
 
@@ -180,7 +180,7 @@ setMethod("bdpsurvival",
            number_mcmc   = 10000,
            weibull_scale = 0.135,
            weibull_shape = 3,
-           two_side      = 1){
+           two_side      = TRUE){
 
   ### Check dataframe and ensure it has the correct column names
   namesData <- tolower(names(data))
@@ -188,22 +188,20 @@ setMethod("bdpsurvival",
   if(length(namesDiff)>0){
     nDiff <- length(namesDiff)
     if(nDiff == 1){
-      errorMsg <- paste0("Error: column ",
+      errorMsg <- paste0("Column ",
                          namesDiff,
                          " is missing from the input dataframe.")
-      return(errorMsg)
+      stop(errorMsg)
     } else if(nDiff>1){
       errorNames <- paste0(namesDiff, collapse = ", ")
-      errorMsg <- paste0("Error: columns are missing from input dataframe: ",
+      errorMsg <- paste0("Columns are missing from input dataframe: ",
                          errorNames)
+      stop(errorMsg)
     }
   }
 
 
 
-  ### Set internal arm2 value to FALSE. Currently, only single arm trial is
-  ### supported for survival data
-  arm2 <- FALSE
 
   historical <- NULL
   treatment <- NULL
@@ -234,10 +232,12 @@ setMethod("bdpsurvival",
      breaks <- quantile(data$time,probs=c(0.2,0.4,0.6,0.8))
   }
 
-  ### If too many breaks, return error
-  if(length(breaks) > 5){
-    return("Error: currently only a maximum of 5 breaks are supported.")
+  ### If zero is present in breaks, remove and give warning
+  if(any(breaks==0)){
+    breaks <- breaks[!(breaks==0)]
+    warning("Breaks vector includeded 0. The zero value was removed.")
   }
+
 
 
   ### Split the data on the breaks
@@ -250,7 +250,7 @@ setMethod("bdpsurvival",
 
   ### If surv_time is null, replace with median time
   if(is.null(surv_time)){
-    surv_time <- median(dataSplit$time)
+    surv_time <- median(data$time)
   }
 
 
@@ -269,19 +269,26 @@ setMethod("bdpsurvival",
   S0_t <- subset(dataSplit, historical==1 & treatment == 1)
   S0_c <- subset(dataSplit, historical==1 & treatment == 0)
 
-  ### Check inputs
-  if(!arm2){
-    if(nrow(S_t) == 0) return("Error: current treatment data missing or input incorrectly.")
-    if(nrow(S0_t) == 0) return("Error: historical treatment data missing or input incorrectly.")
-    if(nrow(S_c) > 0) return("Error: current control data present. Two arm analysis not supported.")
-    if(nrow(S0_c) > 0) return("Error: historical control data present. Two arm analysis not supported.")
-  } else if(arm2){
-    if(nrow(S_t) == 0) return("Error: current treatment data missing or input incorrectly.")
-    if(nrow(S_c) == 0) return("Error: current control data missing or input incorrectly.")
-    if(nrow(S0_t) == 0 & nrow(S0_c)==0) return("Error: historical data input incorrectly.")
+
+  ### Compute arm2, internal indicator of a two-arm trial
+  if(nrow(S_c) == 0 & nrow(S0_c) == 0){
+    arm2 <- FALSE
+  } else{
+    arm2 <- TRUE
   }
 
-  posterior_treatment <- survival_posterior(
+
+  ### Check inputs
+  if(!arm2){
+    if(nrow(S_t) == 0) stop("Current treatment data missing or input incorrectly.")
+    if(nrow(S0_t) == 0) stop("Historical treatment data missing or input incorrectly.")
+  } else if(arm2){
+    if(nrow(S_t) == 0) stop("Current treatment data missing or input incorrectly.")
+    if(nrow(S_c) == 0) stop("Current control data missing or input incorrectly.")
+    if(nrow(S0_t) == 0 & nrow(S0_c)==0) stop("Historical data input incorrectly.")
+  }
+
+  posterior_treatment <- posterior_survival(
     S             = S_t,
     S0            = S0_t,
     alpha_max     = alpha_max[1],
@@ -296,7 +303,7 @@ setMethod("bdpsurvival",
     breaks        = breaks)
 
   if(arm2){
-    posterior_control <- survival_posterior(
+    posterior_control <- posterior_survival(
       S             = S_c,
       S0            = S0_c,
       alpha_max     = alpha_max[2],
@@ -393,9 +400,9 @@ discount_function_survival <- function(S, S0, alpha_max, fix_alpha, a0, b0,
   if(fix_alpha == TRUE){
     alpha_discount <- alpha_max
   } else{
-    if (two_side == 0) {
+    if (!two_side) {
       alpha_discount <- pweibull(p_test, shape=weibull_shape, scale=weibull_scale)*alpha_max
-    } else if (two_side == 1){
+    } else if (two_side){
       p_test1    <- ifelse(p_test > 0.5, 1 - p_test, p_test)
       alpha_discount <- pweibull(p_test1, shape=weibull_shape, scale=weibull_scale)*alpha_max
     }
@@ -457,7 +464,7 @@ posterior_augment_survival <- function(S, S0, alpha_discount, a0, b0,
 
 
 ### Combine  loss function and posterior estimation into one function
-survival_posterior <- function(S, S0, alpha_max, fix_alpha, a0, b0, surv_time,
+posterior_survival <- function(S, S0, alpha_max, fix_alpha, a0, b0, surv_time,
                                number_mcmc, weibull_shape, weibull_scale,
                                two_side, breaks){
 

@@ -8,7 +8,7 @@
 bdpsurvival(formula = formula, data = data, breaks = NULL, a0 = 0.1,
   b0 = 0.1, surv_time = NULL, alpha_max = 1, fix_alpha = FALSE,
   number_mcmc = 10000, weibull_scale = 0.135, weibull_shape = 3,
-  two_side = 1)
+  two_side = TRUE)
 }
 \arguments{
 \item{formula}{an object of class "formula." Must have a survival object on
@@ -53,8 +53,8 @@ where the first value is used to estimate the weight of the historical
 treatment group and the second value is used to estimate the weight of the
 historical control group.}
 
-\item{two_side}{scalar. Indicator of two-sided test for the discount
-function. Default value is 1.}
+\item{two_side}{logical. Indicator of two-sided test for the discount
+function. Default value is TRUE.}
 }
 \value{
 \code{bdpsurvival} returns an object of class "bdpsurvival".
@@ -170,4 +170,3 @@ summary(fitSurv)
 
 
 }
-

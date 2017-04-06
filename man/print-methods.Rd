@@ -2,12 +2,12 @@
 % Please edit documentation in R/print.R
 \docType{methods}
 \name{print,bdpnormal-method}
-\alias{print,bdpbinomial}
-\alias{print,bdpbinomial-method}
-\alias{print,bdpnormal}
 \alias{print,bdpnormal-method}
-\alias{print,bdpsurvival}
+\alias{print,bdpnormal}
+\alias{print,bdpbinomial-method}
+\alias{print,bdpbinomial}
 \alias{print,bdpsurvival-method}
+\alias{print,bdpsurvival}
 \title{print}
 \usage{
 \S4method{print}{bdpnormal}(x)
@@ -26,4 +26,3 @@ binomial print method
 
 survival print method
 }
-

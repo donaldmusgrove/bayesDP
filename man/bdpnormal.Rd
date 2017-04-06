@@ -196,4 +196,3 @@ Haddad, T., Himes, A., Thompson, L., Irony, T., Nair, R. MDIC Computer
   engineering models as prior information in Bayesian medical device trials.
   \emph{Journal of Biopharmaceutical Statistics}. To Appear.
 }
-

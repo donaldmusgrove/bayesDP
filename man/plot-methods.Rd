@@ -2,12 +2,12 @@
 % Please edit documentation in R/plot.R
 \docType{methods}
 \name{plot,bdpnormal-method}
-\alias{plot,bdpbinomial,bdpbinomial-method}
-\alias{plot,bdpbinomial-method}
-\alias{plot,bdpnormal,bdpnormal-method}
 \alias{plot,bdpnormal-method}
-\alias{plot,bdpsurvival,bdpsurvival-method}
+\alias{plot,bdpnormal,bdpnormal-method}
+\alias{plot,bdpbinomial-method}
+\alias{plot,bdpbinomial,bdpbinomial-method}
 \alias{plot,bdpsurvival-method}
+\alias{plot,bdpsurvival,bdpsurvival-method}
 \title{plot}
 \usage{
 \S4method{plot}{bdpnormal}(x)
@@ -26,4 +26,3 @@ binomial plot method
 
 survival plot method
 }
-
