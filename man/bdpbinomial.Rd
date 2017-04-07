@@ -73,7 +73,7 @@ the following components:
    \itemize{
      \item{\code{alpha_discount}}{
        numeric. Alpha value, the weighting parameter of the historical data.}
-     \item{\code{pvalue}}{
+     \item{\code{p_hat}}{
        numeric. The posterior probability of the stochastic comparison
        between the current and historical data.}
      \item{\code{posterior}}{
@@ -109,7 +109,7 @@ the following components:
      \item{\code{density_prior_control}}{
        object of class \code{density}. Used internally to plot the density of
        the control group (if present) prior.}
-     \item{\code{TestMinusControl_post}}{
+     \item{\code{comparison_posterior}}{
        vector. If control group is present, vector contains posterior
        distribution of the effect estimate of treatment vs. control.
        control groups.}

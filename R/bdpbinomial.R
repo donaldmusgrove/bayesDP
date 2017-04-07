@@ -77,7 +77,7 @@
 #'    \itemize{
 #'      \item{\code{alpha_discount}}{
 #'        numeric. Alpha value, the weighting parameter of the historical data.}
-#'      \item{\code{pvalue}}{
+#'      \item{\code{p_hat}}{
 #'        numeric. The posterior probability of the stochastic comparison
 #'        between the current and historical data.}
 #'      \item{\code{posterior}}{
@@ -113,7 +113,7 @@
 #'      \item{\code{density_prior_control}}{
 #'        object of class \code{density}. Used internally to plot the density of
 #'        the control group (if present) prior.}
-#'      \item{\code{TestMinusControl_post}}{
+#'      \item{\code{comparison_posterior}}{
 #'        vector. If control group is present, vector contains posterior
 #'        distribution of the effect estimate of treatment vs. control.
 #'        control groups.}
@@ -356,7 +356,7 @@ setMethod("bdpbinomial",
                 arm2          = arm2,
                 intent        = paste(intent,collapse=", "))
 
-  if(arm2==TRUE){
+  if(arm2){
     me <- list(posterior_treatment = posterior_treatment,
                posterior_control   = posterior_control,
                f1                  = f1,
@@ -422,11 +422,11 @@ posterior_binomial <- function(y, N, y0, N0, alpha_max, fix_alpha, a0, b0,
                                    scale=weibull_scale)*alpha_max
       }
     }
-    pvalue <- p_test
+    p_hat <- p_test
 
   } else{
     alpha_discount <- NULL
-    pvalue         <- NULL
+    p_hat         <- NULL
   }
 
 
@@ -452,7 +452,7 @@ posterior_binomial <- function(y, N, y0, N0, alpha_max, fix_alpha, a0, b0,
   }
 
   return(list(alpha_discount  = alpha_discount,
-              pvalue          = pvalue,
+              p_hat           = p_hat,
               posterior       = posterior,
               posterior_flat  = posterior_flat,
               prior           = prior,

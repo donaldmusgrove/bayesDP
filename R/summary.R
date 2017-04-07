@@ -40,7 +40,7 @@ setMethod("summary", signature(object = "bdpnormal"), function(object){
                  sigma0_t, ", N0_t = ", N0_t))
       cat("\n")
       cat(paste0("Stochastic comparison - treatment (current vs. historical data): ",
-                 posterior_treatment$pvalue))
+                 posterior_treatment$p_hat))
       cat("\n")
       cat(paste0("Discount function value - treatment: ", posterior_treatment$alpha_discount))
       cat("\n")
@@ -76,7 +76,7 @@ setMethod("summary", signature(object = "bdpnormal"), function(object){
 
     if(!is.null(N0_t)){
       cat(paste0("Stochastic comparison - treatment (current vs. historical data): ",
-                 posterior_treatment$pvalue))
+                 posterior_treatment$p_hat))
       cat("\n")
     }
 
@@ -145,7 +145,7 @@ setMethod("summary", signature(object = "bdpbinomial"), function(object){
     if(!is.null(N0_t)){
       cat(paste0("Historical treatment data: ", y0_t, " and ", N0_t, "\n"))
       cat(paste0("Stochastic comparison - treatment (current vs. historical data): ",
-                 posterior_treatment$pvalue))
+                 posterior_treatment$p_hat))
       cat("\n")
       cat(paste0("Discount function value - treatment: ", posterior_treatment$alpha_discount))
       cat("\n")
@@ -161,12 +161,6 @@ setMethod("summary", signature(object = "bdpbinomial"), function(object){
     cat("probability of success\n")
     cat(paste0(" ",mean_est_t))
     cat("\n")
-
-    #prior_for_treatment_group <- list(
-    #  `Stochastic comparison - treatment (new vs historical data):  ` = posterior_treatment$pvalue,
-    #  `Discount function value - treatment:  `                        = posterior_treatment$alpha_discount,
-    #  `Sample size of historical - treatment:  `                      = posterior_treatment$N0,
-    #  `Binomial posterior - treatment (95% CI):  `                    = mean_print_t)
 
   } else{
 
@@ -197,11 +191,11 @@ setMethod("summary", signature(object = "bdpbinomial"), function(object){
       cat(paste0("Historical control data: ", y0_c, " and ", N0_c, "\n"))
     }
     if(!is.null(N_t) & !is.null(N0_t)){
-      cat(paste0("Stochastic comparison - treatment (current vs. historical data): ", posterior_treatment$pvalue))
+      cat(paste0("Stochastic comparison - treatment (current vs. historical data): ", posterior_treatment$p_hat))
       cat("\n")
     }
     if(!is.null(N_c) & !is.null(N0_c)){
-      cat(paste0("Stochastic comparison - control (current vs. historical data): ", posterior_control$pvalue))
+      cat(paste0("Stochastic comparison - control (current vs. historical data): ", posterior_control$p_hat))
       cat("\n")
     }
 
@@ -224,19 +218,8 @@ setMethod("summary", signature(object = "bdpbinomial"), function(object){
     cat("prop 1 prop2\n")
     cat(paste0("  ", mean_est_t, "  ", mean_est_c))
 
-
-    #prior_for_control_group <- list(
-    #  `Stochastic comparison - control (new vs historical data):  ` = posterior_control$pvalue,
-    #  `Discount function value - control:  `                        = posterior_control$alpha_discount,
-    #  `Sample size of historical - control:  `                      = posterior_control$N0,
-    #  `Binomial posterior - control (95% CI):  `                    = mean_print_c,
-    #  `Binomial difference - treatment vs. control (95% CI): `      = comp_print)
   }
 
-  #pp(prior_for_treatment_group)
-  #if(is.null(posterior_control$N0) == FALSE){
-  #  pp(prior_for_control_group)
-  #}
 })
 
 

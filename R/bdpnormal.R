@@ -96,17 +96,25 @@ NULL
 #'    \itemize{
 #'      \item{\code{alpha_discount}}{
 #'        numeric. Alpha value, the weighting parameter of the historical data.}
-#'      \item{\code{pvalue}}{
+#'      \item{\code{p_hat}}{
 #'        numeric. The posterior probability of the stochastic comparison
 #'        between the current and historical data.}
-#'      \item{\code{mu_posterior}}{
+#'      \item{\code{posterior_mu}}{
 #'        vector. The posterior of the treatment group, incorporating the
 #'        weighted historical data.}
-#'      \item{\code{mu_posterior_flat}}{
+#'      \item{\code{posterior_sigma2}}{
+#'        vector. The posterior of the treatment group variance, incorporating the
+#'        weighted historical data.}
+#'      \item{\code{posterior_flat_mu}}{
 #'        vector. The distribution of the current treatment group, i.e., no
 #'        incorporation of the historical data.}
-#'      \item{\code{mu_prior}}{
+#'      \item{\code{posterior_flat_sigma2}}{
+#'        vector. The distribution of the current treatment group variance, i.e., no
+#'        incorporation of the historical data.}
+#'      \item{\code{prior_mu}}{
 #'        vector. The distribution of the historical treatment group.}
+#'      \item{\code{prior_sigma2}}{
+#'        vector. The distribution of the historical treatment group variance.}
 #'   }
 #'  \item{\code{posterior_control}}{
 #'    list. Similar entries as \code{posterior_treament}. Only present if
@@ -388,7 +396,7 @@ setMethod("bdpnormal",
                 arm2          = arm2,
                 intent        = paste(intent,collapse=", "))
 
-  if (arm2 == TRUE){
+  if (arm2){
     me <- list(posterior_treatment = posterior_treatment,
                posterior_control   = posterior_control,
                f1                  = f1,
@@ -459,11 +467,11 @@ posterior_normal <- function(mu, sigma, N, mu0, sigma0, N0, alpha_max,
                                    scale=weibull_scale)*alpha_max
       }
     }
-    pvalue <- p_test
+    p_hat <- p_test
 
   } else{
     alpha_discount <- NULL
-    pvalue         <- NULL
+    p_hat         <- NULL
   }
 
 
@@ -495,7 +503,7 @@ posterior_normal <- function(mu, sigma, N, mu0, sigma0, N0, alpha_max,
 
 
   return(list(alpha_discount        = alpha_discount,
-              pvalue                = pvalue,
+              p_hat                 = p_hat,
               posterior_mu          = posterior_mu,
               posterior_sigma2      = posterior_sigma2,
               posterior_flat_mu     = posterior_flat_mu,

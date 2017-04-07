@@ -83,17 +83,25 @@ the following components:
    \itemize{
      \item{\code{alpha_discount}}{
        numeric. Alpha value, the weighting parameter of the historical data.}
-     \item{\code{pvalue}}{
+     \item{\code{p_hat}}{
        numeric. The posterior probability of the stochastic comparison
        between the current and historical data.}
-     \item{\code{mu_posterior}}{
+     \item{\code{posterior_mu}}{
        vector. The posterior of the treatment group, incorporating the
        weighted historical data.}
-     \item{\code{mu_posterior_flat}}{
+     \item{\code{posterior_sigma2}}{
+       vector. The posterior of the treatment group variance, incorporating the
+       weighted historical data.}
+     \item{\code{posterior_flat_mu}}{
        vector. The distribution of the current treatment group, i.e., no
        incorporation of the historical data.}
-     \item{\code{mu_prior}}{
+     \item{\code{posterior_flat_sigma2}}{
+       vector. The distribution of the current treatment group variance, i.e., no
+       incorporation of the historical data.}
+     \item{\code{prior_mu}}{
        vector. The distribution of the historical treatment group.}
+     \item{\code{prior_sigma2}}{
+       vector. The distribution of the historical treatment group variance.}
   }
  \item{\code{posterior_control}}{
    list. Similar entries as \code{posterior_treament}. Only present if
