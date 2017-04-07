@@ -270,7 +270,7 @@ setMethod("bdpbinomial",
   }
 
 
-  if(length(y_c + N_c + y0_c  + N0_c)!=0){
+  if(!is.null(N_c) | !is.null(N0_c)){
     arm2 <- TRUE
   }else{
     arm2 <- FALSE
@@ -313,7 +313,7 @@ setMethod("bdpbinomial",
     weibull_shape = weibull_shape[1],
     two_side      = two_side)
 
-  if (arm2==TRUE){
+  if(arm2){
     posterior_control <- posterior_binomial(
       y             = y_c,
       N             = N_c,
@@ -329,7 +329,7 @@ setMethod("bdpbinomial",
       two_side      = two_side)
   }
 
-  if (arm2==TRUE){
+  if(arm2){
     f1 <- final_binomial(posterior_treatment = posterior_treatment,
                          posterior_control   = posterior_control)
   }
@@ -380,19 +380,9 @@ setMethod("bdpbinomial",
 ################################################################################
 # Binomial: estimate weight for prior data assuming a binomial outcome
 ################################################################################
-discount_function_binomial <- function(y, N, y0, N0, alpha_max, fix_alpha, a0,
-                                       b0, number_mcmc, weibull_shape,
-                                       weibull_scale, two_side){
-
-  ### Theta for using flat prior
-  a_post_flat     <- y + a0
-  b_post_flat     <- N - y + b0
-  posterior_flat  <- rbeta(number_mcmc, a_post_flat, b_post_flat)
-
-  ### Prior model
-  a_prior  <- y0 + a0
-  b_prior  <- N0 - y0 + b0
-  prior    <- rbeta(number_mcmc, a_prior, b_prior) #flat prior
+discount_function_binomial <- function(alpha_max, fix_alpha, number_mcmc,
+                                       weibull_shape, weibull_scale, two_side,
+                                       posterior_flat, prior){
 
   ### Test of model vs real
   p_test <- mean(posterior_flat < prior)   # larger is higher failure
@@ -410,9 +400,7 @@ discount_function_binomial <- function(y, N, y0, N0, alpha_max, fix_alpha, a0,
   }
 
   return(list(alpha_discount  = alpha_discount,
-              pvalue          = p_test,
-              posterior_flat  = posterior_flat,
-              prior           = prior))
+              pvalue          = p_test))
 }
 
 
@@ -423,7 +411,9 @@ discount_function_binomial <- function(y, N, y0, N0, alpha_max, fix_alpha, a0,
 posterior_augment_binomial <- function(y, N, y0, N0, alpha_discount, a0, b0,
                                        number_mcmc){
 
-  effective_N0 <- N0 * alpha_discount
+  if(!is.null(alpha_discount)){
+    effective_N0 <- N0 * alpha_discount
+  }
 
   if(is.null(N0)){
     a_prior <- a0
@@ -449,40 +439,67 @@ posterior_binomial <- function(y, N, y0, N0, alpha_max, fix_alpha, a0, b0,
                                number_mcmc, weibull_shape, weibull_scale,
                                two_side){
 
-  alpha_discount <- discount_function_binomial(y             = y,
-                                               N             = N,
-                                               y0            = y0,
-                                               N0            = N0,
-                                               alpha_max     = alpha_max,
-                                               fix_alpha     = fix_alpha,
-                                               a0            = a0,
-                                               b0            = b0,
-                                               number_mcmc   = number_mcmc,
-                                               weibull_shape = weibull_shape,
-                                               weibull_scale = weibull_scale,
-                                               two_side      = two_side)
+  ### Compute posteriors with non-informative priors
+  if(!is.null(N)){
+    posterior_flat  <- rbeta(number_mcmc, y + a0, N - y + b0)
+  } else{
+    posterior_flat <- NULL
+  }
 
-  posterior <- posterior_augment_binomial(y              = y,
-                                          N              = N,
-                                          y0             = y0,
-                                          N0             = N0,
-                                          alpha_discount = alpha_discount$alpha_discount,
-                                          a0             = a0,
-                                          b0             = b0,
-                                          number_mcmc    = number_mcmc)
+  if(!is.null(N0)){
+    prior    <- rbeta(number_mcmc, y0 + a0, N0 - y0 + b0)
+  } else{
+    prior <- NULL
+  }
+
+  ### Only compute alpha discount if both N and N0 are present
+  if(!is.null(N) & !is.null(N0)){
+    alpha_discount <- discount_function_binomial(alpha_max      = alpha_max,
+                                                 fix_alpha      = fix_alpha,
+                                                 number_mcmc    = number_mcmc,
+                                                 weibull_shape  = weibull_shape,
+                                                 weibull_scale  = weibull_scale,
+                                                 two_side       = two_side,
+                                                 posterior_flat = posterior_flat,
+                                                 prior          = prior)
+  } else{
+    alpha_discount <- list(alpha_discount = NULL, pvalue=NULL)
+  }
+
+
+  ### If only the historical data is present, compute posterior on historical
+  if(is.null(N)){
+    posterior <- posterior_augment_binomial(y              = y0,
+                                            N              = N0,
+                                            y0             = y,
+                                            N0             = N,
+                                            alpha_discount = alpha_discount$alpha_discount,
+                                            a0             = a0,
+                                            b0             = b0,
+                                            number_mcmc    = number_mcmc)
+  } else{
+    posterior <- posterior_augment_binomial(y              = y,
+                                            N              = N,
+                                            y0             = y0,
+                                            N0             = N0,
+                                            alpha_discount = alpha_discount$alpha_discount,
+                                            a0             = a0,
+                                            b0             = b0,
+                                            number_mcmc    = number_mcmc)
+  }
+
 
   return(list(alpha_discount  = alpha_discount$alpha_discount,
               pvalue          = alpha_discount$pvalue,
               posterior       = posterior,
-              posterior_flat  = alpha_discount$posterior_flat,
-              prior           = alpha_discount$prior,
+              posterior_flat  = posterior_flat,
+              prior           = prior,
               weibull_scale   = weibull_scale,
               weibull_shape   = weibull_shape,
               y               = y,
               N               = N,
               y0              = y0,
-              N0              = N0,
-              N0_effective    = alpha_discount$alpha_discount*N0))
+              N0              = N0))
 }
 
 
@@ -496,10 +513,21 @@ final_binomial <- function(posterior_treatment, posterior_control=NULL){
 
   density_post_treatment  <- density(posterior_treatment$posterior,
                                      adjust = .5)
-  density_flat_treatment  <- density(posterior_treatment$posterior_flat,
-                                     adjust = .5)
-  density_prior_treatment <- density(posterior_treatment$prior,
-                                     adjust = .5)
+
+  if(!is.null(posterior_treatment$posterior_flat)){
+    density_flat_treatment  <- density(posterior_treatment$posterior_flat,
+                                       adjust = .5)
+  } else{
+    density_flat_treatment <- NULL
+  }
+
+  if(!is.null(posterior_treatment$prior)){
+    density_prior_treatment <- density(posterior_treatment$prior,
+                                       adjust = .5)
+  } else{
+    density_prior_treatment <- NULL
+  }
+
 
   if(is.null(posterior_control)){
     treatment_posterior <- posterior_treatment$posterior
@@ -511,10 +539,20 @@ final_binomial <- function(posterior_treatment, posterior_control=NULL){
   } else{
     density_post_control  <- density(posterior_control$posterior,
                                      adjust = .5)
-    density_flat_control  <- density(posterior_control$posterior_flat,
-                                     adjust = .5)
-    density_prior_control <- density(posterior_control$prior,
-                                     adjust = .5)
+
+    if(!is.null(posterior_control$posterior_flat)){
+      density_flat_control  <- density(posterior_control$posterior_flat,
+                                       adjust = .5)
+    } else{
+      density_flat_control <- NULL
+    }
+
+    if(!is.null(posterior_control$prior)){
+      density_prior_control <- density(posterior_control$prior,
+                                       adjust = .5)
+    } else{
+      density_prior_control <- NULL
+    }
 
     comparison_posterior <- posterior_treatment$posterior - posterior_control$posterior
 

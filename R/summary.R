@@ -72,8 +72,11 @@ setMethod("summary", signature(object = "bdpbinomial"), function(object){
   two_side            <- object$args1$two_side
   y_t                 <- object$args1$y_t
   N_t                 <- object$args1$N_t
+  y_c                 <- object$args1$y_c
+  N_c                 <- object$args1$N_c
   y0_t                <- object$args1$y0_t
   N0_t                <- object$args1$N0_t
+  y0_c                <- object$args1$y0_c
   N0_c                <- object$args1$N0_c
 
   if(!arm2){
@@ -132,21 +135,21 @@ setMethod("summary", signature(object = "bdpbinomial"), function(object){
     if(!is.null(N0_c)){
       cat(paste0("Historical control data: ", y0_c, " and ", N0_c, "\n"))
     }
-    if(!is.null(N0_t)){
+    if(!is.null(N_t) & !is.null(N0_t)){
       cat(paste0("Stochastic comparison - treatment (current vs. historical data): ", posterior_treatment$pvalue))
       cat("\n")
     }
-    if(!is.null(N0_c)){
+    if(!is.null(N_c) & !is.null(N0_c)){
       cat(paste0("Stochastic comparison - control (current vs. historical data): ", posterior_control$pvalue))
       cat("\n")
     }
 
-    if(!is.null(N0_t)){
+    if(!is.null(N_t) & !is.null(N0_t)){
       cat(paste0("Discount function value - treatment: ", posterior_treatment$alpha_discount))
       cat("\n")
     }
 
-    if(!is.null(N0_c)){
+    if(!is.null(N_c) & !is.null(N0_c)){
       cat(paste0("Discount function value - control: ", posterior_control$alpha_discount))
       cat("\n")
     }
@@ -159,8 +162,6 @@ setMethod("summary", signature(object = "bdpbinomial"), function(object){
     cat("augmented sample estimates:\n")
     cat("prop 1 prop2\n")
     cat(paste0("  ", mean_est_t, "  ", mean_est_c))
-
-
 
 
     #prior_for_control_group <- list(
