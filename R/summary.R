@@ -82,7 +82,7 @@ setMethod("summary", signature(object = "bdpnormal"), function(object){
 
     if(!is.null(N0_c) & !is.null(N_c)){
       cat(paste0("Stochastic comparison - control (current vs. historical data): ",
-                 posterior_control$pvalue))
+                 posterior_control$p_hat))
       cat("\n")
     }
 
@@ -243,7 +243,7 @@ setMethod("summary", signature(object = "bdpsurvival"), function(object){
   surv_print <- paste0(surv_est, " (",surv_CI[1], ", ", surv_CI[2],")")
 
   ### Output list
-  prior_for_treatment_group <- list(`Stochastic comparison (new vs historical data):  ` = posterior_treatment$pvalue,
+  prior_for_treatment_group <- list(`Stochastic comparison (new vs historical data):  ` = posterior_treatment$p_hat,
                                     `Discount function value:  `                        = posterior_treatment$alpha_discount,
                                     `Survival time:  `                                  = surv_time,
                                     `Median survival probability (95% CI):  `           = surv_print)

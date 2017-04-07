@@ -112,7 +112,7 @@ setMethod("print", signature(x = "bdpsurvival"), function(x){
   surv_print <- paste0(surv_est, " (",surv_CI[1], ", ", surv_CI[2],")")
 
   ### Output list
-  prior_for_treatment_group <- list(`Stochastic comparison (new vs historical data):  ` = posterior_treatment$pvalue,
+  prior_for_treatment_group <- list(`Stochastic comparison (new vs historical data):  ` = posterior_treatment$p_hat,
                                     `Discount function value:  `                        = posterior_treatment$alpha_discount,
                                     `Survival time:  `                                  = surv_time,
                                     `Median survival probability (95% CI):  `           = surv_print)

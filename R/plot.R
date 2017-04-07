@@ -423,14 +423,14 @@ setMethod("plot", signature(x = "bdpsurvival"), function(x){
   D1 <- data.frame(group = "Treatment",
                    y     = Loss_function_treatment,
                    x     = seq(0, 1, length.out=100))
-  D2 <- data.frame(group = "Treatment", pvalue = posterior_treatment$pvalue)
-  D3 <- data.frame(group = "Treatment", pvalue = posterior_treatment$alpha_discount)
+  D2 <- data.frame(group = "Treatment", p_hat = posterior_treatment$p_hat)
+  D3 <- data.frame(group = "Treatment", p_hat = posterior_treatment$alpha_discount)
 
 
   discountfun_plot <- ggplot() +
     geom_line(data = D1, aes_string(y = "y", x = "x", colour = "group"), size = 1) +
-    geom_vline(data = D2, aes_string(xintercept = "pvalue", colour = "group"), lty = 2) +
-    geom_hline(data=D3, aes_string(yintercept ="pvalue", colour="group"),lty=2)
+    geom_vline(data = D2, aes_string(xintercept = "p_hat", colour = "group"), lty = 2) +
+    geom_hline(data=D3, aes_string(yintercept ="p_hat", colour="group"),lty=2)
 
   discountfun_plot <- discountfun_plot +
     facet_wrap(~group, ncol = 1) +

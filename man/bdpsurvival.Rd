@@ -70,7 +70,7 @@ the following components:
    \itemize{
      \item{\code{alpha_discount}}{
        numeric. Alpha value, the weighting parameter of the historical data.}
-     \item{\code{pvalue}}{
+     \item{\code{p_hat}}{
        numeric. The posterior probability of the stochastic comparison
        between the current and historical data.}
      \item{\code{posterior}}{

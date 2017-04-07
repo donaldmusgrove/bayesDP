@@ -81,7 +81,7 @@
 #'    \itemize{
 #'      \item{\code{alpha_discount}}{
 #'        numeric. Alpha value, the weighting parameter of the historical data.}
-#'      \item{\code{pvalue}}{
+#'      \item{\code{p_hat}}{
 #'        numeric. The posterior probability of the stochastic comparison
 #'        between the current and historical data.}
 #'      \item{\code{posterior}}{
@@ -409,7 +409,7 @@ discount_function_survival <- function(S, S0, alpha_max, fix_alpha, a0, b0,
   }
 
   return(list(alpha_discount = alpha_discount,
-              pvalue         = p_test,
+              p_hat          = p_test,
               posterior_flat = hazard_post_aug_t,
               prior          = hazard_post_aug_t0))
 }
@@ -490,7 +490,7 @@ posterior_survival <- function(S, S0, alpha_max, fix_alpha, a0, b0, surv_time,
     breaks         = breaks)
 
     return(list(alpha_discount = alpha_discount$alpha_discount,
-                pvalue         = alpha_discount$pvalue,
+                p_hat          = alpha_discount$p_hat,
                 posterior      = posterior,
                 posterior_flat = alpha_discount$posterior_flat,
                 prior          = alpha_discount$prior))
