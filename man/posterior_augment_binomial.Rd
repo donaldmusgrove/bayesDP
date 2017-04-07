@@ -6,7 +6,7 @@
 \title{posterior_augment_binomial}
 \usage{
 posterior_augment_binomial(y = NULL, N = NULL, y0 = NULL, N0 = NULL,
-  alpha_max = 1, fix_alpha = FALSE, a0 = 1, b0 = 1,
+  alpha_discount = NULL, fix_alpha = FALSE, a0 = 1, b0 = 1,
   number_mcmc = 10000)
 }
 \arguments{
@@ -18,11 +18,6 @@ posterior_augment_binomial(y = NULL, N = NULL, y0 = NULL, N0 = NULL,
 
 \item{N0}{scalar. Sample size of the historical data.}
 
-\item{alpha_max}{scalar. Maximum weight the discount function can apply.
-Default is 1. For a two-arm trial, users may specify a vector of two values
-where the first value is used to weight the historical treatment group and
-the second value is used to weight the historical control group.}
-
 \item{fix_alpha}{logical. Fix alpha at alpha_max? Default value is FALSE.}
 
 \item{a0}{scalar. Prior value for the beta rate. Default is 1.}
@@ -31,6 +26,11 @@ the second value is used to weight the historical control group.}
 
 \item{number_mcmc}{scalar. Number of Markov Chain Monte Carlo (MCMC)
 simulations. Default is 10000.}
+
+\item{alpha_max}{scalar. Maximum weight the discount function can apply.
+Default is 1. For a two-arm trial, users may specify a vector of two values
+where the first value is used to weight the historical treatment group and
+the second value is used to weight the historical control group.}
 }
 \description{
 posterior_augment_binomial
