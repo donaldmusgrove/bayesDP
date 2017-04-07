@@ -3,10 +3,15 @@
 \name{final_binomial}
 \alias{final_binomial}
 \alias{final_binomial,ANY-method}
-\title{FILL IN}
+\title{final_binomial}
 \usage{
 final_binomial(posterior_treatment = NULL, posterior_control = NULL)
 }
+\arguments{
+\item{posterior_treatment}{posterior_treatment}
+
+\item{posterior_control}{posterior_control}
+}
 \description{
-FILL IN
+final_binomial
 }

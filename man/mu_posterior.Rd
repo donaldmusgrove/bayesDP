@@ -3,7 +3,7 @@
 \name{mu_posterior}
 \alias{mu_posterior}
 \alias{mu_posterior,ANY-method}
-\title{FILL IN}
+\title{mu_posterior}
 \usage{
 mu_posterior(mu = NULL, sigma = NULL, N = NULL, mu0 = NULL,
   sigma0 = NULL, N0 = NULL, alpha_max = 1, fix_alpha = FALSE,
@@ -11,5 +11,5 @@ mu_posterior(mu = NULL, sigma = NULL, N = NULL, mu0 = NULL,
   two_side = 1)
 }
 \description{
-FILL IN
+mu_posterior
 }

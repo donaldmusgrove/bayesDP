@@ -34,7 +34,6 @@
 #' @param b0 scalar. Prior value for the beta rate. Default is 1.
 #' @param two_side logical. Indicator of two-sided test for the discount
 #'   function. Default value is TRUE.
-#'
 #' @details \code{bdpbinomial} uses a two-stage approach for determining the
 #'   strength of historical data in estimation of a binomial count mean outcome.
 #'   In the first stage, a Weibull distribution function is used as a
@@ -380,8 +379,31 @@ setMethod("bdpbinomial",
 # - Need posterior_flat and prior inputs
 ################################################################################
 
-#' @title FILL IN
-#' @description FILL IN
+#' @title discount_function_binomial
+#' @description discount_function_binomial
+#' @param alpha_max scalar. Maximum weight the discount function can apply.
+#'   Default is 1. For a two-arm trial, users may specify a vector of two values
+#'   where the first value is used to weight the historical treatment group and
+#'   the second value is used to weight the historical control group.
+#' @param fix_alpha logical. Fix alpha at alpha_max? Default value is FALSE.
+#' @param number_mcmc scalar. Number of Markov Chain Monte Carlo (MCMC)
+#'   simulations. Default is 10000.
+#' @param weibull_scale scalar. Scale parameter of the Weibull discount function
+#'   used to compute alpha, the weight parameter of the historical data. Default
+#'   value is 0.135. For a two-arm trial, users may specify a vector of two values
+#'   where the first value is used to estimate the weight of the historical
+#'   treatment group and the second value is used to estimate the weight of the
+#'   historical control group.
+#' @param weibull_shape scalar. Shape parameter of the Weibull discount function
+#'   used to compute alpha, the weight parameter of the historical data. Default
+#'   value is 3. For a two-arm trial, users may specify a vector of two values
+#'   where the first value is used to estimate the weight of the historical
+#'   treatment group and the second value is used to estimate the weight of the
+#'   historical control group.
+#' @param two_side logical. Indicator of two-sided test for the discount
+#'   function. Default value is TRUE.
+#' @param posterior_flat posterior_flat
+#' @param prior prior
 #' @rdname discount_function_binomial
 #' @aliases discount_function_binomial,ANY-method
 #' @export discount_function_binomial
@@ -434,8 +456,22 @@ setMethod("discount_function_binomial",
 # Binomial: posterior augmentation for Binomial distribution
 ################################################################################
 
-#' @title FILL IN
-#' @description FILL IN
+#' @title posterior_augment_binomial
+#' @description posterior_augment_binomial
+#' @param y scalar. Number of events for the current data.
+#' @param N scalar. Sample size of the current data.
+#' @param y0 scalar. Number of events for the historical data.
+#' @param N0 scalar. Sample size of the historical data.
+#' @param alpha_max scalar. Maximum weight the discount function can apply.
+#'   Default is 1. For a two-arm trial, users may specify a vector of two values
+#'   where the first value is used to weight the historical treatment group and
+#'   the second value is used to weight the historical control group.
+#' @param fix_alpha logical. Fix alpha at alpha_max? Default value is FALSE.
+#' @param a0 scalar. Prior value for the beta rate. Default is 1.
+#' @param b0 scalar. Prior value for the beta rate. Default is 1.
+#' @param number_mcmc scalar. Number of Markov Chain Monte Carlo (MCMC)
+#'   simulations. Default is 10000.
+
 #' @rdname posterior_augment_binomial
 #' @aliases posterior_augment_binomial,ANY-method
 #' @export posterior_augment_binomial
@@ -491,8 +527,35 @@ setMethod("posterior_augment_binomial",
 ################################################################################
 
 
-#' @title FILL IN
-#' @description FILL IN
+#' @title posterior_binomial
+#' @description posterior_binomial
+#' @param y scalar. Number of events for the current data.
+#' @param N scalar. Sample size of the current data.
+#' @param y0 scalar. Number of events for the historical data.
+#' @param N0 scalar. Sample size of the historical data.
+#' @param alpha_max scalar. Maximum weight the discount function can apply.
+#'   Default is 1. For a two-arm trial, users may specify a vector of two values
+#'   where the first value is used to weight the historical treatment group and
+#'   the second value is used to weight the historical control group.
+#' @param fix_alpha logical. Fix alpha at alpha_max? Default value is FALSE.
+#' @param a0 scalar. Prior value for the beta rate. Default is 1.
+#' @param b0 scalar. Prior value for the beta rate. Default is 1.
+#' @param number_mcmc scalar. Number of Markov Chain Monte Carlo (MCMC)
+#'   simulations. Default is 10000.
+#' @param weibull_scale scalar. Scale parameter of the Weibull discount function
+#'   used to compute alpha, the weight parameter of the historical data. Default
+#'   value is 0.135. For a two-arm trial, users may specify a vector of two values
+#'   where the first value is used to estimate the weight of the historical
+#'   treatment group and the second value is used to estimate the weight of the
+#'   historical control group.
+#' @param weibull_shape scalar. Shape parameter of the Weibull discount function
+#'   used to compute alpha, the weight parameter of the historical data. Default
+#'   value is 3. For a two-arm trial, users may specify a vector of two values
+#'   where the first value is used to estimate the weight of the historical
+#'   treatment group and the second value is used to estimate the weight of the
+#'   historical control group.
+#' @param two_side logical. Indicator of two-sided test for the discount
+#'   function. Default value is TRUE.
 #' @rdname posterior_binomial
 #' @aliases posterior_binomial,ANY-method
 #' @export posterior_binomial
@@ -598,8 +661,10 @@ setMethod("posterior_binomial",
 # Binomial: create final result class
 # - If no control, only returns posterior info for the treatment data
 ################################################################################
-#' @title FILL IN
-#' @description FILL IN
+#' @title final_binomial
+#' @description final_binomial
+#' @param posterior_treatment posterior_treatment
+#' @param posterior_control posterior_control
 #' @rdname final_binomial
 #' @aliases final_binomial,ANY-method
 #' @export final_binomial

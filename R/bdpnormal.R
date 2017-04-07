@@ -53,7 +53,6 @@ NULL
 #'   simulations. Default is 10000.
 #' @param two_side scalar. Indicator of two-sided test for the discount
 #'   function. Default value is 1.
-#'
 #' @details \code{bdpnormal} uses a two-stage approach for determining the
 #'   strength of historical data in estimation of a mean outcome.  In the first
 #'   stage, a Weibull distribution function is used as a
@@ -412,8 +411,38 @@ setMethod("bdpnormal",
 ################################################################################
 # Produce prior data weight (scalar between 0 and 1) assuming a mu outcome     #
 ################################################################################
-#' @title FILL IN
-#' @description FILL IN
+#' @title Discount_function
+#' @description Discount_function
+#' @param mu scalar. Mean of the current data.
+#' @param sigma scalar. Standard deviation of the current data.
+#' @param N scalar. Number of observations of the current data.
+#' @param mu0 scalar. Mean of the historical data. Required
+#'   for single arm (OPC) trials.
+#' @param sigma0 scalar. Standard deviation of the historical treatment
+#'  group. Required for single arm (OPC) trials.
+#' @param N0 scalar. Number of observations of the historical treatment
+#'  group. Required for single arm (OPC) trials.
+#' @param alpha_max scalar. Maximum weight the discount function can apply.
+#'   Default is 1. For a two-arm trial, users may specify a vector of two values
+#'   where the first value is used to weight the historical treatment group and
+#'   the second value is used to weight the historical control group.
+#' @param fix_alpha logical. Fix alpha at alpha_max? Default value is FALSE.
+#' @param number_mcmc scalar. Number of Markov Chain Monte Carlo (MCMC)
+#'   simulations. Default is 10000.
+#' @param weibull_scale scalar. Scale parameter of the Weibull discount function
+#'   used to compute alpha, the weight parameter of the historical data. Default
+#'   value is 0.135. For a two-arm trial, users may specify a vector of two values
+#'   where the first value is used to estimate the weight of the historical
+#'   treatment group and the second value is used to estimate the weight of the
+#'   historical control group.
+#' @param weibull_shape scalar. Shape parameter of the Weibull discount function
+#'   used to compute alpha, the weight parameter of the historical data. Default
+#'   value is 3. For a two-arm trial, users may specify a vector of two values
+#'   where the first value is used to estimate the weight of the historical
+#'   treatment group and the second value is used to estimate the weight of the
+#'   historical control group.
+#' @param two_side scalar. Indicator of two-sided test for the discount
+#'   function. Default value is 1.
 #' @rdname Discount_function
 #' @aliases Discount_function,ANY-method
 #' @export Discount_function
@@ -481,8 +510,24 @@ setMethod("Discount_function",
 ################################################################################
 # Estimate posterior for mu given alpha_discount value                         #
 ################################################################################
-#' @title FILL IN
-#' @description FILL IN
+#' @title mu_post_aug
+#' @description mu_post_aug
+#' @param mu scalar. Mean of the current data.
+#' @param sigma scalar. Standard deviation of the current data.
+#' @param N scalar. Number of observations of the current data.
+#' @param mu0 scalar. Mean of the historical data. Required
+#'   for single arm (OPC) trials.
+#' @param sigma0 scalar. Standard deviation of the historical treatment
+#'  group. Required for single arm (OPC) trials.
+#' @param N0 scalar. Number of observations of the historical treatment
+#'  group. Required for single arm (OPC) trials.
+#' @param alpha_discount scalar. Maximum weight the discount function can apply.
+#'   Default is 1. For a two-arm trial, users may specify a vector of two values
+#'   where the first value is used to weight the historical treatment group and
+#'   the second value is used to weight the historical control group.
+#' @param fix_alpha logical. Fix alpha at alpha_max? Default value is FALSE.
+#' @param number_mcmc scalar. Number of Markov Chain Monte Carlo (MCMC)
+#'   simulations. Default is 10000.
 #' @rdname mu_post_aug
 #' @aliases mu_post_aug,ANY-method
 #' @export mu_post_aug
@@ -530,8 +575,8 @@ setMethod("mu_post_aug",
   ################################################################################
   # Combine discount function and posterior estimation into one function             #
   ################################################################################
-  #' @title FILL IN
-  #' @description FILL IN
+  #' @title mu_posterior
+  #' @description mu_posterior
   #' @rdname mu_posterior
   #' @aliases mu_posterior,ANY-method
   #' @export mu_posterior
@@ -611,8 +656,10 @@ setMethod("mu_post_aug",
   })
 
 
-#' @title FILL IN
-#' @description FILL IN
+#' @title final
+#' @description final
+#' @param posterior_treatment posterior_treatment
+#' @param posterior_control posterior_control
 #' @rdname final
 #' @aliases final,ANY-method
 #' @export final

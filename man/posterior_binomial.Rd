@@ -3,13 +3,53 @@
 \name{posterior_binomial}
 \alias{posterior_binomial}
 \alias{posterior_binomial,ANY-method}
-\title{FILL IN}
+\title{posterior_binomial}
 \usage{
 posterior_binomial(y = NULL, N = NULL, y0 = NULL, N0 = NULL,
   alpha_max = 1, fix_alpha = FALSE, a0 = 1, b0 = 1,
   number_mcmc = 10000, weibull_scale = 0.135, weibull_shape = 3,
   two_side = TRUE)
 }
+\arguments{
+\item{y}{scalar. Number of events for the current data.}
+
+\item{N}{scalar. Sample size of the current data.}
+
+\item{y0}{scalar. Number of events for the historical data.}
+
+\item{N0}{scalar. Sample size of the historical data.}
+
+\item{alpha_max}{scalar. Maximum weight the discount function can apply.
+Default is 1. For a two-arm trial, users may specify a vector of two values
+where the first value is used to weight the historical treatment group and
+the second value is used to weight the historical control group.}
+
+\item{fix_alpha}{logical. Fix alpha at alpha_max? Default value is FALSE.}
+
+\item{a0}{scalar. Prior value for the beta rate. Default is 1.}
+
+\item{b0}{scalar. Prior value for the beta rate. Default is 1.}
+
+\item{number_mcmc}{scalar. Number of Markov Chain Monte Carlo (MCMC)
+simulations. Default is 10000.}
+
+\item{weibull_scale}{scalar. Scale parameter of the Weibull discount function
+used to compute alpha, the weight parameter of the historical data. Default
+value is 0.135. For a two-arm trial, users may specify a vector of two values
+where the first value is used to estimate the weight of the historical
+treatment group and the second value is used to estimate the weight of the
+historical control group.}
+
+\item{weibull_shape}{scalar. Shape parameter of the Weibull discount function
+used to compute alpha, the weight parameter of the historical data. Default
+value is 3. For a two-arm trial, users may specify a vector of two values
+where the first value is used to estimate the weight of the historical
+treatment group and the second value is used to estimate the weight of the
+historical control group.}
+
+\item{two_side}{logical. Indicator of two-sided test for the discount
+function. Default value is TRUE.}
+}
 \description{
-FILL IN
+posterior_binomial
 }

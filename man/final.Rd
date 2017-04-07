@@ -3,10 +3,15 @@
 \name{final}
 \alias{final}
 \alias{final,ANY-method}
-\title{FILL IN}
+\title{final}
 \usage{
 final(posterior_treatment = NULL, posterior_control = NULL)
 }
+\arguments{
+\item{posterior_treatment}{posterior_treatment}
+
+\item{posterior_control}{posterior_control}
+}
 \description{
-FILL IN
+final
 }
