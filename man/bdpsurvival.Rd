@@ -18,8 +18,8 @@ historical. See "Details" for more information.}
 \item{data}{data frame. A data frame with columns 'time', 'status',
 'treatment', and historical.' See "Details" for required structure.}
 
-\item{breaks}{vector. Breaks (intervals) used to compose the breaks of the
-piecewise exponential model.}
+\item{breaks}{vector. Breaks (interval starts) used to compose the breaks of the
+piecewise exponential model. Do not include zero.}
 
 \item{a0}{scalar. Prior value for the gamma shape. Default is 1.}
 
@@ -170,3 +170,4 @@ summary(fitSurv)
 
 
 }
+

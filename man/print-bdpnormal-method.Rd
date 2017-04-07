@@ -3,26 +3,14 @@
 \docType{methods}
 \name{print,bdpnormal-method}
 \alias{print,bdpnormal-method}
-\alias{print,bdpnormal}
-\alias{print,bdpbinomial-method}
-\alias{print,bdpbinomial}
-\alias{print,bdpsurvival-method}
-\alias{print,bdpsurvival}
 \title{print}
 \usage{
 \S4method{print}{bdpnormal}(x)
-
-\S4method{print}{bdpbinomial}(x)
-
-\S4method{print}{bdpsurvival}(x)
 }
 \arguments{
 \item{x}{Result}
 }
 \description{
 normal print method
-
-binomial print method
-
-survival print method
 }
+

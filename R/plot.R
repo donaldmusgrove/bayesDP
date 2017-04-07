@@ -7,8 +7,6 @@
 #' @importFrom stats density is.empty.model median model.offset model.response pweibull quantile rbeta rgamma rnorm var vcov
 #' @param x Result
 #' @export
-#' @rdname plot-methods
-#' @aliases plot,bdpnormal,bdpnormal-method
 setMethod("plot", signature(x = "bdpnormal"), function(x){
   f <- x$f1
   posterior_treatment <- x$posterior_treatment
@@ -157,12 +155,13 @@ setMethod("plot", signature(x = "bdpnormal"), function(x){
 
 #' @title plot
 #' @description binomial plot method
+#' @import methods
 #' @importFrom utils head
+#' @importFrom ggplot2 aes_string ggtitle ylim guides guide_legend theme element_blank
 #' @importFrom graphics par
 #' @importFrom stats density is.empty.model median model.offset model.response pweibull quantile rbeta rgamma rnorm var vcov
+#' @param x Result
 #' @export
-#' @rdname plot-methods
-#' @aliases plot,bdpbinomial,bdpbinomial-method
 setMethod("plot", signature(x = "bdpbinomial"), function(x){
   f                   <- x$f1
   posterior_treatment <- x$posterior_treatment
@@ -328,12 +327,13 @@ setMethod("plot", signature(x = "bdpbinomial"), function(x){
 
 #' @title plot
 #' @description survival plot method
+#' @import methods
 #' @importFrom utils head
+#' @importFrom ggplot2 aes_string ggtitle ylim guides guide_legend theme element_blank
 #' @importFrom graphics par
 #' @importFrom stats density is.empty.model median model.offset model.response pweibull quantile rbeta rgamma rnorm var vcov
+#' @param x Result
 #' @export
-#' @rdname plot-methods
-#' @aliases plot,bdpsurvival,bdpsurvival-method
 setMethod("plot", signature(x = "bdpsurvival"), function(x){
   f                   <- x$f1
   posterior_treatment <- x$posterior_treatment
