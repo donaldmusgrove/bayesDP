@@ -9,7 +9,7 @@ bdpnormal(mu_t = NULL, sigma_t = NULL, N_t = NULL, mu0_t = NULL,
   sigma0_t = NULL, N0_t = NULL, mu_c = NULL, sigma_c = NULL,
   N_c = NULL, mu0_c = NULL, sigma0_c = NULL, N0_c = NULL,
   alpha_max = 1, fix_alpha = FALSE, weibull_scale = 0.135,
-  weibull_shape = 3, number_mcmc = 10000, two_side = 1)
+  weibull_shape = 3, number_mcmc = 10000, two_side = TRUE)
 }
 \arguments{
 \item{mu_t}{scalar. Mean of the current treatment group.}
@@ -66,8 +66,8 @@ historical control group.}
 \item{number_mcmc}{scalar. Number of Markov Chain Monte Carlo (MCMC)
 simulations. Default is 10000.}
 
-\item{two_side}{scalar. Indicator of two-sided test for the discount
-function. Default value is 1.}
+\item{two_side}{logical. Indicator of two-sided test for the discount
+function. Default value is TRUE.}
 }
 \value{
 \code{bdpnormal} returns an object of class "bdpnormal".
