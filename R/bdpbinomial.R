@@ -375,15 +375,39 @@ setMethod("bdpbinomial",
 })
 
 
-
-
 ################################################################################
 # Binomial: estimate weight for prior data assuming a binomial outcome
 # - Need posterior_flat and prior inputs
 ################################################################################
-discount_function_binomial <- function(alpha_max, fix_alpha, number_mcmc,
-                                       weibull_shape, weibull_scale, two_side,
-                                       posterior_flat, prior){
+
+#' @title FILL IN
+#' @description FILL IN
+#' @rdname discount_function_binomial
+#' @aliases discount_function_binomial,ANY-method
+#' @export discount_function_binomial
+
+setGeneric("discount_function_binomial",
+           function(alpha_max      = 1,
+                    fix_alpha      = FALSE,
+                    number_mcmc    = 10000,
+                    weibull_scale  = 0.135,
+                    weibull_shape  = 3,
+                    two_side       = TRUE,
+                    posterior_flat = NULL,
+                    prior          = NULL){
+             standardGeneric("discount_function_binomial")
+           })
+
+setMethod("discount_function_binomial",
+          signature(),
+          function(alpha_max      = 1,
+                   fix_alpha      = FALSE,
+                   number_mcmc    = 10000,
+                   weibull_scale  = 0.135,
+                   weibull_shape  = 3,
+                   two_side       = TRUE,
+                   posterior_flat = NULL,
+                   prior          = NULL){
 
   ### Test of model vs real
   p_test <- mean(posterior_flat < prior)   # larger is higher failure
@@ -402,15 +426,44 @@ discount_function_binomial <- function(alpha_max, fix_alpha, number_mcmc,
 
   return(list(alpha_discount  = alpha_discount,
               pvalue          = p_test))
-}
+})
 
 
 
 ################################################################################
 # Binomial: posterior augmentation for Binomial distribution
 ################################################################################
-posterior_augment_binomial <- function(y, N, y0, N0, alpha_discount, a0, b0,
-                                       number_mcmc){
+
+#' @title FILL IN
+#' @description FILL IN
+#' @rdname posterior_augment_binomial
+#' @aliases posterior_augment_binomial,ANY-method
+#' @export posterior_augment_binomial
+
+setGeneric("posterior_augment_binomial",
+           function(y             = NULL,
+                    N             = NULL,
+                    y0            = NULL,
+                    N0            = NULL,
+                    alpha_max     = 1,
+                    fix_alpha     = FALSE,
+                    a0            = 1,
+                    b0            = 1,
+                    number_mcmc   = 10000){
+             standardGeneric("posterior_augment_binomial")
+           })
+
+setMethod("posterior_augment_binomial",
+          signature(),
+          function(y             = NULL,
+                   N             = NULL,
+                   y0            = NULL,
+                   N0            = NULL,
+                   alpha_max     = 1,
+                   fix_alpha     = FALSE,
+                   a0            = 1,
+                   b0            = 1,
+                   number_mcmc   = 10000){
 
   if(!is.null(alpha_discount)){
     effective_N0 <- N0 * alpha_discount
@@ -429,16 +482,50 @@ posterior_augment_binomial <- function(y, N, y0, N0, alpha_discount, a0, b0,
 
   post_aug <- rbeta(number_mcmc, a_post_aug, b_post_aug)
   return(post_aug)
-}
+})
 
 
 
 ################################################################################
 # Binomial: combine discount function and posterior estimation into one function
 ################################################################################
-posterior_binomial <- function(y, N, y0, N0, alpha_max, fix_alpha, a0, b0,
-                               number_mcmc, weibull_shape, weibull_scale,
-                               two_side){
+
+
+#' @title FILL IN
+#' @description FILL IN
+#' @rdname posterior_binomial
+#' @aliases posterior_binomial,ANY-method
+#' @export posterior_binomial
+setGeneric("posterior_binomial",
+           function(y             = NULL,
+                    N             = NULL,
+                    y0            = NULL,
+                    N0            = NULL,
+                    alpha_max     = 1,
+                    fix_alpha     = FALSE,
+                    a0            = 1,
+                    b0            = 1,
+                    number_mcmc   = 10000,
+                    weibull_scale = 0.135,
+                    weibull_shape = 3,
+                    two_side      = TRUE){
+  standardGeneric("posterior_binomial")
+})
+
+setMethod("posterior_binomial",
+          signature(),
+          function(y             = NULL,
+                   N             = NULL,
+                   y0            = NULL,
+                   N0            = NULL,
+                   alpha_max     = 1,
+                   fix_alpha     = FALSE,
+                   a0            = 1,
+                   b0            = 1,
+                   number_mcmc   = 10000,
+                   weibull_scale = 0.135,
+                   weibull_shape = 3,
+                   two_side      = TRUE){
 
   ### Compute posterior(s) of current (flat) and historical (prior) data
   ### with non-informative priors
@@ -502,7 +589,7 @@ posterior_binomial <- function(y, N, y0, N0, alpha_max, fix_alpha, a0, b0,
               N               = N,
               y0              = y0,
               N0              = N0))
-}
+})
 
 
 
@@ -511,7 +598,21 @@ posterior_binomial <- function(y, N, y0, N0, alpha_max, fix_alpha, a0, b0,
 # Binomial: create final result class
 # - If no control, only returns posterior info for the treatment data
 ################################################################################
-final_binomial <- function(posterior_treatment, posterior_control=NULL){
+#' @title FILL IN
+#' @description FILL IN
+#' @rdname final_binomial
+#' @aliases final_binomial,ANY-method
+#' @export final_binomial
+setGeneric("final_binomial",
+           function(posterior_treatment = NULL,
+                    posterior_control   = NULL){
+    standardGeneric("final_binomial")
+  })
+
+  setMethod("final_binomial",
+            signature(),
+            function(posterior_treatment = NULL,
+                     posterior_control   = NULL){
 
   density_post_treatment  <- density(posterior_treatment$posterior,
                                      adjust = .5)
@@ -567,4 +668,4 @@ final_binomial <- function(posterior_treatment, posterior_control=NULL){
                 comparison_posterior    = comparison_posterior))
   }
 
-}
+})

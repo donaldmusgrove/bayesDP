@@ -412,8 +412,6 @@ setMethod("bdpnormal",
 ################################################################################
 # Produce prior data weight (scalar between 0 and 1) assuming a mu outcome     #
 ################################################################################
-
-
 #' @title FILL IN
 #' @description FILL IN
 #' @rdname Discount_function
@@ -481,7 +479,7 @@ setMethod("Discount_function",
 
 
 ################################################################################
-# Estimate posterior for mu given alpha_discount value                             #
+# Estimate posterior for mu given alpha_discount value                         #
 ################################################################################
 #' @title FILL IN
 #' @description FILL IN
