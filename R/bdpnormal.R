@@ -51,8 +51,8 @@ NULL
 #'   historical control group.
 #' @param number_mcmc scalar. Number of Markov Chain Monte Carlo (MCMC)
 #'   simulations. Default is 10000.
-#' @param two_side scalar. Indicator of two-sided test for the discount
-#'   function. Default value is 1.
+#' @param two_side logical. Indicator of two-sided test for the discount
+#'   function. Default value is TRUE.
 #' @details \code{bdpnormal} uses a two-stage approach for determining the
 #'   strength of historical data in estimation of a mean outcome.  In the first
 #'   stage, a Weibull distribution function is used as a
@@ -199,7 +199,7 @@ setGeneric("bdpnormal",
                     weibull_scale = 0.135,
                     weibull_shape = 3,
                     number_mcmc   = 10000,
-                    two_side      = 1){
+                    two_side      = TRUE){
              standardGeneric("bdpnormal")
            })
 
@@ -222,7 +222,7 @@ setMethod("bdpnormal",
                    weibull_scale = 0.135,
                    weibull_shape = 3,
                    number_mcmc   = 10000,
-                   two_side      = 1){
+                   two_side      = TRUE){
 
   ################################################################################
   # Check Input                                                                  #
@@ -231,7 +231,7 @@ setMethod("bdpnormal",
   intent <- c()
   if(length(mu_t + sigma_t + N_t) != 0){
     intent <- c(intent,"current treatment")
-    cat("Current Treatment\n")
+    #cat("Current Treatment\n")
   }else{
     if(is.null(mu_t) == TRUE){
       cat("mu_t missing\n")
@@ -247,7 +247,7 @@ setMethod("bdpnormal",
 
   if(length(mu0_t + sigma0_t + N0_t) != 0){
     intent <- c(intent,"historical treatment")
-    cat("Historical Treatment\n")
+    #cat("Historical Treatment\n")
   }else{
     if(length(c(mu0_t, sigma0_t, N0_t)) > 0){
       if(is.null(mu0_t) == TRUE){
@@ -265,7 +265,7 @@ setMethod("bdpnormal",
 
   if(length(mu_c + sigma_c + N_c) != 0){
     intent <- c(intent,"current control")
-    cat("Current Control\n")
+    #cat("Current Control\n")
   }else{
     if(length(c(mu_c, sigma_c, N_c)) > 0){
       if(is.null(mu_c) == TRUE){
@@ -283,7 +283,7 @@ setMethod("bdpnormal",
 
   if(length(mu0_c + sigma0_c + N0_c) != 0){
     intent <- c(intent,"historical control")
-    cat("Historical Contro\nl")
+    #cat("Historical Contro\nl")
   }else{
     if(length(c(mu0_c, sigma0_c, N0_c)) > 0){
       if(is.null(mu0_c) == TRUE){
@@ -299,13 +299,12 @@ setMethod("bdpnormal",
     }
   }
 
-  if(length(mu_c + sigma_c + N_c + mu0_c  + sigma0_c + N0_c)!=0){
+  if(!is.null(N_c) | !is.null(N0_c)){
     arm2 <- TRUE
-    #print("Assuming 2 arm normal.")
   }else{
     arm2 <- FALSE
-    #print("Assuming 1 arm normal.")
   }
+
 
   ##############################################################################
   # Quick check, if alpha_max, weibull_scale, or weibull_shape have length 1,
@@ -328,7 +327,7 @@ setMethod("bdpnormal",
   # Results                                                                      #
   ################################################################################
 
-  posterior_treatment <- mu_posterior(
+  posterior_treatment <- posterior_normal(
     mu            = mu_t,
     sigma         = sigma_t,
     N             = N_t,
@@ -343,8 +342,8 @@ setMethod("bdpnormal",
     two_side      = two_side)
 
 
-  if (arm2 == TRUE){
-    posterior_control <- mu_posterior(
+  if (arm2){
+    posterior_control <- posterior_normal(
       mu            = mu_c,
       sigma         = sigma_c,
       N             = N_c,
@@ -360,12 +359,12 @@ setMethod("bdpnormal",
   }
 
   if (arm2 ==  TRUE){
-    f1 <- final(posterior_treatment = posterior_treatment,
-                posterior_control = posterior_control)
+    f1 <- final_normal(posterior_treatment = posterior_treatment,
+                       posterior_control = posterior_control)
   }
   else{
-    f1 <- final(posterior_treatment = posterior_treatment,
-                posterior_control   = NULL)
+    f1 <- final_normal(posterior_treatment = posterior_treatment,
+                       posterior_control   = NULL)
   }
 
   args1 <- list(mu_t          = mu_t,
@@ -408,303 +407,181 @@ setMethod("bdpnormal",
 })
 
 
-################################################################################
-# Produce prior data weight (scalar between 0 and 1) assuming a mu outcome     #
-################################################################################
-#' @title Discount_function
-#' @description Discount_function
-#' @param mu scalar. Mean of the current data.
-#' @param sigma scalar. Standard deviation of the current data.
-#' @param N scalar. Number of observations of the current data.
-#' @param mu0 scalar. Mean of the historical data. Required
-#'   for single arm (OPC) trials.
-#' @param sigma0 scalar. Standard deviation of the historical treatment
-#'  group. Required for single arm (OPC) trials.
-#' @param N0 scalar. Number of observations of the historical treatment
-#'  group. Required for single arm (OPC) trials.
-#' @param alpha_max scalar. Maximum weight the discount function can apply.
-#'   Default is 1. For a two-arm trial, users may specify a vector of two values
-#'   where the first value is used to weight the historical treatment group and
-#'   the second value is used to weight the historical control group.
-#' @param fix_alpha logical. Fix alpha at alpha_max? Default value is FALSE.
-#' @param number_mcmc scalar. Number of Markov Chain Monte Carlo (MCMC)
-#'   simulations. Default is 10000.
-#' @param weibull_scale scalar. Scale parameter of the Weibull discount function
-#'   used to compute alpha, the weight parameter of the historical data. Default
-#'   value is 0.135. For a two-arm trial, users may specify a vector of two values
-#'   where the first value is used to estimate the weight of the historical
-#'   treatment group and the second value is used to estimate the weight of the
-#'   historical control group.
-#' @param weibull_shape scalar. Shape parameter of the Weibull discount function
-#'   used to compute alpha, the weight parameter of the historical data. Default
-#'   value is 3. For a two-arm trial, users may specify a vector of two values
-#'   where the first value is used to estimate the weight of the historical
-#'   treatment group and the second value is used to estimate the weight of the
-#'   historical control group.
-#' @param two_side scalar. Indicator of two-sided test for the discount
-#'   function. Default value is 1.
-#' @rdname Discount_function
-#' @aliases Discount_function,ANY-method
-#' @export Discount_function
-setGeneric("Discount_function",
-           function(mu          = NULL,
-                    sigma       = NULL,
-                    N           = NULL,
-                    mu0         = NULL,
-                    sigma0      = NULL,
-                    N0          = NULL,
-                    alpha_max     = 1,
-                    fix_alpha     = FALSE,
-                    number_mcmc   = 10000,
-                    weibull_scale = 0.135,
-                    weibull_shape = 3,
-                    two_side      = 1){
-             standardGeneric("Discount_function")
-           })
-
-setMethod("Discount_function",
-          signature(),
-          function(mu          = NULL,
-                   sigma       = NULL,
-                   N           = NULL,
-                   mu0         = NULL,
-                   sigma0      = NULL,
-                   N0          = NULL,
-                   alpha_max     = 1,
-                   fix_alpha     = FALSE,
-                   number_mcmc   = 10000,
-                   weibull_scale = 0.135,
-                   weibull_shape = 3,
-                   two_side      = 1){
-
-            ### mu for using flat prior
-            sigma2_post_flat <- 1/rgamma(number_mcmc, (N - 1)/2, ((N - 1) * sigma^2)/2)
-            mu_post_flat     <- rnorm(number_mcmc, mu, (sigma2_post_flat/((N-1)+1))^0.5)
-
-            ### Prior model (flat priors)
-            sigma2_post_flat0 <- 1/rgamma(number_mcmc, (N0-1)/2, ((N0-1)*sigma0^2)/2)
-            mu_post_flat0     <- rnorm(number_mcmc, mu0, (sigma2_post_flat0/((N0-1)+1))^0.5)
-
-            ### Test of model vs real
-            p_test <- mean(mu_post_flat < mu_post_flat0)  # larger is higher failure
-
-            ### Number of effective sample size given shape and scale discount function
-            if(fix_alpha == TRUE){
-              alpha_discount <- alpha_max
-            } else{
-              if (two_side == 0) {
-                alpha_discount <- pweibull(p_test, shape=weibull_shape, scale=weibull_scale)*alpha_max
-              } else if (two_side == 1){
-                p_test1    <- ifelse(p_test > 0.5, 1 - p_test, p_test)
-                alpha_discount <- pweibull(p_test1, shape=weibull_shape, scale=weibull_scale)*alpha_max
-              }
-            }
-
-            return(list(alpha_discount = alpha_discount,
-                        pvalue         = p_test,
-                        mu_post_flat   = mu_post_flat,
-                        mu0            = mu_post_flat0))
-          })
 
 
 ################################################################################
-# Estimate posterior for mu given alpha_discount value                         #
+# Normal posterior estimation
+# 1) Estimate the discount function (if current+historical data both present)
+# 2) Estimate the posterior of the augmented data
 ################################################################################
-#' @title mu_post_aug
-#' @description mu_post_aug
-#' @param mu scalar. Mean of the current data.
-#' @param sigma scalar. Standard deviation of the current data.
-#' @param N scalar. Number of observations of the current data.
-#' @param mu0 scalar. Mean of the historical data. Required
-#'   for single arm (OPC) trials.
-#' @param sigma0 scalar. Standard deviation of the historical treatment
-#'  group. Required for single arm (OPC) trials.
-#' @param N0 scalar. Number of observations of the historical treatment
-#'  group. Required for single arm (OPC) trials.
-#' @param alpha_discount scalar. Maximum weight the discount function can apply.
-#'   Default is 1. For a two-arm trial, users may specify a vector of two values
-#'   where the first value is used to weight the historical treatment group and
-#'   the second value is used to weight the historical control group.
-#' @param fix_alpha logical. Fix alpha at alpha_max? Default value is FALSE.
-#' @param number_mcmc scalar. Number of Markov Chain Monte Carlo (MCMC)
-#'   simulations. Default is 10000.
-#' @rdname mu_post_aug
-#' @aliases mu_post_aug,ANY-method
-#' @export mu_post_aug
-setGeneric("mu_post_aug",
-           function(mu          = NULL,
-                    sigma       = NULL,
-                    N           = NULL,
-                    mu0         = NULL,
-                    sigma0      = NULL,
-                    N0          = NULL,
-                    alpha_discount = NULL,
-                    number_mcmc = 10000){
-             standardGeneric("mu_post_aug")
-           })
+posterior_normal <- function(mu, sigma, N, mu0, sigma0, N0, alpha_max,
+                             fix_alpha, number_mcmc, weibull_scale,
+                             weibull_shape, two_side){
 
-setMethod("mu_post_aug",
-          signature(),
-          function(mu          = NULL,
-                   sigma       = NULL,
-                   N           = NULL,
-                   mu0         = NULL,
-                   sigma0      = NULL,
-                   N0          = NULL,
-                   alpha_discount = NULL,
-                   number_mcmc = 10000){
-  if (is.null(N0) == FALSE){
-    effective_N0 <- N0 * alpha_discount
-    sigma2_post  <- 1/rgamma(number_mcmc, (N-1)/2, ((N-1)*sigma^2)/2)
-    sigma2_post0 <- 1/rgamma(number_mcmc, (N0-1)/2, ((N0-1)*sigma0^2)/2)
-
-    mu1 <- (sigma2_post0*N*mu + sigma2_post*effective_N0*mu0)/(N*sigma2_post0 +
-                                                                 sigma2_post*effective_N0)
-    var_mu <- (sigma2_post*sigma2_post0)/(N*sigma2_post0 +
-                                            sigma2_post*effective_N0)
-  } else {
-    var_mu <- 1/rgamma(number_mcmc, (N - 1)/2, ((N - 1) * sigma^2)/2)
-    mu1    <- mu
-
+  # Compute posterior(s) of current (flat) and historical (prior) data
+  # with non-informative priors
+  # Current data:
+  if(!is.null(N)){
+    posterior_flat_sigma2 <- 1/rgamma(number_mcmc, (N - 1)/2, ((N - 1) * sigma^2)/2)
+    posterior_flat_mu     <- rnorm(number_mcmc, mu, (posterior_flat_sigma2/((N-1)+1))^0.5)
+  } else{
+    posterior_flat_mu <- posterior_flat_sigma2 <- NULL
   }
-  mu_post <- rnorm(number_mcmc, mu1, sqrt(var_mu))
-  return(mu_post)
-})
 
+  # Historical data:
+  if(!is.null(N0)){
+    prior_sigma2 <- 1/rgamma(number_mcmc, (N0-1)/2, ((N0-1)*sigma0^2)/2)
+    prior_mu     <- rnorm(number_mcmc, mu0, (prior_sigma2/((N0-1)+1))^0.5)
+  } else{
+    prior_mu  <- prior_sigma2 <- NULL
+  }
 
-  ################################################################################
-  # Combine discount function and posterior estimation into one function             #
-  ################################################################################
-  #' @title mu_posterior
-  #' @description mu_posterior
-  #' @rdname mu_posterior
-  #' @aliases mu_posterior,ANY-method
-  #' @export mu_posterior
-  setGeneric("mu_posterior",
-             function(mu          = NULL,
-                      sigma       = NULL,
-                      N           = NULL,
-                      mu0         = NULL,
-                      sigma0      = NULL,
-                      N0          = NULL,
-                      alpha_max     = 1,
-                      fix_alpha     = FALSE,
-                      number_mcmc   = 10000,
-                      weibull_scale = 0.135,
-                      weibull_shape = 3,
-                      two_side      = 1){
-               standardGeneric("mu_posterior")
-             })
+  ##############################################################################
+  # Discount function
+  ##############################################################################
+  ### Compute stochastic comparison and alpha discount only if both
+  ### N and N0 are present (i.e., current & historical data are present)
+  if(!is.null(N) & !is.null(N0)){
 
-  setMethod("mu_posterior",
-            signature(),
-            function(mu          = NULL,
-                     sigma       = NULL,
-                     N           = NULL,
-                     mu0         = NULL,
-                     sigma0      = NULL,
-                     N0          = NULL,
-                     alpha_max     = 1,
-                     fix_alpha     = FALSE,
-                     number_mcmc   = 10000,
-                     weibull_scale = 0.135,
-                     weibull_shape = 3,
-                     two_side      = 1){
-    if (is.null(N0) == FALSE){
-      alpha_discount <- Discount_function(mu    = mu,
-                                  sigma         = sigma,
-                                  N             = N,
-                                  mu0           = mu0,
-                                  sigma0        = sigma0,
-                                  N0            = N0,
-                                  alpha_max     = alpha_max,
-                                  fix_alpha     = fix_alpha,
-                                  number_mcmc   = number_mcmc,
-                                  weibull_shape = weibull_shape,
-                                  weibull_scale = weibull_scale,
-                                  two_side      = two_side)
+    ### Test of model vs real
+    p_test <- mean(posterior_flat_mu < prior_mu)   # larger is higher failure
 
-      mu_posterior <- mu_post_aug(mu             = mu,
-                                  sigma          = sigma,
-                                  N              = N,
-                                  mu0            = mu0,
-                                  sigma0         = sigma0,
-                                  N0             = N0,
-                                  alpha_discount = alpha_discount$alpha_discount,
-                                  number_mcmc    = number_mcmc)
-    } else {
-      mu_posterior <- mu_post_aug(mu             = mu,
-                                  sigma          = sigma,
-                                  N              = N,
-                                  mu0            = mu0,
-                                  sigma0         = sigma0,
-                                  N0             = N0,
-                                  alpha_discount = 0,
-                                  number_mcmc    = number_mcmc)
-
-      alpha_discount <- list(alpha_discount = 0,
-                         pvalue             = 0,
-                         mu0                = rnorm(100),
-                         mu_post_flat       = mu_posterior)
+    ### Number of effective sample size given shape and scale discount function
+    if(fix_alpha == TRUE){
+      alpha_discount <- alpha_max
+    } else{
+      if (!two_side) {
+        alpha_discount <- pweibull(p_test, shape=weibull_shape,
+                                   scale=weibull_scale)*alpha_max
+      } else if (two_side){
+        p_test1    <- ifelse(p_test > 0.5, 1 - p_test, p_test)
+        alpha_discount <- pweibull(p_test1, shape=weibull_shape,
+                                   scale=weibull_scale)*alpha_max
+      }
     }
+    pvalue <- p_test
 
-    return(list(alpha_discount    = alpha_discount$alpha_discount,
-                pvalue            = alpha_discount$pvalue,
-                mu_posterior      = mu_posterior,
-                mu_posterior_flat = alpha_discount$mu_post_flat,
-                mu_prior          = alpha_discount$mu0))
-  })
+  } else{
+    alpha_discount <- NULL
+    pvalue         <- NULL
+  }
 
 
-#' @title final
-#' @description final
+  ##############################################################################
+  # Posterior augmentation
+  # - If current or historical data are missing, this will not augment but
+  #   will return the posterior of the non-missing data (with flat prior)
+  ##############################################################################
+  ### If only the historical data is present, compute posterior on historical
+  if(is.null(N0) & !is.null(N)){
+    posterior_sigma2 <- posterior_flat_sigma2
+    posterior_mu     <- rnorm(number_mcmc, posterior_flat_mu, sqrt(posterior_sigma2))
+
+  } else if(!is.null(N0) & is.null(N)){
+    posterior_sigma2 <- prior_sigma2
+    posterior_mu     <- rnorm(number_mcmc, prior_mu, sqrt(posterior_sigma2))
+
+  } else if(!is.null(N0) & !is.null(N)){
+    effective_N0 <- N0 * alpha_discount
+
+    posterior_mu0 <- prior_sigma2*N*mu + posterior_flat_sigma2*effective_N0*mu0
+    posterior_mu0 <- posterior_mu0 / (N*prior_sigma2 + posterior_flat_sigma2*effective_N0)
+
+    posterior_sigma2 <- posterior_flat_sigma2*prior_sigma2
+    posterior_sigma2 <- posterior_sigma2 / (N*prior_sigma2 + posterior_flat_sigma2*effective_N0)
+
+    posterior_mu     <- rnorm(number_mcmc, posterior_mu0, sqrt(posterior_sigma2))
+  }
+
+
+  return(list(alpha_discount        = alpha_discount,
+              pvalue                = pvalue,
+              posterior_mu          = posterior_mu,
+              posterior_sigma2      = posterior_sigma2,
+              posterior_flat_mu     = posterior_flat_mu,
+              posterior_flat_sigma2 = posterior_flat_sigma2,
+              prior_mu              = prior_mu,
+              prior_sigma2          = prior_sigma2))
+}
+
+
+
+
+
+#' @title final_normal
+#' @description final_normal
 #' @param posterior_treatment posterior_treatment
 #' @param posterior_control posterior_control
-#' @rdname final
-#' @aliases final,ANY-method
-#' @export final
-setGeneric("final",
+#' @rdname final_normal
+#' @aliases final_normal,ANY-method
+#' @export final_normal
+setGeneric("final_normal",
            function(posterior_treatment = NULL,
                     posterior_control   = NULL){
-             standardGeneric("final")
+             standardGeneric("final_normal")
            })
 
-setMethod("final",
+setMethod("final_normal",
           signature(),
           function(posterior_treatment = NULL,
                    posterior_control   = NULL){
 
-    if (is.null(posterior_control) == FALSE){
-      density_post_control  <- density(posterior_control$mu_posterior,
-                                   adjust = 0.5)
-      density_flat_control  <- density(posterior_control$mu_posterior_flat,
-                                   adjust = 0.5)
-      density_prior_control <- density(posterior_control$mu_prior,
-                                   adjust = 0.5)
+  # Create plotting densities for the treatment group
+  density_post_treatment  <- density(posterior_treatment$posterior_mu,
+                                     adjust = 0.5)
+
+  if(!is.null(posterior_treatment$posterior_flat_mu)){
+    density_flat_treatment  <- density(posterior_treatment$posterior_flat_mu,
+                                       adjust = .5)
+  } else{
+    density_flat_treatment <- NULL
+  }
+
+
+  if(!is.null(posterior_treatment$prior_mu)){
+    density_prior_treatment <- density(posterior_treatment$prior_mu,
+                                       adjust = .5)
+  } else{
+    density_prior_treatment <- NULL
+  }
+
+
+  # If no controls are present, output a list with above densities
+  # else, append control densities
+  if(is.null(posterior_control)){
+    treatment_posterior <- posterior_treatment$posterior_mu
+
+    return(list(density_post_treatment  = density_post_treatment,
+                density_flat_treatment  = density_flat_treatment,
+                density_prior_treatment = density_prior_treatment,
+                treatment_posterior     = treatment_posterior))
+  } else{
+    density_post_control  <- density(posterior_control$posterior_mu,
+                                     adjust = .5)
+
+    if(!is.null(posterior_control$posterior_flat_mu)){
+      density_flat_control  <- density(posterior_control$posterior_flat_mu,
+                                       adjust = .5)
+    } else{
+      density_flat_control <- NULL
     }
 
-    density_post_treatment  <- density(posterior_treatment$mu_posterior,
-                              adjust = 0.5)
-    density_flat_treatment  <- density(posterior_treatment$mu_posterior_flat,
-                              adjust = 0.5)
-    density_prior_treatment <- density(posterior_treatment$mu_prior,
-                              adjust = 0.5)
+    if(!is.null(posterior_control$prior_mu)){
+      density_prior_control <- density(posterior_control$prior_mu,
+                                       adjust = .5)
+    } else{
+      density_prior_control <- NULL
+    }
 
-    TestMinusControl_post <- posterior_treatment$mu_posterior - posterior_control$mu_posterior
+    comparison_posterior <- posterior_treatment$posterior_mu - posterior_control$posterior_mu
 
-    if (is.null(posterior_control) == FALSE){
     return(list(density_post_control    = density_post_control,
                 density_flat_control    = density_flat_control,
                 density_prior_control   = density_prior_control,
                 density_post_treatment  = density_post_treatment,
                 density_flat_treatment  = density_flat_treatment,
                 density_prior_treatment = density_prior_treatment,
-                TestMinusControl_post   = TestMinusControl_post))
-    }
-    else{
-    return(list(density_post_treatment  = density_post_treatment,
-                density_flat_treatment  = density_flat_treatment,
-                density_prior_treatment = density_prior_treatment,
-                TestMinusControl_post   = TestMinusControl_post))
-    }
-  })
+                comparison_posterior    = comparison_posterior))
+  }
+
+})

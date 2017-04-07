@@ -7,51 +7,106 @@
 #' @param object Result
 #' @export
 setMethod("summary", signature(object = "bdpnormal"), function(object){
-  f <- object$f1
+  f                   <- object$f1
+  arm2                <- object$args$arm2
   posterior_treatment <- object$posterior_treatment
-  posterior_control <- object$posterior_control
-  two_side <- object$args1$two_side
-  N0_t <- object$args1$N0_t
-  N0_c <- object$args1$N0_c
+  posterior_control   <- object$posterior_control
+  two_side            <- object$args1$two_side
+  mu_t                <- object$args1$mu_t
+  sigma_t             <- object$args1$sigma_t
+  N_t                 <- object$args1$N_t
+  mu0_t               <- object$args1$mu0_t
+  sigma0_t            <- object$args1$sigma0_t
+  N0_t                <- object$args1$N0_t
+  mu_c                <- object$args1$mu_c
+  sigma_c             <- object$args1$sigma_c
+  N_c                 <- object$args1$N_c
+  mu0_c               <- object$args1$mu0_c
+  sigma0_c            <- object$args1$sigma0_c
+  N0_c                <- object$args1$N0_c
 
-  if(is.null(N0_t) == FALSE){
-    ###Format treatment mean output
-    mean_CI_t    <- round(quantile(posterior_treatment$mu_posterior, prob=c(0.025, 0.975)),4)
-    mean_est_t   <- round(median(posterior_treatment$mu_posterior),4)
-    mean_print_t <- paste0(mean_est_t, " (",mean_CI_t[1], ", ", mean_CI_t[2],")")
+  if(!arm2){
+    # Format treatment mean output
+    mean_CI_t  <- round(quantile(posterior_treatment$posterior_mu, prob=c(0.025, 0.975)),4)
+    mean_est_t <- round(median(posterior_treatment$posterior_mu),4)
 
-    prior_for_treatment_group <- list(
-      `Stochastic comparison - treatment (new vs historical data):  ` = posterior_treatment$pvalue,
-      `Discount function value - treatment:  `                        = posterior_treatment$alpha_discount,
-      `Sample size of historical - treatment:  `                      = N0_t,
-      `Mean posterior - treatment (95% CI):  `                        = mean_print_t
-    )
+    cat("\n")
+    cat("    One-armed bdp normal\n\n")
+    cat("data:\n")
+    cat(paste0("  Current treatment: mu_t = ",mu_t,", sigma_t = ", sigma_t, ", N_t = ", N_t))
+    cat("\n")
+    if(!is.null(N0_t)){
+      cat(paste0("  Historical treatment: mu0_t = ",mu0_t,", sigma0_t = ",
+                 sigma0_t, ", N0_t = ", N0_t))
+      cat("\n")
+      cat(paste0("Stochastic comparison - treatment (current vs. historical data): ",
+                 posterior_treatment$pvalue))
+      cat("\n")
+      cat(paste0("Discount function value - treatment: ", posterior_treatment$alpha_discount))
+      cat("\n")
+    }
+    cat("95 percent confidence interval: \n")
+    cat(paste0(" ",mean_CI_t))
+    cat("\n")
+    cat("augmented sample estimate:\n")
+    cat("mean of treatment group\n")
+    cat(paste0(" ",mean_est_t))
+    cat("\n")
+  } else{
+    mean_est_t <- format(round(median(posterior_treatment$posterior_mu),2), nsmall = 2)
+    mean_est_c <- format(round(median(posterior_control$posterior_mu),2), nsmall = 2)
+    comp_CI    <- round(quantile(f$comparison_posterior, prob=c(0.025, 0.975)),4)
+    cat("\n")
+    cat("    Two-armed bdp normal\n\n")
+    cat("data:\n")
+    cat(paste0("  Current treatment: mu_t = ",mu_t,", sigma_t = ", sigma_t, ", N_t = ", N_t))
+    cat("\n")
+    if(!is.null(N_c)){
+      cat(paste0("  Current control: mu_c = ",mu_c,", sigma_c = ", sigma_c, ", N_c = ", N_c))
+      cat("\n")
+    }
+    if(!is.null(N0_t)){
+      cat(paste0("  Historical treatment: mu0_t = ",mu0_t,", sigma0_t = ", sigma0_t, ", N0_t = ", N0_t))
+      cat("\n")
+    }
+    if(!is.null(N0_c)){
+      cat(paste0("  Historical control: mu0_c = ",mu0_c,", sigma0_c = ", sigma0_c, ", N0_c = ", N0_c))
+      cat("\n")
+    }
+
+    if(!is.null(N0_t)){
+      cat(paste0("Stochastic comparison - treatment (current vs. historical data): ",
+                 posterior_treatment$pvalue))
+      cat("\n")
+    }
+
+    if(!is.null(N0_c) & !is.null(N_c)){
+      cat(paste0("Stochastic comparison - control (current vs. historical data): ",
+                 posterior_control$pvalue))
+      cat("\n")
+    }
+
+    if(!is.null(N0_t)){
+      cat(paste0("Discount function value - treatment: ", posterior_treatment$alpha_discount))
+      cat("\n")
+    }
+
+    if(!is.null(N0_c) & !is.null(N_c)){
+      cat(paste0("Discount function value - control: ", posterior_control$alpha_discount))
+      cat("\n")
+    }
+    cat("alternative hypothesis: ", ifelse(two_side, "two.sided", "one.sided"))
+    cat("\n")
+
+    cat("95 percent confidence interval: \n")
+    cat(paste0(" ",comp_CI))
+    cat("\n")
+    cat("augmented sample estimates:\n")
+    cat("treatment group  control group\n")
+    cat(paste0("          ", mean_est_t, "          ", mean_est_c))
+    cat("\n")
   }
 
-  if(is.null(N0_c) == FALSE){
-    ###Format control mean output
-    mean_CI_c    <- round(quantile(posterior_control$mu_posterior, prob=c(0.025, 0.975)),4)
-    mean_est_c   <- round(median(posterior_control$mu_posterior),4)
-    mean_print_c <- paste0(mean_est_c, " (",mean_CI_c[1], ", ", mean_CI_c[2],")")
-
-    ###Format comparison output
-    comp_CI    <- round(quantile(f$TestMinusControl_post, prob=c(0.025, 0.975)),4)
-    comp_est   <- round(median(f$TestMinusControl_post),4)
-    comp_print <- paste0(comp_est, " (",comp_CI[1], ", ", comp_CI[2],")")
-
-    prior_for_control_group <- list(
-      `Stochastic comparison control (new vs historical data):  ` = posterior_control$pvalue,
-      `Discount function value - control:  `                      = posterior_control$alpha_discount,
-      `Sample size of historical - control:  `                    = N0_c,
-      `Mean posterior - control (95% CI):  `                      = mean_print_c,
-      `Mean difference - treatment vs. control (95% CI): `        = comp_print
-    )
-  }
-
-  pp(prior_for_treatment_group)
-  if(is.null(N0_c) == FALSE){
-    pp(prior_for_control_group)
-  }
 })
 
 
@@ -99,7 +154,7 @@ setMethod("summary", signature(object = "bdpbinomial"), function(object){
     cat(paste0(" ",mean_CI_t))
     cat("\n")
     if(!is.null(N0_t)){
-      cat("augmented sample estimates:\n")
+      cat("augmented sample estimate:\n")
     } else{
       cat("sample estimates:\n")
     }
