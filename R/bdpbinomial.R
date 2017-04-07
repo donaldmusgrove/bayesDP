@@ -212,7 +212,7 @@ setMethod("bdpbinomial",
   intent <- c()
   if(length(y_t + N_t) != 0){
     intent <- c(intent,"current treatment")
-    cat("Current Treatment\n")
+    #cat("Current Treatment\n")
   }else{
     if(is.null(y_t) == TRUE){
       cat("y_t missing\n")
@@ -225,7 +225,7 @@ setMethod("bdpbinomial",
 
   if(length(y0_t + N0_t) != 0){
     intent <- c(intent,"historical treatment")
-    cat("Historical Treatment\n")
+    #cat("Historical Treatment\n")
   }else{
     if(length(c(y0_t, N0_t)) > 0){
       if(is.null(y0_t) == TRUE){
@@ -240,7 +240,7 @@ setMethod("bdpbinomial",
 
   if(length(y_c + N_c) != 0){
     intent <- c(intent,"current control")
-    cat("Current Control\n")
+    #cat("Current Control\n")
   }else{
     if(length(c(y_c, N_c)) > 0){
       if(is.null(y_c) == TRUE){
@@ -255,7 +255,7 @@ setMethod("bdpbinomial",
 
   if(length(y0_c + N0_c) != 0){
     intent <- c(intent,"historical control")
-    cat("Historical Control\n")
+    #cat("Historical Control\n")
   }else{
     if(length(c(y0_c, N0_c)) > 0){
       if(is.null(y0_c) == TRUE){
@@ -374,221 +374,16 @@ setMethod("bdpbinomial",
 })
 
 
-################################################################################
-# Binomial: estimate weight for prior data assuming a binomial outcome
-# - Need posterior_flat and prior inputs
-################################################################################
-
-#' @title discount_function_binomial
-#' @description discount_function_binomial
-#' @param alpha_max scalar. Maximum weight the discount function can apply.
-#'   Default is 1. For a two-arm trial, users may specify a vector of two values
-#'   where the first value is used to weight the historical treatment group and
-#'   the second value is used to weight the historical control group.
-#' @param fix_alpha logical. Fix alpha at alpha_max? Default value is FALSE.
-#' @param number_mcmc scalar. Number of Markov Chain Monte Carlo (MCMC)
-#'   simulations. Default is 10000.
-#' @param weibull_scale scalar. Scale parameter of the Weibull discount function
-#'   used to compute alpha, the weight parameter of the historical data. Default
-#'   value is 0.135. For a two-arm trial, users may specify a vector of two values
-#'   where the first value is used to estimate the weight of the historical
-#'   treatment group and the second value is used to estimate the weight of the
-#'   historical control group.
-#' @param weibull_shape scalar. Shape parameter of the Weibull discount function
-#'   used to compute alpha, the weight parameter of the historical data. Default
-#'   value is 3. For a two-arm trial, users may specify a vector of two values
-#'   where the first value is used to estimate the weight of the historical
-#'   treatment group and the second value is used to estimate the weight of the
-#'   historical control group.
-#' @param two_side logical. Indicator of two-sided test for the discount
-#'   function. Default value is TRUE.
-#' @param posterior_flat posterior_flat
-#' @param prior prior
-#' @rdname discount_function_binomial
-#' @aliases discount_function_binomial,ANY-method
-#' @export discount_function_binomial
-
-setGeneric("discount_function_binomial",
-           function(alpha_max      = 1,
-                    fix_alpha      = FALSE,
-                    number_mcmc    = 10000,
-                    weibull_scale  = 0.135,
-                    weibull_shape  = 3,
-                    two_side       = TRUE,
-                    posterior_flat = NULL,
-                    prior          = NULL){
-             standardGeneric("discount_function_binomial")
-           })
-
-setMethod("discount_function_binomial",
-          signature(),
-          function(alpha_max      = 1,
-                   fix_alpha      = FALSE,
-                   number_mcmc    = 10000,
-                   weibull_scale  = 0.135,
-                   weibull_shape  = 3,
-                   two_side       = TRUE,
-                   posterior_flat = NULL,
-                   prior          = NULL){
-
-  ### Test of model vs real
-  p_test <- mean(posterior_flat < prior)   # larger is higher failure
-
-  ### Number of effective sample size given shape and scale discount function
-  if(fix_alpha == TRUE){
-    alpha_discount <- alpha_max
-  } else{
-    if (!two_side) {
-      alpha_discount <- pweibull(p_test, shape=weibull_shape, scale=weibull_scale)*alpha_max
-    } else if (two_side){
-      p_test1    <- ifelse(p_test > 0.5, 1 - p_test, p_test)
-      alpha_discount <- pweibull(p_test1, shape=weibull_shape, scale=weibull_scale)*alpha_max
-    }
-  }
-
-  return(list(alpha_discount  = alpha_discount,
-              pvalue          = p_test))
-})
-
 
 
 ################################################################################
-# Binomial: posterior augmentation for Binomial distribution
+# Binomial posterior estimation
+# 1) Estimate the discount function (if current+historical data both present)
+# 2) Estimate the posterior of the augmented data
 ################################################################################
-
-#' @title posterior_augment_binomial
-#' @description posterior_augment_binomial
-#' @param y scalar. Number of events for the current data.
-#' @param N scalar. Sample size of the current data.
-#' @param y0 scalar. Number of events for the historical data.
-#' @param N0 scalar. Sample size of the historical data.
-#' @param alpha_max scalar. Maximum weight the discount function can apply.
-#'   Default is 1. For a two-arm trial, users may specify a vector of two values
-#'   where the first value is used to weight the historical treatment group and
-#'   the second value is used to weight the historical control group.
-#' @param fix_alpha logical. Fix alpha at alpha_max? Default value is FALSE.
-#' @param a0 scalar. Prior value for the beta rate. Default is 1.
-#' @param b0 scalar. Prior value for the beta rate. Default is 1.
-#' @param number_mcmc scalar. Number of Markov Chain Monte Carlo (MCMC)
-#'   simulations. Default is 10000.
-
-#' @rdname posterior_augment_binomial
-#' @aliases posterior_augment_binomial,ANY-method
-#' @export posterior_augment_binomial
-
-setGeneric("posterior_augment_binomial",
-           function(y             = NULL,
-                    N             = NULL,
-                    y0            = NULL,
-                    N0            = NULL,
-                    alpha_discount     = NULL,
-                    fix_alpha     = FALSE,
-                    a0            = 1,
-                    b0            = 1,
-                    number_mcmc   = 10000){
-             standardGeneric("posterior_augment_binomial")
-           })
-
-setMethod("posterior_augment_binomial",
-          signature(),
-          function(y             = NULL,
-                   N             = NULL,
-                   y0            = NULL,
-                   N0            = NULL,
-                   alpha_discount     = NULL,
-                   fix_alpha     = FALSE,
-                   a0            = 1,
-                   b0            = 1,
-                   number_mcmc   = 10000){
-
-  if(!is.null(alpha_discount)){
-    effective_N0 <- N0 * alpha_discount
-  }
-
-  if(is.null(N0)){
-    a_prior <- a0
-    b_prior <- b0
-  }else{
-    a_prior <- (y0/N0)*effective_N0 + a0
-    b_prior <- effective_N0 - (y0/N0)*effective_N0 + b0
-  }
-
-  a_post_aug <- y + a_prior
-  b_post_aug <- N - y + b_prior
-
-  post_aug <- rbeta(number_mcmc, a_post_aug, b_post_aug)
-  return(post_aug)
-})
-
-
-
-################################################################################
-# Binomial: combine discount function and posterior estimation into one function
-################################################################################
-
-
-#' @title posterior_binomial
-#' @description posterior_binomial
-#' @param y scalar. Number of events for the current data.
-#' @param N scalar. Sample size of the current data.
-#' @param y0 scalar. Number of events for the historical data.
-#' @param N0 scalar. Sample size of the historical data.
-#' @param alpha_max scalar. Maximum weight the discount function can apply.
-#'   Default is 1. For a two-arm trial, users may specify a vector of two values
-#'   where the first value is used to weight the historical treatment group and
-#'   the second value is used to weight the historical control group.
-#' @param fix_alpha logical. Fix alpha at alpha_max? Default value is FALSE.
-#' @param a0 scalar. Prior value for the beta rate. Default is 1.
-#' @param b0 scalar. Prior value for the beta rate. Default is 1.
-#' @param number_mcmc scalar. Number of Markov Chain Monte Carlo (MCMC)
-#'   simulations. Default is 10000.
-#' @param weibull_scale scalar. Scale parameter of the Weibull discount function
-#'   used to compute alpha, the weight parameter of the historical data. Default
-#'   value is 0.135. For a two-arm trial, users may specify a vector of two values
-#'   where the first value is used to estimate the weight of the historical
-#'   treatment group and the second value is used to estimate the weight of the
-#'   historical control group.
-#' @param weibull_shape scalar. Shape parameter of the Weibull discount function
-#'   used to compute alpha, the weight parameter of the historical data. Default
-#'   value is 3. For a two-arm trial, users may specify a vector of two values
-#'   where the first value is used to estimate the weight of the historical
-#'   treatment group and the second value is used to estimate the weight of the
-#'   historical control group.
-#' @param two_side logical. Indicator of two-sided test for the discount
-#'   function. Default value is TRUE.
-#' @rdname posterior_binomial
-#' @aliases posterior_binomial,ANY-method
-#' @export posterior_binomial
-setGeneric("posterior_binomial",
-           function(y             = NULL,
-                    N             = NULL,
-                    y0            = NULL,
-                    N0            = NULL,
-                    alpha_max     = 1,
-                    fix_alpha     = FALSE,
-                    a0            = 1,
-                    b0            = 1,
-                    number_mcmc   = 10000,
-                    weibull_scale = 0.135,
-                    weibull_shape = 3,
-                    two_side      = TRUE){
-  standardGeneric("posterior_binomial")
-})
-
-setMethod("posterior_binomial",
-          signature(),
-          function(y             = NULL,
-                   N             = NULL,
-                   y0            = NULL,
-                   N0            = NULL,
-                   alpha_max     = 1,
-                   fix_alpha     = FALSE,
-                   a0            = 1,
-                   b0            = 1,
-                   number_mcmc   = 10000,
-                   weibull_scale = 0.135,
-                   weibull_shape = 3,
-                   two_side      = TRUE){
+posterior_binomial <- function(y, N, y0, N0, alpha_max, fix_alpha, a0, b0,
+                               number_mcmc, weibull_scale, weibull_shape,
+                               two_side){
 
   ### Compute posterior(s) of current (flat) and historical (prior) data
   ### with non-informative priors
@@ -604,45 +399,60 @@ setMethod("posterior_binomial",
     prior <- NULL
   }
 
-  ### Only compute alpha discount if both N and N0 are present
+  ##############################################################################
+  # Discount function
+  ##############################################################################
+  ### Compute stochastic comparison and alpha discount only if both
+  ### N and N0 are present (i.e., current & historical data are present)
   if(!is.null(N) & !is.null(N0)){
-    alpha_discount <- discount_function_binomial(alpha_max      = alpha_max,
-                                                 fix_alpha      = fix_alpha,
-                                                 number_mcmc    = number_mcmc,
-                                                 weibull_shape  = weibull_shape,
-                                                 weibull_scale  = weibull_scale,
-                                                 two_side       = two_side,
-                                                 posterior_flat = posterior_flat,
-                                                 prior          = prior)
+
+    ### Test of model vs real
+    p_test <- mean(posterior_flat < prior)   # larger is higher failure
+
+    ### Number of effective sample size given shape and scale discount function
+    if(fix_alpha == TRUE){
+      alpha_discount <- alpha_max
+    } else{
+      if (!two_side) {
+        alpha_discount <- pweibull(p_test, shape=weibull_shape,
+                                   scale=weibull_scale)*alpha_max
+      } else if (two_side){
+        p_test1    <- ifelse(p_test > 0.5, 1 - p_test, p_test)
+        alpha_discount <- pweibull(p_test1, shape=weibull_shape,
+                                   scale=weibull_scale)*alpha_max
+      }
+    }
+    pvalue <- p_test
+
   } else{
-    alpha_discount <- list(alpha_discount = NULL, pvalue=NULL)
+    alpha_discount <- NULL
+    pvalue         <- NULL
   }
 
 
+  ##############################################################################
+  # Posterior augmentation
+  # - If current or historical data are missing, this will not augment but
+  #   will return the posterior of the non-missing data (with flat prior)
+  ##############################################################################
   ### If only the historical data is present, compute posterior on historical
-  if(is.null(N)){
-    posterior <- posterior_augment_binomial(y              = y0,
-                                            N              = N0,
-                                            y0             = y,
-                                            N0             = N,
-                                            alpha_discount = alpha_discount$alpha_discount,
-                                            a0             = a0,
-                                            b0             = b0,
-                                            number_mcmc    = number_mcmc)
-  } else{
-    posterior <- posterior_augment_binomial(y              = y,
-                                            N              = N,
-                                            y0             = y0,
-                                            N0             = N0,
-                                            alpha_discount = alpha_discount$alpha_discount,
-                                            a0             = a0,
-                                            b0             = b0,
-                                            number_mcmc    = number_mcmc)
+  if(is.null(N0) & !is.null(N)){
+    posterior <- posterior_flat
+
+  } else if(!is.null(N0) & is.null(N)){
+    posterior <- prior
+
+  } else if(!is.null(N0) & !is.null(N)){
+    effective_N0 <- N0 * alpha_discount
+    a_prior    <- (y0/N0)*effective_N0 + a0
+    b_prior    <- effective_N0 - (y0/N0)*effective_N0 + b0
+    a_post_aug <- y + a_prior
+    b_post_aug <- N - y + b_prior
+    posterior  <- rbeta(number_mcmc, a_post_aug, b_post_aug)
   }
 
-
-  return(list(alpha_discount  = alpha_discount$alpha_discount,
-              pvalue          = alpha_discount$pvalue,
+  return(list(alpha_discount  = alpha_discount,
+              pvalue          = pvalue,
               posterior       = posterior,
               posterior_flat  = posterior_flat,
               prior           = prior,
@@ -652,7 +462,7 @@ setMethod("posterior_binomial",
               N               = N,
               y0              = y0,
               N0              = N0))
-})
+}
 
 
 
@@ -660,6 +470,8 @@ setMethod("posterior_binomial",
 ################################################################################
 # Binomial: create final result class
 # - If no control, only returns posterior info for the treatment data
+# - TODO: Remove density() functions and have plot method compute
+#         densities on the fly
 ################################################################################
 #' @title final_binomial
 #' @description final_binomial

@@ -236,6 +236,7 @@ setMethod("plot", signature(x = "bdpbinomial"), function(x){
     guides(fill=guide_legend(title=NULL)) +
     theme(legend.title=element_blank())
 
+
   ##############################################################################
   ### Density Plots
   ##############################################################################

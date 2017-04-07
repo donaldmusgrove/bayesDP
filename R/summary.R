@@ -87,15 +87,22 @@ setMethod("summary", signature(object = "bdpbinomial"), function(object){
     cat("\n")
     cat("    One-armed bdp binomial\n\n")
     cat(paste0("Current treatment data: ", y_t, " and ", N_t, "\n"))
-    cat(paste0("Historical treatment data: ", y0_t, " and ", N0_t, "\n"))
-    cat(paste0("Stochastic comparison - treatment (current vs. historical data): ", posterior_treatment$pvalue))
-    cat("\n")
-    cat(paste0("Discount function value - treatment: ", posterior_treatment$alpha_discount))
-    cat("\n")
+    if(!is.null(N0_t)){
+      cat(paste0("Historical treatment data: ", y0_t, " and ", N0_t, "\n"))
+      cat(paste0("Stochastic comparison - treatment (current vs. historical data): ",
+                 posterior_treatment$pvalue))
+      cat("\n")
+      cat(paste0("Discount function value - treatment: ", posterior_treatment$alpha_discount))
+      cat("\n")
+    }
     cat("95 percent confidence interval: \n")
     cat(paste0(" ",mean_CI_t))
     cat("\n")
-    cat("augmented sample estimates:\n")
+    if(!is.null(N0_t)){
+      cat("augmented sample estimates:\n")
+    } else{
+      cat("sample estimates:\n")
+    }
     cat("probability of success\n")
     cat(paste0(" ",mean_est_t))
     cat("\n")
