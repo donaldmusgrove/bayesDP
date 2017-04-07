@@ -379,6 +379,7 @@ setMethod("bdpbinomial",
 
 ################################################################################
 # Binomial: estimate weight for prior data assuming a binomial outcome
+# - Need posterior_flat and prior inputs
 ################################################################################
 discount_function_binomial <- function(alpha_max, fix_alpha, number_mcmc,
                                        weibull_shape, weibull_scale, two_side,
@@ -439,7 +440,8 @@ posterior_binomial <- function(y, N, y0, N0, alpha_max, fix_alpha, a0, b0,
                                number_mcmc, weibull_shape, weibull_scale,
                                two_side){
 
-  ### Compute posteriors with non-informative priors
+  ### Compute posterior(s) of current (flat) and historical (prior) data
+  ### with non-informative priors
   if(!is.null(N)){
     posterior_flat  <- rbeta(number_mcmc, y + a0, N - y + b0)
   } else{
