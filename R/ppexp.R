@@ -34,7 +34,7 @@ ppexp <- function(q, x, cuts){
   } else if(is.matrix(x)){
     ppout <- ppexpM(q, x, cuts)
   } else{
-    return("Error: input x is in the wrong format.")
+    stop("Error: input x is in the wrong format.")
   }
   return(ppout)
 }
