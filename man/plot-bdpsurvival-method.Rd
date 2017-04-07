@@ -13,4 +13,3 @@
 \description{
 survival plot method
 }
-

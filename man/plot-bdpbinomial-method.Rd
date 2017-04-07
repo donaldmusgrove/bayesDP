@@ -13,4 +13,3 @@
 \description{
 binomial plot method
 }
-

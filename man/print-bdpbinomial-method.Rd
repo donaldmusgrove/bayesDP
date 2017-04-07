@@ -13,4 +13,3 @@
 \description{
 binomial print method
 }
-

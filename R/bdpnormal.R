@@ -178,9 +178,9 @@ NULL
 #' @aliases bdpnormal,ANY-method
 #' @export bdpnormal
 bdpnormal <- setClass("bdpnormal", slots = c(posterior_treatment = "list",
-                                            posterior_control = "list",
-                                            f1 = "list",
-                                            args1 = "list"))
+                                             posterior_control = "list",
+                                             f1 = "list",
+                                             args1 = "list"))
 
 setGeneric("bdpnormal",
            function(mu_t          = NULL,
@@ -224,7 +224,6 @@ setMethod("bdpnormal",
                    weibull_shape = 3,
                    number_mcmc   = 10000,
                    two_side      = 1){
-
 
   ################################################################################
   # Check Input                                                                  #
@@ -313,6 +312,7 @@ setMethod("bdpnormal",
   # Quick check, if alpha_max, weibull_scale, or weibull_shape have length 1,
   # repeat input twice
   ##############################################################################
+
   if(length(alpha_max)==1){
     alpha_max <- rep(alpha_max, 2)
   }
@@ -323,153 +323,6 @@ setMethod("bdpnormal",
 
   if(length(weibull_shape)==1){
     weibull_shape <- rep(weibull_shape, 2)
-  }
-
-
-  ################################################################################
-  # Produce prior data weight (scalar between 0 and 1) assuming a mu outcome     #
-  ################################################################################
-  Discount_function <- function(mu, sigma, N, mu0, sigma0, N0, alpha_max, fix_alpha,
-                                number_mcmc, weibull_shape, weibull_scale, two_side){
-
-    ### mu for using flat prior
-    sigma2_post_flat <- 1/rgamma(number_mcmc, (N - 1)/2, ((N - 1) * sigma^2)/2)
-    mu_post_flat     <- rnorm(number_mcmc, mu, (sigma2_post_flat/((N-1)+1))^0.5)
-
-    ### Prior model (flat priors)
-    sigma2_post_flat0 <- 1/rgamma(number_mcmc, (N0-1)/2, ((N0-1)*sigma0^2)/2)
-    mu_post_flat0     <- rnorm(number_mcmc, mu0, (sigma2_post_flat0/((N0-1)+1))^0.5)
-
-    ### Test of model vs real
-    p_test <- mean(mu_post_flat < mu_post_flat0)  # larger is higher failure
-
-    ### Number of effective sample size given shape and scale discount function
-    if(fix_alpha == TRUE){
-      alpha_discount <- alpha_max
-    } else{
-      if (two_side == 0) {
-        alpha_discount <- pweibull(p_test, shape=weibull_shape, scale=weibull_scale)*alpha_max
-      } else if (two_side == 1){
-        p_test1    <- ifelse(p_test > 0.5, 1 - p_test, p_test)
-        alpha_discount <- pweibull(p_test1, shape=weibull_shape, scale=weibull_scale)*alpha_max
-      }
-    }
-
-    return(list(alpha_discount = alpha_discount,
-                pvalue         = p_test,
-                mu_post_flat   = mu_post_flat,
-                mu0            = mu_post_flat0))
-  }
-
-
-  ################################################################################
-  # Estimate posterior for mu given alpha_discount value                             #
-  ################################################################################
-  mu_post_aug <- function(mu, sigma, N, mu0, sigma0, N0, alpha_discount,
-                          number_mcmc) {
-    if (is.null(N0) == FALSE){
-      effective_N0 <- N0 * alpha_discount
-      sigma2_post  <- 1/rgamma(number_mcmc, (N-1)/2, ((N-1)*sigma^2)/2)
-      sigma2_post0 <- 1/rgamma(number_mcmc, (N0-1)/2, ((N0-1)*sigma0^2)/2)
-
-      mu1 <- (sigma2_post0*N*mu + sigma2_post*effective_N0*mu0)/(N*sigma2_post0 +
-                                                                   sigma2_post*effective_N0)
-      var_mu <- (sigma2_post*sigma2_post0)/(N*sigma2_post0 +
-                                              sigma2_post*effective_N0)
-    } else {
-      var_mu <- 1/rgamma(number_mcmc, (N - 1)/2, ((N - 1) * sigma^2)/2)
-      mu1    <- mu
-
-    }
-    mu_post <- rnorm(number_mcmc, mu1, sqrt(var_mu))
-    return(mu_post)
-  }
-
-
-  ################################################################################
-  # Combine discount function and posterior estimation into one function             #
-  ################################################################################
-  mu_posterior <- function(mu, sigma, N, mu0, sigma0, N0, alpha_max, fix_alpha,
-                           number_mcmc, weibull_shape, weibull_scale, two_side) {
-    if (is.null(N0) == FALSE){
-      alpha_discount <- Discount_function(mu    = mu,
-                                  sigma         = sigma,
-                                  N             = N,
-                                  mu0           = mu0,
-                                  sigma0        = sigma0,
-                                  N0            = N0,
-                                  alpha_max     = alpha_max,
-                                  fix_alpha     = fix_alpha,
-                                  number_mcmc   = number_mcmc,
-                                  weibull_shape = weibull_shape,
-                                  weibull_scale = weibull_scale,
-                                  two_side      = two_side)
-
-      mu_posterior <- mu_post_aug(mu             = mu,
-                                  sigma          = sigma,
-                                  N              = N,
-                                  mu0            = mu0,
-                                  sigma0         = sigma0,
-                                  N0             = N0,
-                                  alpha_discount = alpha_discount$alpha_discount,
-                                  number_mcmc    = number_mcmc)
-    } else {
-      mu_posterior <- mu_post_aug(mu             = mu,
-                                  sigma          = sigma,
-                                  N              = N,
-                                  mu0            = mu0,
-                                  sigma0         = sigma0,
-                                  N0             = N0,
-                                  alpha_discount = 0,
-                                  number_mcmc    = number_mcmc)
-
-      alpha_discount <- list(alpha_discount = 0,
-                         pvalue             = 0,
-                         mu0                = rnorm(100),
-                         mu_post_flat       = mu_posterior)
-    }
-
-    return(list(alpha_discount    = alpha_discount$alpha_discount,
-                pvalue            = alpha_discount$pvalue,
-                mu_posterior      = mu_posterior,
-                mu_posterior_flat = alpha_discount$mu_post_flat,
-                mu_prior          = alpha_discount$mu0))
-  }
-
-  final <- function(posterior_treatment, posterior_control = NULL) {
-    if (is.null(posterior_control) == FALSE){
-      density_post_control  <- density(posterior_control$mu_posterior,
-                                   adjust = 0.5)
-      density_flat_control  <- density(posterior_control$mu_posterior_flat,
-                                   adjust = 0.5)
-      density_prior_control <- density(posterior_control$mu_prior,
-                                   adjust = 0.5)
-    }
-
-    density_post_treatment  <- density(posterior_treatment$mu_posterior,
-                              adjust = 0.5)
-    density_flat_treatment  <- density(posterior_treatment$mu_posterior_flat,
-                              adjust = 0.5)
-    density_prior_treatment <- density(posterior_treatment$mu_prior,
-                              adjust = 0.5)
-
-    TestMinusControl_post <- posterior_treatment$mu_posterior - posterior_control$mu_posterior
-
-    if (is.null(N0_c) == FALSE){
-    return(list(density_post_control    = density_post_control,
-                density_flat_control    = density_flat_control,
-                density_prior_control   = density_prior_control,
-                density_post_treatment  = density_post_treatment,
-                density_flat_treatment  = density_flat_treatment,
-                density_prior_treatment = density_prior_treatment,
-                TestMinusControl_post   = TestMinusControl_post))
-    }
-    else{
-    return(list(density_post_treatment    = density_post_treatment,
-                density_flat_treatment    = density_flat_treatment,
-                density_prior_treatment   = density_prior_treatment,
-                TestMinusControl_post = TestMinusControl_post))
-    }
   }
 
   ################################################################################
@@ -554,3 +407,259 @@ setMethod("bdpnormal",
   return(me)
 
 })
+
+
+################################################################################
+# Produce prior data weight (scalar between 0 and 1) assuming a mu outcome     #
+################################################################################
+
+
+#' @title FILL IN
+#' @description FILL IN
+#' @rdname Discount_function
+#' @aliases Discount_function,ANY-method
+#' @export Discount_function
+setGeneric("Discount_function",
+           function(mu          = NULL,
+                    sigma       = NULL,
+                    N           = NULL,
+                    mu0         = NULL,
+                    sigma0      = NULL,
+                    N0          = NULL,
+                    alpha_max     = 1,
+                    fix_alpha     = FALSE,
+                    number_mcmc   = 10000,
+                    weibull_scale = 0.135,
+                    weibull_shape = 3,
+                    two_side      = 1){
+             standardGeneric("Discount_function")
+           })
+
+setMethod("Discount_function",
+          signature(),
+          function(mu          = NULL,
+                   sigma       = NULL,
+                   N           = NULL,
+                   mu0         = NULL,
+                   sigma0      = NULL,
+                   N0          = NULL,
+                   alpha_max     = 1,
+                   fix_alpha     = FALSE,
+                   number_mcmc   = 10000,
+                   weibull_scale = 0.135,
+                   weibull_shape = 3,
+                   two_side      = 1){
+
+            ### mu for using flat prior
+            sigma2_post_flat <- 1/rgamma(number_mcmc, (N - 1)/2, ((N - 1) * sigma^2)/2)
+            mu_post_flat     <- rnorm(number_mcmc, mu, (sigma2_post_flat/((N-1)+1))^0.5)
+
+            ### Prior model (flat priors)
+            sigma2_post_flat0 <- 1/rgamma(number_mcmc, (N0-1)/2, ((N0-1)*sigma0^2)/2)
+            mu_post_flat0     <- rnorm(number_mcmc, mu0, (sigma2_post_flat0/((N0-1)+1))^0.5)
+
+            ### Test of model vs real
+            p_test <- mean(mu_post_flat < mu_post_flat0)  # larger is higher failure
+
+            ### Number of effective sample size given shape and scale discount function
+            if(fix_alpha == TRUE){
+              alpha_discount <- alpha_max
+            } else{
+              if (two_side == 0) {
+                alpha_discount <- pweibull(p_test, shape=weibull_shape, scale=weibull_scale)*alpha_max
+              } else if (two_side == 1){
+                p_test1    <- ifelse(p_test > 0.5, 1 - p_test, p_test)
+                alpha_discount <- pweibull(p_test1, shape=weibull_shape, scale=weibull_scale)*alpha_max
+              }
+            }
+
+            return(list(alpha_discount = alpha_discount,
+                        pvalue         = p_test,
+                        mu_post_flat   = mu_post_flat,
+                        mu0            = mu_post_flat0))
+          })
+
+
+################################################################################
+# Estimate posterior for mu given alpha_discount value                             #
+################################################################################
+#' @title FILL IN
+#' @description FILL IN
+#' @rdname mu_post_aug
+#' @aliases mu_post_aug,ANY-method
+#' @export mu_post_aug
+setGeneric("mu_post_aug",
+           function(mu          = NULL,
+                    sigma       = NULL,
+                    N           = NULL,
+                    mu0         = NULL,
+                    sigma0      = NULL,
+                    N0          = NULL,
+                    alpha_discount = NULL,
+                    number_mcmc = 10000){
+             standardGeneric("mu_post_aug")
+           })
+
+setMethod("mu_post_aug",
+          signature(),
+          function(mu          = NULL,
+                   sigma       = NULL,
+                   N           = NULL,
+                   mu0         = NULL,
+                   sigma0      = NULL,
+                   N0          = NULL,
+                   alpha_discount = NULL,
+                   number_mcmc = 10000){
+  if (is.null(N0) == FALSE){
+    effective_N0 <- N0 * alpha_discount
+    sigma2_post  <- 1/rgamma(number_mcmc, (N-1)/2, ((N-1)*sigma^2)/2)
+    sigma2_post0 <- 1/rgamma(number_mcmc, (N0-1)/2, ((N0-1)*sigma0^2)/2)
+
+    mu1 <- (sigma2_post0*N*mu + sigma2_post*effective_N0*mu0)/(N*sigma2_post0 +
+                                                                 sigma2_post*effective_N0)
+    var_mu <- (sigma2_post*sigma2_post0)/(N*sigma2_post0 +
+                                            sigma2_post*effective_N0)
+  } else {
+    var_mu <- 1/rgamma(number_mcmc, (N - 1)/2, ((N - 1) * sigma^2)/2)
+    mu1    <- mu
+
+  }
+  mu_post <- rnorm(number_mcmc, mu1, sqrt(var_mu))
+  return(mu_post)
+})
+
+
+  ################################################################################
+  # Combine discount function and posterior estimation into one function             #
+  ################################################################################
+  #' @title FILL IN
+  #' @description FILL IN
+  #' @rdname mu_posterior
+  #' @aliases mu_posterior,ANY-method
+  #' @export mu_posterior
+  setGeneric("mu_posterior",
+             function(mu          = NULL,
+                      sigma       = NULL,
+                      N           = NULL,
+                      mu0         = NULL,
+                      sigma0      = NULL,
+                      N0          = NULL,
+                      alpha_max     = 1,
+                      fix_alpha     = FALSE,
+                      number_mcmc   = 10000,
+                      weibull_scale = 0.135,
+                      weibull_shape = 3,
+                      two_side      = 1){
+               standardGeneric("mu_posterior")
+             })
+
+  setMethod("mu_posterior",
+            signature(),
+            function(mu          = NULL,
+                     sigma       = NULL,
+                     N           = NULL,
+                     mu0         = NULL,
+                     sigma0      = NULL,
+                     N0          = NULL,
+                     alpha_max     = 1,
+                     fix_alpha     = FALSE,
+                     number_mcmc   = 10000,
+                     weibull_scale = 0.135,
+                     weibull_shape = 3,
+                     two_side      = 1){
+    if (is.null(N0) == FALSE){
+      alpha_discount <- Discount_function(mu    = mu,
+                                  sigma         = sigma,
+                                  N             = N,
+                                  mu0           = mu0,
+                                  sigma0        = sigma0,
+                                  N0            = N0,
+                                  alpha_max     = alpha_max,
+                                  fix_alpha     = fix_alpha,
+                                  number_mcmc   = number_mcmc,
+                                  weibull_shape = weibull_shape,
+                                  weibull_scale = weibull_scale,
+                                  two_side      = two_side)
+
+      mu_posterior <- mu_post_aug(mu             = mu,
+                                  sigma          = sigma,
+                                  N              = N,
+                                  mu0            = mu0,
+                                  sigma0         = sigma0,
+                                  N0             = N0,
+                                  alpha_discount = alpha_discount$alpha_discount,
+                                  number_mcmc    = number_mcmc)
+    } else {
+      mu_posterior <- mu_post_aug(mu             = mu,
+                                  sigma          = sigma,
+                                  N              = N,
+                                  mu0            = mu0,
+                                  sigma0         = sigma0,
+                                  N0             = N0,
+                                  alpha_discount = 0,
+                                  number_mcmc    = number_mcmc)
+
+      alpha_discount <- list(alpha_discount = 0,
+                         pvalue             = 0,
+                         mu0                = rnorm(100),
+                         mu_post_flat       = mu_posterior)
+    }
+
+    return(list(alpha_discount    = alpha_discount$alpha_discount,
+                pvalue            = alpha_discount$pvalue,
+                mu_posterior      = mu_posterior,
+                mu_posterior_flat = alpha_discount$mu_post_flat,
+                mu_prior          = alpha_discount$mu0))
+  })
+
+
+#' @title FILL IN
+#' @description FILL IN
+#' @rdname final
+#' @aliases final,ANY-method
+#' @export final
+setGeneric("final",
+           function(posterior_treatment = NULL,
+                    posterior_control   = NULL){
+             standardGeneric("final")
+           })
+
+setMethod("final",
+          signature(),
+          function(posterior_treatment = NULL,
+                   posterior_control   = NULL){
+
+    if (is.null(posterior_control) == FALSE){
+      density_post_control  <- density(posterior_control$mu_posterior,
+                                   adjust = 0.5)
+      density_flat_control  <- density(posterior_control$mu_posterior_flat,
+                                   adjust = 0.5)
+      density_prior_control <- density(posterior_control$mu_prior,
+                                   adjust = 0.5)
+    }
+
+    density_post_treatment  <- density(posterior_treatment$mu_posterior,
+                              adjust = 0.5)
+    density_flat_treatment  <- density(posterior_treatment$mu_posterior_flat,
+                              adjust = 0.5)
+    density_prior_treatment <- density(posterior_treatment$mu_prior,
+                              adjust = 0.5)
+
+    TestMinusControl_post <- posterior_treatment$mu_posterior - posterior_control$mu_posterior
+
+    if (is.null(posterior_control) == FALSE){
+    return(list(density_post_control    = density_post_control,
+                density_flat_control    = density_flat_control,
+                density_prior_control   = density_prior_control,
+                density_post_treatment  = density_post_treatment,
+                density_flat_treatment  = density_flat_treatment,
+                density_prior_treatment = density_prior_treatment,
+                TestMinusControl_post   = TestMinusControl_post))
+    }
+    else{
+    return(list(density_post_treatment  = density_post_treatment,
+                density_flat_treatment  = density_flat_treatment,
+                density_prior_treatment = density_prior_treatment,
+                TestMinusControl_post   = TestMinusControl_post))
+    }
+  })

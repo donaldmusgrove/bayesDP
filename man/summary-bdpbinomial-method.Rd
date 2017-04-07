@@ -13,4 +13,3 @@
 \description{
 binomial summary method
 }
-

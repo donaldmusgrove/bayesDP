@@ -13,4 +13,3 @@
 \description{
 survival print method
 }
-
