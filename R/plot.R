@@ -192,7 +192,7 @@ setMethod("plot", signature(x = "bdpbinomial"), function(x){
     }
 
     if(!is.null(f$density_prior_control)){
-      D3 <- data.frame(information_sources="Prior",
+      D3 <- data.frame(information_sources="Historical Data",
                        group="Control",
                        y=f$density_prior_control$y,
                        x=f$density_prior_control$x)
@@ -212,7 +212,7 @@ setMethod("plot", signature(x = "bdpbinomial"), function(x){
   }
 
   if(!is.null(f$density_prior_treatment)){
-    D6 <- data.frame(information_sources="Prior",
+    D6 <- data.frame(information_sources="Historical Data",
                      group="Treatment",
                      y=f$density_prior_treatment$y,
                      x=f$density_prior_treatment$x)
@@ -221,7 +221,7 @@ setMethod("plot", signature(x = "bdpbinomial"), function(x){
   D <- as.data.frame(rbind(D1,D2,D3,D4,D5,D6))
 
   D$information_sources <- factor(D$information_sources,
-                                  levels = (c("Posterior","Current Data","Prior")))
+                                  levels = (c("Posterior","Current Data","Historical Data")))
 
   ##############################################################################
   ### Posterior Type Plots
@@ -284,6 +284,11 @@ setMethod("plot", signature(x = "bdpbinomial"), function(x){
 
   if(arm2){
     if(!is.null(N0_c) & !is.null(N_c)){
+
+      if(is.null(discountfun_plot)){
+        discountfun_plot <- ggplot()
+      }
+
       discount_function_control <- pweibull(p_value,
                                             shape=x$args1$weibull_shape[2],
                                             scale=x$args1$weibull_scale[2])
