@@ -95,7 +95,7 @@ setMethod("summary", signature(object = "bdpbinomial"), function(object){
     cat("95 percent confidence interval: \n")
     cat(paste0(" ",mean_CI_t))
     cat("\n")
-    cat("sample estimates:\n")
+    cat("augmented sample estimates:\n")
     cat("probability of success\n")
     cat(paste0(" ",mean_est_t))
     cat("\n")
