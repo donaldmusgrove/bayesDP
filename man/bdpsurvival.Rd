@@ -26,8 +26,8 @@ piecewise exponential model. Do not include zero.}
 \item{b0}{scalar. Prior value for the gamma rate. Default is 1.}
 
 \item{surv_time}{scalar. Survival time of interest for computing the the
-probability of survival for a single arm, i.e., an OPC trial. Default is
-median survival time.}
+probability of survival for a single arm (OPC) trial. Default is
+overall, i.e., current+historical, median survival time.}
 
 \item{alpha_max}{scalar. Maximum weight the discount function can apply.
 Default is 1. For a two-arm trial, users may specify a vector of two values

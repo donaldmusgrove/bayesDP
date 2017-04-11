@@ -40,9 +40,10 @@ setMethod("summary", signature(object = "bdpnormal"), function(object){
                  sigma0_t, ", N0_t = ", N0_t))
       cat("\n")
       cat(paste0("Stochastic comparison - treatment (current vs. historical data): ",
-                 posterior_treatment$p_hat))
+                 round(posterior_treatment$p_hat,4)))
       cat("\n")
-      cat(paste0("Discount function value - treatment: ", posterior_treatment$alpha_discount))
+      cat(paste0("Discount function value - treatment: ",
+                 round(posterior_treatment$alpha_discount,4)))
       cat("\n")
     }
     cat("95 percent confidence interval: \n")
@@ -76,23 +77,25 @@ setMethod("summary", signature(object = "bdpnormal"), function(object){
 
     if(!is.null(N0_t)){
       cat(paste0("Stochastic comparison - treatment (current vs. historical data): ",
-                 posterior_treatment$p_hat))
+                 round(posterior_treatment$p_hat,4)))
       cat("\n")
     }
 
     if(!is.null(N0_c) & !is.null(N_c)){
       cat(paste0("Stochastic comparison - control (current vs. historical data): ",
-                 posterior_control$p_hat))
+                 round(posterior_control$p_hat,4)))
       cat("\n")
     }
 
     if(!is.null(N0_t)){
-      cat(paste0("Discount function value - treatment: ", posterior_treatment$alpha_discount))
+      cat(paste0("Discount function value - treatment: ",
+                 round(posterior_treatment$alpha_discount,4)))
       cat("\n")
     }
 
     if(!is.null(N0_c) & !is.null(N_c)){
-      cat(paste0("Discount function value - control: ", posterior_control$alpha_discount))
+      cat(paste0("Discount function value - control: ",
+                 round(posterior_control$alpha_discount,4)))
       cat("\n")
     }
     cat("alternative hypothesis: ", ifelse(two_side, "two.sided", "one.sided"))
@@ -145,9 +148,10 @@ setMethod("summary", signature(object = "bdpbinomial"), function(object){
     if(!is.null(N0_t)){
       cat(paste0("Historical treatment data: ", y0_t, " and ", N0_t, "\n"))
       cat(paste0("Stochastic comparison - treatment (current vs. historical data): ",
-                 posterior_treatment$p_hat))
+                 round(posterior_treatment$p_hat,4)))
       cat("\n")
-      cat(paste0("Discount function value - treatment: ", posterior_treatment$alpha_discount))
+      cat(paste0("Discount function value - treatment: ",
+                 round(posterior_treatment$alpha_discount,4)))
       cat("\n")
     }
     cat("95 percent confidence interval: \n")
@@ -191,21 +195,25 @@ setMethod("summary", signature(object = "bdpbinomial"), function(object){
       cat(paste0("Historical control data: ", y0_c, " and ", N0_c, "\n"))
     }
     if(!is.null(N_t) & !is.null(N0_t)){
-      cat(paste0("Stochastic comparison - treatment (current vs. historical data): ", posterior_treatment$p_hat))
+      cat(paste0("Stochastic comparison - treatment (current vs. historical data): ",
+                 round(posterior_treatment$p_hat,4)))
       cat("\n")
     }
     if(!is.null(N_c) & !is.null(N0_c)){
-      cat(paste0("Stochastic comparison - control (current vs. historical data): ", posterior_control$p_hat))
+      cat(paste0("Stochastic comparison - control (current vs. historical data): ",
+                 round(posterior_control$p_hat,4)))
       cat("\n")
     }
 
     if(!is.null(N_t) & !is.null(N0_t)){
-      cat(paste0("Discount function value - treatment: ", posterior_treatment$alpha_discount))
+      cat(paste0("Discount function value - treatment: ",
+                 round(posterior_treatment$alpha_discount,4)))
       cat("\n")
     }
 
     if(!is.null(N_c) & !is.null(N0_c)){
-      cat(paste0("Discount function value - control: ", posterior_control$alpha_discount))
+      cat(paste0("Discount function value - control: ",
+                 round(posterior_control$alpha_discount,4)))
       cat("\n")
     }
 
@@ -237,19 +245,77 @@ setMethod("summary", signature(object = "bdpsurvival"), function(object){
   surv_time           <- object$args1$surv_time
 
 
+  args1               <- object$args1
+  posterior_treatment <- object$posterior_treatment
+  data                <- args1$data
+  breaks              <- args1$breaks
+  arm2                <- args1$arm2
+
+
+
+  ##############################################################################
+  ### Survival table
+  ##############################################################################
+  ### Organize current treatment posterior data
+  data_t <- subset(data, historical==0 & treatment == 1)
+  s_t    <- with(data_t, Surv(time, status))# , type="mstate"))
+  n      <- nrow(data_t)
+  s_t    <- survival::survfitKM(factor(rep(1,n)), s_t)
+
+  survival_times_posterior  <- lapply(s_t$time, ppexp,
+    posterior_treatment$posterior_hazard,cuts=c(0,breaks))
+
+  s_t$surv    <- 1-sapply(survival_times_posterior, median)
+  s_t$std.err <- sapply(survival_times_posterior, sd)
+  s_t$upper   <- 1-sapply(survival_times_posterior, quantile, 0.025)
+  s_t$lower   <- 1-sapply(survival_times_posterior, quantile, 0.975)
+
+  m_t <- round(cbind(s_t$time, s_t$n.risk, s_t$n.event, s_t$surv, s_t$std.err,
+               s_t$lower, s_t$upper),4)
+  cnames <- c("time","n.risk","n.event","survival","std.err",
+              "lower 95% CI", "upper 95% CI")
+  dimnames(m_t) <- list(rep("", nrow(m_t)), cnames)
+
+  if(!arm2){
+    cat("\n")
+    cat("    One-armed bdp survival\n\n")
+    if(is.null(args1$S0_t)){
+      cat("  Current treatment summary:")
+      cat("\n")
+      print(m_t)
+    } else{
+      cat(paste0("Stochastic comparison - treatment (current vs. historical data): ",
+                 round(posterior_treatment$p_hat,4)))
+      cat("\n")
+      cat(paste0("Discount function value - treatment: ",
+                 round(posterior_treatment$alpha_discount,4)))
+      cat("\n")
+      cat("\n")
+      cat("Current treatment - augmented posterior summary:")
+      cat("\n")
+      print(m_t)
+      cat("\n")
+    }
+
+  }
+
+
+
+
   ### Format surv_time output
-  surv_CI    <- round(quantile(f$treatmentpost, prob=c(0.025, 0.975)),4)
-  surv_est   <- round(median(f$treatmentpost),4)
-  surv_print <- paste0(surv_est, " (",surv_CI[1], ", ", surv_CI[2],")")
+  # surv_CI    <- round(quantile(f$treatment_posterior, prob=c(0.025, 0.975)),4)
+  # surv_est   <- round(median(f$treatment_posterior),4)
+  # surv_print <- paste0(surv_est, " (",surv_CI[1], ", ", surv_CI[2],")")
+  #
+  # ### Output list
+  # prior_for_treatment_group <- list(`Stochastic comparison (new vs historical data):  ` = posterior_treatment$p_hat,
+  #                                   `Discount function value:  `                        = posterior_treatment$alpha_discount,
+  #                                   `Survival time:  `                                  = surv_time,
+  #                                   `Median survival probability (95% CI):  `           = surv_print)
+  #
+  # ### Text outputs
+  # return(pp(prior_for_treatment_group))
 
-  ### Output list
-  prior_for_treatment_group <- list(`Stochastic comparison (new vs historical data):  ` = posterior_treatment$p_hat,
-                                    `Discount function value:  `                        = posterior_treatment$alpha_discount,
-                                    `Survival time:  `                                  = surv_time,
-                                    `Median survival probability (95% CI):  `           = surv_print)
-
-  ### Text outputs
-  return(pp(prior_for_treatment_group))
 })
 
 # Helper functions:

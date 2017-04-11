@@ -102,24 +102,55 @@ setMethod("print", signature(x = "bdpsurvival"), function(x){
   f                   <- x$f1
   posterior_treatment <- x$posterior_treatment
   surv_time           <- x$args1$surv_time
+  args1               <- x$args1
+  data                <- args1$data
+  breaks              <- args1$breaks
+  arm2                <- args1$arm2
 
-  x <- NULL
+
+  if(!arm2){
+    ##############################################################################
+    # Survival probability and surv_time
+    ##############################################################################
+    ### Print the augmented posterior
+    survival_time_posterior_flat <- ppexp(surv_time,
+                                          posterior_treatment$posterior_hazard,
+                                          cuts=c(0,breaks))
+
+    data_t <- subset(data, historical==0 & treatment == 1)
+    n      <- nrow(data_t)
+    s_t    <- with(data_t, Surv(time, status))# , type="mstate"))
+    s_t    <- survival::survfitKM(factor(rep(1,n)), s_t)
+
+    print_1arm <- matrix(c(nrow(data_t),
+                         sum(s_t$n.event),
+                         surv_time,
+                         1-median(survival_time_posterior_flat),
+                         1-quantile(survival_time_posterior_flat,0.975),
+                         1-quantile(survival_time_posterior_flat,0.025)),nrow=1)
+    print_1arm <- round(print_1arm,4)
+    cnames <- c("n","events","surv_time","median","lower 95% CI","upper 95% CI")
+    dimnames(print_1arm) <- list(rep("", nrow(print_1arm)), cnames)
+    print(print_1arm)
+  }
 
 
-  ### Format surv_time output
-  surv_CI    <- round(quantile(f$treatmentpost, prob=c(0.025, 0.975)),4)
-  surv_est   <- round(median(f$treatmentpost),4)
-  surv_print <- paste0(surv_est, " (",surv_CI[1], ", ", surv_CI[2],")")
 
-  ### Output list
-  prior_for_treatment_group <- list(`Stochastic comparison (new vs historical data):  ` = posterior_treatment$p_hat,
-                                    `Discount function value:  `                        = posterior_treatment$alpha_discount,
-                                    `Survival time:  `                                  = surv_time,
-                                    `Median survival probability (95% CI):  `           = surv_print)
 
-  ### Text outputs
-  cat(pp(prior_for_treatment_group))
-  invisible(x)
+  # ### Format surv_time output
+  # surv_CI    <- round(quantile(f$treatment_posterior, prob=c(0.025, 0.975)),4)
+  # surv_est   <- round(median(f$treatment_posterior),4)
+  # surv_print <- paste0(surv_est, " (",surv_CI[1], ", ", surv_CI[2],")")
+  #
+  # ### Output list
+  # prior_for_treatment_group <- list(`Stochastic comparison (new vs historical data):  ` = posterior_treatment$p_hat,
+  #                                   `Discount function value:  `                        = posterior_treatment$alpha_discount,
+  #                                   `Survival time:  `                                  = surv_time,
+  #                                   `Median survival probability (95% CI):  `           = surv_print)
+  #
+  # ### Text outputs
+  # cat(pp(prior_for_treatment_group))
+  # invisible(x)
 })
 
 
