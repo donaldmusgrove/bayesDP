@@ -506,7 +506,7 @@ posterior_survival <- function(S, S0, surv_time, alpha_max, fix_alpha, a0, b0,
   } else{
     ### Weight historical data via (approximate) hazard ratio comparing
     ### current vs historical
-    R0     <- log(prior_hazard)-log(posterior_flat_survival)
+    R0     <- log(prior_hazard)-log(posterior_flat_hazard)
     V0     <- 1/apply(R0,2,var)
     logHR0 <- R0%*%V0/sum(V0)    #weighted average  of SE^2
 
