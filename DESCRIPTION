@@ -25,4 +25,3 @@ Suggests:
     testthat,
     knitr,
     rmarkdown
-VignetteBuilder: knitr
