@@ -35,13 +35,15 @@ setMethod("print", signature(x = "bdpbinomial"), function(x){
 #' @param x Result
 #' @export
 setMethod("print", signature(x = "bdpsurvival"), function(x){
-  f                   <- x$f1
   posterior_treatment <- x$posterior_treatment
+  posterior_control   <- x$posterior_control
   surv_time           <- x$args1$surv_time
+
   args1               <- x$args1
   data                <- args1$data
   breaks              <- args1$breaks
   arm2                <- args1$arm2
+
 
   treatment = NULL
   historical = NULL
@@ -69,7 +71,13 @@ setMethod("print", signature(x = "bdpsurvival"), function(x){
     print_1arm <- round(print_1arm,4)
     cnames <- c("n","events","surv_time","median","lower 95% CI","upper 95% CI")
     dimnames(print_1arm) <- list(rep("", nrow(print_1arm)), cnames)
+    cat("\n")
+    cat("    One-armed bdp survival\n\n")
+    cat("\n")
     print(print_1arm)
+  } else{
+    ### Return summary
+    summary(x)
   }
 
 })

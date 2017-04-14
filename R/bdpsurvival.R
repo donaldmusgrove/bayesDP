@@ -361,7 +361,7 @@ posterior_survival <- function(S, S0, surv_time, alpha_max, fix_alpha, a0, b0,
 
   if(!is.null(S0)){
     S0_int  <- levels(S0$interval)
-    n0Int   <- length(S0_int)
+    nInt    <- length(S0_int)
   }
 
   interval <- NULL
@@ -375,9 +375,14 @@ posterior_survival <- function(S, S0, surv_time, alpha_max, fix_alpha, a0, b0,
   if(!is.null(S) & !is.null(S0)){
     ### Compute posterior of interval hazards
     a_post  <- b_post  <- numeric(nInt)
-    a_post0 <- b_post0 <- numeric(n0Int)
+    a_post0 <- b_post0 <- numeric(nInt)
 
-    posterior_flat_hazard <- prior_hazard <- matrix(NA, number_mcmc, nInt)
+    if(!is.null(S)){
+      posterior_flat_hazard <- prior_hazard <- matrix(NA, number_mcmc, nInt)
+    } else{
+      posterior_flat_hazard <- prior_hazard <- matrix(NA, number_mcmc, nInt)
+    }
+
 
     ### Compute posterior values
     for(i in 1:nInt){
@@ -408,13 +413,13 @@ posterior_survival <- function(S, S0, surv_time, alpha_max, fix_alpha, a0, b0,
     }
   } else if(is.null(S) & !is.null(S0)) {
     ### Compute posterior of interval hazards
-    a_post0 <- b_post0 <- numeric(n0Int)
+    a_post0 <- b_post0 <- numeric(nInt)
 
     prior_hazard          <- matrix(NA, number_mcmc, nInt)
     posterior_flat_hazard <- NULL
 
     ### Compute posterior values
-    for(i in 1:n0Int){
+    for(i in 1:nInt){
       a_post0[i] <- a0 + sum(subset(S0, interval==S0_int[i])$status)
       b_post0[i] <- b0 + sum(subset(S0, interval==S0_int[i])$exposure)
 
