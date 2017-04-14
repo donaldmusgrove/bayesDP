@@ -365,8 +365,6 @@ setMethod("plot", signature(x = "bdpbinomial"), function(x){
 #' @param x Result
 #' @export
 setMethod("plot", signature(x = "bdpsurvival"), function(x){
-
-
   args1               <- x$args1
   posterior_treatment <- x$posterior_treatment
   posterior_control   <- x$posterior_control
@@ -379,55 +377,112 @@ setMethod("plot", signature(x = "bdpsurvival"), function(x){
   ### Survival curve(s)
   ### - Only computed for one-arm trial
   ##############################################################################
-  if(!arm2){
-    ### Organize data for current treatment
-    time_t  <- sort(unique(args1$S_t$time))
-    survival_times_posterior_flat <- lapply(time_t, ppexp,
-      posterior_treatment$posterior_flat_hazard, cuts=c(0,breaks))
+  ### Organize data for current treatment
+  time_t  <- sort(unique(args1$S_t$time))
+  survival_times_posterior_flat <- lapply(time_t, ppexp,
+    posterior_treatment$posterior_flat_hazard, cuts=c(0,breaks))
+  survival_median_posterior_flat <- 1-sapply(survival_times_posterior_flat, median)
+
+  D1 <- data.frame(source  = "Current Data",
+                   group = "Treatment",
+                   x      = time_t,
+                   y      = survival_median_posterior_flat)
+
+  ### Organize data for historical treatment
+  if(!is.null(args1$S0_t)){
+    time0_t <- sort(unique(args1$S0_t$time))
+    survival_times_prior <- lapply(time0_t, ppexp,
+      posterior_treatment$prior_hazard, cuts=c(0,breaks))
+    survival_median_prior <- 1-sapply(survival_times_prior, median)
+
+    D2 <- data.frame(source = "Historical Data",
+                     group  = "Treatment",
+                     x      = time0_t,
+                     y      = survival_median_prior)
+  } else{
+    D2 <- NULL
+  }
+
+  ### Organize data for treatment posterior
+  survival_times_posterior  <- lapply(time_t, ppexp,posterior_treatment$posterior_hazard,cuts=c(0,breaks))
+  survival_median_posterior <- 1-sapply(survival_times_posterior, median)
+
+  D3 <- data.frame(source = "Posterior",
+                   group  = "Treatment",
+                   x      = time_t,
+                   y      = survival_median_posterior)
+
+  ### Organize data for current control
+  if(!is.null(args1$S_c)){
+    time_c               <- sort(unique(args1$S_c$time))
+    survival_times_posterior_flat <- lapply(time_c, ppexp,
+                                           posterior_control$posterior_flat_hazard, cuts=c(0,breaks))
     survival_median_posterior_flat <- 1-sapply(survival_times_posterior_flat, median)
 
-    D1 <- data.frame(source  = "Current Data",
-                     group = "Treatment",
-                     x      = time_t,
+    D4 <- data.frame(source = "Current Data",
+                     group  = "Control",
+                     x      = time_c,
                      y      = survival_median_posterior_flat)
+  } else{
+    D4 <- NULL
+  }
 
-    ### Organize data for historical treatment
-    if(!is.null(args1$S0_t)){
-      time0_t <- sort(unique(args1$S0_t$time))
-      survival_times_prior <- lapply(time0_t, ppexp,
-        posterior_treatment$prior_hazard, cuts=c(0,breaks))
-      survival_median_prior <- 1-sapply(survival_times_prior, median)
+  ### Organize data for historical control
+  if(!is.null(args1$S0_c)){
+    time0_c               <- sort(unique(args1$S0_c$time))
+    survival_times_prior <- lapply(time0_c, ppexp,
+                                   posterior_control$prior_hazard, cuts=c(0,breaks))
+    survival_median_prior <- 1-sapply(survival_times_prior, median)
 
-      D2 <- data.frame(source = "Historical Data",
-                       group  = "Treatment",
-                       x      = time0_t,
-                       y      = survival_median_prior)
-    } else{
-      D2 <- NULL
-    }
+    D5 <- data.frame(source = "Historical Data",
+                     group  = "Control",
+                     x      = time0_c,
+                     y      = survival_median_prior)
+  } else{
+    D5 <- NULL
+  }
 
-    ### Organize data for posterior
-    survival_times_posterior  <- lapply(time_t, ppexp,posterior_treatment$posterior_hazard,cuts=c(0,breaks))
+  ### Organize data for control posterior
+  if(!is.null(args1$S_c) & !is.null(args1$S0_c)){
+    survival_times_posterior  <- lapply(time_c, ppexp,posterior_control$posterior_hazard,cuts=c(0,breaks))
     survival_median_posterior <- 1-sapply(survival_times_posterior, median)
 
-    D3 <- data.frame(source = "Posterior",
-                     group  = "Treatment",
-                     x      = time_t,
+    D6 <- data.frame(source = "Posterior",
+                     group  = "Control",
+                     x      = time_c,
                      y      = survival_median_posterior)
+  } else if(is.null(args1$S_c) & !is.null(args1$S0_c)){
+    survival_times_posterior  <- lapply(time0_c, ppexp,posterior_control$posterior_hazard,cuts=c(0,breaks))
+    survival_median_posterior <- 1-sapply(survival_times_posterior, median)
 
-    D <- rbind(D1,D2,D3)
+    D6 <- data.frame(source = "Posterior",
+                     group  = "Control",
+                     x      = time0_c,
+                     y      = survival_median_posterior)
+  } else if(!is.null(args1$S_c) & is.null(args1$S0_c)){
+    survival_times_posterior  <- lapply(time_c, ppexp,posterior_control$posterior_hazard,cuts=c(0,breaks))
+    survival_median_posterior <- 1-sapply(survival_times_posterior, median)
 
+    D6 <- data.frame(source = "Posterior",
+                     group  = "Control",
+                     x      = time_c,
+                     y      = survival_median_posterior)
+  } else{
+    D6 <- NULL
+  }                 
+                            
+  D <- rbind(D4,D5,D6, D1,D2,D3)
 
-    ### Plot survival curve
-    survival_curves <- ggplot(D, aes_string(x = "x", y = "y")) +
-      geom_line(size=1.4, aes_string(color="source", lty="source")) +
-      ylab("Survival probability") +
-      xlab("Time") +
-      theme_bw() +
-      ggtitle("Survival Curve(s)") +
-      guides(fill=guide_legend(title=NULL)) +
-      theme(legend.title=element_blank())
-  }
+  ### Plot survival curve
+  survival_curves <- ggplot(D, aes_string(x="x",y="y")) +
+    geom_line(size=1.4, aes_string(color="source", lty="source")) +
+    facet_wrap(~group, ncol=1,scales='free') +
+    ylab("Survival probability") +
+    xlab("Time") +
+    theme_bw() +
+    ggtitle("Survival Curve(s)") +
+    guides(fill=guide_legend(title=NULL)) +
+    theme(legend.title=element_blank())
 
 
   ##############################################################################
@@ -498,15 +553,12 @@ setMethod("plot", signature(x = "bdpsurvival"), function(x){
   }
 
 
-  if(!arm2){
-    op <- par(ask=TRUE)
-    plot(survival_curves)
-    if(!is.null(args1$S0_t)){
-      plot(discountfun_plot)
-    }
-    par(op)
+  op <- par(ask=TRUE)
+  plot(survival_curves)
+  if(!is.null(args1$S0_t) | (!is.null(args1$S_c) & !is.null(args1$S0_c))){
+    plot(discountfun_plot)
   }
-
+  par(op)
 })
 
 

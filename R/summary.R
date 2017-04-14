@@ -240,47 +240,43 @@ setMethod("summary", signature(object = "bdpbinomial"), function(object){
 #' @param object Result
 #' @export
 setMethod("summary", signature(object = "bdpsurvival"), function(object){
-  f                   <- object$f1
   posterior_treatment <- object$posterior_treatment
+  posterior_control   <- object$posterior_control
   surv_time           <- object$args1$surv_time
 
-
   args1               <- object$args1
-  posterior_treatment <- object$posterior_treatment
   data                <- args1$data
   breaks              <- args1$breaks
   arm2                <- args1$arm2
 
-
-
+  historical <- NULL
+  treatment  <- NULL
+  
   ##############################################################################
   ### Survival table
+  ### - Only print if !arm2
   ##############################################################################
-  ### Organize current treatment posterior data
-
-  historical = NULL
-  treatment = NULL
-
-  data_t <- subset(data, historical==0 & treatment == 1)
-  s_t    <- with(data_t, Surv(time, status))# , type="mstate"))
-  n      <- nrow(data_t)
-  s_t    <- survival::survfitKM(factor(rep(1,n)), s_t)
-
-  survival_times_posterior  <- lapply(s_t$time, ppexp,
-    posterior_treatment$posterior_hazard,cuts=c(0,breaks))
-
-  s_t$surv    <- 1-sapply(survival_times_posterior, median)
-  s_t$std.err <- sapply(survival_times_posterior, sd)
-  s_t$upper   <- 1-sapply(survival_times_posterior, quantile, 0.025)
-  s_t$lower   <- 1-sapply(survival_times_posterior, quantile, 0.975)
-
-  m_t <- round(cbind(s_t$time, s_t$n.risk, s_t$n.event, s_t$surv, s_t$std.err,
-               s_t$lower, s_t$upper),4)
-  cnames <- c("time","n.risk","n.event","survival","std.err",
-              "lower 95% CI", "upper 95% CI")
-  dimnames(m_t) <- list(rep("", nrow(m_t)), cnames)
-
   if(!arm2){
+    ### Organize current treatment posterior data
+    data_t <- subset(data, historical==0 & treatment == 1)
+    s_t    <- with(data_t, Surv(time, status))# , type="mstate"))
+    n      <- nrow(data_t)
+    s_t    <- survival::survfitKM(factor(rep(1,n)), s_t)
+
+    survival_times_posterior  <- lapply(s_t$time, ppexp,
+      posterior_treatment$posterior_hazard,cuts=c(0,breaks))
+
+    s_t$surv    <- 1-sapply(survival_times_posterior, median)
+    s_t$std.err <- sapply(survival_times_posterior, sd)
+    s_t$upper   <- 1-sapply(survival_times_posterior, quantile, 0.025)
+    s_t$lower   <- 1-sapply(survival_times_posterior, quantile, 0.975)
+
+    m_t <- round(cbind(s_t$time, s_t$n.risk, s_t$n.event, s_t$surv, s_t$std.err,
+                 s_t$lower, s_t$upper),4)
+    cnames <- c("time","n.risk","n.event","survival","std.err",
+                "lower 95% CI", "upper 95% CI")
+    dimnames(m_t) <- list(rep("", nrow(m_t)), cnames)
+
     cat("\n")
     cat("    One-armed bdp survival\n\n")
     if(is.null(args1$S0_t)){
@@ -300,25 +296,84 @@ setMethod("summary", signature(object = "bdpsurvival"), function(object){
       print(m_t)
       cat("\n")
     }
+  }
+
+  ##############################################################################
+  ### Significance of cox proportional hazard for treatment vs control
+  ### - Only print if arm2
+  ##############################################################################
+  if(arm2){
+    ### Compute treatment effect of treatment vs control and create table
+    R0      <- log(posterior_treatment$posterior_hazard)-log(posterior_control$posterior_hazard)
+    V0      <- 1/apply(R0,2,var)
+    logHR0  <- R0%*%V0/sum(V0)
+    coef    <- mean(logHR0)
+    se_coef <- sd(logHR0)
+    CI      <- quantile(logHR0, probs=c(0.025,0.975))
+
+    summ_table <- matrix(round(c(coef, exp(coef), se_coef, CI[1], CI[2]),4),nrow=1)
+    cnames     <- c("coef", "exp(coef)", "se(coef)", "lower 95% CI", "upper 95% CI")
+    dimnames(summ_table) <- list("treatment", cnames)
+
+
+    ### Count sample size and number of events
+    data_t <- subset(data, historical == 0 & treatment == 1)
+    n_t    <- nrow(data_t)
+    e_t    <- sum(data_t$status)
+
+    if(!is.null(args1$S_c)){
+      data_c <- subset(data, historical == 0 & treatment == 0)
+      n_c    <- nrow(data_c)
+      e_c    <- sum(data_c$status)
+    } else{
+      data_c <- subset(data, historical == 1 & treatment == 0)
+      n_c    <- nrow(data_c)
+      e_c    <- sum(data_c$status)
+    }
+
+    cat("\n")
+    cat("    Two-armed bdp survival\n\n")
+    cat("data:\n")
+    cat(paste0("  Current treatment: n = ",n_t,", number of events = ", e_t))
+    cat("\n")
+    if(!is.null(args1$S_c)){
+      cat(paste0("  Current control: n = ",n_c,", number of events = ", e_c))
+      cat("\n")
+    } else{
+      cat(paste0("  Historical control: n = ",n_c,", number of events = ", e_c))
+      cat("\n")
+    }
+
+    if(!is.null(args1$S0_t)){
+      cat(paste0("Stochastic comparison - treatment (current vs. historical data): ",
+                 round(posterior_treatment$p_hat,4)))
+      cat("\n")
+    }
+
+    if(!is.null(args1$S0_c) & !is.null(args1$S_c)){
+      cat(paste0("Stochastic comparison - control (current vs. historical data): ",
+                 round(posterior_control$p_hat,4)))
+      cat("\n")
+    }
+
+    if(!is.null(args1$S0_t)){
+      cat(paste0("Discount function value - treatment: ",
+                 round(posterior_treatment$alpha_discount,4)))
+      cat("\n")
+    }
+
+    if(!is.null(args1$S0_c) & !is.null(args1$S_c)){
+      cat(paste0("Discount function value - control: ",
+                 round(posterior_control$alpha_discount,4)))
+      cat("\n")
+    }
+    cat("\n")
+    print(summ_table)
 
   }
 
 
 
-
-  ### Format surv_time output
-  # surv_CI    <- round(quantile(f$treatment_posterior, prob=c(0.025, 0.975)),4)
-  # surv_est   <- round(median(f$treatment_posterior),4)
-  # surv_print <- paste0(surv_est, " (",surv_CI[1], ", ", surv_CI[2],")")
-  #
-  # ### Output list
-  # prior_for_treatment_group <- list(`Stochastic comparison (new vs historical data):  ` = posterior_treatment$p_hat,
-  #                                   `Discount function value:  `                        = posterior_treatment$alpha_discount,
-  #                                   `Survival time:  `                                  = surv_time,
-  #                                   `Median survival probability (95% CI):  `           = surv_print)
-  #
-  # ### Text outputs
-  # return(pp(prior_for_treatment_group))
 
 })
 

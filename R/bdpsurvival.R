@@ -97,22 +97,6 @@
 #'        matrix. The distributions of the historical treatment group piecewise
 #'        hazard rates.}
 #'   }
-#'  \item{\code{f1}}{
-#'    list. Entries contain values related to the posterior effect:}
-#'    \itemize{
-#'      \item{\code{density_post_treatment}}{
-#'        object of class \code{density}. Used internally to plot the density of
-#'        the treatment group posterior.}
-#'      \item{\code{density_flat_treatment}}{
-#'        object of class \code{density}. Used internally to plot the density of
-#'        the treatment group "flat" distribution.}
-#'      \item{\code{density_prior_treatment}}{
-#'        object of class \code{density}. Used internally to plot the density of
-#'        the treatment group prior.}
-#'      \item{\code{treatmentpost}}{
-#'        vector. Used internally to plot the posterior distribution of the
-#'        survival probability.}
-#'   }
 #'  \item{\code{args1}}{
 #'    list. Entries contain user inputs. In addition, the following elements
 #'    are ouput:}
@@ -275,7 +259,7 @@ setMethod("bdpsurvival",
     arm2 <- TRUE
   }
 
-  if(arm2) stop("Two arm trials are not currently supported.")
+  #if(arm2) stop("Two arm trials are not currently supported.")
 
   ### If surv_time is null, replace with median time
   if(is.null(surv_time) & !arm2){
@@ -328,12 +312,6 @@ setMethod("bdpsurvival",
   }
 
 
-  f1 <- final_survival(posterior_treatment = posterior_treatment,
-                       posterior_control   = posterior_control,
-                       arm2                = arm2,
-                       surv_time           = surv_time,
-                       breaks              = breaks)
-
   args1 <- list(S_t           = S_t,
                 S_c           = S_c,
                 S0_t          = S0_t,
@@ -353,7 +331,6 @@ setMethod("bdpsurvival",
 
   me <- list(posterior_treatment = posterior_treatment,
              posterior_control   = posterior_control,
-             f1                  = f1,
              args1               = args1)
 
   class(me) <- "bdpsurvival"
@@ -549,7 +526,7 @@ posterior_survival <- function(S, S0, surv_time, alpha_max, fix_alpha, a0, b0,
   if(!arm2){
     posterior_survival <- 1-ppexp(q=surv_time, x=posterior_hazard, cuts=c(0,breaks))
   } else{
-    posterior_survival <- NULL
+    posterior_survival <- posterior_flat_survival <- prior_survival <- NULL
   }
 
 
@@ -563,63 +540,3 @@ posterior_survival <- function(S, S0, surv_time, alpha_max, fix_alpha, a0, b0,
               prior_hazard            = prior_hazard))
 }
 
-
-
-
-
-### Create final result class
-final_survival <- function(posterior_treatment, posterior_control, arm2=FALSE,
-                           surv_time, breaks){
-
-
-  ### Two-arm trial densities only
-  if(!is.null(posterior_control) & arm2){
-    ### Finalize below code
-    density_post_control  <- density(posterior_control$posterior$posterior,
-                                     adjust = 0.5)
-    density_flat_control  <- density(posterior_control$posterior_flat,
-                                     adjust = 0.5)
-    density_prior_control <- density(posterior_control$prior,
-                                     adjust = 0.5)
-
-    ### Posterior hazard ratios at each interval
-    R0     <- log(posterior_treatment$posterior$posterior)-log(posterior_control$posterior$posterior)
-    V0     <- 1/apply(R0,2,var)
-    logHR0 <- R0%*%V0/sum(V0)
-
-    treatmentpost <- logHR0
-
-    return(list(density_post_control    = density_post_control,
-                density_flat_control    = density_flat_control,
-                density_prior_control   = density_prior_control,
-                treatmentpost           = treatmentpost))
-  }
-}
-
-
-### Transform posterior hazard density list into a data frame
-hazard_list_to_df <- function(hazard, starts, information_sources, group){
-  if(!is.list(hazard)){
-    return(hazard)
-  }
-
-  nS <- length(starts)
-  options(warn=-1)
-  df <- data.frame(information_sources = information_sources,
-                   group = group,
-                   start = starts[1],
-                   x = hazard[[1]]$x,
-                   y = hazard[[1]]$y)
-
-  for(i in 2:nS){
-    df1 <- data.frame(information_sources = information_sources,
-                      group = group,
-                      start = starts[i],
-                      x = hazard[[i]]$x,
-                      y = hazard[[i]]$y)
-    df <- rbind(df, df1)
-  }
-  options(warn=0)
-
-  return(df)
-}
