@@ -15,6 +15,18 @@ Vignettes are long form documentation commonly included in packages. Because the
 - Has a smaller default figure size
 - Uses a custom CSS stylesheet instead of the default Twitter Bootstrap style
 
+## Gaussian means with bdpnormal
+
+
+
+## Binomial counts with bdpbinomial
+
+
+
+## Time-to-event outcomes with bdpsurvival
+
+
+
 ## Vignette Info
 
 Note the various macros within the `vignette` section of the metadata block above. These are required in order to instruct R how to build the vignette. Note that you should change the `title` field and the `\VignetteIndexEntry` to match the title of your vignette.
