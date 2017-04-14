@@ -275,6 +275,7 @@ setMethod("bdpsurvival",
     arm2 <- TRUE
   }
 
+  if(arm2) stop("Two arm trials are not currently supported.")
 
   ### If surv_time is null, replace with median time
   if(is.null(surv_time) & !arm2){
@@ -588,10 +589,7 @@ final_survival <- function(posterior_treatment, posterior_control, arm2=FALSE,
 
     treatmentpost <- logHR0
 
-    return(list(density_post_treatment  = density_post_treatment,
-                density_flat_treatment  = density_flat_treatment,
-                density_prior_treatment = density_prior_treatment,
-                density_post_control    = density_post_control,
+    return(list(density_post_control    = density_post_control,
                 density_flat_control    = density_flat_control,
                 density_prior_control   = density_prior_control,
                 treatmentpost           = treatmentpost))

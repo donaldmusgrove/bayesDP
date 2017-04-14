@@ -43,6 +43,8 @@ setMethod("print", signature(x = "bdpsurvival"), function(x){
   breaks              <- args1$breaks
   arm2                <- args1$arm2
 
+  treatment = NULL
+  historical = NULL
 
   if(!arm2){
     ##############################################################################

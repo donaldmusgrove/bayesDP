@@ -257,6 +257,10 @@ setMethod("summary", signature(object = "bdpsurvival"), function(object){
   ### Survival table
   ##############################################################################
   ### Organize current treatment posterior data
+
+  historical = NULL
+  treatment = NULL
+
   data_t <- subset(data, historical==0 & treatment == 1)
   s_t    <- with(data_t, Surv(time, status))# , type="mstate"))
   n      <- nrow(data_t)

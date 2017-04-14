@@ -369,6 +369,7 @@ setMethod("plot", signature(x = "bdpsurvival"), function(x){
 
   args1               <- x$args1
   posterior_treatment <- x$posterior_treatment
+  posterior_control   <- x$posterior_control
   data                <- args1$data
   breaks              <- args1$breaks
   arm2                <- args1$arm2
@@ -418,7 +419,7 @@ setMethod("plot", signature(x = "bdpsurvival"), function(x){
 
 
     ### Plot survival curve
-    survival_curves <- ggplot(D, aes(x=x,y=y)) +
+    survival_curves <- ggplot(D, aes_string(x = "x", y = "y")) +
       geom_line(size=1.4, aes_string(color="source", lty="source")) +
       ylab("Survival probability") +
       xlab("Time") +
