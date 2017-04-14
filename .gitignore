@@ -6,3 +6,4 @@
 *.dll
 *.so
 packrat/lib*/
+inst/doc
