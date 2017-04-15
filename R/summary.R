@@ -123,7 +123,6 @@ setMethod("summary", signature(object = "bdpnormal"), function(object){
 #' @param object Result
 #' @export
 setMethod("summary", signature(object = "bdpbinomial"), function(object){
-  f                   <- object$f1
   arm2                <- object$args$arm2
   posterior_treatment <- object$posterior_treatment
   posterior_control   <- object$posterior_control
@@ -171,6 +170,7 @@ setMethod("summary", signature(object = "bdpbinomial"), function(object){
 
 
     ###Format control mean output
+    comparison_est <- posterior_treatment$posterior - posterior_control$posterior
 
     mean_est_t   <- format(round(median(posterior_treatment$posterior),2), nsmall = 2)
     mean_est_c   <- format(round(median(posterior_control$posterior),2), nsmall = 2)
@@ -179,8 +179,8 @@ setMethod("summary", signature(object = "bdpbinomial"), function(object){
     mean_print_c <- paste0(mean_est_c, " (",mean_CI_c[1], ", ", mean_CI_c[2],")")
 
     ###Format comparison output
-    comp_CI    <- round(quantile(f$comparison_posterior, prob=c(0.025, 0.975)),4)
-    comp_est   <- round(median(f$comparison_posterior),4)
+    comp_CI    <- round(quantile(comparison_est, prob=c(0.025, 0.975)),4)
+    comp_est   <- round(median(comparison_est),4)
     comp_print <- paste0(comp_est, " (",comp_CI[1], ", ", comp_CI[2],")")
 
     cat("\n")

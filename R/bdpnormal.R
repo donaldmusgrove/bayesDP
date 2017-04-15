@@ -161,7 +161,6 @@ NULL
 #' @export bdpnormal
 bdpnormal <- setClass("bdpnormal", slots = c(posterior_treatment = "list",
                                              posterior_control = "list",
-                                             f1 = "list",
                                              args1 = "list"))
 
 setGeneric("bdpnormal",

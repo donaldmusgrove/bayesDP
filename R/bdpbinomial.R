@@ -92,32 +92,6 @@
 #'  \item{\code{posterior_control}}{
 #'    list. Similar entries as \code{posterior_treament}. Only present if
 #'    control group is specified.}
-#'  \item{\code{f1}}{
-#'    list. Entries contain values related to the posterior effect:}
-#'    \itemize{
-#'      \item{\code{density_post_treatment}}{
-#'        object of class \code{density}. Used internally to plot the density of
-#'        the treatment group posterior.}
-#'      \item{\code{density_flat_treatment}}{
-#'        object of class \code{density}. Used internally to plot the density of
-#'        the treatment group "flat" distribution.}
-#'      \item{\code{density_prior_treatment}}{
-#'        object of class \code{density}. Used internally to plot the density of
-#'        the treatment group prior.}
-#'      \item{\code{density_post_control}}{
-#'        object of class \code{density}. Used internally to plot the density of
-#'        the control group (if present) posterior.}
-#'      \item{\code{density_flat_control}}{
-#'        object of class \code{density}. Used internally to plot the density of
-#'        the control group (if present) "flat" distribution.}
-#'      \item{\code{density_prior_control}}{
-#'        object of class \code{density}. Used internally to plot the density of
-#'        the control group (if present) prior.}
-#'      \item{\code{comparison_posterior}}{
-#'        vector. If control group is present, vector contains posterior
-#'        distribution of the effect estimate of treatment vs. control.
-#'        control groups.}
-#'   }
 #'  \item{\code{args1}}{
 #'    list. Entries contain user inputs. In addition, the following elements
 #'    are ouput:}
@@ -162,7 +136,6 @@
 bdpbinomial <- setClass("bdpbinomial",
                         slots = c(posterior_test = "list",
                                   posterior_control = "list",
-                                  f1 = "list",
                                   args1 = "list"))
 
 setGeneric("bdpbinomial",
@@ -326,16 +299,10 @@ setMethod("bdpbinomial",
       weibull_scale = weibull_scale[2],
       weibull_shape = weibull_shape[2],
       two_side      = two_side)
+  } else{
+    posterior_control <- NULL
   }
 
-  if(arm2){
-    f1 <- final_binomial(posterior_treatment = posterior_treatment,
-                         posterior_control   = posterior_control)
-  }
-  else{
-    f1 <- final_binomial(posterior_treatment = posterior_treatment,
-                         posterior_control   = NULL)
-  }
 
   args1 <- list(y_t           = y_t,
                 N_t           = N_t,
@@ -356,16 +323,9 @@ setMethod("bdpbinomial",
                 arm2          = arm2,
                 intent        = paste(intent,collapse=", "))
 
-  if(arm2){
-    me <- list(posterior_treatment = posterior_treatment,
-               posterior_control   = posterior_control,
-               f1                  = f1,
-               args1               = args1)
-  } else{
-      me <- list(posterior_treatment = posterior_treatment,
-                 f1                  = f1,
-                 args1               = args1)
-  }
+  me <- list(posterior_treatment = posterior_treatment,
+             posterior_control   = posterior_control,
+             args1               = args1)
 
   class(me) <- "bdpbinomial"
 
@@ -465,84 +425,3 @@ posterior_binomial <- function(y, N, y0, N0, alpha_max, fix_alpha, a0, b0,
 }
 
 
-
-
-################################################################################
-# Binomial: create final result class
-# - If no control, only returns posterior info for the treatment data
-# - TODO: Remove density() functions and have plot method compute
-#         densities on the fly
-################################################################################
-#' @title final_binomial
-#' @description final_binomial
-#' @param posterior_treatment posterior_treatment
-#' @param posterior_control posterior_control
-#' @rdname final_binomial
-#' @aliases final_binomial,ANY-method
-#' @export final_binomial
-setGeneric("final_binomial",
-           function(posterior_treatment = NULL,
-                    posterior_control   = NULL){
-    standardGeneric("final_binomial")
-  })
-
-  setMethod("final_binomial",
-            signature(),
-            function(posterior_treatment = NULL,
-                     posterior_control   = NULL){
-
-  density_post_treatment  <- density(posterior_treatment$posterior,
-                                     adjust = .5)
-
-  if(!is.null(posterior_treatment$posterior_flat)){
-    density_flat_treatment  <- density(posterior_treatment$posterior_flat,
-                                       adjust = .5)
-  } else{
-    density_flat_treatment <- NULL
-  }
-
-  if(!is.null(posterior_treatment$prior)){
-    density_prior_treatment <- density(posterior_treatment$prior,
-                                       adjust = .5)
-  } else{
-    density_prior_treatment <- NULL
-  }
-
-
-  if(is.null(posterior_control)){
-    treatment_posterior <- posterior_treatment$posterior
-
-    return(list(density_post_treatment  = density_post_treatment,
-                density_flat_treatment  = density_flat_treatment,
-                density_prior_treatment = density_prior_treatment,
-                treatment_posterior     = treatment_posterior))
-  } else{
-    density_post_control  <- density(posterior_control$posterior,
-                                     adjust = .5)
-
-    if(!is.null(posterior_control$posterior_flat)){
-      density_flat_control  <- density(posterior_control$posterior_flat,
-                                       adjust = .5)
-    } else{
-      density_flat_control <- NULL
-    }
-
-    if(!is.null(posterior_control$prior)){
-      density_prior_control <- density(posterior_control$prior,
-                                       adjust = .5)
-    } else{
-      density_prior_control <- NULL
-    }
-
-    comparison_posterior <- posterior_treatment$posterior - posterior_control$posterior
-
-    return(list(density_post_control    = density_post_control,
-                density_flat_control    = density_flat_control,
-                density_prior_control   = density_prior_control,
-                density_post_treatment  = density_post_treatment,
-                density_flat_treatment  = density_flat_treatment,
-                density_prior_treatment = density_prior_treatment,
-                comparison_posterior    = comparison_posterior))
-  }
-
-})

@@ -3,7 +3,6 @@
 export(bdpbinomial)
 export(bdpnormal)
 export(bdpsurvival)
-export(final_binomial)
 export(ppexp)
 exportMethods(plot)
 exportMethods(print)
