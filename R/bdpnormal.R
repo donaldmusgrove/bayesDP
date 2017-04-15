@@ -118,33 +118,8 @@ NULL
 #'   }
 #'  \item{\code{posterior_control}}{
 #'    list. Similar entries as \code{posterior_treament}. Only present if
-#'    control group is specified.}
-#'  \item{\code{f1}}{
-#'    list. Entries contain values related to the posterior effect:}
-#'    \itemize{
-#'      \item{\code{density_post_treatment}}{
-#'        object of class \code{density}. Used internally to plot the density of
-#'        the treatment group posterior.}
-#'      \item{\code{density_flat_treatment}}{
-#'        object of class \code{density}. Used internally to plot the density of
-#'        the treatment group "flat" distribution.}
-#'      \item{\code{density_prior_treatment}}{
-#'        object of class \code{density}. Used internally to plot the density of
-#'        the treatment group prior.}
-#'      \item{\code{density_post_control}}{
-#'        object of class \code{density}. Used internally to plot the density of
-#'        the control group (if present) posterior.}
-#'      \item{\code{density_flat_control}}{
-#'        object of class \code{density}. Used internally to plot the density of
-#'        the control group (if present) "flat" distribution.}
-#'      \item{\code{density_prior_control}}{
-#'        object of class \code{density}. Used internally to plot the density of
-#'        the control group (if present) prior.}
-#'      \item{\code{TestMinusControl_post}}{
-#'        vector. If control group is present, vector contains posterior
-#'        distribution of the effect estimate of treatment vs. control.
-#'        control groups.}
-#'   }
+#'    control group is specified.
+#'  }
 #'  \item{\code{args1}}{
 #'    list. Entries contain user inputs. In addition, the following elements
 #'    are ouput:}
@@ -364,16 +339,10 @@ setMethod("bdpnormal",
       weibull_scale = weibull_scale[2],
       weibull_shape = weibull_shape[2],
       two_side      = two_side)
+  } else{
+    posterior_control <- NULL
   }
 
-  if (arm2 ==  TRUE){
-    f1 <- final_normal(posterior_treatment = posterior_treatment,
-                       posterior_control = posterior_control)
-  }
-  else{
-    f1 <- final_normal(posterior_treatment = posterior_treatment,
-                       posterior_control   = NULL)
-  }
 
   args1 <- list(mu_t          = mu_t,
                 sigma_t       = sigma_t,
@@ -396,22 +365,13 @@ setMethod("bdpnormal",
                 arm2          = arm2,
                 intent        = paste(intent,collapse=", "))
 
-  if (arm2){
-    me <- list(posterior_treatment = posterior_treatment,
-               posterior_control   = posterior_control,
-               f1                  = f1,
-               args1               = args1)
-  }
-  else{
-    me <- list(posterior_treatment = posterior_treatment,
-               f1                  = f1,
-               args1               = args1)
-  }
+  me <- list(posterior_treatment = posterior_treatment,
+             posterior_control   = posterior_control,
+             args1               = args1)
 
   class(me) <- "bdpnormal"
 
   return(me)
-
 })
 
 
@@ -512,84 +472,3 @@ posterior_normal <- function(mu, sigma, N, mu0, sigma0, N0, alpha_max,
               prior_sigma2          = prior_sigma2))
 }
 
-
-
-
-
-#' @title final_normal
-#' @description final_normal
-#' @param posterior_treatment posterior_treatment
-#' @param posterior_control posterior_control
-#' @rdname final_normal
-#' @aliases final_normal,ANY-method
-#' @export final_normal
-setGeneric("final_normal",
-           function(posterior_treatment = NULL,
-                    posterior_control   = NULL){
-             standardGeneric("final_normal")
-           })
-
-setMethod("final_normal",
-          signature(),
-          function(posterior_treatment = NULL,
-                   posterior_control   = NULL){
-
-  # Create plotting densities for the treatment group
-  density_post_treatment  <- density(posterior_treatment$posterior_mu,
-                                     adjust = 0.5)
-
-  if(!is.null(posterior_treatment$posterior_flat_mu)){
-    density_flat_treatment  <- density(posterior_treatment$posterior_flat_mu,
-                                       adjust = .5)
-  } else{
-    density_flat_treatment <- NULL
-  }
-
-
-  if(!is.null(posterior_treatment$prior_mu)){
-    density_prior_treatment <- density(posterior_treatment$prior_mu,
-                                       adjust = .5)
-  } else{
-    density_prior_treatment <- NULL
-  }
-
-
-  # If no controls are present, output a list with above densities
-  # else, append control densities
-  if(is.null(posterior_control)){
-    treatment_posterior <- posterior_treatment$posterior_mu
-
-    return(list(density_post_treatment  = density_post_treatment,
-                density_flat_treatment  = density_flat_treatment,
-                density_prior_treatment = density_prior_treatment,
-                treatment_posterior     = treatment_posterior))
-  } else{
-    density_post_control  <- density(posterior_control$posterior_mu,
-                                     adjust = .5)
-
-    if(!is.null(posterior_control$posterior_flat_mu)){
-      density_flat_control  <- density(posterior_control$posterior_flat_mu,
-                                       adjust = .5)
-    } else{
-      density_flat_control <- NULL
-    }
-
-    if(!is.null(posterior_control$prior_mu)){
-      density_prior_control <- density(posterior_control$prior_mu,
-                                       adjust = .5)
-    } else{
-      density_prior_control <- NULL
-    }
-
-    comparison_posterior <- posterior_treatment$posterior_mu - posterior_control$posterior_mu
-
-    return(list(density_post_control    = density_post_control,
-                density_flat_control    = density_flat_control,
-                density_prior_control   = density_prior_control,
-                density_post_treatment  = density_post_treatment,
-                density_flat_treatment  = density_flat_treatment,
-                density_prior_treatment = density_prior_treatment,
-                comparison_posterior    = comparison_posterior))
-  }
-
-})

@@ -105,33 +105,8 @@ the following components:
   }
  \item{\code{posterior_control}}{
    list. Similar entries as \code{posterior_treament}. Only present if
-   control group is specified.}
- \item{\code{f1}}{
-   list. Entries contain values related to the posterior effect:}
-   \itemize{
-     \item{\code{density_post_treatment}}{
-       object of class \code{density}. Used internally to plot the density of
-       the treatment group posterior.}
-     \item{\code{density_flat_treatment}}{
-       object of class \code{density}. Used internally to plot the density of
-       the treatment group "flat" distribution.}
-     \item{\code{density_prior_treatment}}{
-       object of class \code{density}. Used internally to plot the density of
-       the treatment group prior.}
-     \item{\code{density_post_control}}{
-       object of class \code{density}. Used internally to plot the density of
-       the control group (if present) posterior.}
-     \item{\code{density_flat_control}}{
-       object of class \code{density}. Used internally to plot the density of
-       the control group (if present) "flat" distribution.}
-     \item{\code{density_prior_control}}{
-       object of class \code{density}. Used internally to plot the density of
-       the control group (if present) prior.}
-     \item{\code{TestMinusControl_post}}{
-       vector. If control group is present, vector contains posterior
-       distribution of the effect estimate of treatment vs. control.
-       control groups.}
-  }
+   control group is specified.
+ }
  \item{\code{args1}}{
    list. Entries contain user inputs. In addition, the following elements
    are ouput:}

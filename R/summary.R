@@ -7,7 +7,6 @@
 #' @param object Result
 #' @export
 setMethod("summary", signature(object = "bdpnormal"), function(object){
-  f                   <- object$f1
   arm2                <- object$args$arm2
   posterior_treatment <- object$posterior_treatment
   posterior_control   <- object$posterior_control
@@ -54,9 +53,11 @@ setMethod("summary", signature(object = "bdpnormal"), function(object){
     cat(paste0(" ",mean_est_t))
     cat("\n")
   } else{
+    comparison_est <- posterior_treatment$posterior_mu - posterior_control$posterior_mu
+
     mean_est_t <- format(round(median(posterior_treatment$posterior_mu),2), nsmall = 2)
     mean_est_c <- format(round(median(posterior_control$posterior_mu),2), nsmall = 2)
-    comp_CI    <- round(quantile(f$comparison_posterior, prob=c(0.025, 0.975)),4)
+    comp_CI    <- round(quantile(comparison_est, prob=c(0.025, 0.975)),4)
     cat("\n")
     cat("    Two-armed bdp normal\n\n")
     cat("data:\n")
@@ -251,7 +252,7 @@ setMethod("summary", signature(object = "bdpsurvival"), function(object){
 
   historical <- NULL
   treatment  <- NULL
-  
+
   ##############################################################################
   ### Survival table
   ### - Only print if !arm2

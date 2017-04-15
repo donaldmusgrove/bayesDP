@@ -8,7 +8,6 @@
 #' @param x Result
 #' @export
 setMethod("plot", signature(x = "bdpnormal"), function(x){
-  f                   <- x$f1
   posterior_treatment <- x$posterior_treatment
   posterior_control   <- x$posterior_control
   two_side            <- x$args1$two_side
@@ -24,47 +23,55 @@ setMethod("plot", signature(x = "bdpnormal"), function(x){
   D1 <- D2 <- D3 <- D5 <- D6 <- NULL
 
   if (arm2){
+    dens1 <- density(posterior_control$posterior_mu,
+                     adjust=0.5)
     D1 <- data.frame(information_sources="Posterior",
                      group="Control",
-                     y=f$density_post_control$y,
-                     x=f$density_post_control$x)
+                     x=dens1$x,
+                     y=dens1$y)
 
-    if(!is.null(f$density_flat_control)){
+    if(!is.null(posterior_control$posterior_flat_mu)){
+      dens2 <- density(posterior_control$posterior_flat_mu,adjust=0.5)
       D2 <- data.frame(information_sources="Current Data",
                        group="Control",
-                       y=f$density_flat_control$y,
-                       x=f$density_flat_control$x)
+                       x=dens2$x,
+                       y=dens2$y)
     }
 
-    if(!is.null(f$density_prior_control)){
+    if(!is.null(posterior_control$prior_mu)){
+      dens3 <- density(posterior_control$prior_mu,adjust=0.5)
       D3 <- data.frame(information_sources="Historical Data",
                        group="Control",
-                       y=f$density_prior_control$y,
-                       x=f$density_prior_control$x)
+                       x=dens3$x,
+                       y=dens3$y)
     }
   }
 
+
+  dens4 <- density(posterior_treatment$posterior_mu,adjust=0.5)
   D4 <- data.frame(information_sources="Posterior",
                    group="Treatment",
-                   y=f$density_post_treatment$y,
-                   x=f$density_post_treatment$x)
+                   x=dens4$x,
+                   y=dens4$y)
 
 
-  if(!is.null(f$density_flat_treatment)){
+  if(!is.null(posterior_treatment$posterior_flat_mu)){
+    dens5 <- density(posterior_treatment$posterior_flat_mu,adjust=0.5)
     D5 <- data.frame(information_sources="Current Data",
                      group="Treatment",
-                     y=f$density_flat_treatment$y,
-                     x=f$density_flat_treatment$x)
+                     x=dens5$x,
+                     y=dens5$y)
   }
 
-  if(!is.null(f$density_prior_treatment)){
+  if(!is.null(posterior_treatment$prior_mu)){
+    dens6 <- density(posterior_treatment$prior_mu,adjust=0.5)
     D6 <- data.frame(information_sources="Historical Data",
                      group="Treatment",
-                     y=f$density_prior_treatment$y,
-                     x=f$density_prior_treatment$x)
+                     x=dens6$x,
+                     y=dens6$y)
   }
 
-  D <- as.data.frame(rbind(D1,D2,D3,D4,D5,D6))
+  D <- rbind(D1,D2,D3,D4,D5,D6)
 
   D$information_sources <- factor(D$information_sources,
                                   levels = (c("Posterior","Current Data","Historical Data")))
@@ -469,8 +476,8 @@ setMethod("plot", signature(x = "bdpsurvival"), function(x){
                      y      = survival_median_posterior)
   } else{
     D6 <- NULL
-  }                 
-                            
+  }
+
   D <- rbind(D4,D5,D6, D1,D2,D3)
 
   ### Plot survival curve

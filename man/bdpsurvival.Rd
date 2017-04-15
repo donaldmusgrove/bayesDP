@@ -86,22 +86,6 @@ the following components:
        matrix. The distributions of the historical treatment group piecewise
        hazard rates.}
   }
- \item{\code{f1}}{
-   list. Entries contain values related to the posterior effect:}
-   \itemize{
-     \item{\code{density_post_treatment}}{
-       object of class \code{density}. Used internally to plot the density of
-       the treatment group posterior.}
-     \item{\code{density_flat_treatment}}{
-       object of class \code{density}. Used internally to plot the density of
-       the treatment group "flat" distribution.}
-     \item{\code{density_prior_treatment}}{
-       object of class \code{density}. Used internally to plot the density of
-       the treatment group prior.}
-     \item{\code{treatmentpost}}{
-       vector. Used internally to plot the posterior distribution of the
-       survival probability.}
-  }
  \item{\code{args1}}{
    list. Entries contain user inputs. In addition, the following elements
    are ouput:}
