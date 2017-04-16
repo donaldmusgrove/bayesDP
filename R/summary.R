@@ -38,10 +38,10 @@ setMethod("summary", signature(object = "bdpnormal"), function(object){
       cat(paste0("  Historical treatment: mu0_t = ",mu0_t,", sigma0_t = ",
                  sigma0_t, ", N0_t = ", N0_t))
       cat("\n")
-      cat(paste0("Stochastic comparison - treatment (current vs. historical data): ",
+      cat(paste0("Stochastic comparison (p_hat) - treatment (current vs. historical data): ",
                  round(posterior_treatment$p_hat,4)))
       cat("\n")
-      cat(paste0("Discount function value - treatment: ",
+      cat(paste0("Discount function value (alpha) - treatment: ",
                  round(posterior_treatment$alpha_discount,4)))
       cat("\n")
     }
@@ -77,25 +77,25 @@ setMethod("summary", signature(object = "bdpnormal"), function(object){
     }
 
     if(!is.null(N0_t)){
-      cat(paste0("Stochastic comparison - treatment (current vs. historical data): ",
+      cat(paste0("Stochastic comparison (p_hat) - treatment (current vs. historical data): ",
                  round(posterior_treatment$p_hat,4)))
       cat("\n")
     }
 
     if(!is.null(N0_c) & !is.null(N_c)){
-      cat(paste0("Stochastic comparison - control (current vs. historical data): ",
+      cat(paste0("Stochastic comparison (p_hat) - control (current vs. historical data): ",
                  round(posterior_control$p_hat,4)))
       cat("\n")
     }
 
     if(!is.null(N0_t)){
-      cat(paste0("Discount function value - treatment: ",
+      cat(paste0("Discount function value (alpha) - treatment: ",
                  round(posterior_treatment$alpha_discount,4)))
       cat("\n")
     }
 
     if(!is.null(N0_c) & !is.null(N_c)){
-      cat(paste0("Discount function value - control: ",
+      cat(paste0("Discount function value (alpha) - control: ",
                  round(posterior_control$alpha_discount,4)))
       cat("\n")
     }
@@ -147,10 +147,10 @@ setMethod("summary", signature(object = "bdpbinomial"), function(object){
     cat(paste0("Current treatment data: ", y_t, " and ", N_t, "\n"))
     if(!is.null(N0_t)){
       cat(paste0("Historical treatment data: ", y0_t, " and ", N0_t, "\n"))
-      cat(paste0("Stochastic comparison - treatment (current vs. historical data): ",
+      cat(paste0("Stochastic comparison (p_hat) - treatment (current vs. historical data): ",
                  round(posterior_treatment$p_hat,4)))
       cat("\n")
-      cat(paste0("Discount function value - treatment: ",
+      cat(paste0("Discount function value (alpha) - treatment: ",
                  round(posterior_treatment$alpha_discount,4)))
       cat("\n")
     }
@@ -196,24 +196,24 @@ setMethod("summary", signature(object = "bdpbinomial"), function(object){
       cat(paste0("Historical control data: ", y0_c, " and ", N0_c, "\n"))
     }
     if(!is.null(N_t) & !is.null(N0_t)){
-      cat(paste0("Stochastic comparison - treatment (current vs. historical data): ",
+      cat(paste0("Stochastic comparison (p_hat) - treatment (current vs. historical data): ",
                  round(posterior_treatment$p_hat,4)))
       cat("\n")
     }
     if(!is.null(N_c) & !is.null(N0_c)){
-      cat(paste0("Stochastic comparison - control (current vs. historical data): ",
+      cat(paste0("Stochastic comparison (p_hat) - control (current vs. historical data): ",
                  round(posterior_control$p_hat,4)))
       cat("\n")
     }
 
     if(!is.null(N_t) & !is.null(N0_t)){
-      cat(paste0("Discount function value - treatment: ",
+      cat(paste0("Discount function value (alpha) - treatment: ",
                  round(posterior_treatment$alpha_discount,4)))
       cat("\n")
     }
 
     if(!is.null(N_c) & !is.null(N0_c)){
-      cat(paste0("Discount function value - control: ",
+      cat(paste0("Discount function value (alpha) - control: ",
                  round(posterior_control$alpha_discount,4)))
       cat("\n")
     }
@@ -285,10 +285,10 @@ setMethod("summary", signature(object = "bdpsurvival"), function(object){
       cat("\n")
       print(m_t)
     } else{
-      cat(paste0("Stochastic comparison - treatment (current vs. historical data): ",
+      cat(paste0("Stochastic comparison (p_hat) - treatment (current vs. historical data): ",
                  round(posterior_treatment$p_hat,4)))
       cat("\n")
-      cat(paste0("Discount function value - treatment: ",
+      cat(paste0("Discount function value (alpha) - treatment: ",
                  round(posterior_treatment$alpha_discount,4)))
       cat("\n")
       cat("\n")
@@ -346,25 +346,25 @@ setMethod("summary", signature(object = "bdpsurvival"), function(object){
     }
 
     if(!is.null(args1$S0_t)){
-      cat(paste0("Stochastic comparison - treatment (current vs. historical data): ",
+      cat(paste0("Stochastic comparison (p_hat) - treatment (current vs. historical data): ",
                  round(posterior_treatment$p_hat,4)))
       cat("\n")
     }
 
     if(!is.null(args1$S0_c) & !is.null(args1$S_c)){
-      cat(paste0("Stochastic comparison - control (current vs. historical data): ",
+      cat(paste0("Stochastic comparison (p_hat) - control (current vs. historical data): ",
                  round(posterior_control$p_hat,4)))
       cat("\n")
     }
 
     if(!is.null(args1$S0_t)){
-      cat(paste0("Discount function value - treatment: ",
+      cat(paste0("Discount function value (alpha) - treatment: ",
                  round(posterior_treatment$alpha_discount,4)))
       cat("\n")
     }
 
     if(!is.null(args1$S0_c) & !is.null(args1$S_c)){
-      cat(paste0("Discount function value - control: ",
+      cat(paste0("Discount function value (alpha) - control: ",
                  round(posterior_control$alpha_discount,4)))
       cat("\n")
     }
