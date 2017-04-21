@@ -12,9 +12,6 @@ https://cran.r-project.org/package=bayesDP
 [![Downloads](http://cranlogs.r-pkg.org/badges/bayesDP?color=brightgreen)](http://www.r-pkg.org/pkg/bayesDP)
 
 [![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/balcomes/bayesDP/issues)
-[![Join the chat at https://gitter.im/balcomes/bayesDP](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/bayesDP?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-[![Find me on Slack!](https://img.shields.io/badge/Slack-join%20chat-ff69b4.svg)](https://bayesdp.slack.com/messages/@balcomes)
-
 
 ### CRAN Installation
 
