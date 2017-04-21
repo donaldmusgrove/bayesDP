@@ -3,7 +3,7 @@
 \docType{methods}
 \name{summary,bdpsurvival-method}
 \alias{summary,bdpsurvival-method}
-\title{summary}
+\title{bdpsurvival Object Summary}
 \usage{
 \S4method{summary}{bdpsurvival}(object)
 }
@@ -11,5 +11,5 @@
 \item{object}{Result}
 }
 \description{
-survival summary method
+\code{summary} method for class "\code{bdpsurvival}".
 }

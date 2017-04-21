@@ -25,10 +25,10 @@ quantiles of the input times.}
 \item{a0}{scalar. Prior value for the gamma shape of the piecewise
 exponential hazards. Default is 1.}
 
-\item{b0}{scalar. Prior Prior value for the gamma rate of the piecewise
+\item{b0}{scalar. Prior value for the gamma rate of the piecewise
 exponential hazards. Default is 1.}
 
-\item{surv_time}{scalar. Survival time of interest for computing the the
+\item{surv_time}{scalar. Survival time of interest for computing the
 probability of survival for a single arm (OPC) trial. Default is
 overall, i.e., current+historical, median survival time.}
 
@@ -61,8 +61,8 @@ function. Default value is TRUE.}
 }
 \value{
 \code{bdpsurvival} returns an object of class "bdpsurvival".
-The functions \code{summary} and \code{print} are used to obtain and
-print a summary of the results, including user inputs. The \code{plot}
+The functions \code{\link{summary}} and \code{\link{print}} are used to obtain and
+print a summary of the results, including user inputs. The \code{\link{plot}}
 function displays visual outputs as well.
 
 An object of class "\code{bdpsurvival}" is a list containing at least
@@ -77,21 +77,28 @@ the following components:
        numeric. The posterior probability of the stochastic comparison
        between the current and historical data.}
      \item{\code{posterior_survival}}{
-       vector. If one-arm trial, the posterior probability draws of survival at
+       vector. If one-arm trial, a vector of length \code{number_mcmc}
+       containing the posterior probability draws of survival at
        \code{surv_time}.}
-     \item{posterior_flat_survival}{
-       vector. If one-arm trial, the probability draws of survival at \code{surv_time}
+     \item{\code{posterior_flat_survival}}{
+       vector. If one-arm trial, a vector of length \code{number_mcmc}
+       containing the probability draws of survival at \code{surv_time}
        for the current treatment not augmented by historical treatment.}
-     \item{prior_survival}{
-       vector. If one-arm trial, the probability draws of survival at \code{surv_time}
+     \item{\code{prior_survival}}{
+       vector. If one-arm trial, a vector of length \code{number_mcmc}
+       containing the probability draws of survival at \code{surv_time}
        for the historical treatment.}
      \item{\code{posterior_hazard}}{
-       matrix. The posterior draws of the piecewise hazards for each interval break point.}
-     \item{posterior_flat_hazard}{
-       matrix. The draws of piecewise hazards for each interval break point for current
-       treatment not augmented by historical treatment.}
-     \item{prior_hazard}{
-       matrix. The draws of piecewise hazards for each interval break point
+       matrix. A matrix with \code{number_mcmc} rows and \code{length(breaks)}
+       columns containing the posterior draws of the piecewise hazards
+       for each interval break point.}
+     \item{\code{posterior_flat_hazard}}{
+       matrix. A matrix with \code{number_mcmc} rows and \code{length(breaks)}
+       columns containing the draws of piecewise hazards for each interval
+       break point for current treatment not augmented by historical treatment.}
+     \item{\code{prior_hazard}}{
+       matrix. A matrix with \code{number_mcmc} rows and \code{length(breaks)}
+       columns containing the draws of piecewise hazards for each interval break point
        for historical treatment.}
   }
  \item{\code{posterior_control}}{
@@ -125,8 +132,8 @@ the following components:
   Disagreement between current and historical data is determined by stochastically
   comparing the respective posterior distributions under noninformative priors.
   With a single arm survival data analysis, the comparison is the
-  proability (\code{p}) that the current survial is less than the historical
-  survival. FOr a two-arm survival data, analysis the comparison is the
+  probability (\code{p}) that the current survival is less than the historical
+  survival. For a two-arm survival data, analysis the comparison is the
   probability that the hazard ratio comparing treatment and control is
   different from zero. The comparison metric \code{p} is then
   input into the Weibull discount function and the final strength of the
@@ -157,7 +164,7 @@ the following components:
   and control groups.
 }
 \examples{
-# One-arm trial (OPC) example
+# One-arm trial (OPC) example - survival probability at 5 years
 # Simulate survival data for a single arm (OPC) trial
 time   <- c(rexp(50, rate=1/20), rexp(50, rate=1/10))
 status <- c(rexp(50, rate=1/30), rexp(50, rate=1/30))
@@ -170,10 +177,13 @@ example_surv_1arm <- data.frame(status     = status,
                                 treatment  = 1)
 
 fit1 <- bdpsurvival(Surv(time, status) ~ historical + treatment,
-                       data = example_surv_1arm)
+                    data = example_surv_1arm,
+                    surv_time = 5)
 
-summary(fit1)
-
+print(fit1)
+\dontrun{
+plot(fit1)
+}
 
 # Two-arm trial (OPC) example
 # Simulate survival data for a two-arm trial
@@ -203,4 +213,9 @@ fit2_1 <- bdpsurvival(Surv(time, status) ~ historical + treatment,
 summary(fit2_1)
 
 
+}
+\seealso{
+\code{\link{plot,bdpsurvival-method}}, \code{\link{print,bdpsurvival-method}},
+  and \code{\link{summary,bdpsurvival-method}} for details of each of the
+  supported methods.
 }

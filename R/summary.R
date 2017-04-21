@@ -232,13 +232,14 @@ setMethod("summary", signature(object = "bdpbinomial"), function(object){
 })
 
 
-#' @title summary
-#' @description survival summary method
+#' @title bdpsurvival Object Summary
+#' @description \code{summary} method for class "\code{bdpsurvival}".
 #' @import methods
 #' @importFrom utils head
 #' @importFrom utils write.table
 #' @importFrom stats density is.empty.model median model.offset model.response pweibull quantile rbeta rgamma rnorm var vcov
-#' @param object Result
+#' @param object an object of class "\code{bdpsurvival}", a result of a call
+#'   to \code{\link{bdpsurvival}}.
 #' @export
 setMethod("summary", signature(object = "bdpsurvival"), function(object){
   posterior_treatment <- object$posterior_treatment
