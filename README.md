@@ -1,4 +1,4 @@
-![alt text](https://raw.githubusercontent.com/balcomes/bayesDP/master/bayesDP-logo.png "bayesDP Logo" height = "400" width = "400")
+![alt text](https://raw.githubusercontent.com/balcomes/bayesDP/master/bayesDP-logo.png "bayesDP Logo")
 
 # bayesDP:
 ## Tools for the Bayesian Discount Prior Function
