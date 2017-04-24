@@ -11,7 +11,9 @@
 \item{x}{Result}
 
 \item{type}{character. Optional. Select plot type to print.
-Supports "discount" for the discount function. Leave NULL to
+Supports the following: "discount" gives the discount function;
+"posteriors" gives the posterior plots of the event rates; and
+"density" gives the augmented posterior density plot(s).  Leave NULL to
 display all plots in sequence.}
 }
 \description{
