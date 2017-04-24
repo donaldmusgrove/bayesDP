@@ -193,7 +193,7 @@ setMethod("plot", signature(x = "bdpnormal"), function(x){
 #' @importFrom stats density is.empty.model median model.offset model.response pweibull quantile rbeta rgamma rnorm var vcov
 #' @param x Result
 #' @export
-setMethod("plot", signature(x = "bdpbinomial"), function(x){
+setMethod("plot", signature(x = "bdpbinomial"), function(x, type=NULL){
   posterior_treatment <- x$posterior_treatment
   posterior_control   <- x$posterior_control
   two_side            <- x$args1$two_side
@@ -360,13 +360,19 @@ setMethod("plot", signature(x = "bdpbinomial"), function(x){
   }
 
 
-  op <- par(ask=TRUE)
-  plot(post_typeplot)
-  plot(densityplot)
-  if(!is.null(discountfun_plot)){
-    plot(discountfun_plot)
+  if(is.null(type)){
+    op <- par(ask=TRUE)
+    plot(post_typeplot)
+    plot(densityplot)
+    if(!is.null(discountfun_plot)){
+      plot(discountfun_plot)
+    }
+    par(op)
+  } else if (type=="discount"){
+    if(!is.null(discountfun_plot)){
+      plot(discountfun_plot)
+    }
   }
-  par(op)
 })
 
 
