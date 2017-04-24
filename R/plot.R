@@ -186,6 +186,9 @@ setMethod("plot", signature(x = "bdpnormal"), function(x){
 
 #' @title plot
 #' @description binomial plot method
+#' @param type character. Optional. Select plot type to print.
+#'   Supports "discount" for the discount function. Leave NULL to
+#'   display all plots in sequence.
 #' @import methods
 #' @importFrom utils head
 #' @importFrom ggplot2 aes_string ggtitle ylim guides guide_legend theme element_blank

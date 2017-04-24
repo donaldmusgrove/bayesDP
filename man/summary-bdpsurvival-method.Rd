@@ -8,7 +8,8 @@
 \S4method{summary}{bdpsurvival}(object)
 }
 \arguments{
-\item{object}{Result}
+\item{object}{an object of class "\code{bdpsurvival}", a result of a call
+to \code{\link{bdpsurvival}}.}
 }
 \description{
 \code{summary} method for class "\code{bdpsurvival}".

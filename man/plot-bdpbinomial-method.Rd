@@ -5,10 +5,14 @@
 \alias{plot,bdpbinomial-method}
 \title{plot}
 \usage{
-\S4method{plot}{bdpbinomial}(x)
+\S4method{plot}{bdpbinomial}(x, type = NULL)
 }
 \arguments{
 \item{x}{Result}
+
+\item{type}{character. Optional. Select plot type to print.
+Supports "discount" for the discount function. Leave NULL to
+display all plots in sequence.}
 }
 \description{
 binomial plot method
