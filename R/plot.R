@@ -1,5 +1,10 @@
 #' @title plot
 #' @description normal plot method
+#' @param type character. Optional. Select plot type to print.
+#'   Supports the following: "discount" gives the discount function;
+#'   "posteriors" gives the posterior plots of the event rates; and
+#'   "density" gives the augmented posterior density plot(s).  Leave NULL to
+#'   display all plots in sequence.
 #' @import methods
 #' @importFrom utils head
 #' @importFrom ggplot2 aes_string ggtitle ylim guides guide_legend theme element_blank
@@ -7,7 +12,7 @@
 #' @importFrom stats density is.empty.model median model.offset model.response pweibull quantile rbeta rgamma rnorm var vcov
 #' @param x Result
 #' @export
-setMethod("plot", signature(x = "bdpnormal"), function(x){
+setMethod("plot", signature(x = "bdpnormal"), function(x, type=NULL){
   posterior_treatment <- x$posterior_treatment
   posterior_control   <- x$posterior_control
   two_side            <- x$args1$two_side
@@ -174,13 +179,24 @@ setMethod("plot", signature(x = "bdpnormal"), function(x){
       theme(legend.title=element_blank())
   }
 
-  op <- par(ask=TRUE)
-  plot(post_typeplot)
-  plot(densityplot)
-  if(!is.null(discountfun_plot)){
-    plot(discountfun_plot)
+
+  if(is.null(type)){
+    op <- par(ask=TRUE)
+    plot(post_typeplot)
+    plot(densityplot)
+    if(!is.null(discountfun_plot)){
+      plot(discountfun_plot)
+    }
+    par(op)
+  } else if (type=="discount"){
+    if(!is.null(discountfun_plot)){
+      plot(discountfun_plot)
+    }
+  } else if (type=="posteriors"){
+    plot(post_typeplot)
+  } else if (type=="density"){
+    plot(densityplot)
   }
-  par(op)
 })
 
 
