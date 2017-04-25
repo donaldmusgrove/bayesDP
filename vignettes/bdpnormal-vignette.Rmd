@@ -16,6 +16,7 @@ vignette: >
 ---
 
 ```{r, SETTINGS-knitr, include=FALSE}
+library(bayesDP)
 stopifnot(require(knitr))
 opts_chunk$set(
   #comment = NA,
@@ -29,83 +30,199 @@ opts_chunk$set(
   out.width = "60%",
   fig.align = "center"
   )
+
+# Run two models to document the discount function plots
+fit01 <- bdpnormal(mu_t=10, sigma_t = 1, N_t=500, 
+                   mu0_t=10, sigma0_t = 1, N0_t=500, two_side=FALSE)
+fit02 <- bdpnormal(mu_t=10, sigma_t = 1, N_t=500, 
+                   mu0_t=10, sigma0_t = 1, N0_t=500)
+
+```
+# Introduction
+The purpose of this vignette is to introduce the `bdpnormal` function. `bdpnormal` is used for estimating posterior samples from a Gaussian mean outcome for clinical trials where an informative prior is used. In the parlance of clinical trials, the informative prior is derived from historical data. The weight given to the historical data is determined using what we refer to as a discount function. There are three steps in carrying out estimation:
+
+1. Estimation of the historical data weight, denoted $\hat{\alpha}$, via the discount function
+
+2. Estimation of the posterior distribution of the current data, conditional on the historical data weighted by $\hat{\alpha}$
+
+3. If a two-arm clinical trial, estimation of the posterior treatment effect, i.e., treatment versus control
+
+Throughout this vignette, we use the terms `current`, `historical`, `treatment`, and `control`. These terms are used because the model was envisioned in the context of clinical trials where historical data may be present. Because of this terminology, there are 4 potential sources of data:
+
+1. Current treatment data: treatment data from a current study
+
+2. Current control data: control (or other treatment) data from a current study
+
+3. Historical control data: treatment data from a previous study
+
+4. Historical control data: control (or other treatment) data from a previous study
+
+If only treatment data is input, the function considers the analysis a one-arm trial. If treatment data + control data is input, then it is considered a two-arm trial.
+
+
+## Estimation of the historical data weight
+In the first estimation step, the historical data weight $\hat{\alpha}$ is estimated. In the case of a two-arm trial, where both treatment and control data are available, an $\hat{\alpha}$ value is estimated separately for each of the treatment and control arms. Of course, historical treatment or historical control data must be present, otherwise $\hat{\alpha}$ is not estimated for the corresponding arm.
+
+When historical data are available, estimation of $\hat{\alpha}$ is carried out as follows. Let $\bar{y}_t$, $s_t$, and $N_t$ denote the sample mean, sample standard deviation, and sample size of the current data, respectively. Similarly, let $\bar{y}_{0t}$, $s_{0t}$, and $N_{0t}$ denote the sample mean, sample standard deviation, and sample size of the historical data, respectively. Then, the posterior distribution of the mean for current data, under vague (flat) priors is
+
+$$ \begin{array}{rcl}
+\tilde{\sigma}^2 & \sim & InverseGamma\left(\frac{N_t-1}{2},\,\frac{N_t-1}{2}s_t^2 \right),\\
+\\
+\tilde{\mu} & \sim & \mathcal{N}ormal\left(\bar{y}_t,\, \frac{1}{N_t}\tilde{\sigma}^2  \right).
+\end{array}
+$$
+
+Similarly, the posterior distribution of the mean for historical data, under vague (flat) priors is 
+$$ \begin{array}{rcl}
+\sigma^2_0 & \sim & InverseGamma\left(\frac{N_{0t}-1}{2},\,\frac{N_{0t}-1}{2}s_{0t}^2 \right),\\
+\\
+\mu_0 & \sim & \mathcal{N}ormal\left(\bar{y}_{0t},\, \frac{1}{N_{0t}}\sigma^2_0  \right).
+\end{array}
+$$
+
+We next compute the posterior probability $p = Pr\left(\tilde{\mu} < \mu_0\right)$. Finally, for a Weibull distribution function (i.e., the Weibull cumulative distribution function), denoted $W$, $\hat{\alpha}$ is computed as 
+$$
+\hat{\alpha}=\begin{cases}
+W\left(p, \,w_{shape}, \,w_{scale}\right),\,0\le p\le0.5\\
+W\left(1-p, \,w_{shape}, \,w_{scale}\right),\,0.5 \lt p \le 1,
+\end{cases}
+$$
+where $w_{shape}$ and $w_{scale}$ are the shape and scale of the Weibull distribution function, respectively. 
+
+There are several model inputs at this first stage. First, the user can select `fix_alpha=TRUE` and force a fixed value of $\hat{\alpha}$ (at the `alpha_max` input), as opposed to estimation via the discount function. Next, a Markov Chain Monte Carlo approach is used, requiring several samples from the posterior distributions. Thus, the user can input a sample size greater than or less than the default value of `number_mcmc=10000`. Finally, the shape of the Weibull discount function can be altered by changing the Weibull shape and scale parameters from the default values of $w_{shape}=3$ and $w_{scale}=0.135$ (`weibull_shape` and `weibull_scale` inputs).
+
+With the historical data weight $\hat{\alpha}$ in hand, we can  move on to estimation of the posterior distribution of the current data.
+
+### Discount function
+Throughout this vignette, we refer to a discount function. The discount function is a Weibull distribution function and has the form
+$$W(x) = 1 - \exp\left\{- (x/w_{scale})^{w_{shape}}\right\}.$$
+During estimation, a user may be interested in selecting values of $w_{shape}$ and $w_{scale}$ that result in optimal statistical properties of the analysis. Thus, the discount function can be used to control the false positive rate (type I error) and/or the false negative rate (type II error). Examples in a following section illustrate the shape of the discount function using the default shape and scale parameters.
+
+Another important aspect related to the discount function is the analysis type: one-sided or two-sided. The sidedness of the analysis is analogous to a one- or two-sided hypothesis test. Using the default shape and scale inputs, a __two-sided__ analysis type results in a discount function with the following curve:
+```{r, echo=FALSE}
+plot(fit02, type="discount")
 ```
 
-```{r}
-library(bayesDP)
+
+The discount function of a __one-sided__ analysis, again with the default shape and scale inputs, has the following curve:
+```{r, echo=FALSE}
+plot(fit01, type="discount")
 ```
 
-Mathjax is now built in... Nice!
 
-$$P(B|A) = \dfrac{P(B) \cdot P(A|B)}{P(B) \cdot P(A|B) + P(\overline{B}) \cdot P(A|\overline{B})}$$
+In both of the above plots, the x-axis is the stochastic comparison between current and historical data, which we've denoted $p$. The y-axis is the discount value $\hat{\alpha}$ that corresponds to a given value of $p$. 
 
-## Gaussian means with bdpnormal
+
+
+
+
+## Estimation of the posterior distribution of the current data, conditional on the historical data
+With $\hat{\alpha}$ in hand, we can now estimate the posterior distribution of the mean of the current data. Using the notation of the previous section, the posterior distribution is 
+$$\mu \sim \mathcal{N}ormal\left( \frac{\sigma^2_0N_t\bar{y}_t + \tilde{\sigma}^2N_{0t}\bar{y}_{0t}\hat{\alpha}}{N_t\sigma^2_0 + \tilde{\sigma}^2N_{0t}\hat{\alpha}},\,\frac{\tilde{\sigma}^2\sigma^2_0}{N_t\sigma^2_0 + \tilde{\sigma}^2N_{0t}\hat{\alpha}}      \right).$$
+At this model stage, we have in hand `number_mcmc` simulations from the augmented mean distribution. If there are no control data, i.e., a one-arm trial, then the modeling stops and we generate summaries of the posterior distribution of $\mu$. Otherwise, if there are control data, we proceed to a third step and compute a comparison between treatment and control data.
+
+
+## Estimation of the posterior treatment effect: treatment versus control
+This step of the model is carried out on-the-fly using the `summary` or `print` methods. Let $\mu_T$ and $\mu_C$ denote posterior mean estimates of the treatment and control arms, respectively. Currently, the implemented comparison between treatment and control is the difference, i.e., summary statistics related to the posterior difference: $\mu_T - \mu_C$. In a future release, we may consider implementing additional comparison types. 
+
+
+## Function inputs
+The data inputs for `bdpnormal` are `mu_t`, `sigma_t`, `N_t`, `mu0_t`, `sigma0_t`, `N0_t`, `mu_c`, `sigma_c`, `N_c`, `mu0_c`, `sigma0_c`, and `N0_c`. The data must be input as (`mu`, `sigma`, `N`) triplets For example, `mu_t`, the sample mean of the current treatment group, must be accompanied by `sigma_t` and `N_t`, the sample standard deviation and sample size, respectively. Historical data inputs are not necessary, but using this function would not be necessary either. 
+
+__At the minimum, `mu_t`, `sigma_t`, and `N_t` must be input__. In the case that only `mu_t`, `sigma_t`, and `N_t` are input, the analysis is analogous to a one-sample t-test.. Each of the following input combinations are allowed:
+
+- (`mu_t`, `sigma_t`, `N_t`) - one-arm trial
+- (`mu_t`, `sigma_t`, `N_t`) + (`mu0_t`, `sigma0_t`, `N0_t`) - one-arm trial
+- (`mu_t`, `sigma_t`, `N_t`) + (`mu_c`, `sigma_c`, `N_c`) - two-arm trial
+- (`mu_t`, `sigma_t`, `N_t`) + (`mu0_c`, `sigma0_c`, `N0_c`) - two-arm trial
+- (`mu_t`, `sigma_t`, `N_t`) + (`mu0_t`, `sigma0_t`, `N0_t`) + (`mu_c`, `sigma_c`, `N_c`) - two-arm trial
+- (`mu_t`, `sigma_t`, `N_t`) + (`mu0_t`, `sigma0_t`, `N0_t`) + (`mu0_c`, `sigma0_c`, `N0_c`) - two-arm trial
+- (`mu_t`, `sigma_t`, `N_t`) + (`mu0_t`, `sigma0_t`, `N0_t`) + (`mu_c`, `sigma_c`, `N_c`) + (`mu0_c`, `sigma0_c`, `N0_c`) - two-arm trial
+
+
+
+# Examples
+## One-arm trial
+Suppose we have historical data with a mean of `mu0_t=50`, standard deviation of `sigma0_t=5`, and sample size of `N0_t=250` patients. Also suppose that we have current data with a mean of `mu_t=30`, standard deviation of `sigma_t=10`, and sample size of `N_t=250`. To illustrate the approach, let's first give full weight to the historical data. This is accomplished by setting `alpha_max=1` and `fix_alpha=TRUE` as follows:
 ```{r}
-# One-arm trial (OPC) example
-fit <- bdpnormal(mu_t = 30, sigma_t = 10, N_t = 250,
-                 mu0_t = 50, sigma0_t = 5, N0_t = 250)
-summary(fit)
-plot(fit)
+set.seed(42)
+fit1 <- bdpnormal(mu_t      = 30,
+                  sigma_t   = 10,
+                  N_t       = 250, 
+                  mu0_t     = 50,
+                  sigma0_t  = 5,
+                  N0_t      = 250,
+                  alpha_max = 1,
+                  fix_alpha = TRUE)
+summary(fit1)
+```
 
-# Two-arm (RCT) example
-fit2 <- bdpnormal(mu_t = 30, sigma_t = 10, N_t = 250,
-                  mu0_t = 50, sigma0_t = 5, N0_t = 250,
-                  mu_c = 25, sigma_c = 10, N_c = 250,
-                  mu0_c = 50, sigma0_c = 5, N0_c = 250)
+Based on the `summary` output of `fit1`, we can see that the value of `alpha` was held fixed at 1. The resulting (augmented) mean was estimated at 45.9982. Note that the `print` and `summary` methods result in the same output.
+
+Now, let's relax the constraint on fixing `alpha` at 1. We'll also take this opportunity to describe the output of the plot method.
+```{r}
+set.seed(42)
+fit1a <- bdpnormal(mu_t     = 30,
+                   sigma_t   = 10,
+                   N_t       = 250, 
+                   mu0_t     = 50,
+                   sigma0_t  = 5,
+                   N0_t      = 250,
+                   fix_alpha = FALSE)
+summary(fit1a)
+```
+
+When `alpha` is not constrained to one, it is estimated based on a comparison between the current and historical data. We see that the stochastic comparison, `p_hat`, between historical and control is 1. Here, `p_hat` is the posterior probability that the current sample mean is less than the historical sample mean under vague priors. With the present example, `p_hat = 1` implies that the current and historical sample means are very different. The result is that the weight given to the historical data is shrunk towards zero. Thus, the estimate of `alpha` from the discount function is 0 and the augmented posterior estimate of the mean is approximately the mean of the current data.
+
+Many of the the values presented in the `summary` method are accessible from the fit object. For instance, `alpha` is found in `fit1a$posterior_treatment$alpha_discount` and `p_hat` is located at `fit1a$posterior_treatment$p_hat`. The augmented mean and confidence interval are computed at run-time. The results can be replicated as:
+```{r}
+mean_augmented <- round(median(fit1a$posterior_treatment$posterior_mu),4)
+CI95_augmented <- round(quantile(fit1a$posterior_treatment$posterior_mu, prob=c(0.025, 0.975)),4)
+```
+
+Finally, we'll explore the `plot` method. 
+```{r}
+plot(fit1a)
+```
+
+The top plot displays three density curves. The blue curve is the density of the historical mean, the green curve is the density of the current mean, and the red curve is the density of the current mean augmented by historical data. Since little weight was given to the historical data, the current and posterior means essentially overlap.
+
+The middle plot simply re-displays the posterior mean.
+
+The bottom plot displays the discount function (solid curve) as well as `alpha` (horizontal dashed line) and `p_hat` (vertical dashed line). In the present example, the discount function is the Weibull probability distribution with `shape=3` and `scale=0.135`. 
+
+
+## Two-arm trial
+On to two-arm trials. In this package, we define a two-arm trial as an analysis where a current and/or historical control arm is present. Suppose we have the same treatment data as in the one-arm example, but now we introduce control data: `mu_c = 25`, `sigma_c = 10`, `N_c = 250`, `mu0_c = 25`, `sigma0_c = 5`, and `N0_c = 250`.  
+
+Before proceeding, it is worth pointing out that the discount function is applied separately to the treatment and control data. Now, let's carry out the two-arm analysis using default inputs:
+
+```{r}
+set.seed(42)
+fit2 <- bdpnormal(mu_t      = 30,
+                  sigma_t   = 10,
+                  N_t       = 250, 
+                  mu0_t     = 50,
+                  sigma0_t  = 5,
+                  N0_t      = 250,
+                  mu_c      = 25,
+                  sigma_c   = 10,
+                  N_c       = 250, 
+                  mu0_c     = 25,
+                  sigma0_c  = 5,
+                  N0_c      = 250,
+                  fix_alpha = FALSE)
 summary(fit2)
+```
+
+The `summary` method of a two-arm analysis is slightly different than a one-arm analysis. First, we see `p_hat` and `alpha` reported for the control data. In the present analysis, the current and historical control data have sample means that are very close, thus the historical control data is given full weight. Again, little weight is given to the historical treatment data.
+
+The confidence interval is computed at run time and is the interval estimate of the difference between the posterior means of the treatment and control groups. With a 95% confidence interval of `(3.6263, 6.3496)`, we would conclude that the treatment and control arms are not significantly different.
+
+The `plot` method of a two-arm analysis is slightly different than a one-arm analysis as well:
+```{r}
 plot(fit2)
 ```
+Each of the three plots are analogous to the one-arm analysis, but each plot now presents additional data related to the control arm.
 
 
-
-#Just leaving Rstudio template at bottom for now.
-
-
-
-Vignettes are long form documentation commonly included in packages. Because they are part of the distribution of the package, they need to be as compact as possible. The `html_vignette` output type provides a custom style sheet (and tweaks some options) to ensure that the resulting html is as small as possible. The `html_vignette` format:
-
-- Never uses retina figures
-- Has a smaller default figure size
-- Uses a custom CSS stylesheet instead of the default Twitter Bootstrap style
-
-## Vignette Info
-
-Note the various macros within the `vignette` section of the metadata block above. These are required in order to instruct R how to build the vignette. Note that you should change the `title` field and the `\VignetteIndexEntry` to match the title of your vignette.
-
-## Styles
-
-The `html_vignette` template includes a basic CSS theme. To override this theme you can specify your own CSS in the document metadata as follows:
-
-    output: 
-      rmarkdown::html_vignette:
-        css: mystyles.css
-
-## Figures
-
-The figure sizes have been customised so that you can easily put two images side-by-side. 
-
-```{r, fig.show='hold', fig.cap = "Your figure caption."}
-plot(1:10)
-plot(10:1)
-```
-
-You can enable figure captions by `fig_caption: yes` in YAML:
-
-    output:
-      rmarkdown::html_vignette:
-        fig_caption: yes
-
-Then you can use the chunk option `fig.cap = "Your figure caption."` in **knitr**.
-
-## More Examples
-
-You can write math expressions, e.g. $Y = X\beta + \epsilon$, footnotes^[A footnote here.], and tables, e.g. using `knitr::kable()`.
-
-```{r, echo=FALSE, results='asis'}
-knitr::kable(head(mtcars, 10))
-```
-
-Also a quote using `>`:
-
-> "He who gives up [code] safety for [code] speed deserves neither."
-([via](https://twitter.com/hadleywickham/status/504368538874703872))
