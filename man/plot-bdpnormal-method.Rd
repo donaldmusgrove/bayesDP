@@ -5,10 +5,16 @@
 \alias{plot,bdpnormal-method}
 \title{plot}
 \usage{
-\S4method{plot}{bdpnormal}(x)
+\S4method{plot}{bdpnormal}(x, type = NULL)
 }
 \arguments{
 \item{x}{Result}
+
+\item{type}{character. Optional. Select plot type to print.
+Supports the following: "discount" gives the discount function;
+"posteriors" gives the posterior plots of the event rates; and
+"density" gives the augmented posterior density plot(s).  Leave NULL to
+display all plots in sequence.}
 }
 \description{
 normal plot method
