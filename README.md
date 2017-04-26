@@ -1,9 +1,7 @@
 ![alt text](https://raw.githubusercontent.com/balcomes/bayesDP/master/bayesDP-logo.png "bayesDP Logo")
 
 # bayesDP:
-## Tools for the Bayesian Discount Prior Function
-
-Functions for data augmentation using the Bayesian discount prior function for 1 arm and 2 arm clinical trials.
+### Tools for the Bayesian Discount Prior Function
 
 https://cran.r-project.org/package=bayesDP
 
@@ -15,6 +13,10 @@ https://cran.r-project.org/package=bayesDP
 [![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/balcomes/bayesDP/issues)
 [![License](https://img.shields.io/badge/license-GPL%20%28%3E=%203%29-brightgreen.svg?style=flat)](http://www.gnu.org/licenses/gpl-3.0.html)
 [![CRAN](http://www.r-pkg.org/badges/version/bayesDP)](https://cran.r-project.org/package=bayesDP)
+
+### Description
+
+Functions for data augmentation using the Bayesian discount prior function for 1 arm and 2 arm clinical trials.
 
 ### CRAN Installation
 
@@ -34,7 +36,11 @@ devtools::install_github("balcomes/bayesDP")
 
 ### Documentation 
 
-See manuals within package.
+See manuals and vignettes within package.
+
+### Examples
+
+See manuals and vignettes within package.
 
 ### Authors
 
