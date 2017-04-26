@@ -45,3 +45,4 @@ and Christopher Jackson (For the ppexp R code that was ported to C++.)
 GPL (>= 3)
 
 :apple: :tangerine: :lemon: :cherries:  [:watermelon:](http://ghv.artzub.com/#repo=bayesDP&user=balcomes)  :strawberry:  :peach: :pear:  :green_apple:
+![alt text](https://raw.githubusercontent.com/balcomes/bayesDP/master/gif-balcomes-bayesdp.gif "http://codeology.braintreepayments.com/balcomes/bayesdp#")
