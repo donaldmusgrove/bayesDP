@@ -52,19 +52,3 @@ and Christopher Jackson (For the ppexp R code that was ported to C++.)
 GPL (>= 3)
 
 :apple: :tangerine: :lemon: :cherries:  [:watermelon:](http://codeology.braintreepayments.com/balcomes/bayesdp#)  :strawberry:  :peach: :pear:  :green_apple:
-
-```html
-<h2>Example of code</h2>
-<pre>
-    <div class="container">
-        <div class="block two first">
-            <h2>Your title</h2>
-            <div class="wrap">
-              <iframe src="http://codeology.braintreepayments.com/balcomes/bayesdp#">
-                <p>http://codeology.braintreepayments.com/balcomes/bayesdp#</p>
-              </iframe>
-            </div>
-        </div>
-    </div>
-</pre>
-```
