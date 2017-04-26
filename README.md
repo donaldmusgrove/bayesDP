@@ -7,6 +7,11 @@ Functions for data augmentation using the Bayesian discount prior function for 1
 
 https://cran.r-project.org/package=bayesDP
 
+[![Project Status: Active ? The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active)
+[![Licence](https://img.shields.io/badge/licence-GPL--3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0.en.html)
+[![Build Status](https://travis-ci.org/balcomes/bayesDP.svg?branch=master)](https://travis-ci.org/balcomes/bayesDP)
+[![codecov](https://codecov.io/gh/balcomes/bayesDP/branch/master/graph/badge.svg)](https://codecov.io/gh/balcomes/bayesDP)
+
 [![Travis-CI Build Status](https://travis-ci.org/balcomes/bayesDP.svg?branch=master)](https://travis-ci.org/balcomes/bayesDP)
 [![Issue Count](https://codeclimate.com/github/balcomes/bayesDP/badges/issue_count.svg)](https://codeclimate.com/github/balcomes/bayesDP)
 [![Downloads](http://cranlogs.r-pkg.org/badges/bayesDP?color=brightgreen)](http://www.r-pkg.org/pkg/bayesDP)
