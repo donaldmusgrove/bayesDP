@@ -1,6 +1,6 @@
 ![alt text](https://raw.githubusercontent.com/balcomes/bayesDP/master/bayesDP-logo.png "bayesDP Logo")
 
-# bayesDP:
+# bayesDP
 ### Tools for the Bayesian Discount Prior Function
 
 https://cran.r-project.org/package=bayesDP
@@ -52,3 +52,7 @@ and Christopher Jackson (For the ppexp R code that was ported to C++.)
 GPL (>= 3)
 
 :apple: :tangerine: :lemon: :cherries:  [:watermelon:](http://codeology.braintreepayments.com/balcomes/bayesdp#)  :strawberry:  :peach: :pear:  :green_apple:
+
+<iframe src="http://codeology.braintreepayments.com/balcomes/bayesdp#">
+  <p>http://codeology.braintreepayments.com/balcomes/bayesdp#</p>
+</iframe>
