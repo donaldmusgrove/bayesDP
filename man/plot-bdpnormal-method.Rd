@@ -19,3 +19,4 @@ display all plots in sequence.}
 \description{
 normal plot method
 }
+

@@ -219,3 +219,4 @@ summary(fit2_1)
   and \code{\link{summary,bdpsurvival-method}} for details of each of the
   supported methods.
 }
+

@@ -14,3 +14,4 @@ to \code{\link{bdpsurvival}}.}
 \description{
 \code{summary} method for class "\code{bdpsurvival}".
 }
+

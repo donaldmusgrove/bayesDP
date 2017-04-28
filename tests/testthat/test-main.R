@@ -1,130 +1,102 @@
 context("bayesDP")
 
-test_that("Normal", {
-  expect_true(class(try(bdpnormal(20,5,500,30,10,250), silent = TRUE)) != "try-error",
-              "1arm Normal Test Error")
-  expect_true(class(try(bdpnormal(20,5,500,30,10,250,15,10,400,50,15,1000), silent = TRUE)) != "try-error",
-              "2arm Normal Test/Control Error")
-  options(warn=2)
-  expect_true(class(try(bdpnormal(20,5,500,30,10,250), silent = TRUE)) != "try-error",
-              "1arm Normal Test Warning")
-  expect_true(class(try(bdpnormal(20,5,500,30,10,250,15,10,400,50,15,1000), silent = TRUE)) != "try-error",
-              "2arm Normal Test/Control Warning")
-  options(warn=0)
-})
 
-test_that("Normal Plot", {
-  expect_true(class(try(plot(bdpnormal(20,5,500,30,10,250)), silent = TRUE)) != "try-error",
-              "1arm Normal Test Plot Error")
-  expect_true(class(try(plot(bdpnormal(20,5,500,30,10,250,15,10,400,50,15,1000)), silent = TRUE)) != "try-error",
-              "2arm Normal Test/Control Plot Error")
-  options(warn=2)
-  expect_true(class(try(plot(bdpnormal(20,5,500,30,10,250)), silent = TRUE)) != "try-error",
-              "1arm Normal Test Plot Warning")
-  expect_true(class(try(plot(bdpnormal(20,5,500,30,10,250,15,10,400,50,15,1000)), silent = TRUE)) != "try-error",
-              "2arm Normal Test/Control Plot Warning")
-  options(warn=0)
-})
+################################################################################
+# bdpnormal
+################################################################################
 
-test_that("Normal Print", {
-  expect_true(class(try(print(bdpnormal(20,5,500,30,10,250)), silent = TRUE)) != "try-error",
-              "1arm Normal Test Print Error")
-  expect_true(class(try(print(bdpnormal(20,5,500,30,10,250,15,10,400,50,15,1000)), silent = TRUE)) != "try-error",
-              "2arm Normal Test/Control Print Error")
-  options(warn=2)
-  expect_true(class(try(print(bdpnormal(20,5,500,30,10,250)), silent = TRUE)) != "try-error",
-              "1arm Normal Test Print Warning")
-  expect_true(class(try(print(bdpnormal(20,5,500,30,10,250,15,10,400,50,15,1000)), silent = TRUE)) != "try-error",
-              "2arm Normal Test/Control Print Warning")
-  options(warn=0)
-})
+# One-arm trial (OPC) example
+fit <- bdpnormal(mu_t = 30, sigma_t = 10, N_t = 250,
+                 mu0_t = 50, sigma0_t = 5, N0_t = 250)
+summary(fit)
+plot(fit)
 
-test_that("Normal Summary", {
-  expect_true(length(try(summary(bdpnormal(20,5,500,30,10,250)), silent = TRUE)) == 0,
-              "1arm Normal Test Summary Error")
-  expect_true(length(try(summary(bdpnormal(20,5,500,30,10,250,15,10,400,50,15,1000)), silent = TRUE)) == 0,
-              "2arm Normal Test/Control Summary Error")
-  options(warn=2)
-  expect_true(length(try(summary(bdpnormal(20,5,500,30,10,250)), silent = TRUE)) == 0,
-              "1arm Normal Test Summary Warning")
-  expect_true(length(try(summary(bdpnormal(20,5,500,30,10,250,15,10,400,50,15,1000)), silent = TRUE)) == 0,
-              "2arm Normal Test/Control Summary Warning")
-  options(warn=0)
-})
+# Two-arm (RCT) example
+fit2 <- bdpnormal(mu_t = 30, sigma_t = 10, N_t = 250,
+                  mu0_t = 50, sigma0_t = 5, N0_t = 250,
+                  mu_c = 25, sigma_c = 10, N_c = 250,
+                  mu0_c = 50, sigma0_c = 5, N0_c = 250)
+summary(fit2)
+plot(fit2)
 
 
+################################################################################
+# bdpbinomial
+################################################################################
 
-test_that("Binomial", {
-  expect_true(class(try(bdpbinomial(20,500,50,300), silent = TRUE)) != "try-error",
-              "1arm Binomial Test Error")
-  expect_true(class(try(bdpbinomial(20,500,50,300,30,400,60,1000), silent = TRUE)) != "try-error",
-              "2arm Binomial Test/Control Error")
-  options(warn=2)
-  expect_true(class(try(bdpbinomial(20,500,50,300), silent = TRUE)) != "try-error",
-              "1arm Binomial Test Warning")
-  expect_true(class(try(bdpbinomial(20,500,50,300,30,400,60,1000), silent = TRUE)) != "try-error",
-              "2arm Binomial Test/Control Warning")
-  options(warn=0)
-})
 
-test_that("Binomial Plot", {
-  expect_true(class(try(plot(bdpbinomial(20,500,50,300)), silent = TRUE)) != "try-error",
-              "1arm Binomial Test Plot Error")
-  expect_true(class(try(plot(bdpbinomial(20,500,50,300,30,400,60,1000)), silent = TRUE)) != "try-error",
-              "2arm Binomial Test/Control Plot Error")
-  options(warn=2)
-  expect_true(class(try(plot(bdpbinomial(20,500,50,300)), silent = TRUE)) != "try-error",
-              "1arm Binomial Test Plot Warning")
-  expect_true(class(try(plot(bdpbinomial(20,500,50,300,30,400,60,1000)), silent = TRUE)) != "try-error",
-              "2arm Binomial Test/Control Plot Warning")
-  options(warn=0)
-})
+# One-arm trial (OPC) example
+fit <- bdpbinomial(y_t           = 10,
+                   N_t           = 500,
+                   y0_t          = 25,
+                   N0_t          = 250)
+summary(fit)
+print(fit)
+plot(fit)
 
-test_that("Binomial Print", {
-  expect_true(class(try(print(bdpbinomial(20,500,50,300)), silent = TRUE)) != "try-error",
-              "1arm Binomial Test Print Error")
-  expect_true(class(try(print(bdpbinomial(20,500,50,300,30,400,60,1000)), silent = TRUE)) != "try-error",
-              "2arm Binomial Test/Control Print Error")
-  options(warn=2)
-  expect_true(class(try(print(bdpbinomial(20,500,50,300)), silent = TRUE)) != "try-error",
-              "1arm Binomial Test Print Warning")
-  expect_true(class(try(print(bdpbinomial(20,500,50,300,30,400,60,1000)), silent = TRUE)) != "try-error",
-              "2arm Binomial Test/Control Print Warning")
-  options(warn=0)
-})
+# Two-arm (RCT) example
+fit2 <- bdpbinomial(y_t = 10,
+                    N_t = 500,
+                    y0_t = 25,
+                    N0_t = 250,
+                    y_c = 8,
+                    N_c = 500,
+                    y0_c = 20,
+                    N0_c = 250)
+summary(fit2)
+print(fit2)
+plot(fit2)
 
-test_that("Binomial Summary", {
-  expect_true(length(try(summary(bdpbinomial(20,500,50,300)), silent = TRUE)) == 0,
-              "1arm Binomial Test Summary Error")
-  expect_true(length(try(summary(bdpbinomial(20,500,50,300,30,400,60,1000)), silent = TRUE)) == 0,
-              "2arm Binomial Test/Control Summary Error")
-  options(warn=2)
-  expect_true(length(try(summary(bdpbinomial(20,500,50,300)), silent = TRUE)) == 0,
-              "1arm Binomial Test Summary Warning")
-  expect_true(length(try(summary(bdpbinomial(20,500,50,300,30,400,60,1000)), silent = TRUE)) == 0,
-              "2arm Binomial Test/Control Summary Warning")
-  options(warn=0)
-})
 
-test_that("Linear Regression", {
-  data <- data.frame(y         = rnorm(100, 4, 0.1),
-                     x         = c(rnorm(50,1,0.1), rnorm(50,3,0.1)),
-                     treatment = c(rep(0,50),rep(1,50)))
+################################################################################
+# bdpsurvival
+################################################################################
 
-  expect_true(class(try(bdpregression_linear(data,
-                                             formula       = y ~ treatment + x,
-                                             family        = "gaussian",
-                                             treatment     = "treatment",
-                                             prior.dist    = NULL,
-                                             prior.mean    = 0,
-                                             prior.scale   = 1000,
-                                             prior.df      = Inf,
-                                             mu0           = 1,
-                                             sigma02       = 0.1,
-                                             weibull_scale = 1,
-                                             weibull_shape = 1,
-                                             alpha_max     = 1,
-                                             number_mcmc   = 10000,
-                                             two_side      = 0), silent = TRUE)) != "try-error",
-              "Linear Regression Error")
-})
+
+# One-arm trial (OPC) example - survival probability at 5 years
+# Simulate survival data for a single arm (OPC) trial
+time   <- c(rexp(50, rate=1/20), rexp(50, rate=1/10))
+status <- c(rexp(50, rate=1/30), rexp(50, rate=1/30))
+status <- ifelse(time < status, 1, 0)
+
+# Collect data into a dataframe
+example_surv_1arm <- data.frame(status     = status,
+                                time       = time,
+                                historical = c(rep(1,50),rep(0,50)),
+                                treatment  = 1)
+
+fit1 <- bdpsurvival(Surv(time, status) ~ historical + treatment,
+                    data = example_surv_1arm,
+                    surv_time = 5)
+
+print(fit1)
+
+plot(fit1)
+
+
+# Two-arm trial (OPC) example
+# Simulate survival data for a two-arm trial
+time   <- c(rexp(50, rate=1/20), # Current treatment
+            rexp(50, rate=1/10), # Current control
+            rexp(50, rate=1/30), # Historical treatment
+            rexp(50, rate=1/5))  # Historical control
+status <- rexp(200, rate=1/40)
+status <- ifelse(time < status, 1, 0)
+
+# Collect data into a dataframe
+example_surv_2arm <- data.frame(status     = status,
+                                time       = time,
+                                historical = c(rep(0,100),rep(1,100)),
+                                treatment  = c(rep(1,50),rep(0,50),rep(1,50),rep(0,50)))
+
+fit2 <- bdpsurvival(Surv(time, status) ~ historical + treatment,
+                    data = example_surv_2arm)
+
+summary(fit2)
+
+### Fix alpha at 1
+fit2_1 <- bdpsurvival(Surv(time, status) ~ historical + treatment,
+                      data = example_surv_2arm,
+                      fix_alpha = TRUE)
+
+summary(fit2_1)
