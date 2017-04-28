@@ -42,7 +42,15 @@ See manuals and vignettes within package.
 
 See manuals and vignettes within package.
 
-{::nomarkdown}
+```html
+<h2>Example of code</h2>
+
+<pre>
+    <div class="container">
+        <div class="block two first">
+            <h2>Your title</h2>
+            <div class="wrap">
+
 
 <style type="text/css">
 body, td {
@@ -351,7 +359,11 @@ print(fit2)
 
 <p>}</p>
 
-{:/}
+            </div>
+        </div>
+    </div>
+</pre>
+```
 
 ### Authors
 
