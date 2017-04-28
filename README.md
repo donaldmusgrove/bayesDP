@@ -58,11 +58,11 @@ historical data. The weight given to the historical data is determined
 using what we refer to as a discount function. There are three steps in
 carrying out estimation:
 
-1.  Estimation of the historical data weight, denoted $\hat{\alpha}$,
+1.  Estimation of the historical data weight, denoted $\\hat{\\alpha}$,
     via the discount function
 
 2.  Estimation of the posterior distribution of the current data,
-    conditional on the historical data weighted by $\hat{\alpha}$
+    conditional on the historical data weighted by $\\hat{\\alpha}$
 
 3.  If a two-arm clinical trial, estimation of the posterior treatment
     effect, i.e., treatment versus control
@@ -91,53 +91,53 @@ Estimation of the historical data weight
 ----------------------------------------
 
 In the first estimation step, the historical data weight
-$\hat{\alpha}$ is estimated. In the case of a two-arm trial, where
-both treatment and control data are available, an $\hat{\alpha}$ value
+$\\hat{\\alpha}$ is estimated. In the case of a two-arm trial, where
+both treatment and control data are available, an $\\hat{\\alpha}$ value
 is estimated separately for each of the treatment and control arms. Of
 course, historical treatment or historical control data must be present,
-otherwise $\hat{\alpha}$ is not estimated for the corresponding arm.
+otherwise $\\hat{\\alpha}$ is not estimated for the corresponding arm.
 
-When historical data are available, estimation of $\hat{\alpha}$ is
-carried out as follows. Let $\bar{y}\_t$, *s*<sub>*t*</sub>, and
+When historical data are available, estimation of $\\hat{\\alpha}$ is
+carried out as follows. Let $\\bar{y}\_t$, *s*<sub>*t*</sub>, and
 *N*<sub>*t*</sub> denote the sample mean, sample standard deviation, and
 sample size of the current data, respectively. Similarly, let
-$\bar{y}\_{0t}$, *s*<sub>0*t*</sub>, and *N*<sub>0*t*</sub> denote the
+$\\bar{y}\_{0t}$, *s*<sub>0*t*</sub>, and *N*<sub>0*t*</sub> denote the
 sample mean, sample standard deviation, and sample size of the
 historical data, respectively. Then, the posterior distribution of the
 mean for current data, under vague (flat) priors is
 
-$$ \begin{array}{rcl}
-\tilde{\sigma}^2 & \sim & InverseGamma\left(\frac{N\_t-1}{2},\,\frac{N\_t-1}{2}s\_t^2 \right),\\
-\\
-\tilde{\mu} & \sim & \mathcal{N}ormal\left(\bar{y}\_t,\, \frac{1}{N\_t}\tilde{\sigma}^2  \right).
-\end{array}
+$$ \\begin{array}{rcl}
+\\tilde{\\sigma}^2 & \\sim & InverseGamma\\left(\\frac{N\_t-1}{2},\\,\\frac{N\_t-1}{2}s\_t^2 \\right),\\\\
+\\\\
+\\tilde{\\mu} & \\sim & \\mathcal{N}ormal\\left(\\bar{y}\_t,\\, \\frac{1}{N\_t}\\tilde{\\sigma}^2  \\right).
+\\end{array}
 $$
 
 Similarly, the posterior distribution of the mean for historical data,
 under vague (flat) priors is
-$$ \begin{array}{rcl}
-\sigma^2\_0 & \sim & InverseGamma\left(\frac{N\_{0t}-1}{2},\,\frac{N\_{0t}-1}{2}s\_{0t}^2 \right),\\
-\\
-\mu\_0 & \sim & \mathcal{N}ormal\left(\bar{y}\_{0t},\, \frac{1}{N\_{0t}}\sigma^2\_0  \right).
-\end{array}
+$$ \\begin{array}{rcl}
+\\sigma^2\_0 & \\sim & InverseGamma\\left(\\frac{N\_{0t}-1}{2},\\,\\frac{N\_{0t}-1}{2}s\_{0t}^2 \\right),\\\\
+\\\\
+\\mu\_0 & \\sim & \\mathcal{N}ormal\\left(\\bar{y}\_{0t},\\, \\frac{1}{N\_{0t}}\\sigma^2\_0  \\right).
+\\end{array}
 $$
 
 We next compute the posterior probability
-$p = Pr\left(\tilde{\mu} &lt; \mu\_0\right)$. Finally, for a
+$p = Pr\\left(\\tilde{\\mu} &lt; \\mu\_0\\right)$. Finally, for a
 Weibull distribution function (i.e., the Weibull cumulative distribution
-function), denoted *W*, $\hat{\alpha}$ is computed as
+function), denoted *W*, $\\hat{\\alpha}$ is computed as
 $$
-\hat{\alpha}=\begin{cases}
-W\left(p, \,w\_{shape}, \,w\_{scale}\right),\,0\le p\le0.5\\
-W\left(1-p, \,w\_{shape}, \,w\_{scale}\right),\,0.5 \lt p \le 1,
-\end{cases}
+\\hat{\\alpha}=\\begin{cases}
+W\\left(p, \\,w\_{shape}, \\,w\_{scale}\\right),\\,0\\le p\\le0.5\\\\
+W\\left(1-p, \\,w\_{shape}, \\,w\_{scale}\\right),\\,0.5 \\lt p \\le 1,
+\\end{cases}
 $$
  where *w*<sub>*s**h**a**p**e*</sub> and *w*<sub>*s**c**a**l**e*</sub>
 are the shape and scale of the Weibull distribution function,
 respectively.
 
 There are several model inputs at this first stage. First, the user can
-select `fix_alpha=TRUE` and force a fixed value of $\hat{\alpha}$ (at
+select `fix_alpha=TRUE` and force a fixed value of $\\hat{\\alpha}$ (at
 the `alpha_max` input), as opposed to estimation via the discount
 function. Next, a Markov Chain Monte Carlo approach is used, requiring
 several samples from the posterior distributions. Thus, the user can
@@ -148,7 +148,7 @@ the default values of *w*<sub>*s**h**a**p**e*</sub> = 3 and
 *w*<sub>*s**c**a**l**e*</sub> = 0.135 (`weibull_shape` and
 `weibull_scale` inputs).
 
-With the historical data weight $\hat{\alpha}$ in hand, we can move on
+With the historical data weight $\\hat{\\alpha}$ in hand, we can move on
 to estimation of the posterior distribution of the current data.
 
 ### Discount function
@@ -177,16 +177,16 @@ default shape and scale inputs, has the following curve:
 
 In both of the above plots, the x-axis is the stochastic comparison
 between current and historical data, which we've denoted *p*. The y-axis
-is the discount value $\hat{\alpha}$ that corresponds to a given value
+is the discount value $\\hat{\\alpha}$ that corresponds to a given value
 of *p*.
 
 Estimation of the posterior distribution of the current data, conditional on the historical data
 ------------------------------------------------------------------------------------------------
 
-With $\hat{\alpha}$ in hand, we can now estimate the posterior
+With $\\hat{\\alpha}$ in hand, we can now estimate the posterior
 distribution of the mean of the current data. Using the notation of the
 previous section, the posterior distribution is
-$$\mu \sim \mathcal{N}ormal\left( \frac{\sigma^2\_0N\_t\bar{y}\_t + \tilde{\sigma}^2N\_{0t}\bar{y}\_{0t}\hat{\alpha}}{N\_t\sigma^2\_0 + \tilde{\sigma}^2N\_{0t}\hat{\alpha}},\,\frac{\tilde{\sigma}^2\sigma^2\_0}{N\_t\sigma^2\_0 + \tilde{\sigma}^2N\_{0t}\hat{\alpha}}      \right).$$
+$$\\mu \\sim \\mathcal{N}ormal\\left( \\frac{\\sigma^2\_0N\_t\\bar{y}\_t + \\tilde{\\sigma}^2N\_{0t}\\bar{y}\_{0t}\\hat{\\alpha}}{N\_t\\sigma^2\_0 + \\tilde{\\sigma}^2N\_{0t}\\hat{\\alpha}},\\,\\frac{\\tilde{\\sigma}^2\\sigma^2\_0}{N\_t\\sigma^2\_0 + \\tilde{\\sigma}^2N\_{0t}\\hat{\\alpha}}      \\right).$$
  At this model stage, we have in hand `number_mcmc` simulations from the
 augmented mean distribution. If there are no control data, i.e., a
 one-arm trial, then the modeling stops and we generate summaries of the
@@ -427,11 +427,11 @@ derived from historical data. The weight given to the historical data is
 determined using what we refer to as a discount function. There are
 three steps in carrying out estimation:
 
-1.  Estimation of the historical data weight, denoted $\hat{\alpha}$,
+1.  Estimation of the historical data weight, denoted $\\hat{\\alpha}$,
     via the discount function
 
 2.  Estimation of the posterior distribution of the current data,
-    conditional on the historical data weighted by $\hat{\alpha}$
+    conditional on the historical data weighted by $\\hat{\\alpha}$
 
 3.  If a two-arm clinical trial, estimation of the posterior treatment
     effect, i.e., treatment versus control
@@ -460,13 +460,13 @@ Estimation of the historical data weight
 ----------------------------------------
 
 In the first estimation step, the historical data weight
-$\hat{\alpha}$ is estimated. In the case of a two-arm trial, where
-both treatment and control data are available, an $\hat{\alpha}$ value
+$\\hat{\\alpha}$ is estimated. In the case of a two-arm trial, where
+both treatment and control data are available, an $\\hat{\\alpha}$ value
 is estimated separately for each of the treatment and control arms. Of
 course, historical treatment or historical control data must be present,
-otherwise $\hat{\alpha}$ is not estimated for the corresponding arm.
+otherwise $\\hat{\\alpha}$ is not estimated for the corresponding arm.
 
-When historical data are available, estimation of $\hat{\alpha}$ is
+When historical data are available, estimation of $\\hat{\\alpha}$ is
 carried out as follows. Let *y* and *N* denote the number of events and
 sample size of the current data, respectively. Similarly, let
 *y*<sub>0</sub> and *N*<sub>0</sub> denote the number of events and
@@ -475,27 +475,27 @@ and *b*<sub>0</sub> denote the rate parameters of a Beta distribution.
 Then, the posterior distributions of the event rates for current and
 historical data, under vague (flat) priors are
 
-$$ \tilde{\theta} \sim \mathcal{B}eta\left(y+a\_0,\,N-y+b\_0 \right)$$
+$$ \\tilde{\\theta} \\sim \\mathcal{B}eta\\left(y+a\_0,\\,N-y+b\_0 \\right)$$
  and
 
 *θ*<sub>0</sub> ∼ ℬ*e**t**a*(*y*<sub>0</sub>+*a*<sub>0</sub>, *N*<sub>0</sub>−*y*<sub>0</sub>+*b*<sub>0</sub>),
  respectively. We next compute the posterior probability
-$p = Pr\left(\tilde{\theta} &lt; \theta\_0\right)$. Finally, for a
+$p = Pr\\left(\\tilde{\\theta} &lt; \\theta\_0\\right)$. Finally, for a
 Weibull distribution function (i.e., the Weibull cumulative distribution
-function), denoted *W*, $\hat{\alpha}$ is computed as
+function), denoted *W*, $\\hat{\\alpha}$ is computed as
 
 $$
-\hat{\alpha}=\begin{cases}
-W\left(p, \,w\_{shape}, \,w\_{scale}\right),\,0\le p\le0.5\\
-W\left(1-p, \,w\_{shape}, \,w\_{scale}\right),\,0.5 \lt p \le 1,
-\end{cases}
+\\hat{\\alpha}=\\begin{cases}
+W\\left(p, \\,w\_{shape}, \\,w\_{scale}\\right),\\,0\\le p\\le0.5\\\\
+W\\left(1-p, \\,w\_{shape}, \\,w\_{scale}\\right),\\,0.5 \\lt p \\le 1,
+\\end{cases}
 $$
  where *w*<sub>*s**h**a**p**e*</sub> and *w*<sub>*s**c**a**l**e*</sub>
 are the shape and scale of the Weibull distribution function,
 respectively.
 
 There are several model inputs at this first stage. First, the user can
-select `fix_alpha=TRUE` and force a fixed value of $\hat{\alpha}$ (at
+select `fix_alpha=TRUE` and force a fixed value of $\\hat{\\alpha}$ (at
 the `alpha_max` input), as opposed to estimation via the discount
 function. Next, a Markov Chain Monte Carlo approach is used, requiring
 several samples from the posterior distributions. Thus, the user can
@@ -508,7 +508,7 @@ default values of *w*<sub>*s**h**a**p**e*</sub> = 3 and
 *w*<sub>*s**c**a**l**e*</sub> = 0.135 (`weibull_shape` and
 `weibull_scale` inputs).
 
-With the historical data weight $\hat{\alpha}$ in hand, we can move on
+With the historical data weight $\\hat{\\alpha}$ in hand, we can move on
 to estimation of the posterior distribution of the current data.
 
 ### Discount function
@@ -537,16 +537,16 @@ default shape and scale inputs, has the following curve:
 
 In both of the above plots, the x-axis is the stochastic comparison
 between current and historical data, which we've denoted *p*. The y-axis
-is the discount value $\hat{\alpha}$ that corresponds to a given value
+is the discount value $\\hat{\\alpha}$ that corresponds to a given value
 of *p*.
 
 Estimation of the posterior distribution of the current data, conditional on the historical data
 ------------------------------------------------------------------------------------------------
 
-With $\hat{\alpha}$ in hand, we can now estimate the posterior
+With $\\hat{\\alpha}$ in hand, we can now estimate the posterior
 distribution of the current data event rate. Using the notation of the
 previous section, the posterior distribution is
-$$\theta \sim \mathcal{B}eta\left(y+y\_0\hat{\alpha}+a\_0,\, N-y+\hat{\alpha}(N\_0-y\_0)+b\_0 \right).$$
+$$\\theta \\sim \\mathcal{B}eta\\left(y+y\_0\\hat{\\alpha}+a\_0,\\, N-y+\\hat{\\alpha}(N\_0-y\_0)+b\_0 \\right).$$
  At this model stage, we have in hand `number_mcmc` simulations from the
 augmented event rate distribution. If there are no control data, i.e., a
 one-arm trial, then the modeling stops and we generate summaries of the
