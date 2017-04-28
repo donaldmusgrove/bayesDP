@@ -42,6 +42,8 @@ See manuals and vignettes within package.
 
 See manuals and vignettes within package.
 
+{::nomarkdown}
+
 <style type="text/css">
 body, td {
    font-family: sans-serif;
@@ -348,6 +350,8 @@ print(fit2)
 #plot(fit2)</p>
 
 <p>}</p>
+
+{:/}
 
 ### Authors
 
