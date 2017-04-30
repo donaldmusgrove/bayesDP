@@ -5,12 +5,16 @@
 \alias{plot,bdpsurvival-method}
 \title{plot}
 \usage{
-\S4method{plot}{bdpsurvival}(x)
+\S4method{plot}{bdpsurvival}(x, type = NULL)
 }
 \arguments{
 \item{x}{Result}
+
+\item{type}{character. Optional. Select plot type to print.
+Supports the following: "discount" gives the discount function and
+"survival" gives the survival curves.  Leave NULL to
+display all plots in sequence.}
 }
 \description{
 survival plot method
 }
-

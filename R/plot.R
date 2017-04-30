@@ -405,6 +405,10 @@ setMethod("plot", signature(x = "bdpbinomial"), function(x, type=NULL){
 
 #' @title plot
 #' @description survival plot method
+#' @param type character. Optional. Select plot type to print.
+#'   Supports the following: "discount" gives the discount function and
+#'   "survival" gives the survival curves.  Leave NULL to
+#'   display all plots in sequence.
 #' @import methods
 #' @importFrom utils head
 #' @importFrom ggplot2 aes_string ggtitle ylim guides guide_legend theme element_blank
@@ -412,7 +416,7 @@ setMethod("plot", signature(x = "bdpbinomial"), function(x, type=NULL){
 #' @importFrom stats density is.empty.model median model.offset model.response pweibull quantile rbeta rgamma rnorm var vcov
 #' @param x Result
 #' @export
-setMethod("plot", signature(x = "bdpsurvival"), function(x){
+setMethod("plot", signature(x = "bdpsurvival"), function(x, type=NULL){
   args1               <- x$args1
   posterior_treatment <- x$posterior_treatment
   posterior_control   <- x$posterior_control
@@ -601,12 +605,22 @@ setMethod("plot", signature(x = "bdpsurvival"), function(x){
   }
 
 
-  op <- par(ask=TRUE)
-  plot(survival_curves)
-  if(!is.null(args1$S0_t) | (!is.null(args1$S_c) & !is.null(args1$S0_c))){
-    plot(discountfun_plot)
+  if(is.null(type)){
+    op <- par(ask=TRUE)
+    plot(survival_curves)
+    if(!is.null(args1$S0_t) | (!is.null(args1$S_c) & !is.null(args1$S0_c))){
+      plot(discountfun_plot)
+    }
+    par(op)
+  } else if(type=="discount"){
+    if(!is.null(args1$S0_t) | (!is.null(args1$S_c) & !is.null(args1$S0_c))){
+      plot(discountfun_plot)
+    }
+  } else if(type=="survival"){
+    plot(survival_curves)
   }
-  par(op)
+
+
 })
 
 
