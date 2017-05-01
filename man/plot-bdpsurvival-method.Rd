@@ -3,12 +3,13 @@
 \docType{methods}
 \name{plot,bdpsurvival-method}
 \alias{plot,bdpsurvival-method}
-\title{plot}
+\title{bdpsurvival Object Plot}
 \usage{
 \S4method{plot}{bdpsurvival}(x, type = NULL)
 }
 \arguments{
-\item{x}{Result}
+\item{x}{object of class \code{bdpsurvival}. The result of a call to the
+\code{\link{bdpsurvival}} function.}
 
 \item{type}{character. Optional. Select plot type to print.
 Supports the following: "discount" gives the discount function and
@@ -16,5 +17,13 @@ Supports the following: "discount" gives the discount function and
 display all plots in sequence.}
 }
 \description{
-survival plot method
+\code{plot} method for class \code{bdpsurvival}.
+}
+\details{
+The \code{plot} method for \code{bdpsurvival} returns up to two
+  plots: (1) posterior survival curves and (2) the discount function. A
+  call to \code{plot} that omits the \code{type} input returns one plot
+  at a time and prompts the user to click the plot or press return to
+  proceed to the next plot. Otherwise, the user can specify a plot
+  \code{type} to display the requested plot.
 }

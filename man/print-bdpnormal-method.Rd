@@ -3,14 +3,17 @@
 \docType{methods}
 \name{print,bdpnormal-method}
 \alias{print,bdpnormal-method}
-\title{print}
+\title{bdpnormal Object Print}
 \usage{
 \S4method{print}{bdpnormal}(x)
 }
 \arguments{
-\item{x}{Result}
+\item{x}{object of class \code{bdpnormal}. The result of a call to the
+\code{\link{bdpnormal}} function.}
 }
 \description{
-normal print method
+\code{print} method for class \code{bdpnormal}.
 }
-
+\details{
+Returns same output as a call to \code{\link[=summary,bdpnormal-method]{summary}}.
+}

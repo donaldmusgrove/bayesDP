@@ -1,16 +1,26 @@
-#' @title plot
-#' @description normal plot method
+#' @title bdpnormal Object Plot
+#' @description \code{plot} method for class \code{bdpnormal}.
+#' @param x object of class \code{bdpnormal}. The result of a call to the
+#'   \code{\link{bdpnormal}} function.
 #' @param type character. Optional. Select plot type to print.
 #'   Supports the following: "discount" gives the discount function;
 #'   "posteriors" gives the posterior plots of the event rates; and
 #'   "density" gives the augmented posterior density plot(s).  Leave NULL to
 #'   display all plots in sequence.
+#'
+#' @details The \code{plot} method for \code{bdpnormal} returns up to three
+#'   plots: (1) posterior density curves; (2) posterior density of the effect
+#'   of interest; and (3) the discount function. A call to \code{plot} that
+#'   omits the \code{type} input returns one plot at a time and prompts the
+#'   user to click the plot or press return to proceed to the next plot.
+#'   Otherwise, the user can specify a plot \code{type} to display the
+#'   requested plot.
+#'
 #' @import methods
 #' @importFrom utils head
 #' @importFrom ggplot2 aes_string ggtitle ylim guides guide_legend theme element_blank
 #' @importFrom graphics par
 #' @importFrom stats density is.empty.model median model.offset model.response pweibull quantile rbeta rgamma rnorm var vcov
-#' @param x Result
 #' @export
 setMethod("plot", signature(x = "bdpnormal"), function(x, type=NULL){
   posterior_treatment <- x$posterior_treatment
@@ -200,19 +210,29 @@ setMethod("plot", signature(x = "bdpnormal"), function(x, type=NULL){
 })
 
 
-#' @title plot
-#' @description binomial plot method
+#' @title bdpbinomial Object Plot
+#' @description \code{plot} method for class \code{bdpbinomial}.
+#' @param x object of class \code{bdpbinomial}. The result of a call to the
+#'   \code{\link{bdpbinomial}} function.
 #' @param type character. Optional. Select plot type to print.
 #'   Supports the following: "discount" gives the discount function;
 #'   "posteriors" gives the posterior plots of the event rates; and
 #'   "density" gives the augmented posterior density plot(s).  Leave NULL to
 #'   display all plots in sequence.
+#'
+#' @details The \code{plot} method for \code{bdpbinomial} returns up to three
+#'   plots: (1) posterior density curves; (2) posterior density of the effect
+#'   of interest; and (3) the discount function. A call to \code{plot} that
+#'   omits the \code{type} input returns one plot at a time and prompts the
+#'   user to click the plot or press return to proceed to the next plot.
+#'   Otherwise, the user can specify a plot \code{type} to display the
+#'   requested plot.
+#'
 #' @import methods
 #' @importFrom utils head
 #' @importFrom ggplot2 aes_string ggtitle ylim guides guide_legend theme element_blank
 #' @importFrom graphics par
 #' @importFrom stats density is.empty.model median model.offset model.response pweibull quantile rbeta rgamma rnorm var vcov
-#' @param x Result
 #' @export
 setMethod("plot", signature(x = "bdpbinomial"), function(x, type=NULL){
   posterior_treatment <- x$posterior_treatment
@@ -403,18 +423,27 @@ setMethod("plot", signature(x = "bdpbinomial"), function(x, type=NULL){
 })
 
 
-#' @title plot
-#' @description survival plot method
+#' @title bdpsurvival Object Plot
+#' @description \code{plot} method for class \code{bdpsurvival}.
+#' @param x object of class \code{bdpsurvival}. The result of a call to the
+#'   \code{\link{bdpsurvival}} function.
 #' @param type character. Optional. Select plot type to print.
 #'   Supports the following: "discount" gives the discount function and
 #'   "survival" gives the survival curves.  Leave NULL to
 #'   display all plots in sequence.
+#'
+#' @details The \code{plot} method for \code{bdpsurvival} returns up to two
+#'   plots: (1) posterior survival curves and (2) the discount function. A
+#'   call to \code{plot} that omits the \code{type} input returns one plot
+#'   at a time and prompts the user to click the plot or press return to
+#'   proceed to the next plot. Otherwise, the user can specify a plot
+#'   \code{type} to display the requested plot.
+#'
 #' @import methods
 #' @importFrom utils head
 #' @importFrom ggplot2 aes_string ggtitle ylim guides guide_legend theme element_blank
 #' @importFrom graphics par
 #' @importFrom stats density is.empty.model median model.offset model.response pweibull quantile rbeta rgamma rnorm var vcov
-#' @param x Result
 #' @export
 setMethod("plot", signature(x = "bdpsurvival"), function(x, type=NULL){
   args1               <- x$args1

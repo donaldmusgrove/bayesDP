@@ -317,7 +317,7 @@ data2 <- data.frame(status     = 1,
                     historical = c(rep(0,50),rep(1,50), rep(0,50),rep(1,50)),
                     treatment  = c(rep(1,100), rep(0,100)))
 ```
-In this example, we've simulated current control survival times from an exponential distribution with rate `1/20` and historical control survival times from an exponential distribution with rate `1/20`. With our dataframe constructed, we can now fit the `bdpsurvival` model. Before proceeding, it is worth pointing out that the discount function is applied separately to the treatment and control data. Now, let's carry out the two-arm analysis using default inputs:
+In this example, we've simulated current and historical control survival times from exponential distributions with rate `1/20`. Note how the `data2` dataframe has been constructed; we've taken care to ensure that the current/historical and treatment/control indicators line up properly. With our dataframe constructed, we can now fit the `bdpsurvival` model. Before proceeding, it is worth pointing out that the discount function is applied separately to the treatment and control data. Now, let's carry out the two-arm analysis using default inputs:
 ```{r}
 set.seed(42)
 fit2 <- bdpsurvival(Surv(time, status) ~ historical + treatment,
@@ -326,7 +326,7 @@ fit2 <- bdpsurvival(Surv(time, status) ~ historical + treatment,
 print(fit2)
 ```
 
-The `print` method of a two-arm analysis is largely different than a one-arm analysis (note that with a two-arm analysis, the `summary` method is identical to `print`). First, we see the stochastic comparisons reported for both the treatment and control arms. As previously reported, the stochastic comparison between the current and historical data for the treatment data is relatively small at ``r round(fit2$posterior_treatment$p_hat,4)``, giving a low historical data weight of ``r round(fit2$posterior_treatment$alpha,4)``. On the other hand, the stochastic comparison between the current and historical data for the control data is relatively large at ``r round(fit2$posterior_control$p_hat,4)``, giving a high historical data weight of ``r round(fit2$posterior_control$alpha,4)``. Finally, the presented `coef` value is the log hazard ratio between the augmented treatment data and the augmented control data computed as `log(treatment) - log(control)`.
+The `print` method of a two-arm analysis is largely different than a one-arm analysis (with a two-arm analysis, the `summary` method is identical to `print`). First, we see the stochastic comparisons reported for both the treatment and control arms. As seen previously, the stochastic comparison between the current and historical data for the treatment data is relatively small at ``r round(fit2$posterior_treatment$p_hat,4)``, giving a low historical data weight of ``r round(fit2$posterior_treatment$alpha,4)``. On the other hand, the stochastic comparison between the current and historical data for the control data is relatively large at ``r round(fit2$posterior_control$p_hat,4)``, giving a high historical data weight of ``r round(fit2$posterior_control$alpha,4)``. Finally, the presented `coef` value (and associated interval limits) is the log hazard ratio between the augmented treatment data and the augmented control data computed as `log(treatment) - log(control)`.
 
 
 

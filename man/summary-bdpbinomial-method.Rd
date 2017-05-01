@@ -3,14 +3,34 @@
 \docType{methods}
 \name{summary,bdpbinomial-method}
 \alias{summary,bdpbinomial-method}
-\title{summary}
+\title{bdpbinomial Object Summary}
 \usage{
 \S4method{summary}{bdpbinomial}(object)
 }
 \arguments{
-\item{object}{Result}
+\item{object}{object of class \code{bdpbinomial}. The result of a call to the
+\code{\link{bdpbinomial}} function.}
 }
 \description{
-binomial summary method
+\code{summary} method for class \code{bdpbinomial}.
 }
+\details{
+Displays a summary of the \code{bdpbinomial} fit including the
+  input data, the stochastic comparison between current and historical
+  data, and the resulting historical data weight (alpha). If historical
+  data is missing then no stochastic comparison nor weight are displayed.
 
+  In the case of a one-arm analysis, the displayed 95 percent
+  confidence interval contains the lower and upper limits of the
+  augmented event rate of the current data. The displayed
+  \code{probability of success} is the event rate of the current data
+  augmented by the historical data.
+
+  When a control arm is present, a two-arm analysis is carried out.
+  Now, the displayed 95 percent confidence interval contains the
+  lower and upper limits of the difference between the treatment and
+  control arms with the historical data augmented to current data, if
+  present. The displayed augmented sample estimates are the
+  event rates of the treatment and control arms, each of
+  which are augmented when historical data are present.
+}

@@ -2,7 +2,8 @@
 #' @description \code{bdpsurvival} is used to estimate the survival probability
 #'   (single arm trial; OPC) or hazard ratio (two-arm trial; RCT) for
 #'   right-censored data using the survival analysis implementation of the
-#'   Bayesian discount prior.
+#'   Bayesian discount prior. This code is modeled after
+#'   the methodologies developed in Haddad et al. (2017).
 #' @param formula an object of class "formula." Must have a survival object on
 #'   the left side and exactly two inputs on the right side: treatment and
 #'   historical. See "Details" for more information.
@@ -23,8 +24,7 @@
 #'   where the first value is used to weight the historical treatment group and
 #'   the second value is used to weight the historical control group.
 #' @param fix_alpha logical. Fix alpha at alpha_max? Default value is FALSE.
-#' @param number_mcmc scalar. Number of Markov Chain Monte Carlo (MCMC)
-#'   simulations. Default is 10000.
+#' @param number_mcmc scalar. Number of Monte Carlo simulations. Default is 10000.
 #' @param weibull_shape scalar. Shape parameter of the Weibull discount function
 #'   used to compute alpha, the weight parameter of the historical data. Default
 #'   value is 3. For a two-arm trial, users may specify a vector of two values
@@ -80,9 +80,12 @@
 #'   on the posterior distribution of the hazard ratio between the treatment
 #'   and control groups.
 #'
+#'   For more details, see the \code{bdpsurvival} vignette: \cr
+#'   \code{vignette("bdpsurvival-vignette", package="bayesDP")}
+#'
 #' @return \code{bdpsurvival} returns an object of class "bdpsurvival".
-#' The functions \code{\link{summary}} and \code{\link{print}} are used to obtain and
-#' print a summary of the results, including user inputs. The \code{\link{plot}}
+#' The functions \code{\link[=summary,bdpsurvival-method]{summary}} and \code{\link[=print,bdpsurvival-method]{print}} are used to obtain and
+#' print a summary of the results, including user inputs. The \code{\link[=plot,bdpsurvival-method]{plot}}
 #' function displays visual outputs as well.
 #'
 #' An object of class "\code{bdpsurvival}" is a list containing at least
@@ -136,9 +139,16 @@
 #'   }
 #' }
 #'
-#' @seealso \code{\link{plot,bdpsurvival-method}}, \code{\link{print,bdpsurvival-method}},
-#'   and \code{\link{summary,bdpsurvival-method}} for details of each of the
+#' @seealso \code{\link[=summary,bdpsurvival-method]{summary}},
+#'   \code{\link[=print,bdpsurvival-method]{print}},
+#'   and \code{\link[=plot,bdpsurvival-method]{plot}} for details of each of the
 #'   supported methods.
+#'
+#' @references
+#' Haddad, T., Himes, A., Thompson, L., Irony, T., Nair, R. MDIC Computer
+#'   Modeling and Simulation working group.(2017) Incorporation of stochastic
+#'   engineering models as prior information in Bayesian medical device trials.
+#'   \emph{Journal of Biopharmaceutical Statistics}, 1-15.
 #'
 #' @examples
 #' # One-arm trial (OPC) example - survival probability at 5 years

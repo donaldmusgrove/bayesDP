@@ -1,10 +1,31 @@
-#' @title summary
-#' @description normal summary method
+#' @title bdpnormal Object Summary
+#' @description \code{summary} method for class \code{bdpnormal}.
+#' @param object object of class \code{bdpnormal}. The result of a call to the
+#'   \code{\link{bdpnormal}} function.
+#'
+#' @details Displays a summary of the \code{bdpnormal} fit including the
+#'   input data, the stochastic comparison between current and historical
+#'   data, and the resulting historical data weight (alpha). If historical
+#'   data is missing then no stochastic comparison nor weight are displayed.
+#'
+#'   In the case of a one-arm analysis, the displayed 95 percent
+#'   confidence interval contains the lower and upper limits of the
+#'   augmented mean value of the current data. The displayed
+#'   \code{mean of treatment group} is the mean of the current data
+#'   augmented by the historical data.
+#'
+#'   When a control arm is present, a two-arm analysis is carried out.
+#'   Now, the displayed 95 percent confidence interval contains the
+#'   lower and upper limits of the difference between the treatment and
+#'   control arms with the historical data augmented to current data, if
+#'   present. The displayed augmented sample estimates are the
+#'   mean of the treatment and control arms, each of
+#'   which are augmented when historical data are present.
+#'
 #' @import methods
 #' @importFrom utils head
 #' @importFrom utils write.table
 #' @importFrom stats density is.empty.model median model.offset model.response pweibull quantile rbeta rgamma rnorm var vcov
-#' @param object Result
 #' @export
 setMethod("summary", signature(object = "bdpnormal"), function(object){
   arm2                <- object$args$arm2
@@ -114,13 +135,35 @@ setMethod("summary", signature(object = "bdpnormal"), function(object){
 })
 
 
-#' @title summary
-#' @description binomial summary method
+#' @title bdpbinomial Object Summary
+#' @description \code{summary} method for class \code{bdpbinomial}.
+#' @param object object of class \code{bdpbinomial}. The result of a call to the
+#'   \code{\link{bdpbinomial}} function.
+#'
+#' @details Displays a summary of the \code{bdpbinomial} fit including the
+#'   input data, the stochastic comparison between current and historical
+#'   data, and the resulting historical data weight (alpha). If historical
+#'   data is missing then no stochastic comparison nor weight are displayed.
+#'
+#'   In the case of a one-arm analysis, the displayed 95 percent
+#'   confidence interval contains the lower and upper limits of the
+#'   augmented event rate of the current data. The displayed
+#'   \code{probability of success} is the event rate of the current data
+#'   augmented by the historical data.
+#'
+#'   When a control arm is present, a two-arm analysis is carried out.
+#'   Now, the displayed 95 percent confidence interval contains the
+#'   lower and upper limits of the difference between the treatment and
+#'   control arms with the historical data augmented to current data, if
+#'   present. The displayed augmented sample estimates are the
+#'   event rates of the treatment and control arms, each of
+#'   which are augmented when historical data are present.
+#'
+#'
 #' @import methods
 #' @importFrom utils head
 #' @importFrom utils write.table
 #' @importFrom stats density is.empty.model median model.offset model.response pweibull quantile rbeta rgamma rnorm var vcov
-#' @param object Result
 #' @export
 setMethod("summary", signature(object = "bdpbinomial"), function(object){
   arm2                <- object$args$arm2
@@ -233,13 +276,32 @@ setMethod("summary", signature(object = "bdpbinomial"), function(object){
 
 
 #' @title bdpsurvival Object Summary
-#' @description \code{summary} method for class "\code{bdpsurvival}".
+#' @description \code{summary} method for class \code{bdpsurvival}.
 #' @import methods
 #' @importFrom utils head
 #' @importFrom utils write.table
 #' @importFrom stats density is.empty.model median model.offset model.response pweibull quantile rbeta rgamma rnorm var vcov
-#' @param object an object of class "\code{bdpsurvival}", a result of a call
+#' @param object an object of class \code{bdpsurvival}, a result of a call
 #'   to \code{\link{bdpsurvival}}.
+#' @details Displays a summary of the \code{bdpsurvival} fit. The output
+#'   is different, conditional on a one- or two-arm survival analysis.
+#'
+#'   In the case of a one-arm analysis, the stochastic comparison between
+#'   current and historical data and the resulting historical data weight
+#'   (alpha) are displayed, followed by a survival table containing
+#'   augmented posterior estimates of the survival probability at each
+#'   time point for the current data.
+#'
+#'   When a control arm is present, a two-arm analysis is carried out.
+#'   A two-arm survival analysis is similar to a cox proportional
+#'   hazards analysis, and the displayed summary reflects this. First,
+#'   the stochastic comparison between current and historical data and
+#'   the resulting historical data weight (alpha) are displayed, when
+#'   historical data is present for the respective arm. The displayed
+#'   \code{coef} value is the log-hazard between the augmented treatment
+#'   and control arms (log(treatment) - log(control)). The lower and upper
+#'   95 percent interval limits correspond to the \code{coef} value.
+#'
 #' @export
 setMethod("summary", signature(object = "bdpsurvival"), function(object){
   posterior_treatment <- object$posterior_treatment

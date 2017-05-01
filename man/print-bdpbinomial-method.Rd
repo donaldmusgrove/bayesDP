@@ -3,14 +3,18 @@
 \docType{methods}
 \name{print,bdpbinomial-method}
 \alias{print,bdpbinomial-method}
-\title{print}
+\title{bdpbinomial Object Print}
 \usage{
 \S4method{print}{bdpbinomial}(x)
 }
 \arguments{
-\item{x}{Result}
+\item{x}{object of class \code{bdpbinomial}. The result of a call to the
+\code{\link{bdpbinomial}} function.}
 }
 \description{
-binomial print method
+\code{print} method for class \code{bdpbinomial}.
 }
-
+\details{
+Returns same output as a call to
+\code{\link[=summary,bdpbinomial-method]{summary}}.
+}

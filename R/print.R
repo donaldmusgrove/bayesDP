@@ -1,10 +1,13 @@
-#' @title print
-#' @description normal print method
+#' @title bdpnormal Object Print
+#' @description \code{print} method for class \code{bdpnormal}.
 #' @import methods
 #' @importFrom utils head
 #' @importFrom utils write.table
 #' @importFrom stats density is.empty.model median model.offset model.response pweibull quantile rbeta rgamma rnorm var vcov
-#' @param x Result
+#' @param x object of class \code{bdpnormal}. The result of a call to the
+#'   \code{\link{bdpnormal}} function.
+#'
+#' @details Returns same output as a call to \code{\link[=summary,bdpnormal-method]{summary}}.
 #' @export
 setMethod("print", signature(x = "bdpnormal"), function(x){
   ### Return summary
@@ -12,13 +15,17 @@ setMethod("print", signature(x = "bdpnormal"), function(x){
 })
 
 
-#' @title print
-#' @description binomial print method
+#' @title bdpbinomial Object Print
+#' @description \code{print} method for class \code{bdpbinomial}.
 #' @import methods
 #' @importFrom utils head
 #' @importFrom utils write.table
 #' @importFrom stats density is.empty.model median model.offset model.response pweibull quantile rbeta rgamma rnorm var vcov
-#' @param x Result
+#' @param x object of class \code{bdpbinomial}. The result of a call to the
+#'   \code{\link{bdpbinomial}} function.
+#'
+#' @details Returns same output as a call to
+#' \code{\link[=summary,bdpbinomial-method]{summary}}.
 #' @export
 setMethod("print", signature(x = "bdpbinomial"), function(x){
   ### Return summary
@@ -26,13 +33,25 @@ setMethod("print", signature(x = "bdpbinomial"), function(x){
 })
 
 
-#' @title print
-#' @description survival print method
+#' @title bdpsurvival Object Print
+#' @description \code{print} method for class \code{bdpsurvival}.
 #' @import methods
 #' @importFrom utils head
 #' @importFrom utils write.table
 #' @importFrom stats density is.empty.model median model.offset model.response pweibull quantile rbeta rgamma rnorm var vcov
-#' @param x Result
+#' @param x object of class \code{bdpsurvival}. The result of a call to the
+#'   \code{\link{bdpsurvival}} function.
+#' @details Displays a print of the \code{bdpsurvival} fit. The output
+#'   is different, conditional on a one- or two-arm survival analysis.
+#'
+#'   In the case of a one-arm analysis, a brief summary is displayed,
+#'   including the current data sample size, number of events,
+#'   user input survival time, the augmented median survival probability,
+#'   and corresponding lower and upper 95 percent interval limits.
+#'
+#'   When a control arm is present, the output is the same as a call to
+#'   \code{\link[=summary,bdpsurvival-method]{summary}}.
+#'
 #' @export
 setMethod("print", signature(x = "bdpsurvival"), function(x){
   posterior_treatment <- x$posterior_treatment

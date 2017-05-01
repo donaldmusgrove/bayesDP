@@ -1,6 +1,6 @@
 #' @title Bayesian Discount Prior: Binomial counts
 #' @description \code{bdpbinomial} is used for estimating posterior samples from a
-#'   Binomial outcome where an informative prior is used. The prior weight
+#'   binomial outcome where an informative prior is used. The prior weight
 #'   is determined using a discount function. This code is modeled after
 #'   the methodologies developed in Haddad et al. (2017).
 #' @param y_t scalar. Number of events for the current treatment group.
@@ -28,8 +28,7 @@
 #'   where the first value is used to estimate the weight of the historical
 #'   treatment group and the second value is used to estimate the weight of the
 #'   historical control group.
-#' @param number_mcmc scalar. Number of Markov Chain Monte Carlo (MCMC)
-#'   simulations. Default is 10000.
+#' @param number_mcmc scalar. Number of Monte Carlo simulations. Default is 10000.
 #' @param a0 scalar. Prior value for the beta rate. Default is 1.
 #' @param b0 scalar. Prior value for the beta rate. Default is 1.
 #' @param two_side logical. Indicator of two-sided test for the discount
@@ -57,16 +56,19 @@
 #'  distribution of the current data augmented by the historical data.
 #'
 #'  To carry our a two-arm (RCT) analysis, data for the current treatment and
-#'  current control (\code{y_c} and \code{N_c}) must be input,
-#'  as well as at least one of the historical treatment and historical control
-#'  (\code{y0_c} and \code{N0_c}). The results
+#'  at least one of current or historical control data must be input. The results
 #'  are then based on the posterior distribution of the difference between
 #'  current treatment and control, augmented by available historical data.
 #'
-#' @return \code{bdpbinomial} returns an object of class "bdpbinomial".
-#' The functions \code{summary} and \code{print} are used to obtain and
-#' print a summary of the results, including user inputs. The \code{plot}
-#' function displays visual outputs as well.
+#'   For more details, see the \code{bdpbinomial} vignette: \cr
+#'   \code{vignette("bdpbinomial-vignette", package="bayesDP")}
+#'
+#' @return \code{bdpbinomial} returns an object of class "bdpbinomial". The
+#'   functions \code{\link[=summary,bdpbinomial-method]{summary}} and
+#'   \code{\link[=print,bdpbinomial-method]{print}} are used to obtain and
+#'   print a summary of the results, including user inputs. The
+#'   \code{\link[=plot,bdpbinomial-method]{plot}} function displays visual
+#'   outputs as well.
 #'
 #' An object of class \code{bdpbinomial} is a list containing at least
 #' the following components:
@@ -81,16 +83,22 @@
 #'        numeric. The posterior probability of the stochastic comparison
 #'        between the current and historical data.}
 #'      \item{\code{posterior}}{
-#'        vector. The posterior of the treatment group, incorporating the
-#'        weighted historical data.}
+#'        vector. A vector of length \code{number_mcmc} containing
+#'        posterior Monte Carlo samples of the event rate of the treatment
+#'        group. If historical treatment data is present, the posterior
+#'        incorporates the weighted historical data.}
 #'      \item{\code{posterior_flat}}{
-#'        vector. The distribution of the current treatment group, i.e., no
-#'        incorporation of the historical data.}
+#'        vector. A vector of length \code{number_mcmc} containing
+#'        Monte Carlo samples of the event rate of the current treatment group
+#'        under a flat/non-informative prior, i.e., no incorporation of the
+#'        historical data.}
 #'      \item{\code{prior}}{
-#'        vector. The distribution of the historical treatment group.}
+#'        vector. If historical treatment data is present, a vector of length
+#'        \code{number_mcmc} containing Monte Carlo samples of the event rate
+#'        of the historical treatment group under a flat/non-informative prior.}
 #'   }
 #'  \item{\code{posterior_control}}{
-#'    list. Similar entries as \code{posterior_treament}. Only present if
+#'    list. Similar entries as \code{posterior_treament}. Only present if a
 #'    control group is specified.}
 #'  \item{\code{args1}}{
 #'    list. Entries contain user inputs. In addition, the following elements
@@ -105,6 +113,17 @@
 #'   }
 #' }
 #'
+#' @seealso \code{\link[=summary,bdpbinomial-method]{summary}},
+#'   \code{\link[=print,bdpbinomial-method]{print}},
+#'   and \code{\link[=plot,bdpbinomial-method]{plot}} for details of each of the
+#'   supported methods.
+#'
+#' @references
+#' Haddad, T., Himes, A., Thompson, L., Irony, T., Nair, R. MDIC Computer
+#'   Modeling and Simulation working group.(2017) Incorporation of stochastic
+#'   engineering models as prior information in Bayesian medical device trials.
+#'   \emph{Journal of Biopharmaceutical Statistics}, 1-15.
+#'
 #' @examples
 #' # One-arm trial (OPC) example
 #' fit <- bdpbinomial(y_t           = 10,
@@ -113,7 +132,9 @@
 #'                    N0_t          = 250)
 #' summary(fit)
 #' print(fit)
-#' #plot(fit)
+#' \dontrun{
+#' plot(fit)
+#' }
 #'
 #' # Two-arm (RCT) example
 #' fit2 <- bdpbinomial(y_t = 10,
@@ -126,7 +147,9 @@
 #'                     N0_c = 250)
 #' summary(fit2)
 #' print(fit2)
-#' #plot(fit2)
+#' \dontrun{
+#' plot(fit2)
+#' }
 #'
 #' @rdname bdpbinomial
 #' @import methods

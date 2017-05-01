@@ -3,12 +3,13 @@
 \docType{methods}
 \name{plot,bdpbinomial-method}
 \alias{plot,bdpbinomial-method}
-\title{plot}
+\title{bdpbinomial Object Plot}
 \usage{
 \S4method{plot}{bdpbinomial}(x, type = NULL)
 }
 \arguments{
-\item{x}{Result}
+\item{x}{object of class \code{bdpbinomial}. The result of a call to the
+\code{\link{bdpbinomial}} function.}
 
 \item{type}{character. Optional. Select plot type to print.
 Supports the following: "discount" gives the discount function;
@@ -17,6 +18,14 @@ Supports the following: "discount" gives the discount function;
 display all plots in sequence.}
 }
 \description{
-binomial plot method
+\code{plot} method for class \code{bdpbinomial}.
 }
-
+\details{
+The \code{plot} method for \code{bdpbinomial} returns up to three
+  plots: (1) posterior density curves; (2) posterior density of the effect
+  of interest; and (3) the discount function. A call to \code{plot} that
+  omits the \code{type} input returns one plot at a time and prompts the
+  user to click the plot or press return to proceed to the next plot.
+  Otherwise, the user can specify a plot \code{type} to display the
+  requested plot.
+}

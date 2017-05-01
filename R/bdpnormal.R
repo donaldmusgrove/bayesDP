@@ -17,18 +17,14 @@ NULL
 #' @param mu_t scalar. Mean of the current treatment group.
 #' @param sigma_t scalar. Standard deviation of the current treatment group.
 #' @param N_t scalar. Number of observations of the current treatment group.
-#' @param mu0_t scalar. Mean of the historical treatment group. Required
-#'   for single arm (OPC) trials.
+#' @param mu0_t scalar. Mean of the historical treatment group.
 #' @param sigma0_t scalar. Standard deviation of the historical treatment
-#'  group. Required for single arm (OPC) trials.
+#'  group.
 #' @param N0_t scalar. Number of observations of the historical treatment
-#'  group. Required for single arm (OPC) trials.
-#' @param mu_c scalar. Mean of the current control group. Required for
-#'  two arm (RCT) trials.
+#'  group.
+#' @param mu_c scalar. Mean of the current control group.
 #' @param sigma_c scalar. Standard deviation of the current control group.
-#'  Required for two arm (RCT) trials.
 #' @param N_c scalar. Number of observations of the current control group.
-#'  Required for two arm (RCT) trials.
 #' @param mu0_c scalar. Mean of the historical control group.
 #' @param sigma0_c scalar. Standard deviation of the historical control group.
 #' @param N0_c scalar. Number of observations of the historical control group.
@@ -49,8 +45,7 @@ NULL
 #'   where the first value is used to estimate the weight of the historical
 #'   treatment group and the second value is used to estimate the weight of the
 #'   historical control group.
-#' @param number_mcmc scalar. Number of Markov Chain Monte Carlo (MCMC)
-#'   simulations. Default is 10000.
+#' @param number_mcmc scalar. Number of Monte Carlo simulations. Default is 10000.
 #' @param two_side logical. Indicator of two-sided test for the discount
 #'   function. Default value is TRUE.
 #' @details \code{bdpnormal} uses a two-stage approach for determining the
@@ -77,16 +72,20 @@ NULL
 #'  by the historical data.
 #'
 #'  To carry our a two-arm (RCT) analysis, data for the current treatment and
-#'  current control (\code{mu_c}, \code{sigma_c}, and \code{N_c}) must be input,
-#'  as well as at least one of the historical treatment and historical control
-#'  (\code{mu0_c}, \code{sigma0_c}, and \code{N0_c}). The results
-#'  are then based on the posterior distribution of the difference between
-#'  current treatment and control, augmented by available historical data.
+#'  at least one of current or historical control data must be input.
+#'  The results are then based on the posterior distribution of the difference
+#'  between current treatment and control, augmented by available historical data.
 #'
-#' @return \code{bdpnormal} returns an object of class "bdpnormal".
-#' The functions \code{\link{summary}} and \code{\link{print}} are used to obtain and
-#' print a summary of the results, including user inputs. The \code{\link{plot}}
-#' function displays visual outputs as well.
+#'   For more details, see the \code{bdpnormal} vignette: \cr
+#'   \code{vignette("bdpnormal-vignette", package="bayesDP")}
+#'
+#'
+#' @return \code{bdpnormal} returns an object of class "bdpnormal". The
+#'   functions \code{\link[=summary,bdpnormal-method]{summary}} and
+#'   \code{\link[=print,bdpnormal-method]{print}} are used to obtain and print
+#'   a summary of the results, including user inputs. The
+#'   \code{\link[=plot,bdpnormal-method]{plot}} function displays visual
+#'   outputs as well.
 #'
 #' An object of class \code{bdpnormal} is a list containing at least
 #' the following components:
@@ -100,24 +99,34 @@ NULL
 #'        numeric. The posterior probability of the stochastic comparison
 #'        between the current and historical data.}
 #'      \item{\code{posterior_mu}}{
-#'        vector. The posterior of the treatment group, incorporating the
-#'        weighted historical data.}
+#'        vector. A vector of length \code{number_mcmc} containing the posterior
+#'        mean of the treatment group. If historical treatment data is present,
+#'        the posterior incorporates the weighted historical data.}
 #'      \item{\code{posterior_sigma2}}{
-#'        vector. The posterior of the treatment group variance, incorporating the
-#'        weighted historical data.}
+#'        vector. A vector of length \code{number_mcmc} containing the posterior
+#'        variance of the treatment group. If historical treatment data is present,
+#'        the posterior incorporates the weighted historical data.}
 #'      \item{\code{posterior_flat_mu}}{
-#'        vector. The distribution of the current treatment group, i.e., no
-#'        incorporation of the historical data.}
+#'        vector. A vector of length \code{number_mcmc} containing
+#'        Monte Carlo samples of the mean of the current treatment group
+#'        under a flat/non-informative prior, i.e., no incorporation of the
+#'        historical data.}
 #'      \item{\code{posterior_flat_sigma2}}{
-#'        vector. The distribution of the current treatment group variance, i.e., no
-#'        incorporation of the historical data.}
+#'        vector. A vector of length \code{number_mcmc} containing
+#'        Monte Carlo samples of the standard deviation of the current treatment group
+#'        under a flat/non-informative prior, i.e., no incorporation of the
+#'        historical data.}
 #'      \item{\code{prior_mu}}{
-#'        vector. The distribution of the historical treatment group.}
+#'        vector. If historical treatment data is present, a vector of length
+#'        \code{number_mcmc} containing Monte Carlo samples of the mean
+#'        of the historical treatment group under a flat/non-informative prior.}
 #'      \item{\code{prior_sigma2}}{
-#'        vector. The distribution of the historical treatment group variance.}
+#'        vector. If historical treatment data is present, a vector of length
+#'        \code{number_mcmc} containing Monte Carlo samples of the standard deviation
+#'        of the historical treatment group under a flat/non-informative prior.}
 #'   }
 #'  \item{\code{posterior_control}}{
-#'    list. Similar entries as \code{posterior_treament}. Only present if
+#'    list. Similar entries as \code{posterior_treament}. Only present if a
 #'    control group is specified.
 #'  }
 #'  \item{\code{args1}}{
@@ -133,18 +142,25 @@ NULL
 #'   }
 #' }
 #'
+#' @seealso \code{\link[=summary,bdpnormal-method]{summary}},
+#'   \code{\link[=print,bdpnormal-method]{print}},
+#'   and \code{\link[=plot,bdpnormal-method]{plot}} for details of each of the
+#'   supported methods.
+#'
 #' @references
 #' Haddad, T., Himes, A., Thompson, L., Irony, T., Nair, R. MDIC Computer
 #'   Modeling and Simulation working group.(2017) Incorporation of stochastic
 #'   engineering models as prior information in Bayesian medical device trials.
-#'   \emph{Journal of Biopharmaceutical Statistics}. To Appear.
+#'   \emph{Journal of Biopharmaceutical Statistics}, 1-15.
 #'
 #' @examples
 #' # One-arm trial (OPC) example
 #' fit <- bdpnormal(mu_t = 30, sigma_t = 10, N_t = 250,
 #'                  mu0_t = 50, sigma0_t = 5, N0_t = 250)
 #' summary(fit)
-#' #plot(fit)
+#' \dontrun{
+#' plot(fit)
+#' }
 #'
 #' # Two-arm (RCT) example
 #' fit2 <- bdpnormal(mu_t = 30, sigma_t = 10, N_t = 250,
@@ -152,7 +168,9 @@ NULL
 #'                   mu_c = 25, sigma_c = 10, N_c = 250,
 #'                   mu0_c = 50, sigma0_c = 5, N0_c = 250)
 #' summary(fit2)
-#' #plot(fit2)
+#' \dontrun{
+#' plot(fit2)
+#' }
 #'
 #' @rdname bdpnormal
 #' @import methods
