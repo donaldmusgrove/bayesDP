@@ -75,7 +75,7 @@ Before we get into our estimation scheme, we will briefly describe the piecewise
 Now, let $d_{ij}$ be an event indicator for the $i$th subject in the $j$th interval. That is, $d_{ij}=1$ if the endpoint occurred in the $j$th interval, otherwise $d_{ij}=0$. Let $t_{ij}$ denote the exposure time of the $i$th subject in the $j$th interval. 
 
 Let $D_j=\sum_id_{ij}$ be the number of episodes that occurred in interval $j$, and let $T_j=\sum_it_{ij}$ be the total exposure time within interval $j$. Then, the $j$th hazard rate is estimated as
-$$\lambda_j \sim \mathcal{G}amma\left(a_0+D_j,\,b_0+T_j\right),$$
+$$\lambda_j\mid D_j, \sim \mathcal{G}amma\left(a_0+D_j,\,b_0+T_j\right),$$
 where $a_0$ and $b_0$ are the prior shape and rate parameters of a gamma distribution. The survival probability can be estimated as
 $$p_S = 1-F_p\left(q,\,\lambda_1,\dots,\,\lambda_J,\,\tau_0,\,\dots\,\,\tau_J\right),$$
 where $F_p$ is the piecewise exponential cumulative distribution function.
@@ -87,27 +87,22 @@ $$\lambda_{jT} \sim \mathcal{G}amma\left(a_0+D_{jT},\,b_0+T_{jT}\right)$$
 and
 $$\lambda_{jC} \sim \mathcal{G}amma\left(a_0+D_{jC},\,b_0+T_{jC}\right),$$
 where $D_{jT}$ and $D_{jC}$ denote the number of events occurring in interval $j$ for the treatment and control arms, respectively, and $T_{jT}$ and $T_{jC}$ denote the total exposures times in interval $j$ for the treatment and control arms, respectively. Then, the approximation of the log-hazard rate $\beta$ is carried out as follows:
-$$
-\begin{array}{rcl}
+$$\begin{array}{rcl}
 R_j & = & \log\lambda_{jT}-\log\lambda_{jC},\,\,\,j=1,\dots,\,J,\\
 \\
 V_j & = & \mathbb{V}ar(R_j),\,\,\,j=1,\dots,\,J,\\
 \\
 \beta & = & \displaystyle{\frac{\sum_jR_j/V_j}{\sum_j1/V_j}}.\\
-\end{array}
-$$
+\end{array}$$
 This estimate of $\beta$ is essentially a normal approximation to the estimate under a Poisson glm. Currently, the variance term $V_j$ is estimated empirically by calculating the variance of the posterior draws. The empirical variance approximates the theoretical variance under a normal approximation of
-$$
-\begin{array}{rcl}
-
+$$\begin{array}{rcl}
 \tilde{V}_j & = & V_{jT} + V_{jC},\\
 \\
 V_{jT} & = & 1/D_{jT},\\
 \\
 V_{jC} & = & 1/D_{jC}.\\
-\end{array}
-$$
-In a future release of the package, we will briefly demonstrate via simulation how well this normal approximation works in practice.
+\end{array}$$
+In a future release of the package, we will demonstrate via simulation how well this normal approximation works in practice.
 
 
 
@@ -117,34 +112,40 @@ In the first estimation step, the historical data weight $\hat{\alpha}$ is estim
 
 When historical data are available, estimation of $\hat{\alpha}$ is carried out as follows. Let $d_{ij}$ and $t_{ij}$ denote the the event indicator and event time or censoring time for the $i$th subject in the $j$th interval of the current data, respectively. Similarly, let $d_{0ij}$ and $t_{0ij}$ denote the the event indicator and event time or censoring time for the $i$th subject in the $j$th interval of the historical data, respectively. Let $a_0$ and $b_0$ denote the shape and rate parameters of a gamma distribution, respectively. Then, the posterior distributions of the $j$ piecewise hazard rates for current and historical data, under vague (flat) priors are
 
-$$\lambda_{j} \sim \mathcal{G}amma\left(a_0+\sum_id_{ij},\,b_0+\sum_it_{ij}\right)$$
-and
+$$\lambda_{j} \sim \mathcal{G}amma\left(a_0+D_j,\,b_0+T_j\right)$$
 
-$$\lambda_{j0} \sim \mathcal{G}amma\left(a_0+\sum_id_{0ij},\,b_0+\sum_it_{0ij}\right)$$
-respectively. The next steps are dependent on whether a one-arm or two-arm analysis is requested.
+$$\lambda_{j0} \sim \mathcal{G}amma\left(a_0+D_{0j},\,b_0+T_{j0}\right)$$
+respectively, where $D_j=\sum_id_{ij}$, $T_j=\sum_it_{ij}$, $D_{0j}=\sum_id_{0ij}$, and $T_{j0}=\sum_it_{0ij}$. The next steps are dependent on whether a one-arm or two-arm analysis is requested.
 
 ### Estimation under a one-arm analysis
 Under a one-arm analysis, the comparison of interest is the survival probability at user-specified time $t^\ast$. Let 
-$$p_S = 1-F_p\left(t^\ast,\,\lambda_1,\dots,\,\lambda_J,\,\tau_0,\,\dots\,\,\tau_J\right),$$
+$$\tilde{\theta} = 1-F_p\left(t^\ast,\,\lambda_1,\dots,\,\lambda_J,\,\tau_0,\,\dots\,\,\tau_J\right),$$
 and
-$$p_{S0} = 1-F_p\left(t^\ast,\,\lambda_{10},\dots,\,\lambda_{J0},\,\tau_0,\,\dots\,\,\tau_J\right),$$
-be the posterior survival probabilities for the current and historical data, respectively. Then, we compute the posterior probability that the current survival is greater than the historical survival $p = Pr\left(p_S > p_{s0}\right)$. Finally, for a Weibull distribution function (i.e., the Weibull cumulative distribution function), denoted $W$, $\hat{\alpha}$ is computed as 
+$$\theta_0 = 1-F_p\left(t^\ast,\,\lambda_{10},\dots,\,\lambda_{J0},\,\tau_0,\,\dots\,\,\tau_J\right),$$
+be the posterior survival probabilities for the current and historical data, respectively. Then, we compute the posterior probability that the current survival is greater than the historical survival $p = Pr\left(\tilde{\theta} > \theta_0 \mid D, T, D_0,T_0 \right)$, where $D$ and $T$ collect $D_1,\dots,D_J$ and $T_1,\dots,T_J$, respectively.
+
 
 
 ### Estimation under a two-arm analysis
-Under a two-arm analysis, the comparison of interest is the hazard ratio of current vs. historical data. We estimate the log hazard ratio $\beta$ as described previously and compute the posterior probability that $\beta>0$ as $p = Pr\left(\beta > 0\right)$.
+Under a two-arm analysis, the comparison of interest is the hazard ratio of current vs. historical data. We estimate the log hazard ratio $\beta$ as described previously and compute the posterior probability that $\beta>0$ as $p = Pr\left(\beta > 0\mid D, T, D_0, T_0\right)$.
 
 ***
 
-Now, upon computing the posterior probability $p$, we can compute the historical data weight $\hat{\alpha}$ as 
+Finally, with the posterior probability $p$ in hand, we can compute the weight $\hat{\alpha}$. For a Weibull distribution function (i.e., the Weibull cumulative distribution function), denoted $W$, $\hat{\alpha}$ is computed as 
 
 $$
+\begin{array}{ccc}
+\mbox{One-sided analysis} & & \mbox{Two-sided analysis} \\
+\hat{\alpha}=\alpha_{max}\cdot W\left(p, \,w_{shape}, \,w_{scale}\right),
+& &
 \hat{\alpha}=\begin{cases}
-W\left(p, \,w_{shape}, \,w_{scale}\right),\,0\le p\le0.5\\
-W\left(1-p, \,w_{shape}, \,w_{scale}\right),\,0.5 \lt p \le 1,
+\alpha_{max}\cdot W\left(p, \,w_{shape}, \,w_{scale}\right),\,0\le p\le0.5\\
+\alpha_{max}\cdot W\left(1-p, \,w_{shape}, \,w_{scale}\right),\,0.5 \lt p \le 1,
 \end{cases}
+\end{array}
 $$
-where $w_{shape}$ and $w_{scale}$ are the shape and scale of the Weibull distribution function, respectively. 
+
+where $w_{shape}$ and $w_{scale}$ are the shape and scale of the Weibull distribution function, respectively and $\alpha_{max}$ scales the weight $\hat{\alpha}$ by a user-input maximum value. Using the default values of $w_{shape}=3$ and $w_{scale}=0.135$, $\hat{\alpha}$ increases to 1 as $p$ increases to 1 (one-sided) and $\hat{\alpha}$ increases to 1 as $p$ goes to 0.5 (two-sided).
 
 There are several model inputs at this first stage. First, the user can select `fix_alpha=TRUE` and force a fixed value of $\hat{\alpha}$ (at the `alpha_max` input), as opposed to estimation via the discount function. Next, a Monte Carlo estimation approach is used, requiring several samples from the posterior distributions. Thus, the user can input a sample size greater than or less than the default value of `number_mcmc=10000`. Next, the Beta rate parameters can be changed from the defaults of $a_0=b_0=1$ (`a0` and `b0` inputs). Finally, the shape of the Weibull discount function can be altered by changing the Weibull shape and scale parameters from the default values of $w_{shape}=3$ and $w_{scale}=0.135$ (`weibull_shape` and `weibull_scale` inputs).
 
@@ -176,7 +177,7 @@ The posterior distribution is dependent on the analysis type: one-arm or two-arm
 
 
 ### Estimation under a one-arm analysis
-With $\hat{\alpha}$ in hand, we can now estimate the posterior distribution of the survival probability. Using the notation of the previous sections, the posterior distribution is 
+With $\hat{\alpha}$ in hand, we can now estimate the posterior distributions of the hazards so that we can estimate the survival probability as described previously. Using the notation of the previous sections, the posterior distribution is 
 $$
 \begin{array}{rcl}
 p_S & = & 1-F_p\left(t^\ast,\,\lambda_1,\dots,\,\lambda_J,\,\tau_0,\,\dots\,\,\tau_J\right),\\

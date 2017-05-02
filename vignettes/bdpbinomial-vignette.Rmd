@@ -63,19 +63,24 @@ In the first estimation step, the historical data weight $\hat{\alpha}$ is estim
 
 When historical data are available, estimation of $\hat{\alpha}$ is carried out as follows. Let $y$ and $N$ denote the number of events and sample size of the current data, respectively. Similarly, let $y_0$ and $N_0$ denote the number of events and sample size of the historical data, respectively. Let $a_0$ and $b_0$ denote the rate parameters of a Beta distribution. Then, the posterior distributions of the event rates for current and historical data, under vague (flat) priors are
 
-$$ \tilde{\theta} \sim \mathcal{B}eta\left(y+a_0,\,N-y+b_0 \right)$$
+$$ \tilde{\theta}\mid y,N \sim \mathcal{B}eta\left(y+a_0,\,N-y+b_0 \right)$$
 and
 
-$$ \theta_0 \sim \mathcal{B}eta\left(y_0+a_0,\,N_0-y_0+b_0 \right),$$
-respectively. We next compute the posterior probability $p = Pr\left(\tilde{\theta} < \theta_0\right)$. Finally, for a Weibull distribution function (i.e., the Weibull cumulative distribution function), denoted $W$, $\hat{\alpha}$ is computed as 
+$$ \theta_0\mid y_0,N_0 \sim \mathcal{B}eta\left(y_0+a_0,\,N_0-y_0+b_0 \right),$$
+respectively. We next compute the posterior probability $p = Pr\left(\tilde{\theta} \lt \theta_0\mid y, N, y_0, N_0\right)$. Finally, for a Weibull distribution function (i.e., the Weibull cumulative distribution function), denoted $W$, $\hat{\alpha}$ is computed as 
 
 $$
+\begin{array}{ccc}
+\mbox{One-sided analysis} & & \mbox{Two-sided analysis} \\
+\hat{\alpha}=\alpha_{max}\cdot W\left(p, \,w_{shape}, \,w_{scale}\right),
+& &
 \hat{\alpha}=\begin{cases}
-W\left(p, \,w_{shape}, \,w_{scale}\right),\,0\le p\le0.5\\
-W\left(1-p, \,w_{shape}, \,w_{scale}\right),\,0.5 \lt p \le 1,
+\alpha_{max}\cdot W\left(p, \,w_{shape}, \,w_{scale}\right),\,0\le p\le0.5\\
+\alpha_{max}\cdot W\left(1-p, \,w_{shape}, \,w_{scale}\right),\,0.5 \lt p \le 1,
 \end{cases}
+\end{array}
 $$
-where $w_{shape}$ and $w_{scale}$ are the shape and scale of the Weibull distribution function, respectively. 
+where $w_{shape}$ and $w_{scale}$ are the shape and scale of the Weibull distribution function, respectively and $\alpha_{max}$ scales the weight $\hat{\alpha}$ by a user-input maximum value. Using the default values of $w_{shape}=3$ and $w_{scale}=0.135$, $\hat{\alpha}$ increases to 1 as $p$ increases to 1 (one-sided) and $\hat{\alpha}$ increases to 1 as $p$ goes to 0.5 (two-sided).
 
 There are several model inputs at this first stage. First, the user can select `fix_alpha=TRUE` and force a fixed value of $\hat{\alpha}$ (at the `alpha_max` input), as opposed to estimation via the discount function. Next, a Monte Carlo estimation approach is used, requiring several samples from the posterior distributions. Thus, the user can input a sample size greater than or less than the default value of `number_mcmc=10000`. Next, the Beta rate parameters can be changed from the defaults of $a_0=b_0=1$ (`a0` and `b0` inputs). Finally, the shape of the Weibull discount function can be altered by changing the Weibull shape and scale parameters from the default values of $w_{shape}=3$ and $w_{scale}=0.135$ (`weibull_shape` and `weibull_scale` inputs).
 

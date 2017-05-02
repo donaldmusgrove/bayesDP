@@ -63,31 +63,37 @@ If only treatment data is input, the function considers the analysis a one-arm t
 ## Estimation of the historical data weight
 In the first estimation step, the historical data weight $\hat{\alpha}$ is estimated. In the case of a two-arm trial, where both treatment and control data are available, an $\hat{\alpha}$ value is estimated separately for each of the treatment and control arms. Of course, historical treatment or historical control data must be present, otherwise $\hat{\alpha}$ is not estimated for the corresponding arm.
 
-When historical data are available, estimation of $\hat{\alpha}$ is carried out as follows. Let $\bar{y}_t$, $s_t$, and $N_t$ denote the sample mean, sample standard deviation, and sample size of the current data, respectively. Similarly, let $\bar{y}_{0t}$, $s_{0t}$, and $N_{0t}$ denote the sample mean, sample standard deviation, and sample size of the historical data, respectively. Then, the posterior distribution of the mean for current data, under vague (flat) priors is
+When historical data are available, estimation of $\hat{\alpha}$ is carried out as follows. Let $\bar{y}$, $s$, and $N$ denote the sample mean, sample standard deviation, and sample size of the current data, respectively. Similarly, let $\bar{y}_0$, $s_0$, and $N_0$ denote the sample mean, sample standard deviation, and sample size of the historical data, respectively. Then, the posterior distribution of the mean for current data, under vague (flat) priors is
 
 $$ \begin{array}{rcl}
-\tilde{\sigma}^2 & \sim & InverseGamma\left(\frac{N_t-1}{2},\,\frac{N_t-1}{2}s_t^2 \right),\\
+\tilde{\sigma}^2\mid\bar{y},s,N & \sim & InverseGamma\left(\frac{N-1}{2},\,\frac{N-1}{2}s^2 \right),\\
 \\
-\tilde{\mu} & \sim & \mathcal{N}ormal\left(\bar{y}_t,\, \frac{1}{N_t}\tilde{\sigma}^2  \right).
+\tilde{\mu}\mid\bar{y},N,\tilde{\sigma}^2 & \sim & \mathcal{N}ormal\left(\bar{y},\, \frac{1}{N}\tilde{\sigma}^2  \right).
 \end{array}
 $$
 
 Similarly, the posterior distribution of the mean for historical data, under vague (flat) priors is 
 $$ \begin{array}{rcl}
-\sigma^2_0 & \sim & InverseGamma\left(\frac{N_{0t}-1}{2},\,\frac{N_{0t}-1}{2}s_{0t}^2 \right),\\
+\sigma^2_0 & \sim & InverseGamma\left(\frac{N_0-1}{2},\,\frac{N_0-1}{2}s_0^2 \right),\\
 \\
-\mu_0 & \sim & \mathcal{N}ormal\left(\bar{y}_{0t},\, \frac{1}{N_{0t}}\sigma^2_0  \right).
+\mu_0 \mid \bar{y}_0, N_0, \sigma^2_0 &  \sim  & \mathcal{N}ormal\left(\bar{y}_0,\, \frac{1}{N_0}\sigma^2_0  \right).
 \end{array}
 $$
 
-We next compute the posterior probability $p = Pr\left(\tilde{\mu} < \mu_0\right)$. Finally, for a Weibull distribution function (i.e., the Weibull cumulative distribution function), denoted $W$, $\hat{\alpha}$ is computed as 
+We next compute the posterior probability $p = Pr\left(\tilde{\mu} < \mu_0\mid\bar{y},s,N,\bar{y}_0,s_0,N_0\right)$. Finally, for a Weibull distribution function (i.e., the Weibull cumulative distribution function), denoted $W$, $\hat{\alpha}$ is computed as 
+
 $$
+\begin{array}{ccc}
+\mbox{One-sided analysis} & & \mbox{Two-sided analysis} \\
+\hat{\alpha}=\alpha_{max}\cdot W\left(p, \,w_{shape}, \,w_{scale}\right),
+& &
 \hat{\alpha}=\begin{cases}
-W\left(p, \,w_{shape}, \,w_{scale}\right),\,0\le p\le0.5\\
-W\left(1-p, \,w_{shape}, \,w_{scale}\right),\,0.5 \lt p \le 1,
+\alpha_{max}\cdot W\left(p, \,w_{shape}, \,w_{scale}\right),\,0\le p\le0.5\\
+\alpha_{max}\cdot W\left(1-p, \,w_{shape}, \,w_{scale}\right),\,0.5 \lt p \le 1,
 \end{cases}
+\end{array}
 $$
-where $w_{shape}$ and $w_{scale}$ are the shape and scale of the Weibull distribution function, respectively. 
+where $w_{shape}$ and $w_{scale}$ are the shape and scale of the Weibull distribution function, respectively and $\alpha_{max}$ scales the weight $\hat{\alpha}$ by a user-input maximum value. Using the default values of $w_{shape}=3$ and $w_{scale}=0.135$, $\hat{\alpha}$ increases to 1 as $p$ increases to 1 (one-sided) and $\hat{\alpha}$ increases to 1 as $p$ goes to 0.5 (two-sided). 
 
 There are several model inputs at this first stage. First, the user can select `fix_alpha=TRUE` and force a fixed value of $\hat{\alpha}$ (at the `alpha_max` input), as opposed to estimation via the discount function. Next, a Monte Carlo estimation approach is used, requiring several samples from the posterior distributions. Thus, the user can input a sample size greater than or less than the default value of `number_mcmc=10000`. Finally, the shape of the Weibull discount function can be altered by changing the Weibull shape and scale parameters from the default values of $w_{shape}=3$ and $w_{scale}=0.135$ (`weibull_shape` and `weibull_scale` inputs).
 
@@ -118,7 +124,7 @@ In both of the above plots, the x-axis is the stochastic comparison between curr
 
 ## Estimation of the posterior distribution of the current data, conditional on the historical data
 With $\hat{\alpha}$ in hand, we can now estimate the posterior distribution of the mean of the current data. Using the notation of the previous section, the posterior distribution is 
-$$\mu \sim \mathcal{N}ormal\left( \frac{\sigma^2_0N_t\bar{y}_t + \tilde{\sigma}^2N_{0t}\bar{y}_{0t}\hat{\alpha}}{N_t\sigma^2_0 + \tilde{\sigma}^2N_{0t}\hat{\alpha}},\,\frac{\tilde{\sigma}^2\sigma^2_0}{N_t\sigma^2_0 + \tilde{\sigma}^2N_{0t}\hat{\alpha}}      \right).$$
+$$\mu \sim \mathcal{N}ormal\left( \frac{\sigma^2_0N\bar{y} + \tilde{\sigma}^2N_0\bar{y}_0\hat{\alpha}}{N\sigma^2_0 + \tilde{\sigma}^2N_0\hat{\alpha}},\,\frac{\tilde{\sigma}^2\sigma^2_0}{N\sigma^2_0 + \tilde{\sigma}^2N_0\hat{\alpha}}      \right).$$
 At this model stage, we have in hand `number_mcmc` simulations from the augmented mean distribution. If there are no control data, i.e., a one-arm trial, then the modeling stops and we generate summaries of the posterior distribution of $\mu$. Otherwise, if there are control data, we proceed to a third step and compute a comparison between treatment and control data.
 
 

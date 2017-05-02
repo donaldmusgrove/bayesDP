@@ -293,7 +293,7 @@ setMethod("bdpsurvival",
   ### If zero is present in breaks, remove and give warning
   if(any(breaks==0)){
     breaks <- breaks[!(breaks==0)]
-    warning("Breaks vector includeded 0. The zero value was removed.")
+    warning("Breaks vector included 0. The zero value was removed.")
   }
 
 
