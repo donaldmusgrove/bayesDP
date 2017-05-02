@@ -547,16 +547,16 @@ posterior_survival <- function(S, S0, surv_time, alpha_max, fix_alpha, a0, b0,
     prior_survival           <- 1 - ppexp(q=surv_time, x=prior_hazard, cuts = c(0,breaks))
 
     ### Compute probability that survival is greater for current vs historical
-    p_test <- mean(posterior_flat_survival > prior_survival)   # higher is better survival
+    p_hat <- mean(posterior_flat_survival > prior_survival)   # higher is better survival
 
     if(fix_alpha){
       alpha_discount <- alpha_max
     } else{
       if (!two_side) {
-        alpha_discount <- pweibull(p_test, shape=weibull_shape, scale=weibull_scale)*alpha_max
+        alpha_discount <- pweibull(p_hat, shape=weibull_shape, scale=weibull_scale)*alpha_max
       } else if (two_side){
-        p_test1    <- ifelse(p_test > 0.5, 1 - p_test, p_test)
-        alpha_discount <- pweibull(p_test1, shape=weibull_shape, scale=weibull_scale)*alpha_max
+        p_hat    <- ifelse(p_hat > 0.5, 1 - p_hat, p_hat)
+        alpha_discount <- pweibull(p_hat, shape=weibull_shape, scale=weibull_scale)*alpha_max
       }
     }
   } else{
@@ -566,16 +566,16 @@ posterior_survival <- function(S, S0, surv_time, alpha_max, fix_alpha, a0, b0,
     V0     <- 1/apply(R0,2,var)
     logHR0 <- R0%*%V0/sum(V0)    #weighted average  of SE^2
 
-    p_test <- mean(logHR0 > 0)   #larger is higher failure
+    p_hat <- mean(logHR0 > 0)   #larger is higher failure
 
     if(fix_alpha){
       alpha_discount <- alpha_max
     } else{
       if (!two_side) {
-        alpha_discount <- pweibull(p_test, shape=weibull_shape, scale=weibull_scale)*alpha_max
+        alpha_discount <- pweibull(p_hat, shape=weibull_shape, scale=weibull_scale)*alpha_max
       } else if (two_side){
-        p_test1    <- ifelse(p_test > 0.5, 1 - p_test, p_test)
-        alpha_discount <- pweibull(p_test1, shape=weibull_shape, scale=weibull_scale)*alpha_max
+        p_hat    <- ifelse(p_hat > 0.5, 1 - p_hat, p_hat)
+        alpha_discount <- pweibull(p_hat, shape=weibull_shape, scale=weibull_scale)*alpha_max
       }
     }
   }
@@ -610,7 +610,7 @@ posterior_survival <- function(S, S0, surv_time, alpha_max, fix_alpha, a0, b0,
 
 
   return(list(alpha_discount          = alpha_discount,
-              p_hat                   = p_test,
+              p_hat                   = p_hat,
               posterior_survival      = posterior_survival,
               posterior_flat_survival = posterior_flat_survival,
               prior_survival          = prior_survival,

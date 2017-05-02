@@ -429,22 +429,21 @@ posterior_normal <- function(mu, sigma, N, mu0, sigma0, N0, alpha_max,
   if(!is.null(N) & !is.null(N0)){
 
     ### Test of model vs real
-    p_test <- mean(posterior_flat_mu < prior_mu)   # larger is higher failure
+    p_hat <- mean(posterior_flat_mu < prior_mu)   # larger is higher failure
 
     ### Number of effective sample size given shape and scale discount function
     if(fix_alpha == TRUE){
       alpha_discount <- alpha_max
     } else{
       if (!two_side) {
-        alpha_discount <- pweibull(p_test, shape=weibull_shape,
+        alpha_discount <- pweibull(p_hat, shape=weibull_shape,
                                    scale=weibull_scale)*alpha_max
       } else if (two_side){
-        p_test1    <- ifelse(p_test > 0.5, 1 - p_test, p_test)
-        alpha_discount <- pweibull(p_test1, shape=weibull_shape,
+        p_hat    <- ifelse(p_hat > 0.5, 1 - p_hat, p_hat)
+        alpha_discount <- pweibull(p_hat, shape=weibull_shape,
                                    scale=weibull_scale)*alpha_max
       }
     }
-    p_hat <- p_test
 
   } else{
     alpha_discount <- NULL
