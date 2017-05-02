@@ -59,7 +59,7 @@ time   <- c(rexp(50, rate=1/20), rexp(50, rate=1/10))
 status <- c(rexp(50, rate=1/30), rexp(50, rate=1/30))
 status <- ifelse(time < status, 1, 0)
 
-# Collect data into a dataframe
+# Collect data into a data frame
 example_surv_1arm <- data.frame(status     = status,
                                 time       = time,
                                 historical = c(rep(1,50),rep(0,50)),
@@ -83,7 +83,7 @@ time   <- c(rexp(50, rate=1/20), # Current treatment
 status <- rexp(200, rate=1/40)
 status <- ifelse(time < status, 1, 0)
 
-# Collect data into a dataframe
+# Collect data into a data frame
 example_surv_2arm <- data.frame(status     = status,
                                 time       = time,
                                 historical = c(rep(0,100),rep(1,100)),

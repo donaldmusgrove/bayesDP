@@ -61,7 +61,7 @@
 #'   estimation procedures.
 #'
 #'   To carry out a single arm (OPC) analysis, data for the current and
-#'   historical treatments are specified in a dataframe. The dataframe must have
+#'   historical treatments are specified in a data frame. The data frame must have
 #'   columns with names 'time', 'status', 'treatment', and 'historical.' Column
 #'   'time' is the survival (censor) time of the event and 'status' is the
 #'   event indicator. The column 'treatment' is used to indicate which observations
@@ -72,7 +72,7 @@
 #'   \code{surv_time} for the current data augmented by the historical data.
 #'
 #'   Two-arm (RCT) analyses are specified similarly to a single arm trial. Again
-#'   the input dataframe must have columns with names 'time', 'status',
+#'   the input data frame must have columns with names 'time', 'status',
 #'   'treatment', and 'historical.' Column 'time' is the survival (censor) time
 #'   of the event and 'status' is the event indicator. Now, the 'treatment'
 #'   column must use 0 to indicate the control group. The current data are
@@ -157,7 +157,7 @@
 #' status <- c(rexp(50, rate=1/30), rexp(50, rate=1/30))
 #' status <- ifelse(time < status, 1, 0)
 #'
-#' # Collect data into a dataframe
+#' # Collect data into a data frame
 #' example_surv_1arm <- data.frame(status     = status,
 #'                                 time       = time,
 #'                                 historical = c(rep(1,50),rep(0,50)),
@@ -181,7 +181,7 @@
 #' status <- rexp(200, rate=1/40)
 #' status <- ifelse(time < status, 1, 0)
 #'
-#' # Collect data into a dataframe
+#' # Collect data into a data frame
 #' example_surv_2arm <- data.frame(status     = status,
 #'                                 time       = time,
 #'                                 historical = c(rep(0,100),rep(1,100)),
@@ -240,7 +240,7 @@ setMethod("bdpsurvival",
            weibull_shape = 3,
            two_side      = TRUE){
 
-  ### Check dataframe and ensure it has the correct column names
+  ### Check data frame and ensure it has the correct column names
   namesData <- tolower(names(data))
   namesDiff <- setdiff(c("status", "time", "historical", "treatment"), namesData)
   if(length(namesDiff)>0){
@@ -248,11 +248,11 @@ setMethod("bdpsurvival",
     if(nDiff == 1){
       errorMsg <- paste0("Column ",
                          namesDiff,
-                         " is missing from the input dataframe.")
+                         " is missing from the input data frame.")
       stop(errorMsg)
     } else if(nDiff>1){
       errorNames <- paste0(namesDiff, collapse = ", ")
-      errorMsg <- paste0("Columns are missing from input dataframe: ",
+      errorMsg <- paste0("Columns are missing from input data frame: ",
                          errorNames)
       stop(errorMsg)
     }

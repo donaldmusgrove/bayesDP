@@ -233,13 +233,13 @@ set.seed(42)
 time_current    <- rexp(50, rate=1/10)
 time_historical <- rexp(50, rate=1/15)
 
-# Combine simulated data into a dataframe
+# Combine simulated data into a data frame
 data1 <- data.frame(status     = 1,
                     time       = c(time_current, time_historical),
                     historical = c(rep(0,50),rep(1,50)),
                     treatment  = 1)
 ```
-In this example, we've simulated current survival times from an exponential distribution with rate `1/10` and historical survival times from an exponential distribution with rate `1/15`. With our dataframe constructed, we can now fit the `bdpsurvival` model. Since this is a one-arm trial, we will request the survival probability at `surv_time=5`. Thus, estimation using the default model inputs is carried out:
+In this example, we've simulated current survival times from an exponential distribution with rate `1/10` and historical survival times from an exponential distribution with rate `1/15`. With our data frame constructed, we can now fit the `bdpsurvival` model. Since this is a one-arm trial, we will request the survival probability at `surv_time=5`. Thus, estimation using the default model inputs is carried out:
 
 ```{r}
 set.seed(42)
@@ -310,14 +310,14 @@ time_current_cntrl    <- rexp(50, rate=1/20)
 time_historical_cntrl <- rexp(50, rate=1/20)
 
 
-# Combine simulated data into a dataframe
+# Combine simulated data into a data frame
 data2 <- data.frame(status     = 1,
                     time       = c(time_current_trt,   time_historical_trt,
                                    time_current_cntrl, time_historical_cntrl),
                     historical = c(rep(0,50),rep(1,50), rep(0,50),rep(1,50)),
                     treatment  = c(rep(1,100), rep(0,100)))
 ```
-In this example, we've simulated current and historical control survival times from exponential distributions with rate `1/20`. Note how the `data2` dataframe has been constructed; we've taken care to ensure that the current/historical and treatment/control indicators line up properly. With our dataframe constructed, we can now fit the `bdpsurvival` model. Before proceeding, it is worth pointing out that the discount function is applied separately to the treatment and control data. Now, let's carry out the two-arm analysis using default inputs:
+In this example, we've simulated current and historical control survival times from exponential distributions with rate `1/20`. Note how the `data2` data frame has been constructed; we've taken care to ensure that the current/historical and treatment/control indicators line up properly. With our data frame constructed, we can now fit the `bdpsurvival` model. Before proceeding, it is worth pointing out that the discount function is applied separately to the treatment and control data. Now, let's carry out the two-arm analysis using default inputs:
 ```{r}
 set.seed(42)
 fit2 <- bdpsurvival(Surv(time, status) ~ historical + treatment,

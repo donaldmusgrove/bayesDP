@@ -34,7 +34,7 @@ setMethod("plot", signature(x = "bdpnormal"), function(x, type=NULL){
 
   information_sources <- NULL
 
-  ### Create dataframes for plotting via ggplot2
+  ### Create data frames for plotting via ggplot2
   D1 <- D2 <- D3 <- D5 <- D6 <- NULL
 
   if (arm2){
@@ -246,7 +246,7 @@ setMethod("plot", signature(x = "bdpbinomial"), function(x, type=NULL){
 
   information_sources <- NULL
 
-  ### Create dataframes for plotting via ggplot2
+  ### Create data frames for plotting via ggplot2
   D1 <- D2 <- D3 <- D5 <- D6 <- NULL
 
   if (arm2){
