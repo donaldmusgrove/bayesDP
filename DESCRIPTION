@@ -2,7 +2,7 @@ Package: bayesDP
 Type: Package
 Title: Tools for the Bayesian Discount Prior Function
 Version: 1.0.3
-Date: 2017-04-14
+Date: 2017-05-03
 Authors@R: c(person("Shawn", "Balcome", email = "sbalcome@mdic.org", role = c("cre")), person("Donnie", "Musgrove", email = "donald.r.musgrove@medtronic.com", role = c("aut")), person("Tarek", "Haddad", email = "tarek.d.haddad@medtronic.com", role = c("aut")), person("Christopher", "Jackson", email = "chris.jackson@mrc-bsu.cam.ac.uk", role = "ctb", comment="For the ppexp R code that was ported to C++."))
 Depends:
     R (>= 3.2.3),
