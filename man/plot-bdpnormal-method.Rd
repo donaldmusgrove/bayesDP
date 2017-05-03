@@ -29,3 +29,4 @@ The \code{plot} method for \code{bdpnormal} returns up to three
   Otherwise, the user can specify a plot \code{type} to display the
   requested plot.
 }
+

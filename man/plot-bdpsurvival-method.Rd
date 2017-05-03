@@ -27,3 +27,4 @@ The \code{plot} method for \code{bdpsurvival} returns up to two
   proceed to the next plot. Otherwise, the user can specify a plot
   \code{type} to display the requested plot.
 }
+
