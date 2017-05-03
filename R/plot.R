@@ -20,7 +20,7 @@
 #' @importFrom utils head
 #' @importFrom ggplot2 aes_string ggtitle ylim guides guide_legend theme element_blank
 #' @importFrom graphics par
-#' @importFrom stats density is.empty.model median model.offset model.response pweibull quantile rbeta rgamma rnorm var vcov
+#' @importFrom stats sd density is.empty.model median model.offset model.response pweibull quantile rbeta rgamma rnorm var vcov
 #' @export
 setMethod("plot", signature(x = "bdpnormal"), function(x, type=NULL){
   posterior_treatment <- x$posterior_treatment

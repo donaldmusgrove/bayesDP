@@ -25,7 +25,7 @@
 #' @import methods
 #' @importFrom utils head
 #' @importFrom utils write.table
-#' @importFrom stats density is.empty.model median model.offset model.response pweibull quantile rbeta rgamma rnorm var vcov
+#' @importFrom stats sd density is.empty.model median model.offset model.response pweibull quantile rbeta rgamma rnorm var vcov
 #' @export
 setMethod("summary", signature(object = "bdpnormal"), function(object){
   arm2                <- object$args$arm2

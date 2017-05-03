@@ -20,7 +20,7 @@ setMethod("print", signature(x = "bdpnormal"), function(x){
 #' @import methods
 #' @importFrom utils head
 #' @importFrom utils write.table
-#' @importFrom stats density is.empty.model median model.offset model.response pweibull quantile rbeta rgamma rnorm var vcov
+#' @importFrom stats sd density is.empty.model median model.offset model.response pweibull quantile rbeta rgamma rnorm var vcov
 #' @param x object of class \code{bdpbinomial}. The result of a call to the
 #'   \code{\link{bdpbinomial}} function.
 #'
