@@ -8,6 +8,10 @@ bayesDP
 
 <https://cran.r-project.org/package=bayesDP>
 
+Shiny app available at:
+
+<https://mdic.shinyapps.io/bayesdp/>
+
 [![Travis-CI Build
 Status](https://travis-ci.org/balcomes/bayesDP.svg?branch=master)](https://travis-ci.org/balcomes/bayesDP)
 [![Issue
