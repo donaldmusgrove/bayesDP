@@ -3,11 +3,11 @@
 * Supports two-arm survival analysis via hazard rate comparisons
 * Completely revamped summary and print methods to produce better formatted results
 * Plot method allows users to specify a `type`
-* Added vignettes for each of `bdpbinomial`, `bdpnorma`, and `bdpsurvival`
+* Added vignettes for each of `bdpbinomial`, `bdpnormal`, and `bdpsurvival`
 * Implemented the `fix_alpha` input which allows users to set the historical data weight at `alpha_max`
 
 ## Bug fixes and minor improvements
-* Fixed error with two-arm analysis where models did not fit if either the current or historical control data was not input
+* Fixed error with two-arm analysis where models did not fit if either the current or historical control data were not input
 * Changed `two_side` input to logical
 * Consolidated several internal functions into a single function for computational efficiency gains
 
