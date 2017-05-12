@@ -1,6 +1,6 @@
 ---
 title: "BayesDP"
-author: "Shawn Balcome"
+author: "Donnie Musgrove"
 date: "`r Sys.Date()`"
 output: 
   rmarkdown::html_vignette:
