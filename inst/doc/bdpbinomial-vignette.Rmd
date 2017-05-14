@@ -1,6 +1,6 @@
 ---
 title: "BayesDP"
-author: "Shawn Balcome"
+author: "Donnie Musgrove"
 date: "`r Sys.Date()`"
 output: 
   rmarkdown::html_vignette:
@@ -10,7 +10,7 @@ params:
   # EVAL: !r identical(Sys.getenv("NOT_CRAN"), "true")
   # EVAL: !r FALSE
 vignette: >
-  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteIndexEntry{Binomial Count Estimation}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
