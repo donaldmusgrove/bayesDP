@@ -553,8 +553,9 @@ setMethod("plot", signature(x = "bdpsurvival"), function(x, type=NULL){
     D6 <- NULL
   }
 
-  D <- rbind(D4,D5,D6, D1,D2,D3)
-
+  D       <- rbind(D4,D5,D6, D1,D2,D3)
+  D$group <- factor(D$group, levels=c("Treatment", "Control"))
+    
   ### Plot survival curve
   survival_curves <- ggplot(D, aes_string(x="x",y="y")) +
     geom_line(size=1.4, aes_string(color="source", lty="source")) +
