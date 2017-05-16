@@ -90,7 +90,7 @@ setMethod("plot", signature(x = "bdpnormal"), function(x, type=NULL){
 
   D$information_sources <- factor(D$information_sources,
                                   levels = (c("Posterior","Current Data","Historical Data")))
-
+  D$group <- factor(D$group, levels=c("Treatment", "Control"))
 
   ##############################################################################
   ### Posterior Type Plots
@@ -302,7 +302,8 @@ setMethod("plot", signature(x = "bdpbinomial"), function(x, type=NULL){
 
   D$information_sources <- factor(D$information_sources,
                                   levels = (c("Posterior","Current Data","Historical Data")))
-
+  D$group <- factor(D$group, levels=c("Treatment", "Control"))
+  
   ##############################################################################
   ### Posterior Type Plots
   ##############################################################################
