@@ -5,7 +5,7 @@
 \alias{plot,bdpsurvival-method}
 \title{bdpsurvival Object Plot}
 \usage{
-\S4method{plot}{bdpsurvival}(x, type = NULL)
+\S4method{plot}{bdpsurvival}(x, type = NULL, print = TRUE)
 }
 \arguments{
 \item{x}{object of class \code{bdpsurvival}. The result of a call to the
@@ -15,6 +15,10 @@
 Supports the following: "discount" gives the discount function and
 "survival" gives the survival curves.  Leave NULL to
 display all plots in sequence.}
+
+\item{print}{logical. Optional. Produce a plot (\code{print = TRUE}; default) or
+return a ggplot object (\code{print = FALSE}). When \code{print = FALSE},
+it is possible to use \code{ggplot2} syntax to modify the plot appearance.}
 }
 \description{
 \code{plot} method for class \code{bdpsurvival}.
@@ -27,4 +31,3 @@ The \code{plot} method for \code{bdpsurvival} returns up to two
   proceed to the next plot. Otherwise, the user can specify a plot
   \code{type} to display the requested plot.
 }
-

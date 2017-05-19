@@ -5,7 +5,7 @@
 \alias{plot,bdpnormal-method}
 \title{bdpnormal Object Plot}
 \usage{
-\S4method{plot}{bdpnormal}(x, type = NULL)
+\S4method{plot}{bdpnormal}(x, type = NULL, print = TRUE)
 }
 \arguments{
 \item{x}{object of class \code{bdpnormal}. The result of a call to the
@@ -16,6 +16,10 @@ Supports the following: "discount" gives the discount function;
 "posteriors" gives the posterior plots of the event rates; and
 "density" gives the augmented posterior density plot(s).  Leave NULL to
 display all plots in sequence.}
+
+\item{print}{logical. Optional. Produce a plot (\code{print = TRUE}; default) or
+return a ggplot object (\code{print = FALSE}). When \code{print = FALSE},
+it is possible to use \code{ggplot2} syntax to modify the plot appearance.}
 }
 \description{
 \code{plot} method for class \code{bdpnormal}.
@@ -29,4 +33,3 @@ The \code{plot} method for \code{bdpnormal} returns up to three
   Otherwise, the user can specify a plot \code{type} to display the
   requested plot.
 }
-
