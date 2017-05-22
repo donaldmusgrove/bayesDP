@@ -1,4 +1,4 @@
-#bayesDP
+# bayesDP
 
 ### Tools for the Bayesian Discount Prior Function
 
