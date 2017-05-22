@@ -1,4 +1,4 @@
-<img src=https://raw.githubusercontent.com/balcomes/bayesDP/master/bayesDP-logo.png alt="bayesDP Logo" width="400" height="400">
+<p align="center"><img src=https://raw.githubusercontent.com/balcomes/bayesDP/master/bayesDP-logo.png alt="bayesDP Logo" width="400" height="400"></p>
 
 # bayesDP
 
