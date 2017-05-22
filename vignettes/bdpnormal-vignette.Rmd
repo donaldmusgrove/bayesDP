@@ -53,7 +53,7 @@ Throughout this vignette, we use the terms `current`, `historical`, `treatment`,
 
 2. Current control data: control (or other treatment) data from a current study
 
-3. Historical control data: treatment data from a previous study
+3. Historical treatment data: treatment data from a previous study
 
 4. Historical control data: control (or other treatment) data from a previous study
 
