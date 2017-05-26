@@ -2,6 +2,7 @@
 
 export(bdpbinomial)
 export(bdpnormal)
+export(bdpregression)
 export(bdpsurvival)
 export(ppexp)
 exportMethods(plot)

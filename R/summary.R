@@ -435,10 +435,6 @@ setMethod("summary", signature(object = "bdpsurvival"), function(object){
     print(summ_table)
 
   }
-
-
-
-
 })
 
 # Helper functions:
@@ -447,4 +443,30 @@ pp <- function(m){
   write.table(format(m, justify="right"),
               row.names=T, col.names=F, quote=F)
 }
+
+
+#' @title bdpregression Object Summary
+#' @description \code{summary} method for class \code{bdpregression}.
+#' @param object object of class \code{bdpregression}. The result of a call to the
+#'   \code{\link{bdpregression}} function.
+#'
+#' @details Displays a summary of the \code{bdpregression} fit including the
+#'   input data, the stochastic comparison between current and historical
+#'   data, and the resulting historical data weight (alpha). If historical
+#'   data is missing then no stochastic comparison nor weight are displayed.
+#'
+#'   ...
+#'
+#' @import methods
+#' @importFrom utils head
+#' @importFrom utils write.table
+#' @export
+setMethod("summary", signature(object = "bdpregression"), function(object){
+
+  #arm2                <- object$args$arm2
+  #if(!arm2){
+    summary(object$posterior_treatment$posterior_regression)
+  #s}
+
+})
 
