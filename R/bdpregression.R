@@ -138,7 +138,7 @@
 #'
 #' @rdname bdpregression
 #' @import methods
-#' @importFrom stats density is.empty.model median model.offset model.response pweibull quantile rbeta rgamma rnorm var vcov
+#' @importFrom stats density is.empty.model median model.offset model.response pweibull quantile rbeta rgamma rnorm var vcov contrasts<- dt gaussian lm.fit model.frame model.matrix.default offset rchisq terms terms.formula
 #' @aliases bdpregression,ANY-method
 #' @export bdpregression
 bdpregression <- setClass("bdpregression", slots = c(posterior_treatment = "list",
