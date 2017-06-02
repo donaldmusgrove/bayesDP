@@ -245,9 +245,11 @@ setMethod("bdpregression",
   cmatch <- !is.na(cmatch)  ### == TRUE == missing
 
   if(!cmatch[1] & cmatch[2] & !cmatch[3]){
-    ### No intercept and no treatment indicator: cannot analyze as one-arm (or two-arm)
-    stop("Data input incorrectly. Intercept and (optional) treatment covariate are missing.
-         Cannot determine if one-arm or two-arm analysis.")
+    ### No intercept and no treatment indicator: cannot analyze as
+    ### one-arm (or two-arm)
+    stop("Data input incorrectly. Intercept and (optional) treatment
+          covariate are missing. Cannot determine if one-arm or two-arm
+          analysis.")
   } else if(all(!cmatch)){
     ### No intercept, historical, or treatment: cannot figure out what kind of analysis
     ### (one arm makes no sense here since intercept must be present)
@@ -271,11 +273,12 @@ setMethod("bdpregression",
   if(arm2) stop("Two arm trials are not currently supported.")
 
 
-  ### Check that (if present) historical and (if present) treatment columns have exactly 2 levels
+  ### Check that (if present) historical and (if present) treatment columns
+  ### have exactly 1-2 levels
   if(cmatch[2]){
     if(!(length(levels(as.factor(X[,"historical"]))) %in% c(1,2))){
       stop("Historical column does not have 1 or 2 unique values.
-         Convert to binary indicator or fix inputs.")
+            Convert to binary indicator or fix inputs.")
     }
   }
 
@@ -339,60 +342,57 @@ setMethod("bdpregression",
     two_side                  = two_side,
     arm2                      = arm2)
 
-  posterior_treatment$posterior_regression$call <- formula
+  if(arm2){
+    posterior_control <- posterior_regression(
+      df                        = df_c,
+      family                    = family,
+      alpha_max                 = alpha_max[2],
+      fix_alpha                 = fix_alpha,
+      prior.mean                = prior.mean,
+      prior.scale               = prior.scale,
+      prior.df                  = prior.df,
+      prior.mean.for.intercept  = prior.mean.for.intercept,
+      prior.scale.for.intercept = prior.scale.for.intercept,
+      prior.df.for.intercept    = prior.df.for.intercept,
+      number_mcmc               = number_mcmc,
+      weibull_shape             = weibull_shape[2],
+      weibull_scale             = weibull_scale[2],
+      two_side                  = two_side,
+      arm2                      = arm2)
+  } else{
+    posterior_control <- NULL
+    posterior_treatment$posterior_regression$call <- formula
+  }
+
+  args1 <- list(df_t                      = df_t,
+                df_c                      = NULL,
+                alpha_max                 = alpha_max,
+                fix_alpha                 = fix_alpha,
+                prior.mean                = prior.mean,
+                prior.scale               = prior.scale,
+                prior.df                  = prior.df,
+                prior.mean.for.intercept  = prior.mean.for.intercept,
+                prior.scale.for.intercept = prior.scale.for.intercept,
+                prior.df.for.intercept    = prior.df.for.intercept,
+                number_mcmc               = number_mcmc,
+                weibull_scale             = weibull_scale,
+                weibull_shape             = weibull_shape,
+                two_side                  = two_side,
+                arm2                      = arm2,
+                data                      = data,
+                family                    = family)
+  if(arm2){
+    args1$df_c <- df_c
+  }
+
 
   me <- list(posterior_treatment = posterior_treatment,
-             posterior_control   = NULL)
+             posterior_control   = posterior_control,
+             args1               = args1)
 
   class(me) <- "bdpregression"
   return(me)
 
-
-
-#   if(arm2){
-#     posterior_control <- posterior_regression(
-#       S             = S_c,
-#       S0            = S0_c,
-#       alpha_max     = alpha_max[2],
-#       fix_alpha     = fix_alpha,
-#       a0            = a0,
-#       b0            = b0,
-#       surv_time     = surv_time,
-#       number_mcmc   = number_mcmc,
-#       weibull_shape = weibull_shape[2],
-#       weibull_scale = weibull_scale[2],
-#       two_side      = two_side,
-#       breaks        = breaks,
-#       arm2          = arm2)
-#   } else{
-#     posterior_control <- NULL
-#   }
-#
-#
-#   args1 <- list(S_t           = S_t,
-#                 S_c           = S_c,
-#                 S0_t          = S0_t,
-#                 S0_c          = S0_c,
-#                 alpha_max     = alpha_max,
-#                 fix_alpha     = fix_alpha,
-#                 a0            = a0,
-#                 b0            = b0,
-#                 surv_time     = surv_time,
-#                 number_mcmc   = number_mcmc,
-#                 weibull_scale = weibull_scale,
-#                 weibull_shape = weibull_shape,
-#                 two_side      = two_side,
-#                 arm2          = arm2,
-#                 breaks        = breaks,
-#                 data          = data)
-#
-#   me <- list(posterior_treatment = posterior_treatment,
-#              posterior_control   = posterior_control,
-#              args1               = args1)
-#
-#   class(me) <- "bdpsurvival"
-#
-#   return(me)
 })
 
 
@@ -463,6 +463,10 @@ posterior_regression <- function(df, family, alpha_max, fix_alpha, prior.mean,
         prior.scale.for.intercept = prior.scale.for.intercept,
         prior.df.for.intercept    = prior.df.for.intercept)
 
+      ### Set classes
+      class(posterior_flat_regression) <- c("glm", "lm")
+      class(prior_regression) <- c("glm", "lm")
+
       ### Simulate data from approximate posterior distributions of the coefficients
       sim_  <- sim(posterior_flat_regression, family=family, n.sims = number_mcmc)
       sim_0 <- sim(prior_regression, family=family, n.sims = number_mcmc)
@@ -510,6 +514,9 @@ posterior_regression <- function(df, family, alpha_max, fix_alpha, prior.mean,
                                                  prior.scale.for.intercept = prior.scale.for.intercept,
                                                  prior.df.for.intercept    = prior.df.for.intercept)
 
+      ### Set class
+      class(posterior_flat_regression) <- c("glm", "lm")
+
       ### Simulate data from approximate posterior distributions of the coefficients
       sim_  <- sim(posterior_flat_regression, family=family, n.sims = number_mcmc)
 
@@ -534,6 +541,8 @@ posterior_regression <- function(df, family, alpha_max, fix_alpha, prior.mean,
                                         prior.mean.for.intercept  = prior.mean.for.intercept,
                                         prior.scale.for.intercept = prior.scale.for.intercept,
                                         prior.df.for.intercept    = prior.df.for.intercept)
+
+      class(prior_regression) <- c("glm", "lm")
 
       ### Simulate data from approximate posterior distributions of the coefficients
       sim_0 <- sim(prior_regression, family=family, n.sims = number_mcmc)
@@ -567,6 +576,8 @@ posterior_regression <- function(df, family, alpha_max, fix_alpha, prior.mean,
                                                  prior.mean.for.intercept  = prior.mean.for.intercept,
                                                  prior.scale.for.intercept = prior.scale.for.intercept,
                                                  prior.df.for.intercept    = prior.df.for.intercept)
+
+      class(posterior_flat_regression) <- c("glm", "lm")
 
       ### Simulate data from approximate posterior distributions of the coefficients
       sim_  <- sim(posterior_flat_regression, family=family, n.sims = number_mcmc)
@@ -618,6 +629,9 @@ posterior_regression <- function(df, family, alpha_max, fix_alpha, prior.mean,
         prior.scale.for.intercept = sd_0$intercept/sqrt(alpha_discount),
         prior.df.for.intercept    = prior.df.for.intercept)
 
+
+      class(posterior_regression) <- c("glm", "lm")
+
       ### Simulate date from approximate posterior distribution of the coefficients
       sim_a  <- sim(posterior_regression, family=family, n.sims = number_mcmc)
 
@@ -634,7 +648,6 @@ posterior_regression <- function(df, family, alpha_max, fix_alpha, prior.mean,
                   posterior_flat_regression = posterior_flat_regression,
                   prior_regression          = prior_regression)
 
-      class(res$posterior_regression) <- c("glm", "lm")
       return(res)
     } else if(!is.null(df_) & is.null(df_0)){
 
@@ -643,8 +656,6 @@ posterior_regression <- function(df, family, alpha_max, fix_alpha, prior.mean,
                   posterior_regression      = posterior_flat_regression,
                   posterior_flat_regression = posterior_flat_regression,
                   prior_regression          = NULL)
-
-      class(res$posterior_regression) <- c("glm", "lm")
       return(res)
 
     } else if(is.null(df_) & !is.null(df_0)){
@@ -654,8 +665,6 @@ posterior_regression <- function(df, family, alpha_max, fix_alpha, prior.mean,
                   posterior_regression      = prior_regression,
                   posterior_flat_regression = NULL,
                   prior_regression          = prior_regression)
-
-      class(res$posterior_regression) <- c("glm", "lm")
       return(res)
     }
 
@@ -1152,60 +1161,61 @@ getQr <- function(x, ...){
 }
 
 
-sim <- function(object, family="gaussian", n.sims=100){
+sim <- function(object, family=gaussian, n.sims=100){
 
-  coef <- object$coef
+  if(family$family == "gaussian"){
+    coef      <- object$coef
 
-  sigma.hat <- object$dispersion
-  beta.hat  <- coef
-  V.beta    <- chol2inv(object$R)
-  eV        <- eigen(V.beta, symmetric = TRUE)
-  ev        <- eV$values
+    sigma.hat <- object$dispersion
+    beta.hat  <- coef
+    V.beta    <- chol2inv(object$R)
+    eV        <- eigen(V.beta, symmetric = TRUE)
+    ev        <- eV$values
 
-  n         <- length(object$y)
-  k         <- object$rank
+    n         <- length(object$y)
+    k         <- object$rank
 
-  sigma <- rep (NA, n.sims)
-  beta  <- array (NA, c(n.sims,k))
-  dimnames(beta) <- list (NULL, names(beta.hat))
+    sigma <- rep (NA, n.sims)
+    beta  <- array (NA, c(n.sims,k))
+    dimnames(beta) <- list (NULL, names(beta.hat))
 
-  for (s in 1:n.sims){
-    sigma[s] <- sigma.hat*sqrt((n-k)/rchisq(1,n-k))
-    beta[s,] <- beta.hat + sigma[s]*eV$vectors %*% diag(sqrt(pmax(ev, 0)), k) %*% rnorm(k)
-    # Cholesky version, less stable:
-    # beta[s,] <- beta.hat + sigma[s]*V.beta%*%rnorm(k)
+    for (s in 1:n.sims){
+      sigma[s] <- sigma.hat*sqrt((n-k)/rchisq(1,n-k))
+      beta[s,] <- beta.hat + sigma[s]*eV$vectors %*% diag(sqrt(pmax(ev, 0)), k) %*% rnorm(k)
+      # Cholesky version, less stable:
+      # beta[s,] <- beta.hat + sigma[s]*V.beta%*%rnorm(k)
+    }
+
+    ans <- list(coef = beta, sigma = sigma)
+    return(ans)
+  } else{
+    summ      <- summary(object, correlation=TRUE, dispersion = object$dispersion)
+    coef      <- summ$coef
+    beta.hat  <- coef[,1,drop=FALSE]
+    sd.beta   <- coef[,2,drop=FALSE]
+    corr.beta <- summ$corr
+    n         <- summ$df[1] + summ$df[2]
+    k         <- summ$df[1]
+    V.beta    <- corr.beta*array(sd.beta,c(k,k))*t(array(sd.beta,c(k,k)))
+    beta      <- array (NA, c(n.sims,k))
+
+    R.beta    <- chol2inv(V.beta)
+    eR        <- eigen(R.beta, symmetric = TRUE)
+    er        <- eR$values
+
+    dimnames(beta) <- list (NULL, dimnames(beta.hat)[[1]])
+
+    for (s in 1:n.sims){
+      #beta[s,] <- MASS::mvrnorm(1, beta.hat, V.beta)
+      beta[s,] <- beta.hat + eR$vectors %*% diag(sqrt(pmax(er, 0)), k) %*% rnorm(k)
+    }
+
+    beta2           <- array (0, c(n.sims,length(coefficients(object))))
+    dimnames(beta2) <- list (NULL, names(coefficients(object)))
+    beta2[,dimnames(beta2)[[2]]%in%dimnames(beta)[[2]]] <- beta
+
+    sigma <- rep(sqrt(summ$dispersion), n.sims)
+    ans   <- list(coef = beta2, sigma = sigma)
+    return(ans)
   }
-
-  ans <- list(coef = beta, sigma = sigma)
-  return(ans)
 }
-
-
-
-# sim <- function(object, n.sims=100){
-#   object.class <- class(object)[[1]]
-#   summ <- summary (object, correlation=TRUE, dispersion = object$dispersion)
-#   coef <- summ$coef[,1:2,drop=FALSE]
-#   dimnames(coef)[[2]] <- c("coef.est","coef.sd")
-#   beta.hat <- coef[,1,drop=FALSE]
-#   sd.beta <- coef[,2,drop=FALSE]
-#   corr.beta <- summ$corr
-#   n <- summ$df[1] + summ$df[2]
-#   k <- summ$df[1]
-#   V.beta <- corr.beta * array(sd.beta,c(k,k)) * t(array(sd.beta,c(k,k)))
-#   beta <- array (NA, c(n.sims,k))
-#   dimnames(beta) <- list (NULL, dimnames(beta.hat)[[1]])
-#   for (s in 1:n.sims){
-#     beta[s,] <- MASS::mvrnorm (1, beta.hat, V.beta)
-#   }
-#   # Added by Masanao
-#   beta2 <- array (0, c(n.sims,length(coefficients(object))))
-#   dimnames(beta2) <- list (NULL, names(coefficients(object)))
-#   beta2[,dimnames(beta2)[[2]]%in%dimnames(beta)[[2]]] <- beta
-#   # Added by Masanao
-#   sigma <- rep (sqrt(summ$dispersion), n.sims)
-#   ans <- new("sim",
-#   coef = beta2,
-#   sigma = sigma)
-#   return(ans)
-#}
