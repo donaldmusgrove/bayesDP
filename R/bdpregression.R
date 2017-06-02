@@ -1038,7 +1038,7 @@ bayesglm.fit <- function (x, y, weights = rep(1, nobs), start = NULL, etastart =
       #================================
       if (family$family == "binomial" && print.unnormalized.log.posterior) {
         logprior <- sum(dt(coefs.hat, prior.df, prior.mean, log = TRUE))
-        xb <- invlogit( x %*% coefs.hat )
+        xb <- 1/(1 + exp(-( x %*% coefs.hat )))
         loglikelihood <- sum( log( c( xb[ y == 1 ], 1 - xb[ y == 0 ] ) ) )
         cat( "log prior: ", logprior, ", log likelihood: ", loglikelihood, ",
              unnormalized log posterior: ", loglikelihood +logprior, "\n" ,sep="")
