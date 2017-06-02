@@ -463,10 +463,26 @@ pp <- function(m){
 #' @export
 setMethod("summary", signature(object = "bdpregression"), function(object){
 
-  #arm2                <- object$args$arm2
-  #if(!arm2){
-    summary(object$posterior_treatment$posterior_regression)
-  #s}
+
+  posterior_treatment <- object$posterior_treatment
+  posterior_control   <- object$posterior_control
+  arm2                <- object$args1$arm2
+
+  if(!arm2){
+    summ <- summary(posterior_treatment$posterior_regression)
+
+    cat("One-armed bdp regression")
+    cat("\n")
+    print(summ)
+
+    if(!is.null(posterior_treatment$p_hat)){
+      cat(paste0("Stochastic comparison (p_hat) - treatment (current vs. historical data): ",
+                 round(posterior_treatment$p_hat,4)))
+      cat("\n")
+      cat(paste0("Discount function value (alpha) - treatment: ",
+                 round(posterior_treatment$alpha_discount,4)))
+    }
+  }
 
 })
 

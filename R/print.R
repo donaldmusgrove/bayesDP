@@ -102,6 +102,41 @@ setMethod("print", signature(x = "bdpsurvival"), function(x){
 })
 
 
+#' @title bdpregression Object Print
+#' @description \code{print} method for class \code{bdpregression}.
+#' @import methods
+#' @importFrom utils head
+#' @importFrom utils write.table
+#' @importFrom stats density is.empty.model median model.offset model.response pweibull quantile rbeta rgamma rnorm var vcov
+#' @param x object of class \code{bdpregression}. The result of a call to the
+#'   \code{\link{bdpregression}} function.
+#'
+#' @details Returns a print of the model with output similar to \code{\link{lm}}.
+#' @export
+setMethod("print", signature(x = "bdpregression"), function(x){
+
+
+  posterior_treatment <- x$posterior_treatment
+  posterior_control   <- x$posterior_control
+  arm2                <- x$args1$arm2
+
+  ### Return print
+  if(!arm2){
+    cat("One-armed bdp regression")
+    cat("\n")
+    print(posterior_treatment$posterior_regression)
+    if(!is.null(posterior_treatment$p_hat)){
+      cat(paste0("Stochastic comparison (p_hat) - treatment (current vs. historical data): ",
+                 round(posterior_treatment$p_hat,4)))
+      cat("\n")
+      cat(paste0("Discount function value (alpha) - treatment: ",
+                 round(posterior_treatment$alpha_discount,4)))
+    }
+  }
+
+})
+
+
 # Helper functions:
 
 pp <- function(m){
