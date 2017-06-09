@@ -33,4 +33,3 @@ The \code{plot} method for \code{bdpbinomial} returns up to three
   Otherwise, the user can specify a plot \code{type} to display the
   requested plot.
 }
-

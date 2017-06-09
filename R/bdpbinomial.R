@@ -33,6 +33,10 @@
 #' @param b0 scalar. Prior value for the beta rate. Default is 1.
 #' @param two_side logical. Indicator of two-sided test for the discount
 #'   function. Default value is TRUE.
+#' @param method character. Analysis method with respect to estimation of the weight
+#'   paramter alpha. Default value "\code{fixed}" estimates alpha once and holds it fixed
+#'   throughout the analysis. Alternative method "\code{mc}" estimates alpha for each
+#'   Monte Carlo iteration.
 #' @details \code{bdpbinomial} uses a two-stage approach for determining the
 #'   strength of historical data in estimation of a binomial count mean outcome.
 #'   In the first stage, a Weibull distribution function is used as a
@@ -177,7 +181,8 @@ setGeneric("bdpbinomial",
                     number_mcmc   = 10000,
                     weibull_scale = 0.135,
                     weibull_shape = 3,
-                    two_side      = TRUE){
+                    two_side      = TRUE,
+                    method        = "fixed"){
              standardGeneric("bdpbinomial")
            })
 
@@ -198,7 +203,8 @@ setMethod("bdpbinomial",
                    number_mcmc   = 10000,
                    weibull_scale = 0.135,
                    weibull_shape = 3,
-                   two_side      = TRUE){
+                   two_side      = TRUE,
+                   method        = "fixed"){
 
 
   ################################################################################
@@ -306,7 +312,8 @@ setMethod("bdpbinomial",
     number_mcmc   = number_mcmc,
     weibull_scale = weibull_scale[1],
     weibull_shape = weibull_shape[1],
-    two_side      = two_side)
+    two_side      = two_side,
+    method        = method)
 
   if(arm2){
     posterior_control <- posterior_binomial(
@@ -321,7 +328,8 @@ setMethod("bdpbinomial",
       number_mcmc   = number_mcmc,
       weibull_scale = weibull_scale[2],
       weibull_shape = weibull_shape[2],
-      two_side      = two_side)
+      two_side      = two_side,
+      method        = method)
   } else{
     posterior_control <- NULL
   }
@@ -343,6 +351,7 @@ setMethod("bdpbinomial",
                 weibull_scale = weibull_scale,
                 weibull_shape = weibull_shape,
                 two_side      = two_side,
+                method        = method,
                 arm2          = arm2,
                 intent        = paste(intent,collapse=", "))
 
@@ -366,7 +375,7 @@ setMethod("bdpbinomial",
 ################################################################################
 posterior_binomial <- function(y, N, y0, N0, alpha_max, fix_alpha, a0, b0,
                                number_mcmc, weibull_scale, weibull_shape,
-                               two_side){
+                               two_side, method){
 
   ### Compute posterior(s) of current (flat) and historical (prior) data
   ### with non-informative priors
@@ -390,7 +399,15 @@ posterior_binomial <- function(y, N, y0, N0, alpha_max, fix_alpha, a0, b0,
   if(!is.null(N) & !is.null(N0)){
 
     ### Test of model vs real
-    p_hat <- mean(posterior_flat < prior)   # larger is higher failure
+    if(method == "fixed"){
+      p_hat <- mean(posterior_flat < prior)   # larger is higher failure
+    } else if(method == "mc"){
+      v     <- 1/((y + a0 - 1)/posterior_flat^2 + (N-y+b0-1)/(posterior_flat-1)^2)
+      v0    <- 1/((y0 + a0 - 1)/prior^2 + (N0-y0+b0-1)/(prior-1)^2)
+      Z     <- (posterior_flat-prior) / sqrt(v+v0)
+      p_hat <- pnorm(Z)
+    }
+
 
     ### Number of effective sample size given shape and scale discount function
     if(fix_alpha == TRUE){

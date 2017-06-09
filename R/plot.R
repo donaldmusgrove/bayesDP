@@ -147,8 +147,8 @@ setMethod("plot", signature(x = "bdpnormal"), function(x, type=NULL, print=TRUE)
     D1 <- data.frame(group = "Treatment",
                      y     = discount_function_treatment,
                      x     = seq(0,1,length.out=100))
-    D2 <- data.frame(group=c("Treatment"), p_hat=c(posterior_treatment$p_hat))
-    D3 <- data.frame(group=c("Treatment"), p_hat=c(posterior_treatment$alpha_discount))
+    D2 <- data.frame(group=c("Treatment"), p_hat=median(posterior_treatment$p_hat))
+    D3 <- data.frame(group=c("Treatment"), p_hat=median(posterior_treatment$alpha_discount))
 
     discountfun_plot <- ggplot() +
       geom_line(data=D1,aes_string(y="y",x="x",color="group"),size=1) +
@@ -170,8 +170,8 @@ setMethod("plot", signature(x = "bdpnormal"), function(x, type=NULL, print=TRUE)
       D4 <- data.frame(group = "Control",
                        y     = discount_function_control,
                        x     = seq(0,1,length.out=100))
-      D5 <- data.frame(group="Control", p_hat=c(posterior_control$p_hat))
-      D6 <- data.frame(group="Control", p_hat=c(posterior_control$alpha_discount))
+      D5 <- data.frame(group="Control", p_hat=median(posterior_control$p_hat))
+      D6 <- data.frame(group="Control", p_hat=median(posterior_control$alpha_discount))
 
       discountfun_plot  <- discountfun_plot +
         geom_line(data=D4,aes_string(y="y",x="x",color="group"),size=1) +
@@ -272,6 +272,7 @@ setMethod("plot", signature(x = "bdpbinomial"), function(x, type=NULL, print=TRU
   N_t                 <- x$args1$N_t
   N_c                 <- x$args1$N_c
   arm2                <- x$args1$arm2
+  method              <- x$args1$method
 
   information_sources <- NULL
 
@@ -383,8 +384,8 @@ setMethod("plot", signature(x = "bdpbinomial"), function(x, type=NULL, print=TRU
     D1 <- data.frame(group = "Treatment",
                      y     = discount_function_treatment,
                      x     = seq(0,1,length.out=100))
-    D2 <- data.frame(group="Treatment", p_hat=c(posterior_treatment$p_hat))
-    D3 <- data.frame(group="Treatment", p_hat=c(posterior_treatment$alpha_discount))
+    D2 <- data.frame(group="Treatment", p_hat=median(posterior_treatment$p_hat))
+    D3 <- data.frame(group="Treatment", p_hat=median(posterior_treatment$alpha_discount))
 
     discountfun_plot <- ggplot() +
       geom_line(data=D1,aes_string(y="y",x="x",color="group"),size=1) +
@@ -407,8 +408,8 @@ setMethod("plot", signature(x = "bdpbinomial"), function(x, type=NULL, print=TRU
       D4 <- data.frame(group = "Control",
                        y     = discount_function_control,
                        x     = seq(0,1,length.out=100))
-      D5 <- data.frame(group="Control",p_hat=c(posterior_control$p_hat))
-      D6 <- data.frame(group="Control",p_hat=c(posterior_control$alpha_discount))
+      D5 <- data.frame(group="Control",p_hat=median(posterior_control$p_hat))
+      D6 <- data.frame(group="Control",p_hat=median(posterior_control$alpha_discount))
 
       discountfun_plot  <- discountfun_plot +
         geom_line(data=D4,aes_string(y="y",x="x",color="group"),size=1) +

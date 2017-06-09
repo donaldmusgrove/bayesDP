@@ -17,4 +17,3 @@
 \details{
 Returns same output as a call to \code{\link[=summary,bdpnormal-method]{summary}}.
 }
-

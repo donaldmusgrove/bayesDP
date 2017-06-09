@@ -48,6 +48,10 @@ NULL
 #' @param number_mcmc scalar. Number of Monte Carlo simulations. Default is 10000.
 #' @param two_side logical. Indicator of two-sided test for the discount
 #'   function. Default value is TRUE.
+#' @param method character. Analysis method with respect to estimation of the weight
+#'   paramter alpha. Default value "\code{fixed}" estimates alpha once and holds it fixed
+#'   throughout the analysis. Alternative method "\code{mc}" estimates alpha for each
+#'   Monte Carlo iteration.
 #' @details \code{bdpnormal} uses a two-stage approach for determining the
 #'   strength of historical data in estimation of a mean outcome.  In the first
 #'   stage, a Weibull distribution function is used as a
@@ -199,7 +203,8 @@ setGeneric("bdpnormal",
                     weibull_scale = 0.135,
                     weibull_shape = 3,
                     number_mcmc   = 10000,
-                    two_side      = TRUE){
+                    two_side      = TRUE,
+                    method        = "fixed"){
              standardGeneric("bdpnormal")
            })
 
@@ -222,7 +227,8 @@ setMethod("bdpnormal",
                    weibull_scale = 0.135,
                    weibull_shape = 3,
                    number_mcmc   = 10000,
-                   two_side      = TRUE){
+                   two_side      = TRUE,
+                   method        = "fixed"){
 
   ################################################################################
   # Check Input                                                                  #
@@ -339,7 +345,8 @@ setMethod("bdpnormal",
     number_mcmc   = number_mcmc,
     weibull_scale = weibull_scale[1],
     weibull_shape = weibull_shape[1],
-    two_side      = two_side)
+    two_side      = two_side,
+    method        = method)
 
 
   if (arm2){
@@ -355,7 +362,8 @@ setMethod("bdpnormal",
       number_mcmc   = number_mcmc,
       weibull_scale = weibull_scale[2],
       weibull_shape = weibull_shape[2],
-      two_side      = two_side)
+      two_side      = two_side,
+      method        = method)
   } else{
     posterior_control <- NULL
   }
@@ -379,6 +387,7 @@ setMethod("bdpnormal",
                 weibull_shape = weibull_shape,
                 number_mcmc   = number_mcmc,
                 two_side      = two_side,
+                method        = method,
                 arm2          = arm2,
                 intent        = paste(intent,collapse=", "))
 
@@ -401,7 +410,7 @@ setMethod("bdpnormal",
 ################################################################################
 posterior_normal <- function(mu, sigma, N, mu0, sigma0, N0, alpha_max,
                              fix_alpha, number_mcmc, weibull_scale,
-                             weibull_shape, two_side){
+                             weibull_shape, two_side, method){
 
   # Compute posterior(s) of current (flat) and historical (prior) data
   # with non-informative priors
@@ -428,8 +437,18 @@ posterior_normal <- function(mu, sigma, N, mu0, sigma0, N0, alpha_max,
   ### N and N0 are present (i.e., current & historical data are present)
   if(!is.null(N) & !is.null(N0)){
 
+
+
     ### Test of model vs real
-    p_hat <- mean(posterior_flat_mu < prior_mu)   # larger is higher failure
+    if(method == "fixed"){
+      p_hat <- mean(posterior_flat_mu < prior_mu)   # larger is higher failure
+    } else if(method == "mc"){
+      v     <- posterior_flat_sigma2
+      v0    <- prior_sigma2
+      Z     <- (posterior_flat_mu-prior_mu) / sqrt(v+v0)
+      p_hat <- pnorm(Z)
+    }
+
 
     ### Number of effective sample size given shape and scale discount function
     if(fix_alpha == TRUE){

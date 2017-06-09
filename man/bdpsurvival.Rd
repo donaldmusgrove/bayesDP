@@ -8,7 +8,7 @@
 bdpsurvival(formula = formula, data = data, breaks = NULL, a0 = 0.1,
   b0 = 0.1, surv_time = NULL, alpha_max = 1, fix_alpha = FALSE,
   number_mcmc = 10000, weibull_scale = 0.135, weibull_shape = 3,
-  two_side = TRUE)
+  two_side = TRUE, method = "fixed")
 }
 \arguments{
 \item{formula}{an object of class "formula." Must have a survival object on
@@ -57,6 +57,11 @@ historical control group.}
 
 \item{two_side}{logical. Indicator of two-sided test for the discount
 function. Default value is TRUE.}
+
+\item{method}{character. Analysis method with respect to estimation of the weight
+paramter alpha. Default value "\code{fixed}" estimates alpha once and holds it fixed
+throughout the analysis. Alternative method "\code{mc}" estimates alpha for each
+Monte Carlo iteration. Method "\code{mc}" is implemented for two-arm analysis only.}
 }
 \value{
 \code{bdpsurvival} returns an object of class "bdpsurvival".
@@ -229,4 +234,3 @@ Haddad, T., Himes, A., Thompson, L., Irony, T., Nair, R. MDIC Computer
   and \code{\link[=plot,bdpsurvival-method]{plot}} for details of each of the
   supported methods.
 }
-
