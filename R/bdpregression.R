@@ -15,26 +15,26 @@
 #'   containing the variables in the model. If not found in data,
 #'   the variables are taken from environment(formula), typically
 #'   the environment from which bdpregression is called.
-#' @param prior.mean prior mean for the coefficients; default is 0.
+#' @param prior_mean prior mean for the coefficients; default is 0.
 #'   Can be a vector of length equal to the number of covariates
 #'   (not counting the intercept, if any). If it is a scalar, it is
 #'   expanded to the length of this vector.
-#' @param prior.scale prior scale for the coefficients: default is NULL;
-#'   if NULL, for a logistic regression model, prior.scale is 2.5; for a
+#' @param prior_scale prior scale for the coefficients: default is NULL;
+#'   if NULL, for a logistic regression model, prior_scale is 2.5; for a
 #'    probit model, prior scale is 2.5*1.6. Can be a vector of length equal
 #'    to the number of predictors (not counting the intercept, if any). If
 #'    it is a scalar, it is expanded to the length of this vector.
-#'  @param prior.df prior degrees of freedom for the coefficients. For
+#'  @param prior_df prior degrees of freedom for the coefficients. For
 #'    t distribution default is 1 (Cauchy). Set to Inf to get normal prior
 #'    distributions. Can be a vector of length equal to the number of
 #'    predictors (not counting the intercept, if any). If it is a scalar,
 #'    it is expanded to the length of this vector.
-#'  @param prior.mean.for.intercept prior mean for the intercept: default
+#'  @param prior_mean_for_intercept prior mean for the intercept: default
 #'    is 0.
-#'  @param prior.scale.for.intercept prior scale for the intercept:
+#'  @param prior_scale_for_intercept prior scale for the intercept:
 #'    default is NULL; for a logit model, prior scale for intercept is 10;
 #'    for probit model, prior scale for intercept is rescaled as 10*1.6.
-#'  @param prior.df.for.intercept prior degrees of freedom for the
+#'  @param prior_df_for_intercept prior degrees of freedom for the
 #'    intercept: default is 1.
 #' @param alpha_max scalar. Maximum weight the discount function can apply.
 #'   Default is 1. For a two-arm trial, users may specify a vector of two values
@@ -138,7 +138,7 @@
 #'
 #' @rdname bdpregression
 #' @import methods
-#' @importFrom stats density is.empty.model median model.offset model.response pweibull quantile rbeta rgamma rnorm var vcov contrasts<- dt gaussian lm.fit model.frame model.matrix.default offset rchisq terms terms.formula coefficients
+#' @importFrom stats density is.empty.model median model.offset model.response pweibull pnorm quantile rbeta rgamma rnorm var vcov contrasts<- dt gaussian lm.fit model.frame model.matrix.default offset rchisq terms terms.formula coefficients
 #' @aliases bdpregression,ANY-method
 #' @export bdpregression
 bdpregression <- setClass("bdpregression", slots = c(posterior_treatment = "list",
@@ -148,12 +148,12 @@ setGeneric("bdpregression",
   function(formula       = formula,
            family        = "gaussian",
            data          = data,
-           prior.mean                = 0,
-           prior.scale               = NULL,
-           prior.df                  = 1,
-           prior.mean.for.intercept  = 0,
-           prior.scale.for.intercept = NULL,
-           prior.df.for.intercept    = 1,
+           prior_mean                = 0,
+           prior_scale               = NULL,
+           prior_df                  = 1,
+           prior_mean_for_intercept  = 0,
+           prior_scale_for_intercept = NULL,
+           prior_df_for_intercept    = 1,
            alpha_max     = 1,
            fix_alpha     = FALSE,
            number_mcmc   = 10000,
@@ -168,12 +168,12 @@ setMethod("bdpregression",
   function(formula       = formula,
            family        = "gaussian",
            data          = data,
-           prior.mean                = 0,
-           prior.scale               = NULL,
-           prior.df                  = 1,
-           prior.mean.for.intercept  = 0,
-           prior.scale.for.intercept = NULL,
-           prior.df.for.intercept    = 1,
+           prior_mean                = 0,
+           prior_scale               = NULL,
+           prior_df                  = 1,
+           prior_mean_for_intercept  = 0,
+           prior_scale_for_intercept = NULL,
+           prior_df_for_intercept    = 1,
            alpha_max     = 1,
            fix_alpha     = FALSE,
            number_mcmc   = 10000,
@@ -269,6 +269,8 @@ setMethod("bdpregression",
     arm2 <- FALSE
   }
 
+  historical <- NULL
+  treatment  <- NULL
 
   if(arm2) stop("Two arm trials are not currently supported.")
 
@@ -330,12 +332,12 @@ setMethod("bdpregression",
     family                    = family,
     alpha_max                 = alpha_max[1],
     fix_alpha                 = fix_alpha,
-    prior.mean                = prior.mean,
-    prior.scale               = prior.scale,
-    prior.df                  = prior.df,
-    prior.mean.for.intercept  = prior.mean.for.intercept,
-    prior.scale.for.intercept = prior.scale.for.intercept,
-    prior.df.for.intercept    = prior.df.for.intercept,
+    prior_mean                = prior_mean,
+    prior_scale               = prior_scale,
+    prior_df                  = prior_df,
+    prior_mean_for_intercept  = prior_mean_for_intercept,
+    prior_scale_for_intercept = prior_scale_for_intercept,
+    prior_df_for_intercept    = prior_df_for_intercept,
     number_mcmc               = number_mcmc,
     weibull_shape             = weibull_shape[1],
     weibull_scale             = weibull_scale[1],
@@ -348,12 +350,12 @@ setMethod("bdpregression",
       family                    = family,
       alpha_max                 = alpha_max[2],
       fix_alpha                 = fix_alpha,
-      prior.mean                = prior.mean,
-      prior.scale               = prior.scale,
-      prior.df                  = prior.df,
-      prior.mean.for.intercept  = prior.mean.for.intercept,
-      prior.scale.for.intercept = prior.scale.for.intercept,
-      prior.df.for.intercept    = prior.df.for.intercept,
+      prior_mean                = prior_mean,
+      prior_scale               = prior_scale,
+      prior_df                  = prior_df,
+      prior_mean_for_intercept  = prior_mean_for_intercept,
+      prior_scale_for_intercept = prior_scale_for_intercept,
+      prior_df_for_intercept    = prior_df_for_intercept,
       number_mcmc               = number_mcmc,
       weibull_shape             = weibull_shape[2],
       weibull_scale             = weibull_scale[2],
@@ -368,12 +370,12 @@ setMethod("bdpregression",
                 df_c                      = NULL,
                 alpha_max                 = alpha_max,
                 fix_alpha                 = fix_alpha,
-                prior.mean                = prior.mean,
-                prior.scale               = prior.scale,
-                prior.df                  = prior.df,
-                prior.mean.for.intercept  = prior.mean.for.intercept,
-                prior.scale.for.intercept = prior.scale.for.intercept,
-                prior.df.for.intercept    = prior.df.for.intercept,
+                prior_mean                = prior_mean,
+                prior_scale               = prior_scale,
+                prior_df                  = prior_df,
+                prior_mean_for_intercept  = prior_mean_for_intercept,
+                prior_scale_for_intercept = prior_scale_for_intercept,
+                prior_df_for_intercept    = prior_df_for_intercept,
                 number_mcmc               = number_mcmc,
                 weibull_scale             = weibull_scale,
                 weibull_shape             = weibull_shape,
@@ -409,11 +411,13 @@ setMethod("bdpregression",
 #      covariate effect, divided by alpha
 ################################################################################
 ### Combine  loss function and posterior estimation into one function
-posterior_regression <- function(df, family, alpha_max, fix_alpha, prior.mean,
-                                 prior.scale, prior.df, prior.mean.for.intercept,
-                                 prior.scale.for.intercept, prior.df.for.intercept,
+posterior_regression <- function(df, family, alpha_max, fix_alpha, prior_mean,
+                                 prior_scale, prior_df, prior_mean_for_intercept,
+                                 prior_scale_for_intercept, prior_df_for_intercept,
                                  number_mcmc, weibull_shape, weibull_scale,
                                  two_side, arm2){
+
+  Y <- NULL
 
   ### Look for "historical" column, if missing, df_ <- df and df_0 <- NULL
   hist_missing <- is.na(match("historical", colnames(df)))
@@ -447,21 +451,21 @@ posterior_regression <- function(df, family, alpha_max, fix_alpha, prior.mean,
       ### Fit separate glm models
       posterior_flat_regression <-  bayesglm.fit(x=X_, y=df_$Y, offset=df_$offset,
         family                    = family,
-        prior.mean                = prior.mean,
-        prior.scale               = prior.scale,
-        prior.df                  = prior.df,
-        prior.mean.for.intercept  = prior.mean.for.intercept,
-        prior.scale.for.intercept = prior.scale.for.intercept,
-        prior.df.for.intercept    = prior.df.for.intercept)
+        prior_mean                = prior_mean,
+        prior_scale               = prior_scale,
+        prior_df                  = prior_df,
+        prior_mean_for_intercept  = prior_mean_for_intercept,
+        prior_scale_for_intercept = prior_scale_for_intercept,
+        prior_df_for_intercept    = prior_df_for_intercept)
 
       prior_regression <-  bayesglm.fit(x=X_0, y=df_0$Y, offset=df_0$offset,
         family                    = family,
-        prior.mean                = prior.mean,
-        prior.scale               = prior.scale,
-        prior.df                  = prior.df,
-        prior.mean.for.intercept  = prior.mean.for.intercept,
-        prior.scale.for.intercept = prior.scale.for.intercept,
-        prior.df.for.intercept    = prior.df.for.intercept)
+        prior_mean                = prior_mean,
+        prior_scale               = prior_scale,
+        prior_df                  = prior_df,
+        prior_mean_for_intercept  = prior_mean_for_intercept,
+        prior_scale_for_intercept = prior_scale_for_intercept,
+        prior_df_for_intercept    = prior_df_for_intercept)
 
       ### Set classes
       class(posterior_flat_regression) <- c("glm", "lm")
@@ -507,12 +511,12 @@ posterior_regression <- function(df, family, alpha_max, fix_alpha, prior.mean,
       ### Fit separate glm models
       posterior_flat_regression <-  bayesglm.fit(x=X_, y=df_$Y, offset=df_$offset,
                                                  family                    = family,
-                                                 prior.mean                = prior.mean,
-                                                 prior.scale               = prior.scale,
-                                                 prior.df                  = prior.df,
-                                                 prior.mean.for.intercept  = prior.mean.for.intercept,
-                                                 prior.scale.for.intercept = prior.scale.for.intercept,
-                                                 prior.df.for.intercept    = prior.df.for.intercept)
+                                                 prior_mean                = prior_mean,
+                                                 prior_scale               = prior_scale,
+                                                 prior_df                  = prior_df,
+                                                 prior_mean_for_intercept  = prior_mean_for_intercept,
+                                                 prior_scale_for_intercept = prior_scale_for_intercept,
+                                                 prior_df_for_intercept    = prior_df_for_intercept)
 
       ### Set class
       class(posterior_flat_regression) <- c("glm", "lm")
@@ -535,12 +539,12 @@ posterior_regression <- function(df, family, alpha_max, fix_alpha, prior.mean,
       ### Fit glm model
       prior_regression <-  bayesglm.fit(x=X_0, y=df_0$Y, offset=df_0$offset,
                                         family                    = family,
-                                        prior.mean                = prior.mean,
-                                        prior.scale               = prior.scale,
-                                        prior.df                  = prior.df,
-                                        prior.mean.for.intercept  = prior.mean.for.intercept,
-                                        prior.scale.for.intercept = prior.scale.for.intercept,
-                                        prior.df.for.intercept    = prior.df.for.intercept)
+                                        prior_mean                = prior_mean,
+                                        prior_scale               = prior_scale,
+                                        prior_df                  = prior_df,
+                                        prior_mean_for_intercept  = prior_mean_for_intercept,
+                                        prior_scale_for_intercept = prior_scale_for_intercept,
+                                        prior_df_for_intercept    = prior_df_for_intercept)
 
       class(prior_regression) <- c("glm", "lm")
 
@@ -570,12 +574,12 @@ posterior_regression <- function(df, family, alpha_max, fix_alpha, prior.mean,
                                                  y                         = df$Y,
                                                  offset                    = df$offset,
                                                  family                    = family,
-                                                 prior.mean                = prior.mean,
-                                                 prior.scale               = prior.scale,
-                                                 prior.df                  = prior.df,
-                                                 prior.mean.for.intercept  = prior.mean.for.intercept,
-                                                 prior.scale.for.intercept = prior.scale.for.intercept,
-                                                 prior.df.for.intercept    = prior.df.for.intercept)
+                                                 prior_mean                = prior_mean,
+                                                 prior_scale               = prior_scale,
+                                                 prior_df                  = prior_df,
+                                                 prior_mean_for_intercept  = prior_mean_for_intercept,
+                                                 prior_scale_for_intercept = prior_scale_for_intercept,
+                                                 prior_df_for_intercept    = prior_df_for_intercept)
 
       class(posterior_flat_regression) <- c("glm", "lm")
 
@@ -622,12 +626,12 @@ posterior_regression <- function(df, family, alpha_max, fix_alpha, prior.mean,
 
       posterior_regression <-  bayesglm.fit(x=X_, y=df_$Y, offset=df_$offset,
         family                    = family,
-        prior.mean                = prior.mean,
-        prior.scale               = prior.scale,
-        prior.df                  = prior.df,
-        prior.mean.for.intercept  = mean_0$intercept,
-        prior.scale.for.intercept = sd_0$intercept/sqrt(alpha_discount),
-        prior.df.for.intercept    = prior.df.for.intercept)
+        prior_mean                = prior_mean,
+        prior_scale               = prior_scale,
+        prior_df                  = prior_df,
+        prior_mean_for_intercept  = mean_0$intercept,
+        prior_scale_for_intercept = sd_0$intercept/sqrt(alpha_discount),
+        prior_df_for_intercept    = prior_df_for_intercept)
 
 
       class(posterior_regression) <- c("glm", "lm")
@@ -766,12 +770,12 @@ model.matrixBayes <- function(object, data=environment(object), contrasts.arg=NU
 bayesglm.fit <- function (x, y, weights = rep(1, nobs), start = NULL, etastart = NULL,
                           mustart = NULL, offset = rep(0, nobs), family = gaussian(),
                           control = list(), intercept = TRUE,
-                          prior.mean = 0, prior.scale = NULL, prior.df = 1,
-                          prior.mean.for.intercept = 0,
-                          prior.scale.for.intercept = NULL,
-                          prior.df.for.intercept = 1,
-                          min.prior.scale = 1e-12, scaled = TRUE,
-                          print.unnormalized.log.posterior = FALSE,
+                          prior_mean = 0, prior_scale = NULL, prior_df = 1,
+                          prior_mean_for_intercept = 0,
+                          prior_scale_for_intercept = NULL,
+                          prior_df_for_intercept = 1,
+                          min_prior_scale = 1e-12, scaled = TRUE,
+                          print_unnormalized_log_posterior = FALSE,
                           Warning = TRUE){
 
   control <- do.call("glm.control", control)
@@ -789,17 +793,17 @@ bayesglm.fit <- function (x, y, weights = rep(1, nobs), start = NULL, etastart =
   #===============================
   #  initialize priors
   #===============================
-  if(is.null(prior.scale)){
-    prior.scale <- 2.5
+  if(is.null(prior_scale)){
+    prior_scale <- 2.5
     if(family$link == "probit"){
-      prior.scale <- prior.scale*1.6
+      prior_scale <- prior_scale*1.6
     }
   }
 
-  if(is.null(prior.scale.for.intercept)){
-    prior.scale.for.intercept <- 10
+  if(is.null(prior_scale_for_intercept)){
+    prior_scale_for_intercept <- 10
     if(family$link == "probit"){
-      prior.scale.for.intercept <- prior.scale.for.intercept*1.6
+      prior_scale_for_intercept <- prior_scale_for_intercept*1.6
     }
   }
 
@@ -807,35 +811,35 @@ bayesglm.fit <- function (x, y, weights = rep(1, nobs), start = NULL, etastart =
     nvars <- nvars - 1
   }
 
-  if(length(prior.mean)==1L){
-    prior.mean <- rep(prior.mean, nvars)
-  }else if(length(prior.mean)!=nvars){
-    stop("invalid length for prior.mean")
+  if(length(prior_mean)==1L){
+    prior_mean <- rep(prior_mean, nvars)
+  }else if(length(prior_mean)!=nvars){
+    stop("invalid length for prior_mean")
   }
 
-  if(length(prior.scale)==1L){
-    prior.scale <- rep(prior.scale, nvars)
-  }else if(length(prior.scale)!=nvars){
-    stop("invalid length for prior.scale")
+  if(length(prior_scale)==1L){
+    prior_scale <- rep(prior_scale, nvars)
+  }else if(length(prior_scale)!=nvars){
+    stop("invalid length for prior_scale")
   }
 
-  if(length(prior.df)==1L){
-    prior.df <- rep(prior.df, nvars)
-  }else if(length(prior.df)!=nvars){
-    stop("invalid length for prior.df")
+  if(length(prior_df)==1L){
+    prior_df <- rep(prior_df, nvars)
+  }else if(length(prior_df)!=nvars){
+    stop("invalid length for prior_df")
   }
 
   if(intercept){
-    prior.mean <- c(prior.mean.for.intercept, prior.mean)
-    prior.scale <- c(prior.scale.for.intercept, prior.scale)
-    prior.df <- c(prior.df.for.intercept, prior.df)
+    prior_mean <- c(prior_mean_for_intercept, prior_mean)
+    prior_scale <- c(prior_scale_for_intercept, prior_scale)
+    prior_df <- c(prior_df_for_intercept, prior_df)
   }
 
   if(scaled){
     if(family$family=="gaussian"){
-      prior.scale <- prior.scale*2*sd(y)
+      prior_scale <- prior_scale*2*sd(y)
     }
-    prior.scale.0 <- prior.scale
+    prior_scale.0 <- prior_scale
     if(nvars==0) nvars = 1
     for(j in 1:nvars){
       x.obs <- x[,j]
@@ -847,11 +851,11 @@ bayesglm.fit <- function (x, y, weights = rep(1, nobs), start = NULL, etastart =
       }else if(num.categories>2){
         x.scale <- 2*sd(x.obs)
       }
-      prior.scale[j] <- prior.scale[j]/x.scale
-      if(prior.scale[j] < min.prior.scale){
-        prior.scale[j] <- min.prior.scale
+      prior_scale[j] <- prior_scale[j]/x.scale
+      if(prior_scale[j] < min_prior_scale){
+        prior_scale[j] <- min_prior_scale
         warning("prior scale for varible ", j,
-                " set to min.prior.scale = ", min.prior.scale, "\n")
+                " set to min_prior_scale = ", min_prior_scale, "\n")
       }
     }
   }
@@ -931,9 +935,9 @@ bayesglm.fit <- function (x, y, weights = rep(1, nobs), start = NULL, etastart =
     boundary <- conv <- FALSE
 
     #======================================
-    #   initialize prior.sd
+    #   initialize prior_sd
     #======================================
-    prior.sd <- prior.scale
+    prior_sd <- prior_scale
     #=====================================
     dispersion <- ifelse((family$family %in% c("poisson", "binomial")),  1, var(y)/10000)
     dispersionold <- dispersion
@@ -964,8 +968,8 @@ bayesglm.fit <- function (x, y, weights = rep(1, nobs), start = NULL, etastart =
       if(intercept&scaled){
         x.star[nobs+1,] <- colMeans(x)
       }
-      z.star <- c (z, prior.mean)
-      w.star <- c (w, sqrt(dispersion)/prior.sd)
+      z.star <- c (z, prior_mean)
+      w.star <- c (w, sqrt(dispersion)/prior_sd)
       #=================================================
       good.star <- c (good, rep(TRUE,NCOL(x)))
       ngoodobs.star <- ngoodobs + NCOL(x)
@@ -980,11 +984,11 @@ bayesglm.fit <- function (x, y, weights = rep(1, nobs), start = NULL, etastart =
       fit$qr$qr <- as.matrix (fit$qr$qr)
       V.coefs <- chol2inv(fit$qr$qr[1:NCOL(x.star), 1:NCOL(x.star), drop = FALSE])
       if (family$family == "gaussian" & scaled){
-        prior.scale <- prior.scale.0
+        prior_scale <- prior_scale_0
       }
-      prior.sd <- ifelse(prior.df == Inf, prior.scale,
-                         sqrt(((coefs.hat - prior.mean)^2 + diag(V.coefs)*dispersion +
-                                 prior.df * prior.scale^2)/(1 + prior.df)))
+      prior_sd <- ifelse(prior_df == Inf, prior_scale,
+                         sqrt(((coefs.hat - prior_mean)^2 + diag(V.coefs)*dispersion +
+                                 prior_df * prior_scale^2)/(1 + prior_df)))
       start[fit$qr$pivot] <- fit$coefficients
       eta <- drop(x %*% start)
       mu <- linkinv(eta <- eta + offset)
@@ -1045,8 +1049,8 @@ bayesglm.fit <- function (x, y, weights = rep(1, nobs), start = NULL, etastart =
       #===============================
       # print unnormalized log posterior
       #================================
-      if (family$family == "binomial" && print.unnormalized.log.posterior) {
-        logprior <- sum(dt(coefs.hat, prior.df, prior.mean, log = TRUE))
+      if (family$family == "binomial" && print_unnormalized_log_posterior) {
+        logprior <- sum(dt(coefs.hat, prior_df, prior_mean, log = TRUE))
         xb <- 1/(1 + exp(-( x %*% coefs.hat )))
         loglikelihood <- sum( log( c( xb[ y == 1 ], 1 - xb[ y == 0 ] ) ) )
         cat( "log prior: ", logprior, ", log likelihood: ", loglikelihood, ",
@@ -1147,10 +1151,10 @@ bayesglm.fit <- function (x, y, weights = rep(1, nobs), start = NULL, etastart =
        y = y,
        converged = conv,
        boundary = boundary,
-       prior.mean = prior.mean,
-       prior.scale = prior.scale,
-       prior.df = prior.df,
-       prior.sd = prior.sd,
+       prior_mean = prior_mean,
+       prior_scale = prior_scale,
+       prior_df = prior_df,
+       prior_sd = prior_sd,
        dispersion = dispersion)
 }
 
