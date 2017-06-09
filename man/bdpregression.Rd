@@ -34,22 +34,26 @@ Can be a vector of length equal to the number of covariates
 expanded to the length of this vector.}
 
 \item{prior_scale}{prior scale for the coefficients: default is NULL;
- if NULL, for a logistic regression model, prior_scale is 2.5; for a
-  probit model, prior scale is 2.5*1.6. Can be a vector of length equal
-  to the number of predictors (not counting the intercept, if any). If
-  it is a scalar, it is expanded to the length of this vector.
-@param prior_df prior degrees of freedom for the coefficients. For
-  t distribution default is 1 (Cauchy). Set to Inf to get normal prior
-  distributions. Can be a vector of length equal to the number of
-  predictors (not counting the intercept, if any). If it is a scalar,
-  it is expanded to the length of this vector.
-@param prior_mean_for_intercept prior mean for the intercept: default
-  is 0.
-@param prior_scale_for_intercept prior scale for the intercept:
-  default is NULL; for a logit model, prior scale for intercept is 10;
-  for probit model, prior scale for intercept is rescaled as 10*1.6.
-@param prior_df_for_intercept prior degrees of freedom for the
-  intercept: default is 1.}
+if NULL, for a logistic regression model, prior_scale is 2.5; for a
+ probit model, prior scale is 2.5*1.6. Can be a vector of length equal
+ to the number of predictors (not counting the intercept, if any). If
+ it is a scalar, it is expanded to the length of this vector.}
+
+\item{prior_df}{prior degrees of freedom for the coefficients. For
+t distribution default is 1 (Cauchy). Set to Inf to get normal prior
+distributions. Can be a vector of length equal to the number of
+predictors (not counting the intercept, if any). If it is a scalar,
+it is expanded to the length of this vector.}
+
+\item{prior_mean_for_intercept}{prior mean for the intercept: default
+is 0.}
+
+\item{prior_scale_for_intercept}{prior scale for the intercept:
+default is NULL; for a logit model, prior scale for intercept is 10;
+for probit model, prior scale for intercept is rescaled as 10*1.6.}
+
+\item{prior_df_for_intercept}{prior degrees of freedom for the
+intercept: default is 1.}
 
 \item{alpha_max}{scalar. Maximum weight the discount function can apply.
 Default is 1. For a two-arm trial, users may specify a vector of two values

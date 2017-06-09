@@ -24,17 +24,18 @@
 #'    probit model, prior scale is 2.5*1.6. Can be a vector of length equal
 #'    to the number of predictors (not counting the intercept, if any). If
 #'    it is a scalar, it is expanded to the length of this vector.
-#'  @param prior_df prior degrees of freedom for the coefficients. For
+#'
+#' @param prior_df prior degrees of freedom for the coefficients. For
 #'    t distribution default is 1 (Cauchy). Set to Inf to get normal prior
 #'    distributions. Can be a vector of length equal to the number of
 #'    predictors (not counting the intercept, if any). If it is a scalar,
 #'    it is expanded to the length of this vector.
-#'  @param prior_mean_for_intercept prior mean for the intercept: default
+#' @param prior_mean_for_intercept prior mean for the intercept: default
 #'    is 0.
-#'  @param prior_scale_for_intercept prior scale for the intercept:
+#' @param prior_scale_for_intercept prior scale for the intercept:
 #'    default is NULL; for a logit model, prior scale for intercept is 10;
 #'    for probit model, prior scale for intercept is rescaled as 10*1.6.
-#'  @param prior_df_for_intercept prior degrees of freedom for the
+#' @param prior_df_for_intercept prior degrees of freedom for the
 #'    intercept: default is 1.
 #' @param alpha_max scalar. Maximum weight the discount function can apply.
 #'   Default is 1. For a two-arm trial, users may specify a vector of two values
@@ -418,6 +419,7 @@ posterior_regression <- function(df, family, alpha_max, fix_alpha, prior_mean,
                                  two_side, arm2){
 
   Y <- NULL
+  historical <- NULL
 
   ### Look for "historical" column, if missing, df_ <- df and df_0 <- NULL
   hist_missing <- is.na(match("historical", colnames(df)))
@@ -839,7 +841,7 @@ bayesglm.fit <- function (x, y, weights = rep(1, nobs), start = NULL, etastart =
     if(family$family=="gaussian"){
       prior_scale <- prior_scale*2*sd(y)
     }
-    prior_scale.0 <- prior_scale
+    prior_scale_0 <- prior_scale
     if(nvars==0) nvars = 1
     for(j in 1:nvars){
       x.obs <- x[,j]
