@@ -8,7 +8,6 @@
 #' @importFrom ggplot2 theme_bw
 #' @importFrom ggplot2 xlab
 #' @importFrom ggplot2 ylab
-NULL
 #' @title Bayesian Discount Prior: Gaussian mean values
 #' @description \code{bdpnormal} is used for estimating posterior samples from a
 #'   Gaussian outcome where an informative prior is used. The prior weight
