@@ -243,7 +243,33 @@ setMethod("bdpregression",
   ### Assign one-arm or two-arm analysis. Check validity of inputs.
   # Create indicator of whether each column is present
   cmatch <- match(c("intercept", "historical", "treatment") , colnames(X))
-  cmatch <- !is.na(cmatch)  ### == TRUE == missing
+  cmatch <- !is.na(cmatch)  ### == TRUE == present
+
+  ### If historical present, count levels
+  if(cmatch[2]){
+    hist_levels <- levels(as.factor(X[,"historical"]))
+
+    # Check that the levels are 0 and/or 1
+    if(any(!(hist_levels %in% c(0,1)))){
+      stop("Historical input has wrong levels. Values should be 0 and/or 1.")
+    }
+
+    n_hist_levels <- length(hist_levels)
+  }
+
+  ### If treatment present, count levels
+  if(cmatch[3]){
+    trt_levels <- levels(as.factor(X[,"treatment"]))
+
+    # Check that the levels are 0 and/or 1
+    if(any(!(trt_levels %in% c(0,1)))){
+      stop("Treatment input has wrong levels. Values should be 0 and/or 1.")
+    }
+
+    n_trt_levels <- length(trt_levels)
+  }
+
+
 
   if(!cmatch[1] & cmatch[2] & !cmatch[3]){
     ### No intercept and no treatment indicator: cannot analyze as
@@ -257,13 +283,29 @@ setMethod("bdpregression",
     stop("Data input incorrectly. Intercept, historical covariate, and (optional) treatment
           covariate are missing. Cannot determine if one-arm or two-arm analysis.")
   } else if(all(cmatch)){
-    arm2 <- TRUE
+    if(n_trt_levels == 2){
+      arm2 <- TRUE
+    } else if(n_trt_levels == 1){
+      arm2 <- FALSE
+    }
   } else if(!cmatch[1] & cmatch[2] & cmatch[3]){
-    arm2 <- TRUE
+    if(n_trt_levels == 2){
+      arm2 <- TRUE
+    } else if(n_trt_levels == 1){
+      arm2 <- FALSE
+    }
   } else if(!cmatch[1] & !cmatch[2] & cmatch[3]){
-    arm2 <- TRUE
+    if(n_trt_levels == 2){
+      arm2 <- TRUE
+    } else if(n_trt_levels == 1){
+      arm2 <- FALSE
+    }
   } else if(cmatch[1] & !cmatch[2] & cmatch[3]){
-    arm2 <- TRUE
+    if(n_trt_levels == 2){
+      arm2 <- TRUE
+    } else if(n_trt_levels == 1){
+      arm2 <- FALSE
+    }
   } else if(cmatch[1] & !cmatch[2] & !cmatch[3]){
     arm2 <- FALSE
   } else if(cmatch[1] & cmatch[2] & !cmatch[3]){
@@ -432,6 +474,16 @@ posterior_regression <- function(df, family, alpha_max, fix_alpha, prior_mean,
     df_  <- subset(df, historical==0, select=-c(historical))  # Current data
     df_0 <- subset(df, historical==1, select=-c(historical))  # Historical data
   }
+
+  ### If historical has a single value, then one of df_ and df_0 will have 0 rows
+  if(nrow(df_) == 0){
+    df_ <- NULL
+  }
+
+  if(nrow(df_0) == 0){
+    df_0 <- NULL
+  }
+
 
 
   ##############################################################################
