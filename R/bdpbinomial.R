@@ -404,8 +404,8 @@ posterior_binomial <- function(y, N, y0, N0, alpha_max, fix_alpha, a0, b0,
     } else if(method == "mc"){
       v     <- 1/((y + a0 - 1)/posterior_flat^2 + (N-y+b0-1)/(posterior_flat-1)^2)
       v0    <- 1/((y0 + a0 - 1)/prior^2 + (N0-y0+b0-1)/(prior-1)^2)
-      Z     <- (posterior_flat-prior) / sqrt(v+v0)
-      p_hat <- pnorm(Z)
+      Z     <- (posterior_flat-prior)^2 / (v+v0)
+      p_hat <- pchisq(Z,1,lower.tail=FALSE)
     }
 
 

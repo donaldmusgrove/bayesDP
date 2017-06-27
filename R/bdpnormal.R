@@ -444,8 +444,8 @@ posterior_normal <- function(mu, sigma, N, mu0, sigma0, N0, alpha_max,
     } else if(method == "mc"){
       v     <- posterior_flat_sigma2
       v0    <- prior_sigma2
-      Z     <- (posterior_flat_mu-prior_mu) / sqrt(v+v0)
-      p_hat <- pnorm(Z)
+      Z     <- (posterior_flat_mu-prior_mu)^2 / (v+v0)
+      p_hat <- pchisq(Z,1,lower.tail=FALSE)
     }
 
 
