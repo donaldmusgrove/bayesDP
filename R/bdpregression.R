@@ -121,20 +121,20 @@
 #' @examples
 #' # One-arm trial (OPC) example
 #' # Simulate regression data for a single arm (OPC) trial
-#' time   <- c(rexp(50, rate=1/20), rexp(50, rate=1/10))
-#' status <- c(rexp(50, rate=1/30), rexp(50, rate=1/30))
-#' status <- ifelse(time < status, 1, 0)
+#' #time   <- c(rexp(50, rate=1/20), rexp(50, rate=1/10))
+#' #status <- c(rexp(50, rate=1/30), rexp(50, rate=1/30))
+#' #status <- ifelse(time < status, 1, 0)
 #'
 #' # Collect data into a dataframe
-#' example_surv_1arm <- data.frame(status     = status,
-#'                                 time       = time,
-#'                                 historical = c(rep(1,50),rep(0,50)),
-#'                                 treatment  = 1)
+#' #example_surv_1arm <- data.frame(status     = status,
+#' #                               time       = time,
+#' #                                 historical = c(rep(1,50),rep(0,50)),
+#' #                                 treatment  = 1)
 #'
-#' fitSurv <- bdpsurvival(Surv(time, status) ~ historical + treatment,
-#'                        data = example_surv_1arm)
+#' #fitSurv <- bdpsurvival(Surv(time, status) ~ historical + treatment,
+#' #                        data = example_surv_1arm)
 #'
-#' summary(fitSurv)
+#' #summary(fitSurv)
 #'
 #'
 #' @rdname bdpregression

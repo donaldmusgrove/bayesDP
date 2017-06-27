@@ -43,6 +43,7 @@
 #'   paramter alpha. Default value "\code{fixed}" estimates alpha once and holds it fixed
 #'   throughout the analysis. Alternative method "\code{mc}" estimates alpha for each
 #'   Monte Carlo iteration. Method "\code{mc}" is implemented for two-arm analysis only.
+#'   Currently, only "\code{fixed}" is implemented for one- and two-arm survival analysis.
 #' @details \code{bdpsurvival} uses a two-stage approach for determining the
 #'   strength of historical data in estimation of a survival probability outcome.
 #'   In the first stage, a Weibull distribution function is used as a
@@ -553,7 +554,7 @@ posterior_survival <- function(S, S0, surv_time, alpha_max, fix_alpha, a0, b0,
 
     ### Compute probability that survival is greater for current vs historical
     if(method == "mc"){
-      stop("Method 'mc' is not supported with one-arm analysis.")
+      stop("Method 'mc' is not supported for one-arm survival analysis.")
     }
 
     p_hat <- mean(posterior_flat_survival > prior_survival)   # higher is better survival
@@ -571,14 +572,15 @@ posterior_survival <- function(S, S0, surv_time, alpha_max, fix_alpha, a0, b0,
   } else{
     ### Weight historical data via (approximate) hazard ratio comparing
     ### current vs historical
-    if(method == "fixed"){
-      R0     <- log(prior_hazard)-log(posterior_flat_hazard)
-      V0     <- 1/apply(R0,2,var)
-      logHR0 <- R0%*%V0/sum(V0)    #weighted average  of SE^2
-      p_hat <- mean(logHR0 > 0)    #larger is higher failure
-    } else if(method == "mc"){
-      stop("Method 'mc' is not yet supported with two-arm analysis.")
+    if(method == "mc"){
+      stop("Method 'mc' is not supported for two-arm survival analysis.")
     }
+
+    R0     <- log(prior_hazard)-log(posterior_flat_hazard)
+    V0     <- 1/apply(R0,2,var)
+    logHR0 <- R0%*%V0/sum(V0)    #weighted average  of SE^2
+    p_hat <- mean(logHR0 > 0)    #larger is higher failure
+
 
 
     if(fix_alpha){

@@ -61,7 +61,8 @@ function. Default value is TRUE.}
 \item{method}{character. Analysis method with respect to estimation of the weight
 paramter alpha. Default value "\code{fixed}" estimates alpha once and holds it fixed
 throughout the analysis. Alternative method "\code{mc}" estimates alpha for each
-Monte Carlo iteration. Method "\code{mc}" is implemented for two-arm analysis only.}
+Monte Carlo iteration. Method "\code{mc}" is implemented for two-arm analysis only.
+Currently, only "\code{fixed}" is implemented for one- and two-arm survival analysis.}
 }
 \value{
 \code{bdpsurvival} returns an object of class "bdpsurvival".
