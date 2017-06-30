@@ -13,9 +13,9 @@
 #'   piecewise exponential model. Do not include zero. Default breaks are the
 #'   quantiles of the input times.
 #' @param a0 scalar. Prior value for the gamma shape of the piecewise
-#'   exponential hazards. Default is 1.
+#'   exponential hazards. Default is 0.1.
 #' @param b0 scalar. Prior value for the gamma rate of the piecewise
-#'   exponential hazards. Default is 1.
+#'   exponential hazards. Default is 0.1.
 #' @param surv_time scalar. Survival time of interest for computing the
 #'   probability of survival for a single arm (OPC) trial. Default is
 #'   overall, i.e., current+historical, median survival time.
@@ -42,8 +42,7 @@
 #' @param method character. Analysis method with respect to estimation of the weight
 #'   paramter alpha. Default value "\code{fixed}" estimates alpha once and holds it fixed
 #'   throughout the analysis. Alternative method "\code{mc}" estimates alpha for each
-#'   Monte Carlo iteration. Method "\code{mc}" is implemented for two-arm analysis only.
-#'   Currently, only "\code{fixed}" is implemented for one- and two-arm survival analysis.
+#'   Monte Carlo iteration.
 #' @details \code{bdpsurvival} uses a two-stage approach for determining the
 #'   strength of historical data in estimation of a survival probability outcome.
 #'   In the first stage, a Weibull distribution function is used as a
@@ -554,15 +553,29 @@ posterior_survival <- function(S, S0, surv_time, alpha_max, fix_alpha, a0, b0,
 
     ### Compute probability that survival is greater for current vs historical
     if(method == "mc"){
-      stop("Method 'mc' is not supported for one-arm survival analysis.")
-    }
+      logS  <- log(posterior_flat_survival)
+      logS0 <- log(prior_survival)
 
-    p_hat <- mean(posterior_flat_survival > prior_survival)   # higher is better survival
+      ### Variance of log survival, computed via delta method of hazards
+      nIntervals <- sum(surv_time > c(0,breaks))
+      IntLengths <- c(c(0,breaks)[1:nIntervals], surv_time)
+      surv_times <- diff(IntLengths)
+
+      v          <- as.matrix(posterior_flat_hazard[,1:nIntervals]^2) %*% (surv_times^2/a_post[1:nIntervals])
+      v0         <- as.matrix(prior_hazard[,1:nIntervals]^2) %*% (surv_times^2/a_post0[1:nIntervals])
+      Z          <- (logS - logS0)^2 / (v+v0)
+      p_hat      <- pchisq(Z, df=1, lower.tail=FALSE)
+
+    } else if(method == "fixed"){
+      p_hat <- mean(posterior_flat_survival > prior_survival)   # higher is better survival
+    } else{
+      stop("Unrecognized method. Use one of 'fixed' or 'mc'")
+    }
 
     if(fix_alpha){
       alpha_discount <- alpha_max
     } else{
-      if (!two_side) {
+      if (!two_side | method == "mc") {
         alpha_discount <- pweibull(p_hat, shape=weibull_shape, scale=weibull_scale)*alpha_max
       } else if (two_side){
         p_hat    <- ifelse(p_hat > 0.5, 1 - p_hat, p_hat)
@@ -573,20 +586,26 @@ posterior_survival <- function(S, S0, surv_time, alpha_max, fix_alpha, a0, b0,
     ### Weight historical data via (approximate) hazard ratio comparing
     ### current vs historical
     if(method == "mc"){
-      stop("Method 'mc' is not supported for two-arm survival analysis.")
+      R0    <- log(prior_hazard)-log(posterior_flat_hazard)
+      v     <- 1/(a_post)
+      v0    <- 1/(a_post0)
+      R     <- rowSums(as.matrix(R0/(v+v0) / sum(1/(v+v0))))
+      V0    <- 1 / sum(1/(v+v0))
+      Z     <- R^2 / V0
+      p_hat <- pchisq(Z, df=1, lower.tail=FALSE)
+    } else if(method == "fixed"){
+      R0     <- log(prior_hazard)-log(posterior_flat_hazard)
+      V0     <- 1/apply(R0,2,var)
+      logHR0 <- R0%*%V0/sum(V0)    #weighted average  of SE^2
+      p_hat <- mean(logHR0 > 0)    #larger is higher failure
+    } else{
+      stop("Unrecognized method. Use one of 'fixed' or 'mc'")
     }
-
-    R0     <- log(prior_hazard)-log(posterior_flat_hazard)
-    V0     <- 1/apply(R0,2,var)
-    logHR0 <- R0%*%V0/sum(V0)    #weighted average  of SE^2
-    p_hat <- mean(logHR0 > 0)    #larger is higher failure
-
-
 
     if(fix_alpha){
       alpha_discount <- alpha_max
     } else{
-      if (!two_side) {
+      if (!two_side | method == "mc") {
         alpha_discount <- pweibull(p_hat, shape=weibull_shape, scale=weibull_scale)*alpha_max
       } else if (two_side){
         p_hat    <- ifelse(p_hat > 0.5, 1 - p_hat, p_hat)

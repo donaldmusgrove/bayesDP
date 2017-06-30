@@ -348,10 +348,10 @@ setMethod("summary", signature(object = "bdpsurvival"), function(object){
       print(m_t)
     } else{
       cat(paste0("Stochastic comparison (p_hat) - treatment (current vs. historical data): ",
-                 round(posterior_treatment$p_hat,4)))
+                 round(median(posterior_treatment$p_hat),4)))
       cat("\n")
       cat(paste0("Discount function value (alpha) - treatment: ",
-                 round(posterior_treatment$alpha_discount,4)))
+                 round(median(posterior_treatment$alpha_discount),4)))
       cat("\n")
       cat("\n")
       cat("Current treatment - augmented posterior summary:")

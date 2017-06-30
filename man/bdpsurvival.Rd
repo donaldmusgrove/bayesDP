@@ -23,10 +23,10 @@ piecewise exponential model. Do not include zero. Default breaks are the
 quantiles of the input times.}
 
 \item{a0}{scalar. Prior value for the gamma shape of the piecewise
-exponential hazards. Default is 1.}
+exponential hazards. Default is 0.1.}
 
 \item{b0}{scalar. Prior value for the gamma rate of the piecewise
-exponential hazards. Default is 1.}
+exponential hazards. Default is 0.1.}
 
 \item{surv_time}{scalar. Survival time of interest for computing the
 probability of survival for a single arm (OPC) trial. Default is

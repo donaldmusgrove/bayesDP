@@ -453,7 +453,7 @@ posterior_normal <- function(mu, sigma, N, mu0, sigma0, N0, alpha_max,
     if(fix_alpha == TRUE){
       alpha_discount <- alpha_max
     } else{
-      if (!two_side) {
+      if (!two_side | method == "mc") {
         alpha_discount <- pweibull(p_hat, shape=weibull_shape,
                                    scale=weibull_scale)*alpha_max
       } else if (two_side){
