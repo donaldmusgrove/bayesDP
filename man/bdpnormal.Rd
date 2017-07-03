@@ -68,7 +68,8 @@ function. Default value is TRUE.}
 \item{method}{character. Analysis method with respect to estimation of the weight
 paramter alpha. Default value "\code{fixed}" estimates alpha once and holds it fixed
 throughout the analysis. Alternative method "\code{mc}" estimates alpha for each
-Monte Carlo iteration.}
+Monte Carlo iteration. See the the \code{bdpnormal} vignette \cr
+\code{vignette("bdpnormal-vignette", package="bayesDP")} for more details.}
 }
 \value{
 \code{bdpnormal} returns an object of class "bdpnormal". The

@@ -36,7 +36,8 @@
 #' @param method character. Analysis method with respect to estimation of the weight
 #'   paramter alpha. Default value "\code{fixed}" estimates alpha once and holds it fixed
 #'   throughout the analysis. Alternative method "\code{mc}" estimates alpha for each
-#'   Monte Carlo iteration.
+#'   Monte Carlo iteration. See the the \code{bdpbinomial} vignette \cr
+#'   \code{vignette("bdpbinomial-vignette", package="bayesDP")} for more details.
 #' @details \code{bdpbinomial} uses a two-stage approach for determining the
 #'   strength of historical data in estimation of a binomial count mean outcome.
 #'   In the first stage, a Weibull distribution function is used as a

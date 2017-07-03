@@ -10,7 +10,7 @@ bdpregression(formula = formula, family = "gaussian", data = data,
   prior_mean_for_intercept = 0, prior_scale_for_intercept = NULL,
   prior_df_for_intercept = 1, alpha_max = 1, fix_alpha = FALSE,
   number_mcmc = 10000, weibull_scale = 0.135, weibull_shape = 3,
-  two_side = TRUE)
+  two_side = TRUE, method = "fixed")
 }
 \arguments{
 \item{formula}{an object of class "formula." See "Details" for
@@ -81,12 +81,18 @@ historical control group.}
 
 \item{two_side}{logical. Indicator of two-sided test for the discount
 function. Default value is TRUE.}
+
+\item{method}{character. Analysis method with respect to estimation of the weight
+paramter alpha. Default value "\code{fixed}" estimates alpha once and holds it fixed
+throughout the analysis. Alternative method "\code{mc}" estimates alpha for each
+Monte Carlo iteration. Currently, only the default method "\code{fixed}" is
+supported.}
 }
 \value{
 \code{bdpregression} returns an object of class "bdpregression".
-The functions \code{summary} and \code{print} are used to obtain and
-print a summary of the results, including user inputs. The \code{plot}
-function displays visual outputs as well.
+  The functions \code{summary} and \code{print} are used to obtain and
+  print a summary of the results, including user inputs. The \code{plot}
+  function displays visual outputs as well.
 
 An object of class "\code{bdpregression}" is a list containing at least
 the following components:
@@ -99,26 +105,27 @@ the following components:
      \item{\code{p_hat}}{
        numeric. The posterior probability of the stochastic comparison
        between the current and historical data.}
-     \item{\code{posterior}}{
-       list. Entries contain \code{cdf}, a vector of the posterior cdf of the
-       piecewise exponential distribution; \code{surv_time_posterior}, a
-       vector with the posterior of the survival probability; and
-       \code{posterior}, a matrix of the posteriors of each of the piecewise
-       hazards.}
-     \item{\code{posterior_flat}}{
-       matrix. The distributions of the current treatment group piecewise
-       hazard rates.}
-     \item{\code{prior}}{
-       matrix. The distributions of the historical treatment group piecewise
-       hazard rates.}
-  }
+     \item{\code{posterior_regression}}{
+       list. Contains results for the augmented regression analysis. Entries
+       are similar to the output of \code{glm} and \code{bayesglm} (from the
+        \code{arm} package).}
+     \item{\code{posterior_flat_regression}}{
+       list. Contains entries similar to \code{posterior_regression} corresponding
+       to estimates of the unweighted current data.}
+     \item{\code{prior_regression}}{
+       to estimates of the historical data.}
+   }
  \item{\code{args1}}{
    list. Entries contain user inputs. In addition, the following elements
    are ouput:}
    \itemize{
-     \item{\code{S_t} and \code{S0_t}}{
-       survival objects. Used internally pass survival data between
-       functions.}
+     \item{\code{df_t} and \code{df_c}}{
+       dataframe. Input data parsed into internally used treatment and control
+       data frames.
+     }
+     \item{\code{arm2}}{
+       logical. Used internally to indicate one-arm or two-arm analysis.
+     }
   }
 }
 }
@@ -147,7 +154,7 @@ the following components:
   function parameter, \code{alpha}, is used as a fixed value for all posterior
   estimation procedures.
 
- Two-arm (RCT) analyses are not available with this release.
+ Two-arm (RCT) analyses are not currently available with this release.
 }
 \examples{
 # One-arm trial (OPC) example

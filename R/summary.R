@@ -44,6 +44,7 @@ setMethod("summary", signature(object = "bdpnormal"), function(object){
   mu0_c               <- object$args1$mu0_c
   sigma0_c            <- object$args1$sigma0_c
   N0_c                <- object$args1$N0_c
+  method              <- object$args1$method
 
   if(!arm2){
     # Format treatment mean output
@@ -62,9 +63,20 @@ setMethod("summary", signature(object = "bdpnormal"), function(object){
       cat(paste0("Stochastic comparison (p_hat) - treatment (current vs. historical data): ",
                  round(median(posterior_treatment$p_hat),4)))
       cat("\n")
-      cat(paste0("Discount function value (alpha) - treatment: ",
-                 round(median(posterior_treatment$alpha_discount),4)))
-      cat("\n")
+      if(method=="mc"){
+        alpha_summ <- quantile(posterior_treatment$alpha_discount,
+                               probs=c(0.5,0.025,0.975))
+
+        cat(paste0("Discount function value (alpha) - treatment: ",
+            round(alpha_summ[1],4),
+            " (95% CI: ",round(alpha_summ[2],4), ", ",round(alpha_summ[3],4),
+            ")"))
+        cat("\n")
+      } else{
+        cat(paste0("Discount function value (alpha) - treatment: ",
+            round(median(posterior_treatment$alpha_discount),4)))
+        cat("\n")
+      }
     }
     cat("95 percent confidence interval: \n")
     cat(paste0(" ",mean_CI_t))
@@ -110,15 +122,37 @@ setMethod("summary", signature(object = "bdpnormal"), function(object){
     }
 
     if(!is.null(N0_t)){
-      cat(paste0("Discount function value (alpha) - treatment: ",
-                 round(median(posterior_treatment$alpha_discount),4)))
-      cat("\n")
+      if(method=="mc"){
+        alpha_summ <- quantile(posterior_treatment$alpha_discount,
+                               probs=c(0.5,0.025,0.975))
+
+        cat(paste0("Discount function value (alpha) - treatment: ",
+            round(alpha_summ[1],4),
+            " (95% CI: ",round(alpha_summ[2],4), ", ",round(alpha_summ[3],4),
+            ")"))
+        cat("\n")
+      } else{
+        cat(paste0("Discount function value (alpha) - treatment: ",
+            round(median(posterior_treatment$alpha_discount),4)))
+        cat("\n")
+      }
     }
 
     if(!is.null(N0_c) & !is.null(N_c)){
-      cat(paste0("Discount function value (alpha) - control: ",
-                 round(median(posterior_control$alpha_discount),4)))
-      cat("\n")
+      if(method=="mc"){
+        alpha_summ <- quantile(posterior_control$alpha_discount,
+                               probs=c(0.5,0.025,0.975))
+
+        cat(paste0("Discount function value (alpha) - control: ",
+            round(alpha_summ[1],4),
+            " (95% CI: ",round(alpha_summ[2],4), ", ",round(alpha_summ[3],4),
+            ")"))
+        cat("\n")
+      } else{
+        cat(paste0("Discount function value (alpha) - control: ",
+            round(median(posterior_control$alpha_discount),4)))
+        cat("\n")
+      }
     }
     cat("alternative hypothesis: ", ifelse(two_side, "two.sided", "one.sided"))
     cat("\n")
@@ -192,12 +226,24 @@ setMethod("summary", signature(object = "bdpbinomial"), function(object){
     cat(paste0("Current treatment data: ", y_t, " and ", N_t, "\n"))
     if(!is.null(N0_t)){
       cat(paste0("Historical treatment data: ", y0_t, " and ", N0_t, "\n"))
-        cat(paste0("Stochastic comparison (p_hat) - treatment (current vs. historical data): ",
-                   round(median(posterior_treatment$p_hat),4)))
-        cat("\n")
-        cat(paste0("Discount function value (alpha) - treatment: ",
-                   round(median(posterior_treatment$alpha_discount),4)))
+      cat(paste0("Stochastic comparison (p_hat) - treatment (current vs. historical data): ",
+                 round(median(posterior_treatment$p_hat),4)))
       cat("\n")
+
+      if(method=="mc"){
+        alpha_summ <- quantile(posterior_treatment$alpha_discount,
+                               probs=c(0.5,0.025,0.975))
+
+        cat(paste0("Discount function value (alpha) - treatment: ",
+            round(alpha_summ[1],4),
+            " (95% CI: ",round(alpha_summ[2],4), ", ",round(alpha_summ[3],4),
+            ")"))
+        cat("\n")
+      } else{
+        cat(paste0("Discount function value (alpha) - treatment: ",
+            round(median(posterior_treatment$alpha_discount),4)))
+        cat("\n")
+      }
     }
     cat("95 percent confidence interval: \n")
     cat(paste0(" ",mean_CI_t))
@@ -243,21 +289,45 @@ setMethod("summary", signature(object = "bdpbinomial"), function(object){
 
 
     if(!is.null(N_t) & !is.null(N0_t)){
-        cat(paste0("Stochastic comparison (p_hat) - treatment (current vs. historical data): ",
-                   round(median(posterior_treatment$p_hat),4)))
-        cat("\n")
-        cat(paste0("Discount function value (alpha) - treatment: ",
-                   round(median(posterior_treatment$alpha_discount),4)))
+      cat(paste0("Stochastic comparison (p_hat) - treatment (current vs. historical data): ",
+                 round(median(posterior_treatment$p_hat),4)))
       cat("\n")
+
+      if(method=="mc"){
+        alpha_summ <- quantile(posterior_treatment$alpha_discount,
+                               probs=c(0.5,0.025,0.975))
+
+        cat(paste0("Discount function value (alpha) - treatment: ",
+            round(alpha_summ[1],4),
+            " (95% CI: ",round(alpha_summ[2],4), ", ",round(alpha_summ[3],4),
+            ")"))
+        cat("\n")
+      } else{
+        cat(paste0("Discount function value (alpha) - treatment: ",
+            round(median(posterior_treatment$alpha_discount),4)))
+        cat("\n")
+      }
     }
 
     if(!is.null(N_c) & !is.null(N0_c)){
-        cat(paste0("Stochastic comparison (p_hat) - control (current vs. historical data): ",
-                   round(median(posterior_control$p_hat),4)))
-        cat("\n")
-        cat(paste0("Discount function value (alpha) - control: ",
-                   round(median(posterior_control$alpha_discount),4)))
+      cat(paste0("Stochastic comparison (p_hat) - control (current vs. historical data): ",
+                 round(median(posterior_control$p_hat),4)))
       cat("\n")
+
+      if(method=="mc"){
+        alpha_summ <- quantile(posterior_control$alpha_discount,
+                               probs=c(0.5,0.025,0.975))
+
+        cat(paste0("Discount function value (alpha) - control: ",
+            round(alpha_summ[1],4),
+            " (95% CI: ",round(alpha_summ[2],4), ", ",round(alpha_summ[3],4),
+            ")"))
+        cat("\n")
+      } else{
+        cat(paste0("Discount function value (alpha) - control: ",
+            round(median(posterior_control$alpha_discount),4)))
+        cat("\n")
+      }
     }
 
     cat("alternative hypothesis: ", ifelse(two_side, "two.sided", "one.sided"))
@@ -311,6 +381,7 @@ setMethod("summary", signature(object = "bdpsurvival"), function(object){
   data                <- args1$data
   breaks              <- args1$breaks
   arm2                <- args1$arm2
+  method              <- args1$method
 
   historical <- NULL
   treatment  <- NULL
@@ -350,9 +421,21 @@ setMethod("summary", signature(object = "bdpsurvival"), function(object){
       cat(paste0("Stochastic comparison (p_hat) - treatment (current vs. historical data): ",
                  round(median(posterior_treatment$p_hat),4)))
       cat("\n")
-      cat(paste0("Discount function value (alpha) - treatment: ",
-                 round(median(posterior_treatment$alpha_discount),4)))
-      cat("\n")
+      if(method=="mc"){
+        alpha_summ <- quantile(posterior_treatment$alpha_discount,
+                               probs=c(0.5,0.025,0.975))
+
+        cat(paste0("Discount function value (alpha) - treatment: ",
+            round(alpha_summ[1],4),
+            " (95% CI: ",round(alpha_summ[2],4), ", ",round(alpha_summ[3],4),
+            ")"))
+        cat("\n")
+      } else{
+        cat(paste0("Discount function value (alpha) - treatment: ",
+            round(median(posterior_treatment$alpha_discount),4)))
+        cat("\n")
+      }
+
       cat("\n")
       cat("Current treatment - augmented posterior summary:")
       cat("\n")
@@ -409,26 +492,48 @@ setMethod("summary", signature(object = "bdpsurvival"), function(object){
 
     if(!is.null(args1$S0_t)){
       cat(paste0("Stochastic comparison (p_hat) - treatment (current vs. historical data): ",
-                 round(posterior_treatment$p_hat,4)))
+                 round(median(posterior_treatment$p_hat),4)))
       cat("\n")
     }
 
     if(!is.null(args1$S0_c) & !is.null(args1$S_c)){
       cat(paste0("Stochastic comparison (p_hat) - control (current vs. historical data): ",
-                 round(posterior_control$p_hat,4)))
+                 round(median(posterior_control$p_hat),4)))
       cat("\n")
     }
 
     if(!is.null(args1$S0_t)){
-      cat(paste0("Discount function value (alpha) - treatment: ",
-                 round(posterior_treatment$alpha_discount,4)))
-      cat("\n")
+      if(method=="mc"){
+        alpha_summ <- quantile(posterior_treatment$alpha_discount,
+                               probs=c(0.5,0.025,0.975))
+
+        cat(paste0("Discount function value (alpha) - treatment: ",
+            round(alpha_summ[1],4),
+            " (95% CI: ",round(alpha_summ[2],4), ", ",round(alpha_summ[3],4),
+            ")"))
+        cat("\n")
+      } else{
+        cat(paste0("Discount function value (alpha) - treatment: ",
+            round(median(posterior_treatment$alpha_discount),4)))
+        cat("\n")
+      }
     }
 
     if(!is.null(args1$S0_c) & !is.null(args1$S_c)){
-      cat(paste0("Discount function value (alpha) - control: ",
-                 round(posterior_control$alpha_discount,4)))
-      cat("\n")
+      if(method=="mc"){
+        alpha_summ <- quantile(posterior_control$alpha_discount,
+                               probs=c(0.5,0.025,0.975))
+
+        cat(paste0("Discount function value (alpha) - control: ",
+            round(alpha_summ[1],4),
+            " (95% CI: ",round(alpha_summ[2],4), ", ",round(alpha_summ[3],4),
+            ")"))
+        cat("\n")
+      } else{
+        cat(paste0("Discount function value (alpha) - control: ",
+            round(median(posterior_control$alpha_discount),4)))
+        cat("\n")
+      }
     }
     cat("\n")
     print(summ_table)

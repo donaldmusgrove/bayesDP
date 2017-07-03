@@ -61,7 +61,8 @@ function. Default value is TRUE.}
 \item{method}{character. Analysis method with respect to estimation of the weight
 paramter alpha. Default value "\code{fixed}" estimates alpha once and holds it fixed
 throughout the analysis. Alternative method "\code{mc}" estimates alpha for each
-Monte Carlo iteration.}
+Monte Carlo iteration. See the the \code{bdpbinomial} vignette \cr
+\code{vignette("bdpbinomial-vignette", package="bayesDP")} for more details.}
 }
 \value{
 \code{bdpbinomial} returns an object of class "bdpbinomial". The
