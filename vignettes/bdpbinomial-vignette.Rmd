@@ -105,7 +105,11 @@ plot(fit01, type="discount")
 
 In both of the above plots, the x-axis is the stochastic comparison between current and historical data, which we've denoted $p$. The y-axis is the discount value $\hat{\alpha}$ that corresponds to a given value of $p$. 
 
-
+An advanced input for the plot function is `print`. The default value is `print = TRUE`, which simpy returns the graphics. Alternately, users can specify `print = FALSE`, which returns a `ggplot2` object. Below is an example using the discount function plot:
+```{r}
+p1 <- plot(fit01, type="discount", print=FALSE)
+p1 + ggtitle("Discount Function Plot :-)")
+```
 
 
 

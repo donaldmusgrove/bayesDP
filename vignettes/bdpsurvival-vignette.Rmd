@@ -168,6 +168,13 @@ plot(fit01, type="discount")
 ```
 In both of the above plots, the x-axis is the stochastic comparison between current and historical data, which we've denoted $p$. The y-axis is the discount value $\hat{\alpha}$ that corresponds to a given value of $p$. 
 
+
+```{r}
+p1 <- plot(fit01, type="discount", print=FALSE)
+p1 + ggtitle("Discount Function Plot :-)")
+```
+
+
 <!-- Many users may find the two-sided plot non-intuitive. Full weight is given to the historical data for values of `p_hat` between roughly 0,25 and 0.75. This is because a value of `p_hat=0.5` indicates that the current and historical are very similar. This interpretation is quite different than a traditional p-value where a large value is often used to indicate similarities. In our Bayesian setting, extreme values of 0 and 1 for `p_hat` both indicate that the current and historical data are different. -->
 
 
