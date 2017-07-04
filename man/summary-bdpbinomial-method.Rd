@@ -34,3 +34,4 @@ Displays a summary of the \code{bdpbinomial} fit including the
   event rates of the treatment and control arms, each of
   which are augmented when historical data are present.
 }
+
