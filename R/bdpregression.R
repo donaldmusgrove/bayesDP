@@ -190,6 +190,7 @@ setMethod("bdpregression",
            method                    = "fixed"){
 
 
+  intercept <- NULL
   ### Check validity of family input
   call <- match.call()
   if (is.character(family)) {
