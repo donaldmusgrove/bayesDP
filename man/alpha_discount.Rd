@@ -9,6 +9,8 @@ alpha_discount(p_hat = NULL, alpha_max = 1, weibull_scale = 0.135,
   weibull_shape = 3)
 }
 \arguments{
+\item{p_hat}{INSERT TEXT HERE}
+
 \item{alpha_max}{scalar. Maximum weight the discount function can apply.
 Default is 1. For a two-arm trial, users may specify a vector of two values
 where the first value is used to weight the historical treatment group and
@@ -27,8 +29,6 @@ value is 3. For a two-arm trial, users may specify a vector of two values
 where the first value is used to estimate the weight of the historical
 treatment group and the second value is used to estimate the weight of the
 historical control group.}
-
-\item{phat}{INSERT TEXT HERE}
 }
 \value{
 \code{alpha_discount} returns an object of class "alpha_discount".

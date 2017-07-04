@@ -158,7 +158,7 @@
 #'
 #' @rdname bdpbinomial
 #' @import methods
-#' @importFrom stats sd density is.empty.model median model.offset model.response pweibull quantile rbeta rgamma rnorm var vcov
+#' @importFrom stats sd density is.empty.model median model.offset model.response pweibull quantile rbeta rgamma rnorm var vcov pchisq
 #' @aliases bdpbinomial,ANY-method
 #' @export bdpbinomial
 bdpbinomial <- setClass("bdpbinomial",

@@ -10,7 +10,7 @@
 #' @importFrom ggplot2 ylab
 #' @title INSERT TEXT HERE
 #' @description \code{alpha_discount} INSERT TEXT HERE
-#' @param phat INSERT TEXT HERE
+#' @param p_hat INSERT TEXT HERE
 #' @param alpha_max scalar. Maximum weight the discount function can apply.
 #'   Default is 1. For a two-arm trial, users may specify a vector of two values
 #'   where the first value is used to weight the historical treatment group and
@@ -61,7 +61,7 @@
 #'
 #' @rdname alpha_discount
 #' @import methods
-#' @importFrom stats sd density is.empty.model median model.offset model.response pweibull quantile rbeta rgamma rnorm var vcov
+#' @importFrom stats sd density is.empty.model median model.offset model.response pweibull quantile rbeta rgamma rnorm var vcov pchisq
 #' @aliases alpha_discount,ANY-method
 #' @export alpha_discount
 alpha_discount <- setClass("alpha_discount", slots = c(args1 = "list"))

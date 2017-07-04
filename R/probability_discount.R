@@ -53,7 +53,7 @@
 #'
 #' @rdname probability_discount
 #' @import methods
-#' @importFrom stats sd density is.empty.model median model.offset model.response pweibull quantile rbeta rgamma rnorm var vcov
+#' @importFrom stats sd density is.empty.model median model.offset model.response pweibull quantile rbeta rgamma rnorm var vcov pchisq
 #' @aliases probability_discount,ANY-method
 #' @export probability_discount
 probability_discount <- setClass("probability_discount", slots = c(args1 = "list"))

@@ -206,7 +206,7 @@
 #'
 #' @rdname bdpsurvival
 #' @import methods
-#' @importFrom stats sd density is.empty.model median model.offset model.response pweibull quantile rbeta rgamma rnorm var vcov
+#' @importFrom stats sd density is.empty.model median model.offset model.response pweibull quantile rbeta rgamma rnorm var vcov pchisq
 #' @importFrom survival Surv survSplit
 #' @aliases bdpsurvival,ANY-method
 #' @export bdpsurvival
