@@ -189,8 +189,6 @@ setMethod("bdpregression",
            two_side                  = TRUE,
            method                    = "fixed"){
 
-
-  intercept <- NULL
   ### Check validity of family input
   call <- match.call()
   if (is.character(family)) {
@@ -477,6 +475,7 @@ posterior_regression <- function(df, family, alpha_max, fix_alpha, prior_mean,
 
   Y <- NULL
   historical <- NULL
+  intercept <- NULL
 
   ### Look for "historical" column, if missing, df_ <- df and df_0 <- NULL
   hist_missing <- is.na(match("historical", colnames(df)))
