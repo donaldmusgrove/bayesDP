@@ -2,7 +2,6 @@
 % Please edit documentation in R/alpha_discount.R
 \name{alpha_discount}
 \alias{alpha_discount}
-\alias{alpha_discount,ANY-method}
 \title{INSERT TEXT HERE}
 \usage{
 alpha_discount(p_hat = NULL, alpha_max = 1, weibull_scale = 0.135,

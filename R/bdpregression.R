@@ -148,7 +148,7 @@
 #' @aliases bdpregression,ANY-method
 #' @export bdpregression
 bdpregression <- setClass("bdpregression", slots = c(posterior_treatment = "list",
-                                                     f1 = "list",
+                                                     posterior_control = "list",
                                                      args1 = "list"))
 setGeneric("bdpregression",
   function(formula                   = formula,

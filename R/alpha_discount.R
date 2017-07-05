@@ -62,9 +62,8 @@
 #' @rdname alpha_discount
 #' @import methods
 #' @importFrom stats sd density is.empty.model median model.offset model.response pweibull quantile rbeta rgamma rnorm var vcov pchisq
-#' @aliases alpha_discount,ANY-method
 #' @export alpha_discount
-alpha_discount <- setClass("alpha_discount", slots = c(args1 = "list"))
+alpha_discount <- setClass("alpha_discount")
 
 setGeneric("alpha_discount",
            function(p_hat          = NULL,

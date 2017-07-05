@@ -2,7 +2,6 @@
 % Please edit documentation in R/probability_discount.R
 \name{probability_discount}
 \alias{probability_discount}
-\alias{probability_discount,ANY-method}
 \title{INSERT TEXT HERE}
 \usage{
 probability_discount(mu = NULL, sigma = NULL, N = NULL, mu0 = NULL,
