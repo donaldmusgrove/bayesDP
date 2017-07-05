@@ -2,6 +2,7 @@
 % Please edit documentation in R/probability_discount.R
 \name{probability_discount}
 \alias{probability_discount}
+\alias{probability_discount,ANY-method}
 \title{INSERT TEXT HERE}
 \usage{
 probability_discount(mu = NULL, sigma = NULL, N = NULL, mu0 = NULL,
@@ -56,11 +57,5 @@ Haddad, T., Himes, A., Thompson, L., Irony, T., Nair, R. MDIC Computer
   Modeling and Simulation working group.(2017) Incorporation of stochastic
   engineering models as prior information in Bayesian medical device trials.
   \emph{Journal of Biopharmaceutical Statistics}, 1-15.
-}
-\seealso{
-\code{\link[=summary,probability_discount-method]{summary}},
-  \code{\link[=print,probability_discount-method]{print}},
-  and \code{\link[=plot,probability_discount-method]{plot}} for details of each of the
-  supported methods.
 }
 

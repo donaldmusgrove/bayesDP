@@ -2,6 +2,7 @@
 % Please edit documentation in R/alpha_discount.R
 \name{alpha_discount}
 \alias{alpha_discount}
+\alias{alpha_discount,ANY-method}
 \title{INSERT TEXT HERE}
 \usage{
 alpha_discount(p_hat = NULL, alpha_max = 1, weibull_scale = 0.135,
@@ -60,11 +61,5 @@ Haddad, T., Himes, A., Thompson, L., Irony, T., Nair, R. MDIC Computer
   Modeling and Simulation working group.(2017) Incorporation of stochastic
   engineering models as prior information in Bayesian medical device trials.
   \emph{Journal of Biopharmaceutical Statistics}, 1-15.
-}
-\seealso{
-\code{\link[=summary,alpha_discount-method]{summary}},
-  \code{\link[=print,alpha_discount-method]{print}},
-  and \code{\link[=plot,alpha_discount-method]{plot}} for details of each of the
-  supported methods.
 }
 

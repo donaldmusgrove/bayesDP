@@ -37,11 +37,6 @@
 #'   }
 #' }
 #'
-#' @seealso \code{\link[=summary,probability_discount-method]{summary}},
-#'   \code{\link[=print,probability_discount-method]{print}},
-#'   and \code{\link[=plot,probability_discount-method]{plot}} for details of each of the
-#'   supported methods.
-#'
 #' @references
 #' Haddad, T., Himes, A., Thompson, L., Irony, T., Nair, R. MDIC Computer
 #'   Modeling and Simulation working group.(2017) Incorporation of stochastic
@@ -54,6 +49,7 @@
 #' @rdname probability_discount
 #' @import methods
 #' @importFrom stats sd density is.empty.model median model.offset model.response pweibull quantile rbeta rgamma rnorm var vcov pchisq
+#' @aliases probability_discount,ANY-method
 #' @export probability_discount
 probability_discount <- setClass("probability_discount")
 

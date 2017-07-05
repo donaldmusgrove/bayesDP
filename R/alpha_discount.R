@@ -45,11 +45,6 @@
 #'   }
 #' }
 #'
-#' @seealso \code{\link[=summary,alpha_discount-method]{summary}},
-#'   \code{\link[=print,alpha_discount-method]{print}},
-#'   and \code{\link[=plot,alpha_discount-method]{plot}} for details of each of the
-#'   supported methods.
-#'
 #' @references
 #' Haddad, T., Himes, A., Thompson, L., Irony, T., Nair, R. MDIC Computer
 #'   Modeling and Simulation working group.(2017) Incorporation of stochastic
@@ -62,11 +57,12 @@
 #' @rdname alpha_discount
 #' @import methods
 #' @importFrom stats sd density is.empty.model median model.offset model.response pweibull quantile rbeta rgamma rnorm var vcov pchisq
+#' @aliases alpha_discount,ANY-method
 #' @export alpha_discount
 alpha_discount <- setClass("alpha_discount")
 
 setGeneric("alpha_discount",
-           function(p_hat          = NULL,
+           function(p_hat         = NULL,
                     alpha_max     = 1,
                     weibull_scale = 0.135,
                     weibull_shape = 3){
@@ -75,7 +71,7 @@ setGeneric("alpha_discount",
 
 setMethod("alpha_discount",
           signature(),
-          function(p_hat          = NULL,
+          function(p_hat         = NULL,
                    alpha_max     = 1,
                    weibull_scale = 0.135,
                    weibull_shape = 3){
