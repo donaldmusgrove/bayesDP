@@ -157,23 +157,56 @@ the following components:
  Two-arm (RCT) analyses are not currently available with this release.
 }
 \examples{
-# One-arm trial (OPC) example
+# One-arm trial (OPC) example - linear regression
 # Simulate regression data for a single arm (OPC) trial
-#time   <- c(rexp(50, rate=1/20), rexp(50, rate=1/10))
-#status <- c(rexp(50, rate=1/30), rexp(50, rate=1/30))
-#status <- ifelse(time < status, 1, 0)
+set.seed(3408)
+historical <- c(rep(1,50),rep(0,50))
+x1         <- c(rnorm(50), rnorm(50))
+y          <- c(rnorm(50), rnorm(50)+0.2)
 
-# Collect data into a dataframe
-#example_surv_1arm <- data.frame(status     = status,
-#                               time       = time,
-#                                 historical = c(rep(1,50),rep(0,50)),
-#                                 treatment  = 1)
+fit1 <- bdpregression(y ~ x1 + historical)
+summary(fit1)
+print(fit1)
+plot(fit1, type="discount")
 
-#fitSurv <- bdpsurvival(Surv(time, status) ~ historical + treatment,
-#                        data = example_surv_1arm)
 
-#summary(fitSurv)
+# One-arm trial (OPC) example - logistic regression
+set.seed(3408)
+historical <- c(rep(1,100),rep(0,100))
+x1         <- c(rep(0,50), rep(1,50), rep(0,50), rep(1,50))
+y          <- rbinom(200,1,plogis(1 + 0.5*x1 + 0.1*historical))
+
+fit2 <- bdpregression(y ~ x1 + historical,
+                      family = binomial)
+print(fit2)
+
+
+# One-arm trial (OPC) example - Poisson regression
+set.seed(3408)
+historical <- c(rep(1,100),rep(0,100))
+x1         <- c(rep(0,50), rep(1,50), rep(0,50), rep(1,50))
+y          <- rpois(200,exp(1 + 0.5*x1 + 0.5*historical))
+
+fit3 <- bdpregression(y ~ x1 + historical,
+                      family = poisson)
+summary(fit3)
+
+# Refit the Poisson data ignoring historical
+fit4 <- bdpregression(y ~ x1, family = poisson)
+summary(fit4)
+
+
+# Place data in a dataframe and carry out linear regression
+set.seed(3408)
+df <- data.frame(historical = c(rep(1,50),rep(0,50)),
+                 x1         = c(rnorm(50), rnorm(50)),
+                 y          = c(rnorm(50), rnorm(50)+0.2))
+
+fit5 <- bdpregression(y ~ x1 + historical, data=df)
+summary(fit5)
+
+
+# Two-arm trials are not yet implemented.
 
 
 }
-

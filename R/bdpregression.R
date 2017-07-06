@@ -124,22 +124,56 @@
 #' }
 #'
 #' @examples
-#' # One-arm trial (OPC) example
+#' # One-arm trial (OPC) example - linear regression
 #' # Simulate regression data for a single arm (OPC) trial
-#' #time   <- c(rexp(50, rate=1/20), rexp(50, rate=1/10))
-#' #status <- c(rexp(50, rate=1/30), rexp(50, rate=1/30))
-#' #status <- ifelse(time < status, 1, 0)
+#' set.seed(3408)
+#' historical <- c(rep(1,50),rep(0,50))
+#' x1         <- c(rnorm(50), rnorm(50))
+#' y          <- c(rnorm(50), rnorm(50)+0.2)
 #'
-#' # Collect data into a dataframe
-#' #example_surv_1arm <- data.frame(status     = status,
-#' #                               time       = time,
-#' #                                 historical = c(rep(1,50),rep(0,50)),
-#' #                                 treatment  = 1)
+#' fit1 <- bdpregression(y ~ x1 + historical)
+#' summary(fit1)
+#' print(fit1)
+#' plot(fit1, type="discount")
 #'
-#' #fitSurv <- bdpsurvival(Surv(time, status) ~ historical + treatment,
-#' #                        data = example_surv_1arm)
 #'
-#' #summary(fitSurv)
+#' # One-arm trial (OPC) example - logistic regression
+#' set.seed(3408)
+#' historical <- c(rep(1,100),rep(0,100))
+#' x1         <- c(rep(0,50), rep(1,50), rep(0,50), rep(1,50))
+#' y          <- rbinom(200,1,plogis(1 + 0.5*x1 + 0.1*historical))
+#'
+#' fit2 <- bdpregression(y ~ x1 + historical,
+#'                       family = binomial)
+#' print(fit2)
+#'
+#'
+#' # One-arm trial (OPC) example - Poisson regression
+#' set.seed(3408)
+#' historical <- c(rep(1,100),rep(0,100))
+#' x1         <- c(rep(0,50), rep(1,50), rep(0,50), rep(1,50))
+#' y          <- rpois(200,exp(1 + 0.5*x1 + 0.5*historical))
+#'
+#' fit3 <- bdpregression(y ~ x1 + historical,
+#'                       family = poisson)
+#' summary(fit3)
+#'
+#' # Refit the Poisson data ignoring historical
+#' fit4 <- bdpregression(y ~ x1, family = poisson)
+#' summary(fit4)
+#'
+#'
+#' # Place data in a dataframe and carry out linear regression
+#' set.seed(3408)
+#' df <- data.frame(historical = c(rep(1,50),rep(0,50)),
+#'                  x1         = c(rnorm(50), rnorm(50)),
+#'                  y          = c(rnorm(50), rnorm(50)+0.2))
+#'
+#' fit5 <- bdpregression(y ~ x1 + historical, data=df)
+#' summary(fit5)
+#'
+#'
+#' # Two-arm trials are not yet implemented.
 #'
 #'
 #' @rdname bdpregression
@@ -494,8 +528,10 @@ posterior_regression <- function(df, family, alpha_max, fix_alpha, prior_mean,
     df_ <- NULL
   }
 
-  if(nrow(df_0) == 0){
-    df_0 <- NULL
+  if(!is.null(df_0)){
+    if(nrow(df_0) == 0){
+      df_0 <- NULL
+    }
   }
 
 
@@ -1235,35 +1271,51 @@ getQr <- function(x, ...){
 }
 
 
+mvrnorm <- function (n = 1, mu, Sigma, tol = 1e-06){
+  p <- length(mu)
+  if (!all(dim(Sigma) == c(p, p)))
+      stop("incompatible arguments")
+  eS <- eigen(Sigma, symmetric = TRUE)
+  ev <- eS$values
+  if (!all(ev >= -tol * abs(ev[1L])))
+      stop("'Sigma' is not positive definite")
+  X <- matrix(rnorm(p * n), n)
+  X <- drop(mu) + eS$vectors %*% diag(sqrt(pmax(ev, 0)), p) %*%
+      t(X)
+  nm <- names(mu)
+  if (is.null(nm) && !is.null(dn <- dimnames(Sigma)))
+      nm <- dn[[1L]]
+  dimnames(X) <- list(nm, NULL)
+  if (n == 1)
+      drop(X)
+  else t(X)
+}
+
+
+
 sim <- function(object, family=gaussian, n.sims=100){
 
   if(family$family == "gaussian"){
     coef      <- object$coef
-
     sigma.hat <- object$dispersion
     beta.hat  <- coef
-    V.beta    <- chol2inv(object$R)
-    eV        <- eigen(V.beta, symmetric = TRUE)
-    ev        <- eV$values
-
+    V.beta    <- summary(object)$cov.unscaled
     n         <- length(object$y)
     k         <- object$rank
 
     sigma <- rep (NA, n.sims)
     beta  <- array (NA, c(n.sims,k))
-    dimnames(beta) <- list (NULL, names(beta.hat))
+    dimnames(beta) <- list(NULL, names(beta.hat))
 
     for (s in 1:n.sims){
       sigma[s] <- sigma.hat*sqrt((n-k)/rchisq(1,n-k))
-      beta[s,] <- beta.hat + sigma[s]*eV$vectors %*% diag(sqrt(pmax(ev, 0)), k) %*% rnorm(k)
-      # Cholesky version, less stable:
-      # beta[s,] <- beta.hat + sigma[s]*V.beta%*%rnorm(k)
+      beta[s,] <- mvrnorm(1, beta.hat, V.beta*sigma[s]^2)
     }
 
     ans <- list(coef = beta, sigma = sigma)
     return(ans)
   } else{
-    summ      <- summary(object, correlation=TRUE, dispersion = object$dispersion)
+    summ      <- summary(object, correlation=TRUE, dispersion=object$dispersion)
     coef      <- summ$coef
     beta.hat  <- coef[,1,drop=FALSE]
     sd.beta   <- coef[,2,drop=FALSE]
@@ -1272,16 +1324,10 @@ sim <- function(object, family=gaussian, n.sims=100){
     k         <- summ$df[1]
     V.beta    <- corr.beta*array(sd.beta,c(k,k))*t(array(sd.beta,c(k,k)))
     beta      <- array (NA, c(n.sims,k))
-
-    R.beta    <- chol2inv(V.beta)
-    eR        <- eigen(R.beta, symmetric = TRUE)
-    er        <- eR$values
-
     dimnames(beta) <- list (NULL, dimnames(beta.hat)[[1]])
 
     for (s in 1:n.sims){
-      #beta[s,] <- MASS::mvrnorm(1, beta.hat, V.beta)
-      beta[s,] <- beta.hat + eR$vectors %*% diag(sqrt(pmax(er, 0)), k) %*% rnorm(k)
+      beta[s,] <- mvrnorm(1, beta.hat, V.beta)
     }
 
     beta2           <- array (0, c(n.sims,length(coefficients(object))))
