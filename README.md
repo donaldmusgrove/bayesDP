@@ -57,7 +57,3 @@ Shawn Balcome, Donnie Musgrove, Tarek Haddad and Christopher Jackson
 ### License
 
 GPL (&gt;= 3)
-
-:apple: :tangerine: :lemon: :cherries:
-[:watermelon:](http://codeology.braintreepayments.com/donaldmusgrove/bayesdp#)
-:strawberry: :peach: :pear: :green\_apple:
