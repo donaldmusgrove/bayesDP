@@ -3,13 +3,15 @@
 \name{alpha_discount}
 \alias{alpha_discount}
 \alias{alpha_discount,ANY-method}
-\title{INSERT TEXT HERE}
+\title{Bayesian Discount Prior: Historical Data Weight (alpha)}
 \usage{
 alpha_discount(p_hat = NULL, alpha_max = 1, weibull_scale = 0.135,
   weibull_shape = 3)
 }
 \arguments{
-\item{p_hat}{INSERT TEXT HERE}
+\item{p_hat}{scalar. The posterior probability of a stochastic comparison.
+This value can be the output of \code{posterior_probability} or a value
+between 0 and 1.}
 
 \item{alpha_max}{scalar. Maximum weight the discount function can apply.
 Default is 1. For a two-arm trial, users may specify a vector of two values
@@ -33,27 +35,29 @@ historical control group.}
 \value{
 \code{alpha_discount} returns an object of class "alpha_discount".
 
-An object of class \code{alpha_discount} is a list containing at least
-the following components:
+An object of class \code{alpha_discount} contains the following:
 \describe{
- \item{\code{posterior_treatment}}{
-   list. Entries contain values related to the data:}
-   \itemize{
-    INSERT TEXT HERE
+ \item{\code{alpha_hat}}{
+   scalar. The historical data weight.
   }
-}
+ }
 }
 \description{
-\code{alpha_discount} INSERT TEXT HERE
+\code{alpha_discount} can be used to estimate the weight
+  applied to historical data in the context of a one- or two-arm
+  clinical trial. \code{alpha_discount} is not used internally but is
+  given for educational purposes.
 }
 \details{
-\code{alpha_discount} INSERT TEXT HERE
-
-  For more details, see the \code{alpha_discount} vignette: \cr
-  \code{vignette("alpha_discount-vignette", package="bayesDP")}
+This function is not used internally but is given for educational purposes.
+  Given inputs \code{p_hat}, \code{alpha_max}, \code{weibull_shape}, and
+  \code{weibull_scale} the output is the weight that would be applied to
+  historical data in the context of a one- or two-arm clinical trial.
 }
 \examples{
-# INSERT EXAMPLE HERE
+alpha_discount(0.5)
+
+alpha_discount(0)
 
 }
 \references{

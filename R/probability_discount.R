@@ -8,8 +8,12 @@
 #' @importFrom ggplot2 theme_bw
 #' @importFrom ggplot2 xlab
 #' @importFrom ggplot2 ylab
-#' @title INSERT TEXT HERE
-#' @description \code{probability_discount} INSERT TEXT HERE
+#' @title Bayesian Discount Prior: Comparison Between Current and Historical Data
+#' @description \code{probability_discount} can be used to estimate the posterior
+#'   probability of the comparison between historical and current data in the
+#'   context of a one- or two-arm clinical trial with normal (mean) data.
+#'   \code{probability_discount} is not used internally but is
+#'   given for educational purposes.
 #' @param mu scalar. Mean of the current data.
 #' @param sigma scalar. Standard deviation of the current data.
 #' @param N scalar. Number of observations of the current data.
@@ -19,22 +23,18 @@
 #' @param number_mcmc scalar. Number of Monte Carlo simulations. Default is 10000.
 #' @param two_side logical. Indicator of two-sided test for the discount
 #'   function. Default value is TRUE.
-#' @details \code{probability_discount} INSERT TEXT HERE
-#'
-#'   For more details, see the \code{probability_discount} vignette: \cr
-#'   \code{vignette("probability_discount-vignette", package="bayesDP")}
-#'
+#' @details
+#'   This function is not used internally but is given for educational purposes.
+#'   Given the inputs,  the output is the posterior probability of the comparison
+#'   between current and historical data in the context of a one- or two-arm clinical
+#'   trial with normal (mean) data.
 #'
 #' @return \code{probability_discount} returns an object of class "probability_discount".
 #'
-#' An object of class \code{probability_discount} is a list containing at least
-#' the following components:
+#' An object of class \code{probability_discount} contains the following:
 #' \describe{
-#'  \item{\code{posterior_treatment}}{
-#'    list. Entries contain values related to the data:}
-#'    \itemize{
-#'     INSERT TEXT HERE
-#'   }
+#'  \item{\code{p_hat}}{
+#'    scalar. The posterior probability of the comparison historical data weight.}
 #' }
 #'
 #' @references
@@ -44,7 +44,8 @@
 #'   \emph{Journal of Biopharmaceutical Statistics}, 1-15.
 #'
 #' @examples
-#' # INSERT EXAMPLE HERE
+#' probability_discount(mu  = 0,   sigma = 1, N  = 100,
+#'                      mu0 = 0.1, sigma = 1, N0 = 100)
 #'
 #' @rdname probability_discount
 #' @import methods

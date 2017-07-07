@@ -3,7 +3,7 @@
 \name{probability_discount}
 \alias{probability_discount}
 \alias{probability_discount,ANY-method}
-\title{INSERT TEXT HERE}
+\title{Bayesian Discount Prior: Comparison Between Current and Historical Data}
 \usage{
 probability_discount(mu = NULL, sigma = NULL, N = NULL, mu0 = NULL,
   sigma0 = NULL, N0 = NULL, number_mcmc = 10000, two_side = TRUE)
@@ -29,27 +29,28 @@ function. Default value is TRUE.}
 \value{
 \code{probability_discount} returns an object of class "probability_discount".
 
-An object of class \code{probability_discount} is a list containing at least
-the following components:
+An object of class \code{probability_discount} contains the following:
 \describe{
- \item{\code{posterior_treatment}}{
-   list. Entries contain values related to the data:}
-   \itemize{
-    INSERT TEXT HERE
-  }
+ \item{\code{p_hat}}{
+   scalar. The posterior probability of the comparison historical data weight.}
 }
 }
 \description{
-\code{probability_discount} INSERT TEXT HERE
+\code{probability_discount} can be used to estimate the posterior
+  probability of the comparison between historical and current data in the
+  context of a one- or two-arm clinical trial with normal (mean) data.
+  \code{probability_discount} is not used internally but is
+  given for educational purposes.
 }
 \details{
-\code{probability_discount} INSERT TEXT HERE
-
-  For more details, see the \code{probability_discount} vignette: \cr
-  \code{vignette("probability_discount-vignette", package="bayesDP")}
+This function is not used internally but is given for educational purposes.
+  Given the inputs,  the output is the posterior probability of the comparison
+  between current and historical data in the context of a one- or two-arm clinical
+  trial with normal (mean) data.
 }
 \examples{
-# INSERT EXAMPLE HERE
+probability_discount(mu  = 0,   sigma = 1, N  = 100,
+                     mu0 = 0.1, sigma = 1, N0 = 100)
 
 }
 \references{

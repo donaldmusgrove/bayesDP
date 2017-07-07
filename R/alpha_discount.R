@@ -8,9 +8,14 @@
 #' @importFrom ggplot2 theme_bw
 #' @importFrom ggplot2 xlab
 #' @importFrom ggplot2 ylab
-#' @title INSERT TEXT HERE
-#' @description \code{alpha_discount} INSERT TEXT HERE
-#' @param p_hat INSERT TEXT HERE
+#' @title Bayesian Discount Prior: Historical Data Weight (alpha)
+#' @description \code{alpha_discount} can be used to estimate the weight
+#'   applied to historical data in the context of a one- or two-arm
+#'   clinical trial. \code{alpha_discount} is not used internally but is
+#'   given for educational purposes.
+#' @param p_hat scalar. The posterior probability of a stochastic comparison.
+#'   This value can be the output of \code{posterior_probability} or a value
+#'   between 0 and 1.
 #' @param alpha_max scalar. Maximum weight the discount function can apply.
 #'   Default is 1. For a two-arm trial, users may specify a vector of two values
 #'   where the first value is used to weight the historical treatment group and
@@ -27,23 +32,20 @@
 #'   where the first value is used to estimate the weight of the historical
 #'   treatment group and the second value is used to estimate the weight of the
 #'   historical control group.
-#' @details \code{alpha_discount} INSERT TEXT HERE
-#'
-#'   For more details, see the \code{alpha_discount} vignette: \cr
-#'   \code{vignette("alpha_discount-vignette", package="bayesDP")}
-#'
+#' @details
+#'   This function is not used internally but is given for educational purposes.
+#'   Given inputs \code{p_hat}, \code{alpha_max}, \code{weibull_shape}, and
+#'   \code{weibull_scale} the output is the weight that would be applied to
+#'   historical data in the context of a one- or two-arm clinical trial.
 #'
 #' @return \code{alpha_discount} returns an object of class "alpha_discount".
 #'
-#' An object of class \code{alpha_discount} is a list containing at least
-#' the following components:
+#' An object of class \code{alpha_discount} contains the following:
 #' \describe{
-#'  \item{\code{posterior_treatment}}{
-#'    list. Entries contain values related to the data:}
-#'    \itemize{
-#'     INSERT TEXT HERE
+#'  \item{\code{alpha_hat}}{
+#'    scalar. The historical data weight.
 #'   }
-#' }
+#'  }
 #'
 #' @references
 #' Haddad, T., Himes, A., Thompson, L., Irony, T., Nair, R. MDIC Computer
@@ -52,7 +54,9 @@
 #'   \emph{Journal of Biopharmaceutical Statistics}, 1-15.
 #'
 #' @examples
-#' # INSERT EXAMPLE HERE
+#' alpha_discount(0.5)
+#'
+#' alpha_discount(0)
 #'
 #' @rdname alpha_discount
 #' @import methods
