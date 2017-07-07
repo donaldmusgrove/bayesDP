@@ -84,7 +84,24 @@ where $w_{shape}$ and $w_{scale}$ are the shape and scale of the Weibull distrib
 
 There are several model inputs at this first stage. First, the user can select `fix_alpha=TRUE` and force a fixed value of $\hat{\alpha}$ (at the `alpha_max` input), as opposed to estimation via the discount function. Next, a Monte Carlo estimation approach is used, requiring several samples from the posterior distributions. Thus, the user can input a sample size greater than or less than the default value of `number_mcmc=10000`. Next, the Beta rate parameters can be changed from the defaults of $a_0=b_0=1$ (`a0` and `b0` inputs). Finally, the shape of the Weibull discount function can be altered by changing the Weibull shape and scale parameters from the default values of $w_{shape}=3$ and $w_{scale}=0.135$ (`weibull_shape` and `weibull_scale` inputs).
 
-With the historical data weight $\hat{\alpha}$ in hand, we can  move on to estimation of the posterior distribution of the current data.
+An alternate Monte Carlo-based estimation scheme of $\hat{\alpha}$ has been implemented, controlled by the function input `method="mc"`. Here, instead of treating $\hat{\alpha}$ as a fixed quantity, $\hat{\alpha}$ is treated as random. First, $p$, is computed as 
+
+$$ \begin{array}{rcl}
+v^2 & = & \displaystyle{\left(\frac{y+a_0-1}{\tilde{\theta}^2}+\frac{N-y+b_0-1}{\left(\tilde{\theta}-1\right)^2}\right)^{-1}} ,\\
+\\
+v^2_0 & = & \displaystyle{\left(\frac{y_0+a_0-1}{\theta^2_0}+\frac{N_0-y_0+b_0-1}{\left(\theta_0-1\right)^2}\right)^{-1}} ,\\
+\\
+Z & = & \displaystyle{\frac{\left(\tilde{\theta}-\theta_0\right)^2}{v^2 + v^2_0}} ,\\
+\\
+p &  =  & \chi^2_{Z,1},
+\end{array}
+$$
+where $\chi^2_{x,d}$ is the $x$th quantile of a chi-square distribution with $d$ degrees of freedom (the value $p$ is found via the `pchisq` R function using `lower.tail=FALSE`). Here, $v^2$ and $v^2_0$ are the variances of $\tilde{\theta}$ and $\theta_0$, respectively, derived via the Fisher information. Next, $p$ is used to construct $\hat{\alpha}$ using the one-sided analysis approach described above. Since the values $Z$ and $p$ are computed at each iteration of the Monte Carlo estimation scheme, $\hat{\alpha}$ is computed at each iteration of the Monte Carlo estimation scheme, resulting in a distribution of $\hat{\alpha}$ values.
+
+
+
+With the historical data weight (or weights) $\hat{\alpha}$ in hand, we can  move on to estimation of the posterior distribution of the current data.
+
 
 ### Discount function
 Throughout this vignette, we refer to a discount function. The discount function is a Weibull distribution function and has the form

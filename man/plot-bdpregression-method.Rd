@@ -25,4 +25,3 @@ it is possible to use \code{ggplot2} syntax to modify the plot appearance.}
 The \code{plot} method for \code{bdpregression} currently returns
   only the discount function. More plots will be implemented in a future release.
 }
-

@@ -34,4 +34,3 @@ Displays a summary of the \code{bdpnormal} fit including the
   mean of the treatment and control arms, each of
   which are augmented when historical data are present.
 }
-

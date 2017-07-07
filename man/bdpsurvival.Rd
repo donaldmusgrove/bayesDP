@@ -235,4 +235,3 @@ Haddad, T., Himes, A., Thompson, L., Irony, T., Nair, R. MDIC Computer
   and \code{\link[=plot,bdpsurvival-method]{plot}} for details of each of the
   supported methods.
 }
-
