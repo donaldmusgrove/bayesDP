@@ -1,3 +1,14 @@
+# bayesDP 1.2.0
+## Major new features
+* Supports one-arm regression analysis
+* Two additional modular functions
+* Implementation of Monte Carlo-based estimation of alpha discount
+
+## Bug fixes and minor improvements
+* Fixes to class slots
+* Added print input to plot method
+
+
 # bayesDP 1.1.0
 ## Major new features
 * Supports two-arm survival analysis via hazard rate comparisons
