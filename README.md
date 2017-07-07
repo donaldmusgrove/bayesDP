@@ -1,4 +1,4 @@
-<p align="center"><img src=https://raw.githubusercontent.com/balcomes/bayesDP/master/bayesDP-logo.png alt="bayesDP Logo" width="400" height="250"></p>
+<p align="center"><img src=https://raw.githubusercontent.com/donaldmusgrove/bayesDP/master/bayesDP-logo.png alt="bayesDP Logo" width="400" height="250"></p>
 
 # bayesDP
 
@@ -11,16 +11,16 @@ Shiny app available at:
 <https://mdic.shinyapps.io/bayesdp/>
 
 [![Travis-CI Build
-Status](https://travis-ci.org/balcomes/bayesDP.svg?branch=master)](https://travis-ci.org/balcomes/bayesDP)
+Status](https://travis-ci.org/donaldmusgrove/bayesDP.svg?branch=master)](https://travis-ci.org/donaldmusgrove/bayesDP)
 [![Issue
-Count](https://codeclimate.com/github/balcomes/bayesDP/badges/issue_count.svg)](https://codeclimate.com/github/balcomes/bayesDP)
+Count](https://codeclimate.com/github/donaldmusgrove/bayesDP/badges/issue_count.svg)](https://codeclimate.com/github/donaldmusgrove/bayesDP)
 [![Downloads](http://cranlogs.r-pkg.org/badges/bayesDP?color=brightgreen)](http://www.r-pkg.org/pkg/bayesDP)
 [![Project Status: Active ? The project has reached a stable, usable
 state and is being actively
 developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active)
 
 [![contributions
-welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/balcomes/bayesDP/issues)
+welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/donaldmusgrove/bayesDP/issues)
 [![License](https://img.shields.io/badge/license-GPL%20%28%3E=%203%29-brightgreen.svg?style=flat)](http://www.gnu.org/licenses/gpl-3.0.html)
 [![CRAN](http://www.r-pkg.org/badges/version/bayesDP)](https://cran.r-project.org/package=bayesDP)
 
@@ -39,7 +39,7 @@ Install release version from CRAN:
 
 Install development version from GitHub:
 
-    devtools::install_github("balcomes/bayesDP")
+    devtools::install_github("donaldmusgrove/bayesDP")
 
 ### Documentation
 
@@ -59,5 +59,5 @@ Shawn Balcome, Donnie Musgrove, Tarek Haddad and Christopher Jackson
 GPL (&gt;= 3)
 
 :apple: :tangerine: :lemon: :cherries:
-[:watermelon:](http://codeology.braintreepayments.com/balcomes/bayesdp#)
+[:watermelon:](http://codeology.braintreepayments.com/donaldmusgrove/bayesdp#)
 :strawberry: :peach: :pear: :green\_apple:
