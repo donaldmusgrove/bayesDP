@@ -50,7 +50,7 @@ This function is not used internally but is given for educational purposes.
 }
 \examples{
 probability_discount(mu  = 0,   sigma = 1, N  = 100,
-                     mu0 = 0.1, sigma = 1, N0 = 100)
+                     mu0 = 0.1, sigma0 = 1, N0 = 100)
 
 }
 \references{
