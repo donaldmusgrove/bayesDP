@@ -18,4 +18,3 @@
 Returns same output as a call to
 \code{\link[=summary,bdpbinomial-method]{summary}}.
 }
-

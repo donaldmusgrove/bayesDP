@@ -124,10 +124,8 @@
 #' }
 #'
 #' @examples
-#' \dontrun{
 #' # One-arm trial (OPC) example - linear regression
 #' # Simulate regression data for a single arm (OPC) trial
-#'
 #' set.seed(3408)
 #' historical <- c(rep(1,50),rep(0,50))
 #' x1         <- c(rnorm(50), rnorm(50))
@@ -139,6 +137,7 @@
 #' plot(fit1, type="discount")
 #'
 #'
+#' \dontrun{
 #' # One-arm trial (OPC) example - logistic regression
 #' set.seed(3408)
 #' historical <- c(rep(1,100),rep(0,100))
@@ -159,6 +158,7 @@
 #' fit3 <- bdpregression(y ~ x1 + historical,
 #'                       family = poisson)
 #' summary(fit3)
+#'
 #'
 #' # Refit the Poisson data ignoring historical
 #' fit4 <- bdpregression(y ~ x1, family = poisson)

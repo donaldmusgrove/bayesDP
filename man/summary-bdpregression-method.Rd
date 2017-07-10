@@ -22,4 +22,3 @@ Displays a summary of the \code{bdpregression} fit including the
 
   ...
 }
-
