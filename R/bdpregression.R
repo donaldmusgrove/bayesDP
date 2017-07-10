@@ -124,8 +124,10 @@
 #' }
 #'
 #' @examples
+#' \dontrun{
 #' # One-arm trial (OPC) example - linear regression
 #' # Simulate regression data for a single arm (OPC) trial
+#'
 #' set.seed(3408)
 #' historical <- c(rep(1,50),rep(0,50))
 #' x1         <- c(rnorm(50), rnorm(50))
@@ -174,7 +176,7 @@
 #'
 #'
 #' # Two-arm trials are not yet implemented.
-#'
+#' }
 #'
 #' @rdname bdpregression
 #' @import methods
