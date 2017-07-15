@@ -2,6 +2,7 @@
 
 export(alpha_discount)
 export(bdpbinomial)
+export(bdplm)
 export(bdpnormal)
 export(bdpregression)
 export(bdpsurvival)

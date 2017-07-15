@@ -6,6 +6,40 @@
 
 using namespace Rcpp;
 
+// sigma2marginal
+SEXP sigma2marginal(int n, const arma::vec& grid, const arma::mat& XtX, const arma::mat& SigmaBetaInv, const arma::mat& Xstar, const arma::vec& Xty, const arma::vec& mu0, const arma::vec& ystar);
+RcppExport SEXP bayesDP_sigma2marginal(SEXP nSEXP, SEXP gridSEXP, SEXP XtXSEXP, SEXP SigmaBetaInvSEXP, SEXP XstarSEXP, SEXP XtySEXP, SEXP mu0SEXP, SEXP ystarSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type n(nSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type grid(gridSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type XtX(XtXSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type SigmaBetaInv(SigmaBetaInvSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type Xstar(XstarSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type Xty(XtySEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type mu0(mu0SEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type ystar(ystarSEXP);
+    rcpp_result_gen = Rcpp::wrap(sigma2marginal(n, grid, XtX, SigmaBetaInv, Xstar, Xty, mu0, ystar));
+    return rcpp_result_gen;
+END_RCPP
+}
+// betaRegSampler
+arma::mat betaRegSampler(const arma::vec& sigma2, const arma::mat& XtX, const arma::mat& SigmaBetaInv, const arma::vec& mu0, const arma::vec& Xty, int nsamples);
+RcppExport SEXP bayesDP_betaRegSampler(SEXP sigma2SEXP, SEXP XtXSEXP, SEXP SigmaBetaInvSEXP, SEXP mu0SEXP, SEXP XtySEXP, SEXP nsamplesSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::vec& >::type sigma2(sigma2SEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type XtX(XtXSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type SigmaBetaInv(SigmaBetaInvSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type mu0(mu0SEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type Xty(XtySEXP);
+    Rcpp::traits::input_parameter< int >::type nsamples(nsamplesSEXP);
+    rcpp_result_gen = Rcpp::wrap(betaRegSampler(sigma2, XtX, SigmaBetaInv, mu0, Xty, nsamples));
+    return rcpp_result_gen;
+END_RCPP
+}
 // ppexpV
 double ppexpV(double q, const arma::vec& x, const arma::vec& cuts);
 RcppExport SEXP bayesDP_ppexpV(SEXP qSEXP, SEXP xSEXP, SEXP cutsSEXP) {
