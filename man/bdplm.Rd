@@ -8,8 +8,8 @@
 bdplm(formula = formula, data = data, prior_mean = 0, prior_sigma = 1,
   number_mcmc_alpha = 10000, number_mcmc_sigma2grid = 1000,
   number_mcmc_sigma2 = 100, number_mcmc_beta = 10000, alpha_max = 1,
-  fix_alpha = FALSE, number_mcmc = 10000, weibull_scale = 0.135,
-  weibull_shape = 3, two_side = TRUE, method = "fixed")
+  fix_alpha = FALSE, weibull_scale = 0.135, weibull_shape = 3,
+  method = "fixed")
 }
 \arguments{
 \item{formula}{an object of class "formula." See "Details" for

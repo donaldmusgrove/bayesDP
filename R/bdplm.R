@@ -134,10 +134,8 @@ setGeneric("bdplm",
            number_mcmc_beta          = 10000,
            alpha_max                 = 1,
            fix_alpha                 = FALSE,
-           number_mcmc               = 10000,
            weibull_scale             = 0.135,
            weibull_shape             = 3,
-           two_side                  = TRUE,
            method                    = "fixed"){
              standardGeneric("bdplm")
            })
@@ -154,10 +152,8 @@ setMethod("bdplm",
            number_mcmc_beta          = 10000,
            alpha_max                 = 1,
            fix_alpha                 = FALSE,
-           number_mcmc               = 10000,
            weibull_scale             = 0.135,
            weibull_shape             = 3,
-           two_side                  = TRUE,
            method                    = "fixed"){
 
   ### Check validity of family input
