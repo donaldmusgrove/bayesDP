@@ -6,8 +6,8 @@ using namespace arma;
 // sigma2marginal returns the marginal posterior value with respect to
 // a linear regression model evaluated at sigma2.
 
-double sigma2marginaluni(double sigma2, const arma::mat& XtX, 
-                      const arma::mat& SigmaBetaInv, const arma::mat& Xstar, 
+double sigma2marginaluni(double sigma2, const arma::mat& XtX,
+                      const arma::mat& SigmaBetaInv, const arma::mat& Xstar,
                       const arma::vec& Xty, const arma::vec& mu0,
                       const arma::vec& ystar) {
 
@@ -37,8 +37,8 @@ double sigma2marginaluni(double sigma2, const arma::mat& XtX,
   arma::vec eta = ystar - Xstar * beta_hat;
 
   // Compute the log-likelihood
-  l1 = -0.5 * (n-p) * log(sigma2) ;
-  l2 = 0.5 * log(det(Vbeta_inv));
+  l1 = -0.5 * (n+2) * log(sigma2) ;
+  l2 = -0.5 * log(det(Vbeta_inv));
   l3 = -0.5 * sum( eta%eta%SigmaStar );
 
   // Exponentiate the log-likelihood and add a small value to avoid underflow
@@ -50,13 +50,13 @@ double sigma2marginaluni(double sigma2, const arma::mat& XtX,
 
 // [[Rcpp::export]]
 SEXP sigma2marginal(int n, const arma::vec& grid,
-                            const arma::mat& XtX, 
-                            const arma::mat& SigmaBetaInv, 
-                            const arma::mat& Xstar, 
+                            const arma::mat& XtX,
+                            const arma::mat& SigmaBetaInv,
+                            const arma::mat& Xstar,
                             const arma::vec& Xty, const arma::vec& mu0,
                             const arma::vec& ystar) {
 
- 
+
   arma::vec sigma2Marginal = arma::zeros<arma::vec>(n);
 
   for (int i=0; i<n; i++){
@@ -74,23 +74,23 @@ arma::mat Rmvn(int n, const arma::vec& mu_,
                const arma::mat& Sigma_) {
 
   int p      = Sigma_.n_rows;
-  
+
   // Set-up matrix to fill with samples
   arma::mat beta(p,n);
-  
+
   //Choleskey decomp of Sigma_
   arma::mat L = trans(chol(Sigma_));
-  
+
   // Draw n multivariate standard normal samples
   for (int i=0; i<n; i++){
     beta.col(i) = mu_ + L*randn(p);
   }
-  
+
   return beta;
 }
 
 
-arma::mat betaRegSamplerUni(double sigma2, const arma::mat& XtX, 
+arma::mat betaRegSamplerUni(double sigma2, const arma::mat& XtX,
                     const arma::mat& SigmaBetaInv,
                     const arma::vec& mu0, const arma::vec& Xty,
                     int nsamples) {
@@ -101,22 +101,22 @@ arma::mat betaRegSamplerUni(double sigma2, const arma::mat& XtX,
   //Compute mean estimate of beta
   arma::vec betamean = SigmaBetaInv*mu0 + Xty/sigma2;
             betamean = Vbeta * betamean;
-  
+
   //Simulate beta from multivariate normal
   arma::mat beta = trans(Rmvn(nsamples,betamean, Vbeta));
 
   //Append sigma2 to the beta matrix
   arma::vec sigma2vec = arma::zeros<arma::vec>(nsamples);
             sigma2vec = sigma2vec + sigma2;
-  
+
   beta = join_rows(beta, sigma2vec);
-  
+
   return beta;
 }
 
 
 // [[Rcpp::export]]
-arma::mat betaRegSampler(const arma::vec& sigma2, const arma::mat& XtX, 
+arma::mat betaRegSampler(const arma::vec& sigma2, const arma::mat& XtX,
                     const arma::mat& SigmaBetaInv,
                     const arma::vec& mu0, const arma::vec& Xty,
                     int nsamples) {
@@ -125,13 +125,13 @@ arma::mat betaRegSampler(const arma::vec& sigma2, const arma::mat& XtX,
 
   arma::mat Beta;
   arma::mat Beta0;
-  
+
   for (int i=0; i<p; i++){
-    arma::mat Beta0 = betaRegSamplerUni(sigma2(i), XtX, SigmaBetaInv, mu0, 
+    arma::mat Beta0 = betaRegSamplerUni(sigma2(i), XtX, SigmaBetaInv, mu0,
                                         Xty, nsamples);
     Beta = join_cols(Beta, Beta0);
   }
-  
+
   return Beta;
 }
 
