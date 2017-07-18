@@ -358,8 +358,8 @@ setMethod("bdplm",
 
   ### Format estimates
   estimates <- list()
-  estimates$coefficients <- data.frame(t(colMeans(posterior)))
-  estimates$se           <- data.frame(t(apply(posterior,2,sd)))
+  estimates$coefficients <- data.frame(t(colMeans(beta_samples)))
+  estimates$se           <- data.frame(t(apply(beta_samples,2,sd)))
 
 
   me <- list(posterior      = beta_samples,
