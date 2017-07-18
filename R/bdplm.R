@@ -1,23 +1,25 @@
 #' @title Bayesian Discount Prior: Two-Arm Linear Regression
 #' @description \code{bdplm} is used to estimate the treatment effect
 #'   in the presence of covariates using the regression analysis
-#'   implementation of the Bayesian discount prior. This function is a barebones
-#'   implementation and does not support \code{summary}, \code{plot}, and
-#'   \code{print} methods.
+#'   implementation of the Bayesian discount prior. This function is a
+#'   barebones implementation and does not support \code{summary},
+#'   \code{plot}, and \code{print} methods.
 #' @param formula an object of class "formula." See "Details" for
 #'   more information, including specfication of historical and treatment
-#'   data status.
+#'   data indicators.
 #' @param data an optional data frame, list or environment
 #'   (or object coercible by as.data.frame to a data frame)
 #'   containing the variables in the model. If not found in data,
 #'   the variables are taken from environment(formula), typically
-#'   the environment from which bdpregression is called.
-#' @param prior_mean historical mean for the coefficients; default is 0.
-#'   Can be a vector of length equal to the number of covariates.
-#'   If it is a scalar, it is expanded to the length of this vector.
-#' @param prior_sigma prior standard deviation for the coefficients:
-#'   default is 1. Can be a vector of length equal to the number of covariates.
-#'   If it is a scalar, it is expanded to the length of this vector.
+#'   the environment from which bdplm is called.
+#' @param prior_mean historical mean for the coefficients, specified as a
+#'   a vector. The length of \code{prior_mean} must be equal to the number
+#'   of adjusting covariates + 2 (ignore the intercept in this case). See
+#'   "Details" for more information.
+#' @param prior_sigma prior standard deviation for the coefficient, specified
+#'   as a vector. The length of \code{prior_sigma} must be equal to the number
+#'   of adjusting covariates + 2 (ignore the intercept in this case). See
+#'   "Details" for more information.
 #' @param alpha_max scalar. Maximum weight the discount function can apply.
 #'   Default is 1. Users may specify a vector of two values where the first
 #'   value is used to weight the historical treatment group and
@@ -25,10 +27,10 @@
 #' @param fix_alpha logical. Fix alpha at alpha_max? Default value is FALSE.
 #' @param number_mcmc_alpha scalar. Number of Monte Carlo
 #'   simulations for estimating the historical data weight. Default is 10000.
-#' @param number_mcmc_sigma2grid scalar. Grid size for computing sigma2.
+#' @param number_mcmc_sigmagrid scalar. Grid size for computing sigma.
 #'   Default is 1000. See "Details" for more information.
-#' @param number_mcmc_sigma2 scalar. Number of Monte Carlo simulations for
-#'   estimating sigma2. Default is 1000. See "Details" for more information.
+#' @param number_mcmc_sigma scalar. Number of Monte Carlo simulations for
+#'   estimating sigma. Default is 1000. See "Details" for more information.
 #' @param number_mcmc_beta scalar. Number of Monte Carlo simulations for
 #'   estimating beta, the vector of regression coefficients. Default is 10000.
 #' @param weibull_shape scalar. Shape parameter of the Weibull discount function
@@ -43,14 +45,14 @@
 #'   values where the first value is used to estimate the weight of the
 #'   historical treatment group and the second value is used to estimate the
 #'   weight of the historical control group.
-#' @param method character. Analysis method with respect to estimation of the weight
-#'   paramter alpha. Default value "\code{fixed}" estimates alpha once and holds it fixed
-#'   throughout the analysis. Alternative method "\code{mc}" estimates alpha for each
-#'   Monte Carlo iteration. Currently, only the default method "\code{fixed}" is
-#'   supported.
+#' @param method character. Analysis method with respect to estimation of the
+#'   weight paramter alpha. Default value "\code{fixed}" estimates alpha once
+#'   and holds it fixed throughout the analysis. Alternative method
+#'   "\code{mc}" estimates alpha for each Monte Carlo iteration. Currently, only
+#'   the default method "\code{fixed}" is supported.
 #' @details \code{bdplm} uses a two-stage approach for determining the
-#'   strength of historical data in estimation of an adjusted mean or covariate effect.
-#'   In the first stage, a Weibull distribution function is used as a
+#'   strength of historical data in estimation of an adjusted mean or covariate
+#'   effect. In the first stage, a Weibull distribution function is used as a
 #'   \emph{discount function} that defines the maximum strength of the
 #'   historical data (via \code{weibull_shape}, \code{weibull_scale}, and
 #'   \code{alpha_max}) and discounts based on disagreement with the current data.
@@ -67,51 +69,46 @@
 #'   estimation procedures.
 #'
 #'   At minimum, the formula/data must include an intercept and each of historical
-#'   and treatment columns. Any covariates can be included as well. Examplue usage
-#'   that includes the intercept be default could be:
-#'   \code{y ~ hisorical+treatment+baseline}
+#'   and treatment columns. Any covariates can be included as well. Example usage
+#'   that includes the intercept by default could be:
+#'   \code{y ~ hisorical+treatment+baseline}.
 #'
 #'   In this implementation, current and historical data must be present for both
-#'   treatment and control groups.
+#'   treatment and control groups. The covariate prior parameters \code{prior_mean}
+#'   and \code{prior_sigma} must be input as a vector with elements in the order
+#'   given by the formula.
 #'
 #' @return \code{bdplm} returns an object of class "bdplm".
-#'   The functions \code{summary} and \code{print} are used to obtain and
-#'   print a summary of the results, including user inputs. The \code{plot}
-#'   function displays visual outputs as well.
 #'
 #' An object of class "\code{bdplm}" is a list containing at least
 #' the following components:
 #' \describe{
 #'    \itemize{
+#'      \item{\code{posterior}}{
+#'        data frame. The posterior draws of the covariates, the intercept, and
+#'        the treatment effect. The grid of sigma values are included.}
 #'      \item{\code{alpha_discount}}{
-#'        numeric. Alpha value, the weighting parameter of the historical data.}
-#'      \item{\code{p_hat}}{
 #'        numeric. The posterior probability of the stochastic comparison
 #'        between the current and historical data.}
-#'      \item{\code{posterior_regression}}{
-#'        list. Contains results for the augmented regression analysis. Entries
-#'        are similar to the output of \code{glm} and \code{bayesglm} (from the
-#'         \code{arm} package).}
-#'      \item{\code{posterior_flat_regression}}{
-#'        list. Contains entries similar to \code{posterior_regression} corresponding
-#'        to estimates of the unweighted current data.}
-#'      \item{\code{prior_regression}}{
-#`        list. Contains entries similar to \code{posterior_regression} corresponding
-#'        to estimates of the historical data.}
 #'    }
 #' }
 #'
 #' @examples
-#' # Simulate regression data
-#' set.seed(3408)
-#' historical <- c(rep(1,50),rep(0,50))
-#' x1         <- c(rnorm(50), rnorm(50))
-#' y          <- c(rnorm(50), rnorm(50)+0.2)
+#' # Simulate  data
+#' n_t  <- 100
+#' n_c  <- 100
+#' n_t0 <- 250
+#' n_c0 <- 250
+#' x          <- rnorm(n_t+n_c+n_t0+n_c0, 34, 5)
+#' treatment  <- c(rep(1, n_t+n_t0), rep(0, n_c+n_c0))
+#' historical <- c(rep(0, n_t), rep(1,n_t0), rep(0, n_c), rep(1,n_c0))
 #'
-#' fit1 <- bdpregression(y ~ x1 + historical)
-#' summary(fit1)
-#' print(fit1)
-#' plot(fit1, type="discount")
+#' Y <- treatment + 1000*historical + x*3.5 + rnorm(n_t+n_c+n_t0+n_c0)
+#' df <- data.frame(Y=Y, treatment=treatment, historical=historical, x=x)
+#'
+#' fit <- bdplm(Y ~ treatment+historical+x, data=df,
+#'              prior_mean  = rep(0,3),
+#'              prior_sigma = rep(1e4,3))
 #'
 #'
 #' @rdname bdplm
@@ -129,8 +126,8 @@ setGeneric("bdplm",
            prior_mean                = 0,
            prior_sigma               = 1,
            number_mcmc_alpha         = 10000,
-           number_mcmc_sigma2grid    = 1000,
-           number_mcmc_sigma2        = 100,
+           number_mcmc_sigmagrid     = 1000,
+           number_mcmc_sigma         = 100,
            number_mcmc_beta          = 10000,
            alpha_max                 = 1,
            fix_alpha                 = FALSE,
@@ -147,8 +144,8 @@ setMethod("bdplm",
            prior_mean                = 0,
            prior_sigma               = 1,
            number_mcmc_alpha         = 10000,
-           number_mcmc_sigma2grid    = 1000,
-           number_mcmc_sigma2        = 100,
+           number_mcmc_sigmagrid     = 1000,
+           number_mcmc_sigma         = 100,
            number_mcmc_beta          = 10000,
            alpha_max                 = 1,
            fix_alpha                 = FALSE,
@@ -315,10 +312,10 @@ setMethod("bdplm",
   lower <- 1/qgamma(.9999999999,a/2,(a*b)/2)
   upper <- 1/qgamma(.0000000001,a/2,(a*b)/2)
 
-  grid_sigma2 <- seq(lower,upper,length.out=number_mcmc_sigma2grid)
+  grid_sigma2 <- seq(lower,upper,length.out=number_mcmc_sigmagrid)
 
   ### Sample candidate values of sigma2
-  sigma2candidates <- sigma2marginal(n           = number_mcmc_sigma2grid,
+  sigma2candidates <- sigma2marginal(n           = number_mcmc_sigmagrid,
                                     grid         = grid_sigma2,
                                     XtX          = XtX,
                                     SigmaBetaInv = SigmaBetaInv,
@@ -335,28 +332,39 @@ setMethod("bdplm",
 
   ### Sample with replacement from marginal posterior density of sigma2
   sigma2_accept <- sample(x       = sigma2candidates$sigma2,
-                          size    = number_mcmc_sigma2,
+                          size    = number_mcmc_sigma,
                           replace = TRUE,
                           prob    = L)
 
 
   ### Draw samples of the covariate vector beta
   ### n_beta_samples is ceiling(number_mcmc_beta/number_mcmc_sigma2)
-  n_beta_samples <- ceiling(number_mcmc_beta/number_mcmc_sigma2)
+  n_beta_samples <- ceiling(number_mcmc_beta/number_mcmc_sigma)
 
   beta_samples <- betaRegSampler(sigma2_accept, XtX, SigmaBetaInv, mu0,
                                  Xty, n_beta_samples)
 
   beta_samples <- data.frame(beta_samples)
-  names(beta_samples) <- c("treatment", "control", covs_df, "sigma2")
+  names(beta_samples) <- c("treatment", "control", covs_df, "sigma")
 
   ### Estimate posterior of intercept and treatment effect
   beta_samples$intercept <- beta_samples$control
   beta_samples$treatment <- beta_samples$treatment-beta_samples$control
+  beta_samples$sigma     <- sqrt(beta_samples$sigma)
+
+  ### Format alpha_discount values
+  alpha_discount <- data.frame(treatment = discount_treatment$alpha_discount,
+                               control   = discount_control$alpha_discount)
+
+  ### Format estimates
+  estimates <- list()
+  estimates$coefficients <- data.frame(t(colMeans(posterior)))
+  estimates$se           <- data.frame(t(apply(posterior,2,sd)))
 
 
-  me <- list(beta   = beta_samples,
-       alpha0 = alpha0)
+  me <- list(posterior      = beta_samples,
+             alpha_discount = alpha_discount,
+             estimates      = estimates)
 
   class(me) <- "bdplm"
   return(me)

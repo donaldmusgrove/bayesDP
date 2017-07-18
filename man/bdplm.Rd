@@ -6,8 +6,8 @@
 \title{Bayesian Discount Prior: Two-Arm Linear Regression}
 \usage{
 bdplm(formula = formula, data = data, prior_mean = 0, prior_sigma = 1,
-  number_mcmc_alpha = 10000, number_mcmc_sigma2grid = 1000,
-  number_mcmc_sigma2 = 100, number_mcmc_beta = 10000, alpha_max = 1,
+  number_mcmc_alpha = 10000, number_mcmc_sigmagrid = 1000,
+  number_mcmc_sigma = 100, number_mcmc_beta = 10000, alpha_max = 1,
   fix_alpha = FALSE, weibull_scale = 0.135, weibull_shape = 3,
   method = "fixed")
 }
@@ -20,24 +20,26 @@ data status.}
 (or object coercible by as.data.frame to a data frame)
 containing the variables in the model. If not found in data,
 the variables are taken from environment(formula), typically
-the environment from which bdpregression is called.}
+the environment from which bdplm is called.}
 
-\item{prior_mean}{historical mean for the coefficients; default is 0.
-Can be a vector of length equal to the number of covariates.
-If it is a scalar, it is expanded to the length of this vector.}
+\item{prior_mean}{historical mean for the coefficients, specified as a
+a vector. The length of \code{prior_mean} must be equal to the number
+of adjusting covariates + 2 (ignore the intercept in this case). See
+"Details" for more information.}
 
-\item{prior_sigma}{prior standard deviation for the coefficients:
-default is 1. Can be a vector of length equal to the number of covariates.
-If it is a scalar, it is expanded to the length of this vector.}
+\item{prior_sigma}{prior standard deviation for the coefficient, specified
+as a vector. The length of \code{prior_sigma} must be equal to the number
+of adjusting covariates + 2 (ignore the intercept in this case). See
+"Details" for more information.}
 
 \item{number_mcmc_alpha}{scalar. Number of Monte Carlo
 simulations for estimating the historical data weight. Default is 10000.}
 
-\item{number_mcmc_sigma2grid}{scalar. Grid size for computing sigma2.
+\item{number_mcmc_sigmagrid}{scalar. Grid size for computing sigma.
 Default is 1000. See "Details" for more information.}
 
-\item{number_mcmc_sigma2}{scalar. Number of Monte Carlo simulations for
-estimating sigma2. Default is 1000. See "Details" for more information.}
+\item{number_mcmc_sigma}{scalar. Number of Monte Carlo simulations for
+estimating sigma. Default is 1000. See "Details" for more information.}
 
 \item{number_mcmc_beta}{scalar. Number of Monte Carlo simulations for
 estimating beta, the vector of regression coefficients. Default is 10000.}
@@ -63,50 +65,38 @@ where the first value is used to estimate the weight of the historical
 treatment group and the second value is used to estimate the weight of the
 historical control group.}
 
-\item{method}{character. Analysis method with respect to estimation of the weight
-paramter alpha. Default value "\code{fixed}" estimates alpha once and holds it fixed
-throughout the analysis. Alternative method "\code{mc}" estimates alpha for each
-Monte Carlo iteration. Currently, only the default method "\code{fixed}" is
-supported.}
+\item{method}{character. Analysis method with respect to estimation of the
+weight paramter alpha. Default value "\code{fixed}" estimates alpha once
+and holds it fixed throughout the analysis. Alternative method
+"\code{mc}" estimates alpha for each Monte Carlo iteration. Currently, only
+the default method "\code{fixed}" is supported.}
 }
 \value{
 \code{bdplm} returns an object of class "bdplm".
-  The functions \code{summary} and \code{print} are used to obtain and
-  print a summary of the results, including user inputs. The \code{plot}
-  function displays visual outputs as well.
 
 An object of class "\code{bdplm}" is a list containing at least
 the following components:
 \describe{
    \itemize{
-     \item{\code{alpha_discount}}{
+     \item{\code{posterior}}{
        numeric. Alpha value, the weighting parameter of the historical data.}
-     \item{\code{p_hat}}{
+     \item{\code{alpha_discount}}{
        numeric. The posterior probability of the stochastic comparison
        between the current and historical data.}
-     \item{\code{posterior_regression}}{
-       list. Contains results for the augmented regression analysis. Entries
-       are similar to the output of \code{glm} and \code{bayesglm} (from the
-        \code{arm} package).}
-     \item{\code{posterior_flat_regression}}{
-       list. Contains entries similar to \code{posterior_regression} corresponding
-       to estimates of the unweighted current data.}
-     \item{\code{prior_regression}}{
-       to estimates of the historical data.}
    }
 }
 }
 \description{
 \code{bdplm} is used to estimate the treatment effect
   in the presence of covariates using the regression analysis
-  implementation of the Bayesian discount prior. This function is a barebones
-  implementation and does not support \code{summary}, \code{plot}, and
-  \code{print} methods.
+  implementation of the Bayesian discount prior. This function is a
+  barebones implementation and does not support \code{summary},
+  \code{plot}, and \code{print} methods.
 }
 \details{
 \code{bdplm} uses a two-stage approach for determining the
-  strength of historical data in estimation of an adjusted mean or covariate effect.
-  In the first stage, a Weibull distribution function is used as a
+  strength of historical data in estimation of an adjusted mean or covariate
+  effect. In the first stage, a Weibull distribution function is used as a
   \emph{discount function} that defines the maximum strength of the
   historical data (via \code{weibull_shape}, \code{weibull_scale}, and
   \code{alpha_max}) and discounts based on disagreement with the current data.
@@ -123,24 +113,31 @@ the following components:
   estimation procedures.
 
   At minimum, the formula/data must include an intercept and each of historical
-  and treatment columns. Any covariates can be included as well. Examplue usage
-  that includes the intercept be default could be:
-  \code{y ~ hisorical+treatment+baseline}
+  and treatment columns. Any covariates can be included as well. Example usage
+  that includes the intercept by default could be:
+  \code{y ~ hisorical+treatment+baseline}.
 
   In this implementation, current and historical data must be present for both
-  treatment and control groups.
+  treatment and control groups. The covariate prior parameters \code{prior_mean}
+  and \code{prior_sigma} must be input as vector in the order given in the formula.
 }
 \examples{
-# Simulate regression data
-set.seed(3408)
-historical <- c(rep(1,50),rep(0,50))
-x1         <- c(rnorm(50), rnorm(50))
-y          <- c(rnorm(50), rnorm(50)+0.2)
+# Simulate  data
 
-fit1 <- bdpregression(y ~ x1 + historical)
-summary(fit1)
-print(fit1)
-plot(fit1, type="discount")
+n_t  <- 100
+n_c  <- 100
+n_t0 <- 250
+n_c0 <- 250
+x          <- rnorm(n_t+n_c+n_t0+n_c0, 34, 5)
+treatment  <- c(rep(1, n_t+n_t0), rep(0, n_c+n_c0))
+historical <- c(rep(0, n_t), rep(1,n_t0), rep(0, n_c), rep(1,n_c0))
+
+Y <- treatment + 1000*historical + x*3.5 + rnorm(n_t+n_c+n_t0+n_c0)
+df <- data.frame(Y=Y, treatment=treatment, historical=historical, x=x)
+
+fit <- bdplm(Y ~ treatment+historical+x, data=df,
+             prior_mean  = rep(0,3),
+             prior_sigma = rep(1e4,3))
 
 
 }
