@@ -14,7 +14,7 @@ bdplm(formula = formula, data = data, prior_mean = 0, prior_sigma = 1,
 \arguments{
 \item{formula}{an object of class "formula." See "Details" for
 more information, including specfication of historical and treatment
-data status.}
+data indicators.}
 
 \item{data}{an optional data frame, list or environment
 (or object coercible by as.data.frame to a data frame)
@@ -79,7 +79,8 @@ the following components:
 \describe{
    \itemize{
      \item{\code{posterior}}{
-       numeric. Alpha value, the weighting parameter of the historical data.}
+       data frame. The posterior draws of the covariates, the intercept, and
+       the treatment effect. The grid of sigma values are included.}
      \item{\code{alpha_discount}}{
        numeric. The posterior probability of the stochastic comparison
        between the current and historical data.}
@@ -119,11 +120,11 @@ the following components:
 
   In this implementation, current and historical data must be present for both
   treatment and control groups. The covariate prior parameters \code{prior_mean}
-  and \code{prior_sigma} must be input as vector in the order given in the formula.
+  and \code{prior_sigma} must be input as a vector with elements in the order
+  given by the formula.
 }
 \examples{
 # Simulate  data
-
 n_t  <- 100
 n_c  <- 100
 n_t0 <- 250
@@ -141,3 +142,4 @@ fit <- bdplm(Y ~ treatment+historical+x, data=df,
 
 
 }
+

@@ -26,3 +26,4 @@ Displays a print of the \code{bdpsurvival} fit. The output
   When a control arm is present, the output is the same as a call to
   \code{\link[=summary,bdpsurvival-method]{summary}}.
 }
+

@@ -17,3 +17,4 @@
 \details{
 Returns a print of the model with output similar to \code{\link{lm}}.
 }
+

@@ -28,6 +28,10 @@ plot(fit02, type="discount")
 plot(fit01, type="discount")
 
 ## ------------------------------------------------------------------------
+p1 <- plot(fit01, type="discount", print=FALSE)
+p1 + ggtitle("Discount Function Plot :-)")
+
+## ------------------------------------------------------------------------
 set.seed(42)
 fit1 <- bdpnormal(mu_t      = 30,
                   sigma_t   = 10,
