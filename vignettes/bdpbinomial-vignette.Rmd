@@ -188,7 +188,7 @@ summary(fit1a)
 
 When `alpha` is not constrained to one, it is estimated based on a comparison between the current and historical data. We see that the stochastic comparison, `p_hat`, between historical and control is 0.9762. Here, `p_hat` is the posterior probability that the current event rate is less than the historical event rate under vague priors. With the present example, `p_hat = 0.9762` implies that the current and historical event rates are very different. The result is that the weight given to the historical data is shrunk towards zero. Thus, the estimate of `alpha` from the discount function is 0.0061, essentially zero, and the augmented posterior estimate of the event rate is approximately the event rate of 0.05 observed in the current data.
 
-Many of the the values presented in the `summary` method are accessible from the fit object. For instance, `alpha` is found in `fit1a$posterior_treatment$alpha_discount` and `p_hat` is located at `fit1a$posterior_treatment$p_hat`. The augmented probability of success and confidence interval are computed at run-time. The results can be replicated as:
+Many of the the values presented in the `summary` method are accessible from the fit object. For instance, `alpha` is found in `fit1a$posterior_treatment$alpha_discount` and `p_hat` is located at `fit1a$posterior_treatment$p_hat`. The augmented probability of success and CI are computed at run-time. The results can be replicated as:
 ```{r}
 mean_augmented <- round(median(fit1a$posterior_treatment$posterior),4)
 CI95_augmented <- round(quantile(fit1a$posterior_treatment$posterior, prob=c(0.025, 0.975)),4)
@@ -226,7 +226,7 @@ summary(fit2)
 
 The `summary` method of a two-arm analysis is slightly different than a one-arm analysis. First, we see `p_hat` and `alpha` reported for the control data. In the present analysis, the current and historical control data have event rates that are very close, thus the historical control data is given full weight. This implies that the (augmented) posterior control event rate is approximately `(15 + 20)/(200 + 250) = 0.08`. Again, little weight is given to the historical treatment data, so we have an (augmented) posterior treatment event rate of approximately 0.05.
 
-The confidence interval is computed at run time and is the interval estimate of the difference between the posterior treatment and control event rates. With a 95% confidence interval of `(-0.0628, 0.0161)`, we would conclude that the treatment and control arms are not significantly different.
+The CI is computed at run time and is the interval estimate of the difference between the posterior treatment and control event rates. With a 95% CI of `(-0.0628, 0.0161)`, we would conclude that the treatment and control arms are not significantly different.
 
 The `plot` method of a two-arm analysis is slightly different than a one-arm analysis as well:
 ```{r}

@@ -321,7 +321,7 @@ print(fit1a)
 Now, the median survival probability shifts upwards towards the historical data.
 
 
-Many of the the values presented in the `summary` and `print` methods are accessible from the fit object. For instance, `alpha` is found in `fit1a$posterior_treatment$alpha_discount` and `p_hat` is located at `fit1a$posterior_treatment$p_hat`. The augmented survival probability and confidence interval are computed at run-time. The results can be replicated as:
+Many of the the values presented in the `summary` and `print` methods are accessible from the fit object. For instance, `alpha` is found in `fit1a$posterior_treatment$alpha_discount` and `p_hat` is located at `fit1a$posterior_treatment$p_hat`. The augmented survival probability and CI are computed at run-time. The results can be replicated as:
 ```{r}
 survival_time_posterior_flat <- ppexp(5,
                                       fit1a$posterior_treatment$posterior_hazard,

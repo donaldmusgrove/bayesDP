@@ -21,16 +21,16 @@ Displays a summary of the \code{bdpbinomial} fit including the
   data is missing then no stochastic comparison nor weight are displayed.
 
   In the case of a one-arm analysis, the displayed 95 percent
-  confidence interval contains the lower and upper limits of the
+  CI contains the lower and upper limits of the
   augmented event rate of the current data. The displayed
   \code{probability of success} is the event rate of the current data
   augmented by the historical data.
 
   When a control arm is present, a two-arm analysis is carried out.
-  Now, the displayed 95 percent confidence interval contains the
+  Now, the displayed 95 percent CI contains the
   lower and upper limits of the difference between the treatment and
   control arms with the historical data augmented to current data, if
-  present. The displayed augmented sample estimates are the
+  present. The displayed posterior sample estimates are the
   event rates of the treatment and control arms, each of
   which are augmented when historical data are present.
 }

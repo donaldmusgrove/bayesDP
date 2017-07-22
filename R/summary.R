@@ -9,16 +9,16 @@
 #'   data is missing then no stochastic comparison nor weight are displayed.
 #'
 #'   In the case of a one-arm analysis, the displayed 95 percent
-#'   confidence interval contains the lower and upper limits of the
+#'   CI contains the lower and upper limits of the
 #'   augmented mean value of the current data. The displayed
 #'   \code{mean of treatment group} is the mean of the current data
 #'   augmented by the historical data.
 #'
 #'   When a control arm is present, a two-arm analysis is carried out.
-#'   Now, the displayed 95 percent confidence interval contains the
+#'   Now, the displayed 95 percent CI contains the
 #'   lower and upper limits of the difference between the treatment and
 #'   control arms with the historical data augmented to current data, if
-#'   present. The displayed augmented sample estimates are the
+#'   present. The displayed posterior sample estimates are the
 #'   mean of the treatment and control arms, each of
 #'   which are augmented when historical data are present.
 #'
@@ -78,10 +78,10 @@ setMethod("summary", signature(object = "bdpnormal"), function(object){
         cat("\n")
       }
     }
-    cat("95 percent confidence interval: \n")
+    cat("95 percent CI: \n")
     cat(paste0(" ",mean_CI_t))
     cat("\n")
-    cat("augmented sample estimate:\n")
+    cat("posterior sample estimate:\n")
     cat("mean of treatment group\n")
     cat(paste0(" ",mean_est_t))
     cat("\n")
@@ -157,10 +157,10 @@ setMethod("summary", signature(object = "bdpnormal"), function(object){
     cat("alternative hypothesis: ", ifelse(two_side, "two.sided", "one.sided"))
     cat("\n")
 
-    cat("95 percent confidence interval: \n")
+    cat("95 percent CI: \n")
     cat(paste0(" ",comp_CI))
     cat("\n")
-    cat("augmented sample estimates:\n")
+    cat("posterior sample estimates:\n")
     cat("treatment group  control group\n")
     cat(paste0("          ", mean_est_t, "          ", mean_est_c))
     cat("\n")
@@ -180,16 +180,16 @@ setMethod("summary", signature(object = "bdpnormal"), function(object){
 #'   data is missing then no stochastic comparison nor weight are displayed.
 #'
 #'   In the case of a one-arm analysis, the displayed 95 percent
-#'   confidence interval contains the lower and upper limits of the
+#'   CI contains the lower and upper limits of the
 #'   augmented event rate of the current data. The displayed
 #'   \code{probability of success} is the event rate of the current data
 #'   augmented by the historical data.
 #'
 #'   When a control arm is present, a two-arm analysis is carried out.
-#'   Now, the displayed 95 percent confidence interval contains the
+#'   Now, the displayed 95 percent CI contains the
 #'   lower and upper limits of the difference between the treatment and
 #'   control arms with the historical data augmented to current data, if
-#'   present. The displayed augmented sample estimates are the
+#'   present. The displayed posterior sample estimates are the
 #'   event rates of the treatment and control arms, each of
 #'   which are augmented when historical data are present.
 #'
@@ -245,11 +245,11 @@ setMethod("summary", signature(object = "bdpbinomial"), function(object){
         cat("\n")
       }
     }
-    cat("95 percent confidence interval: \n")
+    cat("95 percent CI: \n")
     cat(paste0(" ",mean_CI_t))
     cat("\n")
     if(!is.null(N0_t)){
-      cat("augmented sample estimate:\n")
+      cat("posterior sample estimate:\n")
     } else{
       cat("sample estimates:\n")
     }
@@ -332,10 +332,10 @@ setMethod("summary", signature(object = "bdpbinomial"), function(object){
 
     cat("alternative hypothesis: ", ifelse(two_side, "two.sided", "one.sided"))
     cat("\n")
-    cat("95 percent confidence interval:\n")
+    cat("95 percent CI:\n")
     cat(paste0(" "), comp_CI)
     cat("\n")
-    cat("augmented sample estimates:\n")
+    cat("posterior sample estimates:\n")
     cat("prop 1 prop2\n")
     cat(paste0("  ", mean_est_t, "  ", mean_est_c))
 

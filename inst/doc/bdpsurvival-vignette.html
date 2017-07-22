@@ -348,7 +348,7 @@ fit1a &lt;-<span class="st"> </span><span class="kw">bdpsurvival</span>(<span cl
 ##   n events surv_time median lower 95% CI upper 95% CI
 ##  50     50         5 0.6831       0.5958       0.7592</code></pre>
 <p>Now, the median survival probability shifts upwards towards the historical data.</p>
-<p>Many of the the values presented in the <code>summary</code> and <code>print</code> methods are accessible from the fit object. For instance, <code>alpha</code> is found in <code>fit1a$posterior_treatment$alpha_discount</code> and <code>p_hat</code> is located at <code>fit1a$posterior_treatment$p_hat</code>. The augmented survival probability and confidence interval are computed at run-time. The results can be replicated as:</p>
+<p>Many of the the values presented in the <code>summary</code> and <code>print</code> methods are accessible from the fit object. For instance, <code>alpha</code> is found in <code>fit1a$posterior_treatment$alpha_discount</code> and <code>p_hat</code> is located at <code>fit1a$posterior_treatment$p_hat</code>. The augmented survival probability and CI are computed at run-time. The results can be replicated as:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">survival_time_posterior_flat &lt;-<span class="st"> </span><span class="kw">ppexp</span>(<span class="dv">5</span>,
                                       fit1a$posterior_treatment$posterior_hazard,
                                       <span class="dt">cuts=</span><span class="kw">c</span>(<span class="dv">0</span>,fit1a$args1$breaks))

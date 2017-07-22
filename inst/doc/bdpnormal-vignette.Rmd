@@ -196,7 +196,7 @@ summary(fit1a)
 
 When `alpha` is not constrained to one, it is estimated based on a comparison between the current and historical data. We see that the stochastic comparison, `p_hat`, between historical and control is 1. Here, `p_hat` is the posterior probability that the current sample mean is less than the historical sample mean under vague priors. With the present example, `p_hat = 1` implies that the current and historical sample means are very different. The result is that the weight given to the historical data is shrunk towards zero. Thus, the estimate of `alpha` from the discount function is 0 and the augmented posterior estimate of the mean is approximately the mean of the current data.
 
-Many of the the values presented in the `summary` method are accessible from the fit object. For instance, `alpha` is found in `fit1a$posterior_treatment$alpha_discount` and `p_hat` is located at `fit1a$posterior_treatment$p_hat`. The augmented mean and confidence interval are computed at run-time. The results can be replicated as:
+Many of the the values presented in the `summary` method are accessible from the fit object. For instance, `alpha` is found in `fit1a$posterior_treatment$alpha_discount` and `p_hat` is located at `fit1a$posterior_treatment$p_hat`. The augmented mean and CI are computed at run-time. The results can be replicated as:
 ```{r}
 mean_augmented <- round(median(fit1a$posterior_treatment$posterior_mu),4)
 CI95_augmented <- round(quantile(fit1a$posterior_treatment$posterior_mu, prob=c(0.025, 0.975)),4)
@@ -239,7 +239,7 @@ summary(fit2)
 
 The `summary` method of a two-arm analysis is slightly different than a one-arm analysis. First, we see `p_hat` and `alpha` reported for the control data. In the present analysis, the current and historical control data have sample means that are very close, thus the historical control data is given full weight. Again, little weight is given to the historical treatment data.
 
-The confidence interval is computed at run time and is the interval estimate of the difference between the posterior means of the treatment and control groups. With a 95% confidence interval of `(3.6263, 6.3496)`, we would conclude that the treatment and control arms are not significantly different.
+The CI is computed at run time and is the interval estimate of the difference between the posterior means of the treatment and control groups. With a 95% CI of `(3.6263, 6.3496)`, we would conclude that the treatment and control arms are not significantly different.
 
 The `plot` method of a two-arm analysis is slightly different than a one-arm analysis as well:
 ```{r}
