@@ -142,4 +142,3 @@ fit <- bdplm(Y ~ treatment+historical+x, data=df,
 
 
 }
-

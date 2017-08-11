@@ -34,4 +34,3 @@ Displays a summary of the \code{bdpsurvival} fit. The output
   and control arms (log(treatment) - log(control)). The lower and upper
   95 percent interval limits correspond to the \code{coef} value.
 }
-

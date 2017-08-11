@@ -44,6 +44,13 @@
 #'   throughout the analysis. Alternative method "\code{mc}" estimates alpha for each
 #'   Monte Carlo iteration. See the the \code{bdpsurvival} vignette \cr
 #'   \code{vignette("bdpsurvival-vignette", package="bayesDP")} for more details.
+#' @param compare logical. Should a comparison object be included in the fit?
+#'   For a one-sided analysis, the comparison object is simply the posterior
+#'   chain of the treatment group parameter. For a two-sided analysis, the comparison
+#'   object is the posterior chain of the treatment effect that compares treatment and
+#'   control. If \code{compare=TRUE}, the comparison object is accessible in the
+#'   \code{final} slot, else the \code{final} slot is \code{NULL}. Default is
+#'   \code{TRUE}.
 #' @details \code{bdpsurvival} uses a two-stage approach for determining the
 #'   strength of historical data in estimation of a survival probability outcome.
 #'   In the first stage, a Weibull distribution function is used as a
@@ -131,6 +138,16 @@
 #'  \item{\code{posterior_control}}{
 #'    list. If two-arm trial, contains values related to the control group
 #'    analagous to the \code{posterior_treatment} output.}
+#'
+#'  \item{\code{final}}{
+#'    list. Contains the final comparison object, dependent on the analysis type:}
+#'    \itemize{
+#'      \item{One-arm analysis:}{
+#'        vector. Posterior chain of survival probability at requested time.}
+#'      \item{Two-arm analysis:}{
+#'        vector. Posterior chain of log-hazard rate comparing treatment and control groups.}
+#'   }
+#'
 #'  \item{\code{args1}}{
 #'    list. Entries contain user inputs. In addition, the following elements
 #'    are ouput:}
@@ -226,7 +243,8 @@ setGeneric("bdpsurvival",
            weibull_scale = 0.135,
            weibull_shape = 3,
            two_side      = TRUE,
-           method        = "fixed"){
+           method        = "fixed",
+           compare       = TRUE){
              standardGeneric("bdpsurvival")
            })
 
@@ -244,7 +262,8 @@ setMethod("bdpsurvival",
            weibull_scale = 0.135,
            weibull_shape = 3,
            two_side      = TRUE,
-           method        = "fixed"){
+           method        = "fixed",
+           compare       = TRUE){
 
   ### Check data frame and ensure it has the correct column names
   namesData <- tolower(names(data))
@@ -409,8 +428,29 @@ setMethod("bdpsurvival",
                 breaks        = breaks,
                 data          = data)
 
+
+  ##############################################################################
+  ### Create final (comparison) object
+  ##############################################################################
+  if(!compare){
+    final <- NULL
+  } else{
+    if(arm2){
+      R0      <- log(posterior_treatment$posterior_hazard)-log(posterior_control$posterior_hazard)
+      V0      <- 1/apply(R0,2,var)
+      logHR0  <- R0%*%V0/sum(V0)
+      final   <- list()
+      final$posterior_loghazard <- logHR0
+    } else{
+      final                    <- list()
+      final$posterior_survival <- posterior_treatment$posterior_survival
+    }
+  }
+
+
   me <- list(posterior_treatment = posterior_treatment,
              posterior_control   = posterior_control,
+             final               = final,
              args1               = args1)
 
   class(me) <- "bdpsurvival"
