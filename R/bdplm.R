@@ -3,23 +3,31 @@
 #'   in the presence of covariates using the regression analysis
 #'   implementation of the Bayesian discount prior. This function is a
 #'   barebones implementation and does not support \code{summary},
-#'   \code{plot}, and \code{print} methods.
+#'   \code{plot}, or \code{print} methods.
 #' @param formula an object of class "formula." See "Details" for
-#'   more information, including specfication of historical and treatment
+#'   more information, including specification of treatment
 #'   data indicators.
-#' @param data an optional data frame, list or environment
-#'   (or object coercible by as.data.frame to a data frame)
-#'   containing the variables in the model. If not found in data,
-#'   the variables are taken from environment(formula), typically
-#'   the environment from which bdplm is called.
-#' @param prior_mean historical mean for the coefficients, specified as a
-#'   a vector. The length of \code{prior_mean} must be equal to the number
-#'   of adjusting covariates + 2 (ignore the intercept in this case). See
-#'   "Details" for more information.
-#' @param prior_sigma prior standard deviation for the coefficient, specified
-#'   as a vector. The length of \code{prior_sigma} must be equal to the number
-#'   of adjusting covariates + 2 (ignore the intercept in this case). See
-#'   "Details" for more information.
+#' @param data a data frame containing the current data variables in the model.
+#' @param data0 a data frame containing the historical data variables in the model.
+#'   The column labels of data and data0 must match.
+#' @param prior_treatment_effect scalar. The historical adjusted treatment effect.
+#'   Default value is 0.
+#' @param prior_control_effect scalar. The historical adjusted control effect.
+#'   Default value is 0.
+#' @param prior_treatment_sd scalar. The standard deviation of the historical
+#'   adjusted treatment effect. Default value is 10000.
+#' @param prior_control_sd scalar. The standard deviation of the historical
+#'   adjusted control effect. Default value is 10000.
+#' @param prior_covariate_effect vector. The prior mean(s) of the covariate
+#'   effect(s). Default value is zero. If a single value is input, the
+#'   the scalar is repeated to the length of the input covariates. Otherwise,
+#'   care must be taken to ensure the length of the input matche the number of
+#'   covariates.
+#' @param prior_covariate_sd vector. The prior standard deviation(s) of the
+#'   covariate effect(s). Default value is 1e4. If a single value is input, the
+#'   the scalar is repeated to the length of the input covariates. Otherwise,
+#'   care must be taken to ensure the length of the input matches the number of
+#'   covariates.
 #' @param alpha_max scalar. Maximum weight the discount function can apply.
 #'   Default is 1. Users may specify a vector of two values where the first
 #'   value is used to weight the historical treatment group and
@@ -68,15 +76,21 @@
 #'   function parameter, \code{alpha}, is used as a fixed value for all posterior
 #'   estimation procedures.
 #'
-#'   At minimum, the formula/data must include an intercept and each of historical
-#'   and treatment columns. Any covariates can be included as well. Example usage
-#'   that includes the intercept by default could be:
-#'   \code{y ~ hisorical+treatment+baseline}.
+#'   The formula must include an intercept and both data and data0 must be present.
+#'   The column names of data and data0 must match. See \code{examples} below for
+#'   example usage.
 #'
-#'   In this implementation, current and historical data must be present for both
-#'   treatment and control groups. The covariate prior parameters \code{prior_mean}
-#'   and \code{prior_sigma} must be input as a vector with elements in the order
-#'   given by the formula.
+#'   The underlying model results in a marginal posterior distribution for the error
+#'   variance \code{sigma2} that does not have a known distribution. Thus, we use
+#'   a grid search to draw samples of \code{sigma2}. First, the marginal posterior
+#'   is evaluated at a grid of \code{number_mcmc_sigmagrid} \code{sigma2} values.
+#'   The bounds of the grid are taken as approximately six standard deviations
+#'   from an estimate of \code{sigma2} using the \code{lm} function.
+#'   Next, \code{number_mcmc_sigma} posterior draws of \code{sigma2} are made by
+#'   sampling with replacement from the grid with each value having the
+#'   corresponding marginal posterior probability of being selected. With posterior
+#'   draws of \code{sigma2} in hand, we can make posterior draws of the regression
+#'   coefficients.
 #'
 #' @return \code{bdplm} returns an object of class "bdplm".
 #'
@@ -95,21 +109,23 @@
 #'
 #' @examples
 #' # Simulate  data
-#' n_t  <- 100
-#' n_c  <- 100
-#' n_t0 <- 250
-#' n_c0 <- 250
+#' n_t  <- 25
+#' n_c  <- 25
+#' n_t0 <- 50
+#' n_c0 <- 50
 #' x          <- rnorm(n_t+n_c+n_t0+n_c0, 34, 5)
+#'
 #' treatment  <- c(rep(1, n_t+n_t0), rep(0, n_c+n_c0))
 #' historical <- c(rep(0, n_t), rep(1,n_t0), rep(0, n_c), rep(1,n_c0))
 #'
-#' Y <- treatment + 1000*historical + x*3.5 + rnorm(n_t+n_c+n_t0+n_c0)
+#' Y  <- treatment + 0*historical + x*3.5 + rnorm(n_t+n_c+n_t0+n_c0,0,0.1)
 #' df <- data.frame(Y=Y, treatment=treatment, historical=historical, x=x)
 #'
-#' fit <- bdplm(Y ~ treatment+historical+x, data=df,
-#'              prior_mean  = rep(0,3),
-#'              prior_sigma = rep(1e4,3))
+#' df_  <- subset(df, historical==0)
+#' df_0 <- subset(df, historical==1)
 #'
+#' fit <- bdplm(formula=Y ~ treatment+x,
+#'              data=df_, data0=df_0)
 #'
 #' @rdname bdplm
 #' @import methods
@@ -123,8 +139,13 @@ bdplm <- setClass("bdplm", slots = c(posterior_treatment = "list",
 setGeneric("bdplm",
   function(formula                   = formula,
            data                      = data,
-           prior_mean                = 0,
-           prior_sigma               = 1,
+           data0                     = NULL,
+           prior_treatment_effect    = 0,
+           prior_control_effect      = 0,
+           prior_treatment_sd        = 1e4,
+           prior_control_sd          = 1e4,
+           prior_covariate_effect    = 0,
+           prior_covariate_sd        = 1e4,
            number_mcmc_alpha         = 10000,
            number_mcmc_sigmagrid     = 1000,
            number_mcmc_sigma         = 100,
@@ -141,8 +162,13 @@ setMethod("bdplm",
   signature(),
   function(formula                   = formula,
            data                      = data,
-           prior_mean                = 0,
-           prior_sigma               = 1,
+           data0                     = NULL,
+           prior_treatment_effect    = 0,
+           prior_control_effect      = 0,
+           prior_treatment_sd        = 1e4,
+           prior_control_sd          = 1e4,
+           prior_covariate_effect    = 0,
+           prior_covariate_sd        = 1e4,
            number_mcmc_alpha         = 10000,
            number_mcmc_sigmagrid     = 1000,
            number_mcmc_sigma         = 100,
@@ -153,11 +179,14 @@ setMethod("bdplm",
            weibull_shape             = 3,
            method                    = "fixed"){
 
-  ### Check validity of family input
+  ### Check validity of data input
   call <- match.call()
-  ### Pull data from the environment if data input is missing
   if (missing(data)) {
-    data <- environment(formula)
+    stop("Current data not input correctly.")
+  }
+
+  if (is.null(data0)) {
+    stop("Historical data not input correctly.")
   }
 
   ### Check method
@@ -165,9 +194,9 @@ setMethod("bdplm",
     stop("Only method = 'fixed' is currently supported.")
   }
 
-  ### Place data into X and Y objects
-  mf <- match.call(expand.dots = FALSE)
-  m  <- match(c("formula", "data", "offset"), names(mf), 0L)
+  ### Parse current data
+  mf <- mf0 <- match.call(expand.dots = FALSE)
+  m  <- match(c("formula", "data"), names(mf), 0L)
   mf <- mf[c(1L, m)]
   mf$na.action <- NULL
   mf[[1L]] <- quote(stats::model.frame)
@@ -193,31 +222,76 @@ setMethod("bdplm",
   imatch <- match("(Intercept)", colnames(X))
   if(!is.na(imatch)) colnames(X)[imatch] <- "intercept"
 
-  ### Assign one-arm or two-arm analysis. Check validity of inputs.
   # Create indicator of whether each column is present
-  cmatch <- match(c("intercept", "historical", "treatment") , colnames(X))
+  cmatch <- match(c("intercept","treatment") , colnames(X))
   cmatch <- !is.na(cmatch)  ### == TRUE == present
 
   if(!all(cmatch)){
-    stop("Data is input incorrectly. Intercept, historical, and treatment must all be present.")
+    stop("Current data is input incorrectly. Intercept and treatment must be present.")
   }
-
-
-  ### Count levels of historical data and ensure 0 and 1 are present
-  hist_levels <- levels(as.factor(X[,"historical"]))
-
-  # Check that the historical levels are 0 and 1
-  if(!(all(hist_levels %in% c(0,1)))){
-    stop("Historical input has wrong levels. Values should be 0 and 1.")
-  }
-
 
   ### Count levels of treatment data and sure 0 and 1 are present
   trt_levels <- levels(as.factor(X[,"treatment"]))
 
-  # Check that the levels are 0 and/or 1
   if(!(all(trt_levels %in% c(0,1)))){
     stop("Treatment input has wrong levels. Values should be 0 and 1.")
+  }
+
+  ### Parse historical data
+  if(missing(data0)){
+    stop("Historical data is required.")
+  } else{
+    m00 <- match("data0", names(mf0), 0L)
+    m01 <- match("data", names(mf0), 0L)
+    mf0[m01] <- mf0[m00]
+    m0  <- match(c("formula", "data"), names(mf0), 0L)
+    mf0 <- mf0[c(1L, m0)]
+    mf0$na.action <- NULL
+    mf0[[1L]] <- quote(stats::model.frame)
+    mf0 <- eval(mf0, parent.frame())
+    mt0 <- attr(mf0, "terms")
+    Y0 <- model.response(mf0, "any")
+    if (length(dim(Y0)) == 1L) {
+      nm0 <- rownames(Y0)
+      dim(Y0) <- NULL
+      if (!is.null(nm0)) {
+        names(Y0) <- nm0
+      }
+    }
+
+    X0 <- if (!is.empty.model(mt0)) {
+      model.matrixBayes(object = mt0, data = data0, contrasts.arg = NULL,
+                        keep.order = TRUE, drop.baseline = TRUE)
+    } else {
+      matrix(, NROW(Y0), 0L)
+    }
+
+    ### Alter intercept column name, if present
+    imatch <- match("(Intercept)", colnames(X0))
+    if(!is.na(imatch)) colnames(X0)[imatch] <- "intercept"
+
+    # Create indicator of whether each column is present
+    cmatch <- match(c("intercept","treatment") , colnames(X0))
+    cmatch <- !is.na(cmatch)  ### == TRUE == present
+
+    if(!all(cmatch)){
+      stop("Historical data is input incorrectly. Intercept and treatment must be present.")
+    }
+
+    cnames  <- colnames(X)
+    cnames0 <- colnames(X0)
+    if(!all(cnames==cnames0)){
+      stop("Column names in the historical data must match the current data.")
+    }
+
+    ### Count levels of treatment data and ensure 0 and 1 are present
+    trt_levels0 <- levels(as.factor(X0[,"treatment"]))
+
+    # Check that the levels are 0 and/or 1
+    if(!(all(trt_levels0 %in% c(0,1)))){
+      stop("Treatment input has wrong levels. Values should be 0 and 1.")
+    }
+
   }
 
 
@@ -241,11 +315,15 @@ setMethod("bdplm",
     weibull_shape <- rep(weibull_shape, 2)
   }
 
+
   ##############################################################################
   # Format input data
   ##############################################################################
   ### Create a master dataframe
-  df <- data.frame(Y=Y, data.frame(X))
+  df  <- data.frame(Y=Y, data.frame(X), historical=0)
+  df0 <- data.frame(Y=Y0, data.frame(X0), historical=1)
+
+  df <- rbind(df, df0)
 
   ### Split data into separate treatment & control dataframes
   df_t <- subset(df, treatment == 1)
@@ -256,7 +334,7 @@ setMethod("bdplm",
 
   ### Count number of covariates
   names_df <- names(df)
-  covs_df  <- names_df[!(names_df %in% c("Y", "treatment", "historical", "intercept"))]
+  covs_df  <- names_df[!(names_df %in% c("Y", "intercept", "treatment", "historical"))]
   n_covs   <- length(covs_df)
 
 
@@ -279,16 +357,50 @@ setMethod("bdplm",
 
 
   ##############################################################################
+  # Estimate historical data effects to use as the prior for the current data
+  # - Not implemented
+  ##############################################################################
+  # if(is.null(prior_treatment_effect)){
+  #
+  #   cnames0 <- names(df0)
+  #   cnames0 <- cnames0[!(cnames0 %in% c("Y", "intercept", "historical","treatment"))]
+  #   cnames0 <- c("treatment", cnames0)
+  #   f0      <- paste0("Y~",paste0(cnames0,collapse="+"))
+  #
+  #   fit_0   <- lm(f0, data=df0)
+  #   summ_0  <- summary(fit_0)
+  #
+  #   prior_treatment_effect <- summ_0$coef[2,1]
+  #   prior_control_effect   <- summ_0$coef[1,1]
+  #   prior_treatment_sd     <- summ_0$coef[2,2]
+  #   prior_control_sd       <- summ_0$coef[1,2]
+  # }
+
+
+  ### Prior covariate effects
+  if(length(prior_covariate_effect) == 1){
+    prior_covariate_effect <- rep(prior_covariate_effect,n_covs)
+  }
+
+  if(length(prior_covariate_sd) == 1){
+    prior_covariate_sd <- rep(prior_covariate_sd,n_covs)
+  }
+
+
+
+  ##############################################################################
   # Estimate augmented treatment effect
   ##############################################################################
   ### Compute prior terms
-  tau2   <- prior_sigma^2
-  mu0    <- prior_mean
+  tau2   <- c(prior_control_sd, prior_treatment_sd, prior_covariate_sd)^2
+  mu0    <- c(prior_control_effect, prior_treatment_effect, prior_covariate_effect)
+
 
   ### Extract alpha0, append "zero" weight for the covariate effect(s)
-  alpha0 <- c(discount_treatment$alpha_discount + 1e-12,
-              discount_control$alpha_discount + 1e-12,
+  alpha0 <- c(discount_control$alpha_discount + 1e-12,
+              discount_treatment$alpha_discount + 1e-12,
               rep(1e-12, n_covs))
+
 
   ### Calculate constants from current data
   df_current$control <- 1-df_current$treatment
@@ -301,6 +413,7 @@ setMethod("bdplm",
   XtX   <- t(X)%*%X
   Xty   <- t(X)%*%y
   SigmaBetaInv <- diag(alpha0/tau2)
+
 
   ### Grid search of sigma2
   ### - Find grid limits via wls
@@ -330,6 +443,7 @@ setMethod("bdplm",
   normL <- logL[which.min(abs(logL))]
   L     <- exp(logL - normL)
 
+
   ### Sample with replacement from marginal posterior density of sigma2
   sigma2_accept <- sample(x       = sigma2candidates$sigma2,
                           size    = number_mcmc_sigma,
@@ -347,6 +461,7 @@ setMethod("bdplm",
   beta_samples <- data.frame(beta_samples)
   names(beta_samples) <- c("treatment", "control", covs_df, "sigma")
 
+
   ### Estimate posterior of intercept and treatment effect
   beta_samples$intercept <- beta_samples$control
   beta_samples$treatment <- beta_samples$treatment-beta_samples$control
@@ -359,7 +474,9 @@ setMethod("bdplm",
   ### Format estimates
   estimates <- list()
   estimates$coefficients <- data.frame(t(colMeans(beta_samples)))
+  estimates$coefficients <- estimates$coefficients[c("intercept", "treatment", covs_df, "sigma")]
   estimates$se           <- data.frame(t(apply(beta_samples,2,sd)))
+  estimates$se           <- estimates$se[c("intercept", "treatment", covs_df, "sigma")]
 
 
   me <- list(posterior      = beta_samples,

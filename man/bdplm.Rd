@@ -5,7 +5,10 @@
 \alias{bdplm,ANY-method}
 \title{Bayesian Discount Prior: Two-Arm Linear Regression}
 \usage{
-bdplm(formula = formula, data = data, prior_mean = 0, prior_sigma = 1,
+bdplm(formula = formula, data = data, data0 = NULL,
+  prior_treatment_effect = 0, prior_control_effect = 0,
+  prior_treatment_sd = 10000, prior_control_sd = 10000,
+  prior_covariate_effect = 0, prior_covariate_sd = 10000,
   number_mcmc_alpha = 10000, number_mcmc_sigmagrid = 1000,
   number_mcmc_sigma = 100, number_mcmc_beta = 10000, alpha_max = 1,
   fix_alpha = FALSE, weibull_scale = 0.135, weibull_shape = 3,
@@ -13,24 +16,37 @@ bdplm(formula = formula, data = data, prior_mean = 0, prior_sigma = 1,
 }
 \arguments{
 \item{formula}{an object of class "formula." See "Details" for
-more information, including specfication of historical and treatment
+more information, including specification of treatment
 data indicators.}
 
-\item{data}{an optional data frame, list or environment
-(or object coercible by as.data.frame to a data frame)
-containing the variables in the model. If not found in data,
-the variables are taken from environment(formula), typically
-the environment from which bdplm is called.}
+\item{data}{a data frame containing the current data variables in the model.}
 
-\item{prior_mean}{historical mean for the coefficients, specified as a
-a vector. The length of \code{prior_mean} must be equal to the number
-of adjusting covariates + 2 (ignore the intercept in this case). See
-"Details" for more information.}
+\item{data0}{a data frame containing the historical data variables in the model.
+The column labels of data and data0 must match.}
 
-\item{prior_sigma}{prior standard deviation for the coefficient, specified
-as a vector. The length of \code{prior_sigma} must be equal to the number
-of adjusting covariates + 2 (ignore the intercept in this case). See
-"Details" for more information.}
+\item{prior_treatment_effect}{scalar. The historical adjusted treatment effect.
+Default value is 0.}
+
+\item{prior_control_effect}{scalar. The historical adjusted control effect.
+Default value is 0.}
+
+\item{prior_treatment_sd}{scalar. The standard deviation of the historical
+adjusted treatment effect. Default value is 10000.}
+
+\item{prior_control_sd}{scalar. The standard deviation of the historical
+adjusted control effect. Default value is 10000.}
+
+\item{prior_covariate_effect}{vector. The prior mean(s) of the covariate
+effect(s). Default value is zero. If a single value is input, the
+the scalar is repeated to the length of the input covariates. Otherwise,
+care must be taken to ensure the length of the input matche the number of
+covariates.}
+
+\item{prior_covariate_sd}{vector. The prior standard deviation(s) of the
+covariate effect(s). Default value is 1e4. If a single value is input, the
+the scalar is repeated to the length of the input covariates. Otherwise,
+care must be taken to ensure the length of the input matches the number of
+covariates.}
 
 \item{number_mcmc_alpha}{scalar. Number of Monte Carlo
 simulations for estimating the historical data weight. Default is 10000.}
@@ -92,7 +108,7 @@ the following components:
   in the presence of covariates using the regression analysis
   implementation of the Bayesian discount prior. This function is a
   barebones implementation and does not support \code{summary},
-  \code{plot}, and \code{print} methods.
+  \code{plot}, or \code{print} methods.
 }
 \details{
 \code{bdplm} uses a two-stage approach for determining the
@@ -113,32 +129,40 @@ the following components:
   function parameter, \code{alpha}, is used as a fixed value for all posterior
   estimation procedures.
 
-  At minimum, the formula/data must include an intercept and each of historical
-  and treatment columns. Any covariates can be included as well. Example usage
-  that includes the intercept by default could be:
-  \code{y ~ hisorical+treatment+baseline}.
+  The formula must include an intercept and both data and data0 must be present.
+  The column names of data and data0 must match. See \code{examples} below for
+  example usage.
 
-  In this implementation, current and historical data must be present for both
-  treatment and control groups. The covariate prior parameters \code{prior_mean}
-  and \code{prior_sigma} must be input as a vector with elements in the order
-  given by the formula.
+  The underlying model results in a marginal posterior distribution for the error
+  variance \code{sigma2} that does not have a known distribution. Thus, we use
+  a grid search to draw samples of \code{sigma2}. First, the marginal posterior
+  is evaluated at a grid of \code{number_mcmc_sigmagrid} \code{sigma2} values.
+  The bounds of the grid are taken as approximately six standard deviations
+  from an estimate of \code{sigma2} using the \code{lm} function.
+  Next, \code{number_mcmc_sigma} posterior draws of \code{sigma2} are made by
+  sampling with replacement from the grid with each value having the
+  corresponding marginal posterior probability of being selected. With posterior
+  draws of \code{sigma2} in hand, we can make posterior draws of the regression
+  coefficients.
 }
 \examples{
 # Simulate  data
-n_t  <- 100
-n_c  <- 100
-n_t0 <- 250
-n_c0 <- 250
+n_t  <- 25
+n_c  <- 25
+n_t0 <- 50
+n_c0 <- 50
 x          <- rnorm(n_t+n_c+n_t0+n_c0, 34, 5)
+
 treatment  <- c(rep(1, n_t+n_t0), rep(0, n_c+n_c0))
 historical <- c(rep(0, n_t), rep(1,n_t0), rep(0, n_c), rep(1,n_c0))
 
-Y <- treatment + 1000*historical + x*3.5 + rnorm(n_t+n_c+n_t0+n_c0)
+Y  <- treatment + 0*historical + x*3.5 + rnorm(n_t+n_c+n_t0+n_c0,0,0.1)
 df <- data.frame(Y=Y, treatment=treatment, historical=historical, x=x)
 
-fit <- bdplm(Y ~ treatment+historical+x, data=df,
-             prior_mean  = rep(0,3),
-             prior_sigma = rep(1e4,3))
+df_  <- subset(df, historical==0)
+df_0 <- subset(df, historical==1)
 
+fit <- bdplm(formula=Y ~ treatment+x,
+             data=df_, data0=df_0)
 
 }
