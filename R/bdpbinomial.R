@@ -214,7 +214,8 @@ setMethod("bdpbinomial",
                    weibull_scale = 0.135,
                    weibull_shape = 3,
                    two_side      = TRUE,
-                   method        = "fixed"){
+                   method        = "fixed",
+                   compare       = TRUE){
 
 
   ################################################################################
