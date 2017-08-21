@@ -52,6 +52,13 @@
 #'   throughout the analysis. Alternative method "\code{mc}" estimates alpha for each
 #'   Monte Carlo iteration. See the the \code{bdpnormal} vignette \cr
 #'   \code{vignette("bdpnormal-vignette", package="bayesDP")} for more details.
+#' @param compare logical. Should a comparison object be included in the fit?
+#'   For a one-sided analysis, the comparison object is simply the posterior
+#'   chain of the treatment group parameter. For a two-sided analysis, the comparison
+#'   object is the posterior chain of the treatment effect that compares treatment and
+#'   control. If \code{compare=TRUE}, the comparison object is accessible in the
+#'   \code{final} slot, else the \code{final} slot is \code{NULL}. Default is
+#'   \code{TRUE}.
 #' @details \code{bdpnormal} uses a two-stage approach for determining the
 #'   strength of historical data in estimation of a mean outcome.  In the first
 #'   stage, a Weibull distribution function is used as a
@@ -183,6 +190,7 @@
 #' @export bdpnormal
 bdpnormal <- setClass("bdpnormal", slots = c(posterior_treatment = "list",
                                              posterior_control = "list",
+                                             final = "list",
                                              args1 = "list"))
 
 setGeneric("bdpnormal",
@@ -204,7 +212,8 @@ setGeneric("bdpnormal",
                     weibull_shape = 3,
                     number_mcmc   = 10000,
                     two_side      = TRUE,
-                    method        = "fixed"){
+                    method        = "fixed",
+                    compare       = TRUE){
              standardGeneric("bdpnormal")
            })
 
@@ -228,7 +237,8 @@ setMethod("bdpnormal",
                    weibull_shape = 3,
                    number_mcmc   = 10000,
                    two_side      = TRUE,
-                   method        = "fixed"){
+                   method        = "fixed",
+                   compare       = TRUE){
 
   ################################################################################
   # Check Input                                                                  #
@@ -389,10 +399,30 @@ setMethod("bdpnormal",
                 two_side      = two_side,
                 method        = method,
                 arm2          = arm2,
-                intent        = paste(intent,collapse=", "))
+                intent        = paste(intent,collapse=", ",
+                compare       = compare))
+
+  ##############################################################################
+  ### Create final (comparison) object
+  ##############################################################################
+  if(!compare){
+    final <- NULL
+  } else{
+    if(arm2){
+      #R0      <- log(posterior_treatment$posterior_hazard)-log(posterior_control$posterior_hazard)
+      #V0      <- 1/apply(R0,2,var)
+      #logHR0  <- R0%*%V0/sum(V0)
+      final   <- list()
+      final$posterior_loghazard <- 1 #logHR0
+    } else{
+      final                    <- list()
+      final$posterior_survival <- 1 #posterior_treatment$posterior_survival
+    }
+  }
 
   me <- list(posterior_treatment = posterior_treatment,
              posterior_control   = posterior_control,
+             final               = final,
              args1               = args1)
 
   class(me) <- "bdpnormal"

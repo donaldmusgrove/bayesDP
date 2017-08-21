@@ -38,6 +38,13 @@
 #'   throughout the analysis. Alternative method "\code{mc}" estimates alpha for each
 #'   Monte Carlo iteration. See the the \code{bdpbinomial} vignette \cr
 #'   \code{vignette("bdpbinomial-vignette", package="bayesDP")} for more details.
+#' @param compare logical. Should a comparison object be included in the fit?
+#'   For a one-sided analysis, the comparison object is simply the posterior
+#'   chain of the treatment group parameter. For a two-sided analysis, the comparison
+#'   object is the posterior chain of the treatment effect that compares treatment and
+#'   control. If \code{compare=TRUE}, the comparison object is accessible in the
+#'   \code{final} slot, else the \code{final} slot is \code{NULL}. Default is
+#'   \code{TRUE}.
 #' @details \code{bdpbinomial} uses a two-stage approach for determining the
 #'   strength of historical data in estimation of a binomial count mean outcome.
 #'   In the first stage, a Weibull distribution function is used as a
@@ -164,6 +171,7 @@
 bdpbinomial <- setClass("bdpbinomial",
                         slots = c(posterior_test = "list",
                                   posterior_control = "list",
+                                  final = "list",
                                   args1 = "list"))
 
 setGeneric("bdpbinomial",
@@ -183,7 +191,8 @@ setGeneric("bdpbinomial",
                     weibull_scale = 0.135,
                     weibull_shape = 3,
                     two_side      = TRUE,
-                    method        = "fixed"){
+                    method        = "fixed",
+                    compare       = TRUE){
              standardGeneric("bdpbinomial")
            })
 
@@ -354,10 +363,30 @@ setMethod("bdpbinomial",
                 two_side      = two_side,
                 method        = method,
                 arm2          = arm2,
-                intent        = paste(intent,collapse=", "))
+                intent        = paste(intent,collapse=", ",
+                compare       = compare))
+
+  ##############################################################################
+  ### Create final (comparison) object
+  ##############################################################################
+  if(!compare){
+    final <- NULL
+  } else{
+    if(arm2){
+      #R0      <- log(posterior_treatment$posterior_hazard)-log(posterior_control$posterior_hazard)
+      #V0      <- 1/apply(R0,2,var)
+      #logHR0  <- R0%*%V0/sum(V0)
+      final   <- list()
+      final$posterior_loghazard <- 1 #logHR0
+    } else{
+      final                    <- list()
+      final$posterior_survival <- 1 #posterior_treatment$posterior_survival
+    }
+  }
 
   me <- list(posterior_treatment = posterior_treatment,
              posterior_control   = posterior_control,
+             final               = final,
              args1               = args1)
 
   class(me) <- "bdpbinomial"

@@ -229,6 +229,7 @@
 #' @export bdpsurvival
 bdpsurvival <- setClass("bdpsurvival", slots = c(posterior_treatment = "list",
                                                  posterior_control = "list",
+                                                 final = "list",
                                                  args1 = "list"))
 setGeneric("bdpsurvival",
   function(formula       = formula,
