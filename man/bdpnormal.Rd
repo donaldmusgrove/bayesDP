@@ -10,7 +10,7 @@ bdpnormal(mu_t = NULL, sigma_t = NULL, N_t = NULL, mu0_t = NULL,
   N_c = NULL, mu0_c = NULL, sigma0_c = NULL, N0_c = NULL,
   alpha_max = 1, fix_alpha = FALSE, weibull_scale = 0.135,
   weibull_shape = 3, number_mcmc = 10000, two_side = TRUE,
-  method = "fixed")
+  method = "fixed", compare = TRUE)
 }
 \arguments{
 \item{mu_t}{scalar. Mean of the current treatment group.}
@@ -70,6 +70,14 @@ paramter alpha. Default value "\code{fixed}" estimates alpha once and holds it f
 throughout the analysis. Alternative method "\code{mc}" estimates alpha for each
 Monte Carlo iteration. See the the \code{bdpnormal} vignette \cr
 \code{vignette("bdpnormal-vignette", package="bayesDP")} for more details.}
+
+\item{compare}{logical. Should a comparison object be included in the fit?
+For a one-sided analysis, the comparison object is simply the posterior
+chain of the treatment group parameter. For a two-sided analysis, the comparison
+object is the posterior chain of the treatment effect that compares treatment and
+control. If \code{compare=TRUE}, the comparison object is accessible in the
+\code{final} slot, else the \code{final} slot is \code{NULL}. Default is
+\code{TRUE}.}
 }
 \value{
 \code{bdpnormal} returns an object of class "bdpnormal". The

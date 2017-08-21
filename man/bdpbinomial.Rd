@@ -9,7 +9,7 @@ bdpbinomial(y_t = NULL, N_t = NULL, y0_t = NULL, N0_t = NULL,
   y_c = NULL, N_c = NULL, y0_c = NULL, N0_c = NULL, alpha_max = 1,
   fix_alpha = FALSE, a0 = 1, b0 = 1, number_mcmc = 10000,
   weibull_scale = 0.135, weibull_shape = 3, two_side = TRUE,
-  method = "fixed")
+  method = "fixed", compare = TRUE)
 }
 \arguments{
 \item{y_t}{scalar. Number of events for the current treatment group.}
@@ -63,6 +63,14 @@ paramter alpha. Default value "\code{fixed}" estimates alpha once and holds it f
 throughout the analysis. Alternative method "\code{mc}" estimates alpha for each
 Monte Carlo iteration. See the the \code{bdpbinomial} vignette \cr
 \code{vignette("bdpbinomial-vignette", package="bayesDP")} for more details.}
+
+\item{compare}{logical. Should a comparison object be included in the fit?
+For a one-sided analysis, the comparison object is simply the posterior
+chain of the treatment group parameter. For a two-sided analysis, the comparison
+object is the posterior chain of the treatment effect that compares treatment and
+control. If \code{compare=TRUE}, the comparison object is accessible in the
+\code{final} slot, else the \code{final} slot is \code{NULL}. Default is
+\code{TRUE}.}
 }
 \value{
 \code{bdpbinomial} returns an object of class "bdpbinomial". The
