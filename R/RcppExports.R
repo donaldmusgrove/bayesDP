@@ -5,8 +5,16 @@ sigma2marginal <- function(n, grid, XtX, SigmaBetaInv, Xstar, Xty, mu0, ystar) {
     .Call('_bayesDP_sigma2marginal', PACKAGE = 'bayesDP', n, grid, XtX, SigmaBetaInv, Xstar, Xty, mu0, ystar)
 }
 
+sigma2marginalmc <- function(n, grid, XtX, SigmaBetaInv, Xstar, Xty, mu0, ystar) {
+    .Call('_bayesDP_sigma2marginalmc', PACKAGE = 'bayesDP', n, grid, XtX, SigmaBetaInv, Xstar, Xty, mu0, ystar)
+}
+
 betaRegSampler <- function(sigma2, XtX, SigmaBetaInv, mu0, Xty, nsamples) {
     .Call('_bayesDP_betaRegSampler', PACKAGE = 'bayesDP', sigma2, XtX, SigmaBetaInv, mu0, Xty, nsamples)
+}
+
+betaRegSamplermc <- function(sigma2, XtX, SigmaBetaInv, SigmaBetaInvID, mu0, Xty, nsamples) {
+    .Call('_bayesDP_betaRegSamplermc', PACKAGE = 'bayesDP', sigma2, XtX, SigmaBetaInv, SigmaBetaInvID, mu0, Xty, nsamples)
 }
 
 ppexpV <- function(q, x, cuts) {

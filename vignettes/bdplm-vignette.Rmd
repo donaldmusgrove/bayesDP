@@ -1,0 +1,130 @@
+---
+title: "BayesDP"
+author: "Donnie Musgrove"
+date: "`r Sys.Date()`"
+output: 
+  rmarkdown::html_vignette:
+    toc: yes
+    fig_caption: yes
+params:
+  # EVAL: !r identical(Sys.getenv("NOT_CRAN"), "true")
+  # EVAL: !r FALSE
+vignette: >
+  %\VignetteIndexEntry{Linear Regression Estimation}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, SETTINGS-knitr, include=FALSE}
+library(bayesDP)
+stopifnot(require(knitr))
+opts_chunk$set(
+  #comment = NA,
+  #message = FALSE,
+  #warning = FALSE,
+  #eval = if (isTRUE(exists("params"))) params$EVAL else FALSE,
+  dev = "png",
+  dpi = 150,
+  fig.asp = 0.8,
+  fig.width = 5,
+  out.width = "60%",
+  fig.align = "center"
+  )
+  
+# # Run two models to document the discount function plots
+# time   <- c(rexp(50, rate=1/20), rexp(50, rate=1/10))
+# status <- c(rexp(50, rate=1/30), rexp(50, rate=1/30))
+# status <- ifelse(time < status, 1, 0)
+# example_surv_1arm <- data.frame(status     = status,
+#                                 time       = time,
+#                                 historical = c(rep(1,50),rep(0,50)),
+#                                 treatment  = 1)
+# 
+# fit01 <- bdpsurvival(Surv(time, status) ~ historical + treatment,
+#                      data = example_surv_1arm,
+#                      surv_time = 5, two_side=FALSE)
+# fit02 <- bdpsurvival(Surv(time, status) ~ historical + treatment,
+#                      data = example_surv_1arm,
+#                      surv_time = 5)
+```
+
+# Introduction
+The purpose of this vignette is to introduce the `bdplm` function. `bdplm` is used for estimating posterior samples in the context of linear regression for clinical trials where an informative prior is used. In the parlance of clinical trials, the informative prior is derived from historical data. The weight given to the historical data is determined using what we refer to as a discount function. There are three steps in carrying out estimation:
+
+1. Estimation of the historical data weight, denoted $\hat{\alpha}$, via the discount function
+
+2. Estimation of the posterior distribution of the current data, conditional on the historical data weighted by $\hat{\alpha}$
+
+3. If a two-arm clinical trial, estimation of the posterior treatment effect, i.e., treatment versus control
+
+Throughout this vignette, we use the terms `current`, `historical`, `treatment`, and `control`. These terms are used because the model was envisioned in the context of clinical trials where historical data may be present. Because of this terminology, there are 4 potential sources of data:
+
+1. Current treatment data: treatment data from a current study
+
+2. Current control data: control (or other treatment) data from a current study
+
+3. Historical treatment data: treatment data from a previous study
+
+4. Historical control data: control (or other treatment) data from a previous study
+
+If only treatment data is input, the function considers the analysis a one-arm trial. If treatment data + control data is input, then it is considered a two-arm trial.
+
+Note that the `bdplm` function currently only has support for a two-arm clinical trial where current and historical treatment and current and historical control data are all present.  
+
+
+
+## Linear Regresion Model Background
+Before we get into our estimation scheme, we will briefly describe our implementation of the linear regression model. The linear regression model implementation, via `bdplm`, serves as an advanced companion to the `bdpnormal` model. With the `bdpnormal` model, we are interested in comparing mean outcomes via the probability that the mean values from treatment and control arms are not equivalent. When covariate adjustments are needed, `bdpnormal` is no longer a viable solution. Thus, `bdplm` allows analysts to adjust the treatment and control arm comparison for covariate effects.
+
+The analysis model of interest has the form
+$$y_i = \beta_0 + \beta_1I(treatment_i) + x_{2i}\beta_1 + \cdots+x_{mi}\beta_m + \varepsilon_i, \varepsilon_i \sim \mathcal{N}ormal\left(0,\,\sigma^2\right),\,\,\,i=1,\dots,n,$$
+where $I(treatment_i)$ indicates whether observation $i$ is in the treatment arm, $\beta_0$ is the intercept, $\beta_1$ is the treatment effect, $x_{ji}$ is the $j$th covariate with corresponding $\beta_j$ covariate effect, $j=1,\dots,m$, and $\sigma^2$ is the unknown error variance. 
+
+Let $\boldsymbol{x}_i^T\boldsymbol{\beta}_{-(0,1)} = x_{2i}\beta_1 + \cdots+x_{mi}\beta_m$. Then, in order to place prior values on the treatment effect, we reparameterize the linear regression model as
+$$y_i = \beta_0^{\ast}I(control_i) + \beta_1^{\ast}I(treatment_i) + \boldsymbol{x}_i^T\beta_{-(0,1)} + \varepsilon_i, \varepsilon_i \sim \mathcal{N}ormal\left(0,\,\sigma^2\right),\,\,\,i=1,\dots,n,$$
+where now $I(control_i)$ indicates whether observation $i$ is in the control arm, i.e., $I(control_i) = 1 - I(treatment_i)$. It is then straightforward to show that $\beta_0 = \beta^{\ast}_0$ and $\beta_1 = \beta_1^{\ast} - \beta^{\ast}_0$.
+
+
+## Estimation of the historical data weight
+In the first estimation step, the historical data weight $\hat{\alpha}$ is estimated. In the case of a two-arm trial, where both treatment and control data are available, an $\hat{\alpha}$ value is estimated separately for each of the treatment and control arms. Of course, historical treatment or historical control data must be present, otherwise $\hat{\alpha}$ is not estimated for the corresponding arm.
+
+When historical data are available, estimation of $\hat{\alpha}$ is carried out as follows. Let $\boldsymbol{y}$ and $\boldsymbol{y}_0$ denote the current and historical data, respectively. The following linear regression model is then fit to the data:
+$$y_i = \tilde{\beta}_0 + \tilde{\beta}_1I(historical_i) + x_{1i}\tilde{\beta}_2 + \cdots+x_{mi}\tilde{\beta}_m + \varepsilon_i, \varepsilon_i \sim \mathcal{N}ormal\left(0,\,\sigma^2\right),\,\,\,i=1,\dots,n,$$
+where $I(historical_i)$ indicates whether observation $i$ is historical. With vague priors on each parameter, we estimate the posterior probability that $\tilde{\beta}_1 \ne 0$, i.e., $p = Pr\left(\tilde{\beta_1} \ne 0 \mid \boldsymbol{y}, \boldsymbol{y}_0 \tilde{\beta}_0, \tilde{\beta}_2, \dots, \tilde{\beta}_m,\sigma^2\right)$.
+
+Finally, for a Weibull distribution function (i.e., the Weibull cumulative distribution function), denoted $W$, $\hat{\alpha}$ is computed as 
+$$
+\hat{\alpha}=\begin{cases}
+\alpha_{max}\cdot W\left(p, \,w_{shape}, \,w_{scale}\right),\,0\le p\le0.5 \\
+\alpha_{max}\cdot W\left(1-p, \,w_{shape}, \,w_{scale}\right),\,0.5 \lt p \le 1,
+\end{cases}
+$$
+where $w_{shape}$ and $w_{scale}$ are the shape and scale of the Weibull distribution function, respectively and $\alpha_{max}$ scales the weight $\hat{\alpha}$ by a user-input maximum value. Using the default values of $w_{shape}=3$ and $w_{scale}=0.135$, $\hat{\alpha}$ increases to 1 as $p$ goes to 0.5.
+
+There are several model inputs at this first stage. First, the user can select `fix_alpha=TRUE` and force a fixed value of $\hat{\alpha}$ (at the `alpha_max` input), as opposed to estimation via the discount function. Next, a Monte Carlo estimation approach is used, requiring several samples from the posterior distributions. Thus, the user can input a sample size greater than or less than the default value of `number_mcmc_alpha=10000`. Finally, the shape of the Weibull discount function can be altered by changing the Weibull shape and scale parameters from the default values of $w_{shape}=3$ and $w_{scale}=0.135$ (`weibull_shape` and `weibull_scale` inputs).
+
+
+An alternate Monte Carlo-based estimation scheme of $\hat{\alpha}$ has been implemented, controlled by the function input `method="mc"`. Here, instead of treating $\hat{\alpha}$ as a fixed quantity, $\hat{\alpha}$ is treated as random. First, $p$, is computed as 
+
+
+$$ \begin{array}{rcl}
+Z & = & \displaystyle{\frac{\beta^2_1}{\sigma_{\beta}^2}},\\
+\\
+p &  =  & \chi^2_{Z,1},
+\end{array}
+$$
+where $\chi^2_{x,d}$ is the $x$th quantile of a chi-square distribution with $d$ degrees of freedom (the value $p$ is found via the `pchisq` R function using `lower.tail=FALSE`). Next, $p$ is used to construct $\hat{\alpha}$ as $\hat{\alpha} = \alpha_{max}\cdot W\left(p, \,w_{shape}\right)$. Since the values $Z$ and $p$ are computed at each iteration of the Monte Carlo estimation scheme, $\hat{\alpha}$ is computed at each iteration of the Monte Carlo estimation scheme, resulting in a distribution of $\hat{\alpha}$ values.
+
+With the historical data weight (or weights) $\hat{\alpha}$ in hand, we can  move on to estimation of the posterior distribution of the current data.
+
+
+### Discount function
+Throughout this vignette, we refer to a discount function. The discount function is a Weibull distribution function and has the form
+$$W(x) = 1 - \exp\left\{- (x/w_{scale})^{w_{shape}}\right\}.$$
+During estimation, a user may be interested in selecting values of $w_{shape}$ and $w_{scale}$ that result in optimal statistical properties of the analysis. Thus, the discount function can be used to control the false positive rate (type I error) and/or the false negative rate (type II error). See examples in the other vignettes for illustratations of the shape of the discount function using the default shape and scale parameters.
+
+
+
+## Estimation of the posterior distribution of the current data, conditional on the historical data
+This section details the modeling scheme used to estimate the parameters of the linear regression model. Using what we call the Gelman parameterization (see Gelman's Bayesian data analysis, 3rd edition, chapter 14, for more information), in vector notation the model can be written
+FINISH HERE WITH DERIVATION.

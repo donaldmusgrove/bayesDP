@@ -69,6 +69,36 @@ SEXP sigma2marginal(int n, const arma::vec& grid,
 }
 
 
+// [[Rcpp::export]]
+SEXP sigma2marginalmc(int n, const arma::vec& grid,
+                            const arma::mat& XtX,
+                            const arma::mat& SigmaBetaInv,
+                            const arma::mat& Xstar,
+                            const arma::vec& Xty, const arma::vec& mu0,
+                            const arma::vec& ystar) {
+  
+                            
+  arma::vec sigma2Marginal = arma::zeros<arma::vec>(n);
+
+  // Set-up indicator for randomly selecting rows of SigmaBetaInv and
+  // thus randomly selecting values of alpha
+  int m = SigmaBetaInv.n_rows;
+  arma::vec Sigmarandom     = arma::randi<arma::vec>(m, distr_param(0,m-1));
+  
+  for (int i=0; i<n; i++){
+    arma::mat SigmaBetaInvMat = arma::diagmat(SigmaBetaInv.row(Sigmarandom(i)));
+    sigma2Marginal(i) = sigma2marginaluni(grid(i), XtX, SigmaBetaInvMat,
+                                          Xstar, Xty, mu0, ystar);
+  }
+
+  return Rcpp::List::create(Rcpp::Named("sigma2")         = grid,
+                            Rcpp::Named("logL")           = sigma2Marginal,
+                            Rcpp::Named("SigmaBetaInvID") = Sigmarandom);
+}
+
+
+
+
 
 arma::mat Rmvn(int n, const arma::vec& mu_,
                const arma::mat& Sigma_) {
@@ -136,6 +166,27 @@ arma::mat betaRegSampler(const arma::vec& sigma2, const arma::mat& XtX,
 }
 
 
+// [[Rcpp::export]]
+arma::mat betaRegSamplermc(const arma::vec& sigma2, const arma::mat& XtX,
+                    const arma::mat& SigmaBetaInv, const arma::vec& SigmaBetaInvID,
+                    const arma::vec& mu0, const arma::vec& Xty,
+                    int nsamples) {
+
+  int p = sigma2.size();
+
+  arma::mat Beta;
+  arma::mat Beta0;
+
+  for (int i=0; i<p; i++){
+    arma::mat SigmaBetaInvMat = arma::diagmat(SigmaBetaInv.row(SigmaBetaInvID(i)));
+    
+    arma::mat Beta0 = betaRegSamplerUni(sigma2(i), XtX, SigmaBetaInvMat, mu0,
+                                        Xty, nsamples);
+    Beta = join_cols(Beta, Beta0);
+  }
+
+  return Beta;
+}
 
 
 

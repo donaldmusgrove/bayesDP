@@ -6,8 +6,8 @@
 \title{Bayesian Discount Prior: Two-Arm Linear Regression}
 \usage{
 bdplm(formula = formula, data = data, data0 = NULL,
-  prior_treatment_effect = 0, prior_control_effect = 0,
-  prior_treatment_sd = 10000, prior_control_sd = 10000,
+  prior_treatment_effect = NULL, prior_control_effect = NULL,
+  prior_treatment_sd = NULL, prior_control_sd = NULL,
   prior_covariate_effect = 0, prior_covariate_sd = 10000,
   number_mcmc_alpha = 10000, number_mcmc_sigmagrid = 1000,
   number_mcmc_sigma = 100, number_mcmc_beta = 10000, alpha_max = 1,
@@ -81,11 +81,11 @@ where the first value is used to estimate the weight of the historical
 treatment group and the second value is used to estimate the weight of the
 historical control group.}
 
-\item{method}{character. Analysis method with respect to estimation of the
-weight paramter alpha. Default value "\code{fixed}" estimates alpha once
-and holds it fixed throughout the analysis. Alternative method
-"\code{mc}" estimates alpha for each Monte Carlo iteration. Currently, only
-the default method "\code{fixed}" is supported.}
+\item{method}{character. Analysis method with respect to estimation of the weight
+paramter alpha. Default value "\code{fixed}" estimates alpha once and holds it fixed
+throughout the analysis. Alternative method "\code{mc}" estimates alpha for each
+Monte Carlo iteration. See the the \code{bdplm} vignette \cr
+\code{vignette("bdplm-vignette", package="bayesDP")} for more details.}
 }
 \value{
 \code{bdplm} returns an object of class "bdplm".
@@ -106,8 +106,8 @@ the following components:
 \description{
 \code{bdplm} is used to estimate the treatment effect
   in the presence of covariates using the regression analysis
-  implementation of the Bayesian discount prior. This function is a
-  barebones implementation and does not support \code{summary},
+  implementation of the Bayesian discount prior. This function is currently
+  a barebones implementation and does not support \code{summary},
   \code{plot}, or \code{print} methods.
 }
 \details{

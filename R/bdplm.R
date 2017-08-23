@@ -1,8 +1,8 @@
 #' @title Bayesian Discount Prior: Two-Arm Linear Regression
 #' @description \code{bdplm} is used to estimate the treatment effect
 #'   in the presence of covariates using the regression analysis
-#'   implementation of the Bayesian discount prior. This function is a
-#'   barebones implementation and does not support \code{summary},
+#'   implementation of the Bayesian discount prior. This function is currently
+#'   a barebones implementation and does not support \code{summary},
 #'   \code{plot}, or \code{print} methods.
 #' @param formula an object of class "formula." See "Details" for
 #'   more information, including specification of treatment
@@ -11,13 +11,15 @@
 #' @param data0 a data frame containing the historical data variables in the model.
 #'   The column labels of data and data0 must match.
 #' @param prior_treatment_effect scalar. The historical adjusted treatment effect.
-#'   Default value is 0.
+#'   If left \code{NULL}, value is estimated from the historical data.
 #' @param prior_control_effect scalar. The historical adjusted control effect.
-#'   Default value is 0.
+#'   If left \code{NULL}, value is estimated from the historical data.
 #' @param prior_treatment_sd scalar. The standard deviation of the historical
-#'   adjusted treatment effect. Default value is 10000.
+#'   adjusted treatment effect. If left \code{NULL}, value is estimated from
+#'   the historical data.
 #' @param prior_control_sd scalar. The standard deviation of the historical
-#'   adjusted control effect. Default value is 10000.
+#'   adjusted control effect. If left \code{NULL}, value is estimated from
+#'   the historical data.
 #' @param prior_covariate_effect vector. The prior mean(s) of the covariate
 #'   effect(s). Default value is zero. If a single value is input, the
 #'   the scalar is repeated to the length of the input covariates. Otherwise,
@@ -53,11 +55,11 @@
 #'   values where the first value is used to estimate the weight of the
 #'   historical treatment group and the second value is used to estimate the
 #'   weight of the historical control group.
-#' @param method character. Analysis method with respect to estimation of the
-#'   weight paramter alpha. Default value "\code{fixed}" estimates alpha once
-#'   and holds it fixed throughout the analysis. Alternative method
-#'   "\code{mc}" estimates alpha for each Monte Carlo iteration. Currently, only
-#'   the default method "\code{fixed}" is supported.
+#' @param method character. Analysis method with respect to estimation of the weight
+#'   paramter alpha. Default value "\code{fixed}" estimates alpha once and holds it fixed
+#'   throughout the analysis. Alternative method "\code{mc}" estimates alpha for each
+#'   Monte Carlo iteration. See the the \code{bdplm} vignette \cr
+#'   \code{vignette("bdplm-vignette", package="bayesDP")} for more details.
 #' @details \code{bdplm} uses a two-stage approach for determining the
 #'   strength of historical data in estimation of an adjusted mean or covariate
 #'   effect. In the first stage, a Weibull distribution function is used as a
@@ -70,11 +72,11 @@
 #'   proability (\code{p}) that the covariate effect of an historical data indicator is
 #'   significantly different from zero. The comparison metric \code{p} is then
 #'   input into the Weibull discount function and the final strength of the
-#'   historical data is returned (alpha).
+#'   historical data is returned (\code{alpha}).
 #'
 #'   In the second stage, posterior estimation is performed where the discount
-#'   function parameter, \code{alpha}, is used as a fixed value for all posterior
-#'   estimation procedures.
+#'   function parameter, \code{alpha}, is used to weight the historical data
+#'   effects.
 #'
 #'   The formula must include an intercept and both data and data0 must be present.
 #'   The column names of data and data0 must match. See \code{examples} below for
@@ -102,8 +104,14 @@
 #'        data frame. The posterior draws of the covariates, the intercept, and
 #'        the treatment effect. The grid of sigma values are included.}
 #'      \item{\code{alpha_discount}}{
-#'        numeric. The posterior probability of the stochastic comparison
-#'        between the current and historical data.}
+#'        vector. The posterior probability of the stochastic comparison
+#'        between the current and historical data for each of the treatment
+#'        and control arms. If \code{method="mc"}, the result is a matrix of
+#'        estimates, otherwise for \code{method="fixed"}, the result is a vector
+#'        of estimates.}
+#'      \item{\code{estimates}}{
+#'        list. The posterior means and standard errors of the intercept,
+#'        treatment effect, covariate effect(s) and error variance.}
 #'    }
 #' }
 #'
@@ -140,10 +148,10 @@ setGeneric("bdplm",
   function(formula                   = formula,
            data                      = data,
            data0                     = NULL,
-           prior_treatment_effect    = 0,
-           prior_control_effect      = 0,
-           prior_treatment_sd        = 1e4,
-           prior_control_sd          = 1e4,
+           prior_treatment_effect    = NULL, #0,
+           prior_control_effect      = NULL, #0,
+           prior_treatment_sd        = NULL, #1e4,
+           prior_control_sd          = NULL, #1e4,
            prior_covariate_effect    = 0,
            prior_covariate_sd        = 1e4,
            number_mcmc_alpha         = 10000,
@@ -163,10 +171,10 @@ setMethod("bdplm",
   function(formula                   = formula,
            data                      = data,
            data0                     = NULL,
-           prior_treatment_effect    = 0,
-           prior_control_effect      = 0,
-           prior_treatment_sd        = 1e4,
-           prior_control_sd          = 1e4,
+           prior_treatment_effect    = NULL, #0,
+           prior_control_effect      = NULL, #0,
+           prior_treatment_sd        = NULL, #1e4,
+           prior_control_sd          = NULL, #1e4,
            prior_covariate_effect    = 0,
            prior_covariate_sd        = 1e4,
            number_mcmc_alpha         = 10000,
@@ -189,10 +197,10 @@ setMethod("bdplm",
     stop("Historical data not input correctly.")
   }
 
-  ### Check method
-  if(method != "fixed"){
-    stop("Only method = 'fixed' is currently supported.")
-  }
+  # ### Check method
+  # if(method != "fixed"){
+  #   stop("Only method = 'fixed' is currently supported.")
+  # }
 
   ### Parse current data
   mf <- mf0 <- match.call(expand.dots = FALSE)
@@ -295,6 +303,13 @@ setMethod("bdplm",
   }
 
 
+  ### For method == "mc", grid size for estimating sigma2 must not be
+  ### larger than the number of draws of alpha.
+  if(method=="mc" & number_mcmc_sigmagrid>number_mcmc_alpha){
+    stop("number_mcmc_sigmagrid must be <= number_mcmc_alpha.")
+  }
+
+
   historical <- NULL
   treatment  <- NULL
   intercept  <- NULL
@@ -346,35 +361,40 @@ setMethod("bdplm",
                                     fix_alpha         = fix_alpha,
                                     number_mcmc_alpha = number_mcmc_alpha,
                                     weibull_shape     = weibull_shape[1],
-                                    weibull_scale     = weibull_scale[1])
+                                    weibull_scale     = weibull_scale[1],
+                                    method            = method)
 
   discount_control <- discount_lm(df                = df_c,
                                   alpha_max         = alpha_max[2],
                                   fix_alpha         = fix_alpha,
                                   number_mcmc_alpha = number_mcmc_alpha,
                                   weibull_shape     = weibull_shape[2],
-                                  weibull_scale     = weibull_scale[2])
+                                  weibull_scale     = weibull_scale[2],
+                                  method            = method)
 
 
   ##############################################################################
-  # Estimate historical data effects to use as the prior for the current data
-  # - Not implemented
+  # Estimate historical adjusted treatment and control effects to use as the
+  # priors for the current data
   ##############################################################################
-  # if(is.null(prior_treatment_effect)){
-  #
-  #   cnames0 <- names(df0)
-  #   cnames0 <- cnames0[!(cnames0 %in% c("Y", "intercept", "historical","treatment"))]
-  #   cnames0 <- c("treatment", cnames0)
-  #   f0      <- paste0("Y~",paste0(cnames0,collapse="+"))
-  #
-  #   fit_0   <- lm(f0, data=df0)
-  #   summ_0  <- summary(fit_0)
-  #
-  #   prior_treatment_effect <- summ_0$coef[2,1]
-  #   prior_control_effect   <- summ_0$coef[1,1]
-  #   prior_treatment_sd     <- summ_0$coef[2,2]
-  #   prior_control_sd       <- summ_0$coef[1,2]
-  # }
+  if(is.null(prior_treatment_effect) | is.null(prior_control_effect) |
+     is.null(prior_treatment_sd)     | is.null(prior_control_sd)){
+
+    df0$control <- 1-df0$treatment
+
+    cnames0 <- names(df0)
+    cnames0 <- cnames0[!(cnames0 %in% c("Y", "intercept", "historical","treatment","control"))]
+    cnames0 <- c("treatment", "control", cnames0)
+    f0      <- paste0("Y~ -1+",paste0(cnames0,collapse="+"))
+
+    fit_0   <- lm(f0, data=df0)
+    summ_0  <- summary(fit_0)
+
+    if(is.null(prior_treatment_effect)) prior_treatment_effect <- summ_0$coef[2,1]
+    if(is.null(prior_control_effect))   prior_control_effect   <- summ_0$coef[1,1]
+    if(is.null(prior_treatment_sd))     prior_treatment_sd     <- summ_0$coef[2,2]
+    if(is.null(prior_control_sd))       prior_control_sd       <- summ_0$coef[1,2]
+  }
 
 
   ### Prior covariate effects
@@ -396,12 +416,6 @@ setMethod("bdplm",
   mu0    <- c(prior_control_effect, prior_treatment_effect, prior_covariate_effect)
 
 
-  ### Extract alpha0, append "zero" weight for the covariate effect(s)
-  alpha0 <- c(discount_control$alpha_discount + 1e-12,
-              discount_treatment$alpha_discount + 1e-12,
-              rep(1e-12, n_covs))
-
-
   ### Calculate constants from current data
   df_current$control <- 1-df_current$treatment
 
@@ -412,51 +426,123 @@ setMethod("bdplm",
   Xstar <- rbind(X, diag(length(mu0)))
   XtX   <- t(X)%*%X
   Xty   <- t(X)%*%y
-  SigmaBetaInv <- diag(alpha0/tau2)
 
 
-  ### Grid search of sigma2
-  ### - Find grid limits via wls
-  W     <- c(rep(1,length(y)), alpha0/tau2)
-  lmfit <- lm(ystar~Xstar-1, weights=W)
-  summ  <- summary(lmfit)
-  a     <- summ$df[2]
-  b     <- summ$sigma^2
-  lower <- 1/qgamma(.9999999999,a/2,(a*b)/2)
-  upper <- 1/qgamma(.0000000001,a/2,(a*b)/2)
+  ### Estimation scheme differs conditional on discounting method
+  if(method == "fixed"){
 
-  grid_sigma2 <- seq(lower,upper,length.out=number_mcmc_sigmagrid)
+    ### Extract alpha0, append "zero" weight for the covariate effect(s)
+    alpha0 <- c(discount_treatment$alpha_discount + 1e-12,
+                discount_control$alpha_discount + 1e-12,
+                rep(1e-12, n_covs))
 
-  ### Sample candidate values of sigma2
-  sigma2candidates <- sigma2marginal(n           = number_mcmc_sigmagrid,
-                                    grid         = grid_sigma2,
-                                    XtX          = XtX,
-                                    SigmaBetaInv = SigmaBetaInv,
-                                    Xstar        = Xstar,
-                                    Xty          = Xty,
-                                    mu0          = mu0,
-                                    ystar        = ystar)
+    ### Grid search of sigma2
+    ### - Find grid limits via wls
+    SigmaBetaInv <- diag(alpha0/tau2)
 
-  ### Normalize the marginal posteriors (log-likelihoods) and exponentiate
-  logL  <- sigma2candidates$logL
-  logL  <- logL[is.finite(logL)]
-  normL <- logL[which.min(abs(logL))]
-  L     <- exp(logL - normL)
+    W     <- c(rep(1,length(y)), alpha0/tau2)
+    lmfit <- lm(ystar~Xstar-1, weights=W)
+    summ  <- summary(lmfit)
+    a     <- summ$df[2]
+    b     <- summ$sigma^2
+    lower <- 1/qgamma(.9999999999,a/2,(a*b)/2)
+    upper <- 1/qgamma(.0000000001,a/2,(a*b)/2)
+
+    grid_sigma2 <- seq(lower,upper,length.out=number_mcmc_sigmagrid)
+
+    ### Sample candidate values of sigma2
+    sigma2candidates <- sigma2marginal(n            = number_mcmc_sigmagrid,
+                                       grid         = grid_sigma2,
+                                       XtX          = XtX,
+                                       SigmaBetaInv = SigmaBetaInv,
+                                       Xstar        = Xstar,
+                                       Xty          = Xty,
+                                       mu0          = mu0,
+                                       ystar        = ystar)
+
+    ### Normalize the marginal posteriors (log-likelihoods) and exponentiate
+    logL  <- sigma2candidates$logL
+    logL  <- logL[is.finite(logL)]
+    normL <- logL[which.min(abs(logL))]
+    L     <- exp(logL - normL)
+
+    ### Sample with replacement from marginal posterior density of sigma2
+    sigma2_accept <- sample(x       = sigma2candidates$sigma2,
+                            size    = number_mcmc_sigma,
+                            replace = TRUE,
+                            prob    = L)
 
 
-  ### Sample with replacement from marginal posterior density of sigma2
-  sigma2_accept <- sample(x       = sigma2candidates$sigma2,
-                          size    = number_mcmc_sigma,
-                          replace = TRUE,
-                          prob    = L)
+    ### Draw samples of the covariate vector beta
+    ### n_beta_samples is ceiling(number_mcmc_beta/number_mcmc_sigma2)
+    n_beta_samples <- ceiling(number_mcmc_beta/number_mcmc_sigma)
+
+    beta_samples <- betaRegSampler(sigma2_accept, XtX, SigmaBetaInv, mu0,
+                                   Xty, n_beta_samples)
 
 
-  ### Draw samples of the covariate vector beta
-  ### n_beta_samples is ceiling(number_mcmc_beta/number_mcmc_sigma2)
-  n_beta_samples <- ceiling(number_mcmc_beta/number_mcmc_sigma)
+  } else if(method == "mc"){
+    ### Extract alpha0, append "zero" weight for the covariate effect(s)
+    alpha0 <- cbind(discount_treatment$alpha_discount + 1e-12,
+                    discount_control$alpha_discount + 1e-12)
+    colnames(alpha0) <- c("alpha_treatment", "alpha_control")
 
-  beta_samples <- betaRegSampler(sigma2_accept, XtX, SigmaBetaInv, mu0,
-                                 Xty, n_beta_samples)
+    for(i in 1:n_covs){
+      alpha0 <- cbind(alpha0, 0)
+      colnames(alpha0)[i+2] <- paste0("x",i)
+    }
+
+    ### Grid search of sigma2
+    ### - Find grid limits via wls
+    SigmaBetaInv <- t(apply(alpha0, 1, function(x) x/tau2))
+
+    W     <- c(rep(1,length(y)), SigmaBetaInv[1,])
+
+    summ <- summary(lm(ystar~Xstar-1, weights=W))
+    a    <- summ$df[2]
+    b    <- summ$sigma^2
+
+    lower <- 1/qgamma(.9999999999,a/2,(a*b)/2)
+    upper <- 1/qgamma(.0000000001,a/2,(a*b)/2)
+
+    grid_sigma2 <- seq(lower,upper,length.out=number_mcmc_sigmagrid)
+
+    ### Sample candidate values of sigma2
+    sigma2candidates <- sigma2marginalmc(n            = number_mcmc_sigmagrid,
+                                         grid         = grid_sigma2,
+                                         XtX          = XtX,
+                                         SigmaBetaInv = SigmaBetaInv,
+                                         Xstar        = Xstar,
+                                         Xty          = Xty,
+                                         mu0          = mu0,
+                                         ystar        = ystar)
+
+    ### Normalize the marginal posteriors (log-likelihoods) and exponentiate
+    logL  <- sigma2candidates$logL
+    logL  <- logL[is.finite(logL)]
+    normL <- logL[which.min(abs(logL))]
+    L     <- exp(logL - normL)
+
+    ### Sample with replacement from marginal posterior density of sigma2
+    sigma2_sampleid <- sample(x       = 1:number_mcmc_sigmagrid,
+                              size    = number_mcmc_sigma,
+                              replace = TRUE,
+                              prob    = L)
+
+    sigma2_accept <- sigma2candidates$sigma2[sigma2_sampleid]
+
+    SigmaBetaInvID <- sigma2candidates$SigmaBetaInvID[sigma2_sampleid]
+
+    ### Draw samples of the covariate vector beta
+    ### n_beta_samples is ceiling(number_mcmc_beta/number_mcmc_sigma2)
+    n_beta_samples <- ceiling(number_mcmc_beta/number_mcmc_sigma)
+
+    beta_samples <- betaRegSamplermc(sigma2_accept, XtX, SigmaBetaInv,
+                                     SigmaBetaInvID,
+                                     mu0,Xty, n_beta_samples)
+
+  }
+
 
   beta_samples <- data.frame(beta_samples)
   names(beta_samples) <- c("treatment", "control", covs_df, "sigma")
@@ -498,7 +584,7 @@ setMethod("bdplm",
 ################################################################################
 discount_lm <- function(df, alpha_max, fix_alpha,
                          number_mcmc_alpha,
-                         weibull_shape, weibull_scale){
+                         weibull_shape, weibull_scale, method){
 
   # Create formula
   cnames <- names(df)
@@ -519,17 +605,33 @@ discount_lm <- function(df, alpha_max, fix_alpha,
   sigma2_beta <- lm_summ$cov.unscaled[2,2]*sigma2
   beta        <- rnorm(number_mcmc_alpha,lm_summ$coefficients[2,1],sqrt(sigma2_beta))
 
-  p_hat  <- mean(beta>0)
-  p_hat  <- ifelse(p_hat > 0.5, 1 - p_hat, p_hat)
 
-  if(fix_alpha){
-    alpha0 <- alpha_max
-  } else{
-    alpha0 <- pweibull(p_hat, shape = weibull_shape, scale = weibull_scale)*alpha_max
+  ### Compute posterior comparison
+  if(method == "fixed"){
+    p_hat  <- mean(beta>0)
+  } else if(method == "mc"){
+    Z     <- beta^2/sigma2_beta
+    p_hat <- pchisq(Z,1,lower.tail=FALSE)
   }
 
-  res <- list(p_hat                     = p_hat,
-              alpha_discount            = alpha0)
+
+  ### Compute alpha, the discount weight
+  if(fix_alpha){
+    alpha_discount <- alpha_max
+  } else{
+    if (method == "mc") {
+      alpha_discount <- pweibull(p_hat, shape=weibull_shape,
+                                 scale=weibull_scale)*alpha_max
+    } else if (method == "fixed"){
+      p_hat          <- ifelse(p_hat > 0.5, 1 - p_hat, p_hat)
+      alpha_discount <- pweibull(p_hat, shape=weibull_shape,
+                                 scale=weibull_scale)*alpha_max
+    }
+  }
+
+
+  res <- list(p_hat          = p_hat,
+              alpha_discount = alpha_discount)
   res
 }
 
