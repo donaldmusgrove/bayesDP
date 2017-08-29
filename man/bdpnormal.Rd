@@ -129,6 +129,17 @@ the following components:
    list. Similar entries as \code{posterior_treament}. Only present if a
    control group is specified.
  }
+
+ \item{\code{final}}{
+   list. Contains the final comparison object, dependent on the analysis type:}
+   \itemize{
+     \item{One-arm analysis:}{
+       vector. Posterior chain of the mean.}
+     \item{Two-arm analysis:}{
+       vector. Posterior chain of the mean difference comparing treatment and
+       control groups.}
+  }
+
  \item{\code{args1}}{
    list. Entries contain user inputs. In addition, the following elements
    are ouput:}

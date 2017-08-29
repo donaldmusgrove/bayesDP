@@ -140,6 +140,17 @@
 #'    list. Similar entries as \code{posterior_treament}. Only present if a
 #'    control group is specified.
 #'  }
+#'
+#'  \item{\code{final}}{
+#'    list. Contains the final comparison object, dependent on the analysis type:}
+#'    \itemize{
+#'      \item{One-arm analysis:}{
+#'        vector. Posterior chain of the mean.}
+#'      \item{Two-arm analysis:}{
+#'        vector. Posterior chain of the mean difference comparing treatment and
+#'        control groups.}
+#'   }
+#'
 #'  \item{\code{args1}}{
 #'    list. Entries contain user inputs. In addition, the following elements
 #'    are ouput:}
@@ -409,14 +420,11 @@ setMethod("bdpnormal",
     final <- NULL
   } else{
     if(arm2){
-      #R0      <- log(posterior_treatment$posterior_hazard)-log(posterior_control$posterior_hazard)
-      #V0      <- 1/apply(R0,2,var)
-      #logHR0  <- R0%*%V0/sum(V0)
-      final   <- list()
-      final$posterior_loghazard <- 1 #logHR0
+      final           <- list()
+      final$posterior <- posterior_treatment$posterior_mu - posterior_control$posterior_mu
     } else{
-      final                    <- list()
-      final$posterior_survival <- 1 #posterior_treatment$posterior_survival
+      final           <- list()
+      final$posterior <- posterior_treatment$posterior_mu
     }
   }
 

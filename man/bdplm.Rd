@@ -19,22 +19,26 @@ bdplm(formula = formula, data = data, data0 = NULL,
 more information, including specification of treatment
 data indicators.}
 
-\item{data}{a data frame containing the current data variables in the model.}
+\item{data}{a data frame containing the current data variables in the model.
+A column named \code{treatment} must be present; \code{treatment} must
+be binary and indicate treatment group vs. control group.}
 
 \item{data0}{a data frame containing the historical data variables in the model.
 The column labels of data and data0 must match.}
 
 \item{prior_treatment_effect}{scalar. The historical adjusted treatment effect.
-Default value is 0.}
+If left \code{NULL}, value is estimated from the historical data.}
 
 \item{prior_control_effect}{scalar. The historical adjusted control effect.
-Default value is 0.}
+If left \code{NULL}, value is estimated from the historical data.}
 
 \item{prior_treatment_sd}{scalar. The standard deviation of the historical
-adjusted treatment effect. Default value is 10000.}
+adjusted treatment effect. If left \code{NULL}, value is estimated from
+the historical data.}
 
 \item{prior_control_sd}{scalar. The standard deviation of the historical
-adjusted control effect. Default value is 10000.}
+adjusted control effect. If left \code{NULL}, value is estimated from
+the historical data.}
 
 \item{prior_covariate_effect}{vector. The prior mean(s) of the covariate
 effect(s). Default value is zero. If a single value is input, the
@@ -98,8 +102,14 @@ the following components:
        data frame. The posterior draws of the covariates, the intercept, and
        the treatment effect. The grid of sigma values are included.}
      \item{\code{alpha_discount}}{
-       numeric. The posterior probability of the stochastic comparison
-       between the current and historical data.}
+       vector. The posterior probability of the stochastic comparison
+       between the current and historical data for each of the treatment
+       and control arms. If \code{method="mc"}, the result is a matrix of
+       estimates, otherwise for \code{method="fixed"}, the result is a vector
+       of estimates.}
+     \item{\code{estimates}}{
+       list. The posterior means and standard errors of the intercept,
+       treatment effect, covariate effect(s) and error variance.}
    }
 }
 }
@@ -123,11 +133,11 @@ the following components:
   proability (\code{p}) that the covariate effect of an historical data indicator is
   significantly different from zero. The comparison metric \code{p} is then
   input into the Weibull discount function and the final strength of the
-  historical data is returned (alpha).
+  historical data is returned (\code{alpha}).
 
   In the second stage, posterior estimation is performed where the discount
-  function parameter, \code{alpha}, is used as a fixed value for all posterior
-  estimation procedures.
+  function parameter, \code{alpha}, is used to weight the historical data
+  effects.
 
   The formula must include an intercept and both data and data0 must be present.
   The column names of data and data0 must match. See \code{examples} below for
