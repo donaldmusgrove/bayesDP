@@ -69,7 +69,7 @@ Throughout this vignette, we use the terms `current`, `historical`, `treatment`,
 
 If only treatment data is input, the function considers the analysis a one-arm trial. If treatment data + control data is input, then it is considered a two-arm trial.
 
-Note that the `bdplm` function currently only has support for a two-arm clinical trial where current and historical treatment and current and historical control data are all present.  
+**Note that the `bdplm` function currently only has support for a two-arm clinical trial where current and historical treatment and current and historical control data are all present.**  
 
 
 
@@ -126,5 +126,99 @@ During estimation, a user may be interested in selecting values of $w_{shape}$ a
 
 
 ## Estimation of the posterior distribution of the current data, conditional on the historical data
-This section details the modeling scheme used to estimate the parameters of the linear regression model. Using what we call the Gelman parameterization (see Gelman's Bayesian data analysis, 3rd edition, chapter 14, for more information), in vector notation the model can be written
-FINISH HERE WITH DERIVATION.
+This section details the modeling scheme used to estimate the parameters of the linear regression model. In vector notation the model can be written
+$$
+\begin{array}{rcl}
+\mathbf{y} & \sim & \mathcal{N}\left(\mathbf{X}\boldsymbol{\beta},\thinspace\boldsymbol{\Sigma}_{y}\right),\\
+\\
+\boldsymbol{\beta} & \sim & \mathcal{N}\left(\boldsymbol{\mu}_{\beta},\thinspace\boldsymbol{\Sigma}_{\beta}\right),
+\end{array}
+$$
+where $\boldsymbol{\mu}_{\beta}=\left(\mu_0,\,\mu_1,\,\mu_2,\dots,\,\mu_m\right)^T$
+and $\boldsymbol{\Sigma}_{\beta}=\mbox{diag}\left(\tau^2_0/\alpha_{00},\,\tau^2_1/\alpha{01},\,\tau^2_2,\dots,\tau^2_m\right)$ are known and $\boldsymbol{\Sigma}_y=\sigma^2\mathbf{I}_n$. Here, $\mu_0$ and $\mu_1$ are the prior means of the control and treatment effects, respectively, while $\mu_2,\dots,\,\mu_m$ are the prior means of the covariate effects. Likewise, $\tau^2_0/\alpha_{00}$ and $\tau^2_1/\alpha_{01}$ are the prior variances of the control and treatment effects (weighted by the discount function result $\alpha$), respectively, while $\tau^2_2,\dots,\tau^2_m$ are the prior variances of the remaining covariate effects.
+
+Using what we refer to as the Gelman parameterization (see Gelman's Bayesian data analysis, 3rd edition, chapter 14, for more information), the model can be reparameterized to improve computational efficiency. First, write
+$$
+\mathbf{y}_{\ast}=\left(\begin{array}{c}
+\mathbf{y}\\
+\boldsymbol{\mu}_{\beta}
+\end{array}\right),\thinspace\mathbf{X}_{\ast}=\left(\begin{array}{c}
+\mathbf{X}\\
+\mathbf{I}_m
+\end{array}\right),\thinspace\boldsymbol{\Sigma}_{\ast}=\left(\begin{array}{cc}
+\boldsymbol{\Sigma}_y & 0\\
+0 & \boldsymbol{\Sigma}_{\beta}
+\end{array}\right).
+$$
+Then, the Gelman parameterization has the form
+$$
+\mathbf{y}_{\ast}=\mathbf{X}_{\ast}\boldsymbol{\beta}+\boldsymbol{\varepsilon},\,\,\,\boldsymbol{\varepsilon}\sim\mathcal{N}\left(\mathbf{0},\,\boldsymbol{\Sigma}_{\ast}\right).
+$$
+The estimate of $\boldsymbol{\beta}$ is computed as
+$$
+\hat{\boldsymbol{\beta}}=\mathbf{V}_{\beta}\mathbf{X}_{\ast}^T\boldsymbol{\Sigma}_{\ast}^{-1}\mathbf{y}_{\ast},
+$$
+where
+$$
+\mathbf{V}_{\beta}=\left(\mathbf{X}_{\ast}^T\boldsymbol{\Sigma}_{\ast}^{-1}\mathbf{X}_{\ast}\right)^{-1}.
+$$
+This estimate of $\hat{\boldsymbol{\beta}}$ is the posterior mean and relies on an unknown parameter, $\sigma^2$. The marginal posterior distribution of $\sigma^2$ is found as
+$$
+\begin{array}{rcl}
+\pi\left(\sigma^2\mid\mathbf{y}\right) & \propto & {\displaystyle \left(\frac{1}{\sigma^2}\right)^{n/2+1}\left|\mathbf{V}_{\beta}\right|^{1/2}\exp\left\{ -\frac{1}{2}\left(\mathbf{y}_{\ast}-\mathbf{X}_{\ast}\hat{\boldsymbol{\beta}}\right)^T\boldsymbol{\Sigma}_{\ast}^{-1}\left(\mathbf{y}_{\ast}-\mathbf{X}_{\ast}\hat{\boldsymbol{\beta}}\right)\right\} }.
+\end{array}
+$$
+Notice that both $\mathbf{V}_{\beta}$ and $\Sigma_{\ast}$ contain $\sigma^2$. Thus, this marginal posterior does not have a known distribution. We resort to a grid search of $\sigma^2$ where 100s or 1000s of values of $\sigma^2$ are proposed, on a grid, and the proposed values are sampled with probability proportional to the likelihood evaluated at the proposal. 
+
+Finally, values of $\sigma^2$ sampled from the posterior distribution are then used to sample values of $\boldsymbol{\beta}$ from 
+$$
+\boldsymbol{\beta} \sim \mathcal{N}\left(\hat{\boldsymbol{\beta}},\, \mathbf{V}_{\beta}\right).
+$$
+
+## Function inputs
+The data inputs for `bdplm` are via dataframes `data` and `data0` that must have matching column names. Each dataframe must have a binary column named `treatment` that indicates treatment vs. control. If no covariate columns are present, users should use the `bdpnormal` function. Currently, both `data` and `data0` must be input since only a two-armed clinical trial with historical data has been implemented.
+
+
+# Examples
+## Two-arm trial
+Throughout this package, we define a two-arm trial as an analysis where a current and/or historical control arm is present. Below we simulate a dataframe and view the estimates of the model fit.
+
+```{r}
+set.seed(42)
+### Simulate  data
+# Sample sizes
+n_t  <- 25  #current treatment sample size
+n_c  <- 25  #current control sample size
+n_t0 <- 50  #historical treatment sample size
+n_c0 <- 50  #historical treatment sample size
+
+# Treatment and historical indicators
+treatment  <- c(rep(1, n_t+n_t0), rep(0, n_c+n_c0))
+historical <- c(rep(0, n_t), rep(1,n_t0), rep(0, n_c), rep(1,n_c0))
+
+# Covariate effect
+x    <- rnorm(n_t+n_c+n_t0+n_c0, 34, 5) 
+
+# Outcome
+Y  <- treatment + 0*historical + x*3.5 + rnorm(n_t+n_c+n_t0+n_c0,0,0.1)
+
+# Place data in a single dataframe
+df <- data.frame(Y=Y, treatment=treatment, historical=historical, x=x)
+
+# Create current and historical dataframes
+df_  <- subset(df, historical==0)
+df_0 <- subset(df, historical==1)
+
+
+# Fit the model with default inputs
+fit <- bdplm(formula=Y ~ treatment+x,
+             data=df_, data0=df_0)
+
+# View estimates:
+fit$estimates$coef
+
+# View alpha discount weight parameters:
+fit$alpha_discount
+
+```
+

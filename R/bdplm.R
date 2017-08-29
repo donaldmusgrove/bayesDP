@@ -8,6 +8,8 @@
 #'   more information, including specification of treatment
 #'   data indicators.
 #' @param data a data frame containing the current data variables in the model.
+#'   A column named \code{treatment} must be present; \code{treatment} must
+#'   be binary and indicate treatment group vs. control group.
 #' @param data0 a data frame containing the historical data variables in the model.
 #'   The column labels of data and data0 must match.
 #' @param prior_treatment_effect scalar. The historical adjusted treatment effect.
