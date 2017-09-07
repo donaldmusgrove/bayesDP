@@ -455,7 +455,8 @@ posterior_normal <- function(mu, sigma, N, mu0, sigma0, N0, alpha_max,
   # Current data:
   if(!is.null(N)){
     posterior_flat_sigma2 <- 1/rgamma(number_mcmc, (N - 1)/2, ((N - 1) * sigma^2)/2)
-    posterior_flat_mu     <- rnorm(number_mcmc, mu, (posterior_flat_sigma2/((N-1)+1))^0.5)
+    s                     <- (posterior_flat_sigma2/((N-1)+1))^0.5
+    posterior_flat_mu     <- rnorm(number_mcmc, mu, s)
   } else{
     posterior_flat_mu <- posterior_flat_sigma2 <- NULL
   }
@@ -463,7 +464,8 @@ posterior_normal <- function(mu, sigma, N, mu0, sigma0, N0, alpha_max,
   # Historical data:
   if(!is.null(N0)){
     prior_sigma2 <- 1/rgamma(number_mcmc, (N0-1)/2, ((N0-1)*sigma0^2)/2)
-    prior_mu     <- rnorm(number_mcmc, mu0, (prior_sigma2/((N0-1)+1))^0.5)
+    s0           <- (prior_sigma2/((N0-1)+1))^0.5
+    prior_mu     <- rnorm(number_mcmc, mu0, s0)
   } else{
     prior_mu  <- prior_sigma2 <- NULL
   }
@@ -481,9 +483,10 @@ posterior_normal <- function(mu, sigma, N, mu0, sigma0, N0, alpha_max,
     if(method == "fixed"){
       p_hat <- mean(posterior_flat_mu < prior_mu)   # larger is higher failure
     } else if(method == "mc"){
-      v     <- posterior_flat_sigma2
-      v0    <- prior_sigma2
-      Z     <- (posterior_flat_mu-prior_mu)^2 / (v+v0)
+      #v     <- posterior_flat_sigma2
+      #v0    <- prior_sigma2
+      #Z     <- (posterior_flat_mu-prior_mu)^2 / (v+v0)
+      Z     <- (posterior_flat_mu-prior_mu)^2 / (s^2+s0^2)
       p_hat <- pchisq(Z,1,lower.tail=FALSE)
     }
 

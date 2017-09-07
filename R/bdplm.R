@@ -38,9 +38,9 @@
 #'   the second value is used to weight the historical control group.
 #' @param fix_alpha logical. Fix alpha at alpha_max? Default value is FALSE.
 #' @param number_mcmc_alpha scalar. Number of Monte Carlo
-#'   simulations for estimating the historical data weight. Default is 10000.
+#'   simulations for estimating the historical data weight. Default is 5000.
 #' @param number_mcmc_sigmagrid scalar. Grid size for computing sigma.
-#'   Default is 1000. See "Details" for more information.
+#'   Default is 5000. See "Details" for more information.
 #' @param number_mcmc_sigma scalar. Number of Monte Carlo simulations for
 #'   estimating sigma. Default is 1000. See "Details" for more information.
 #' @param number_mcmc_beta scalar. Number of Monte Carlo simulations for
@@ -156,8 +156,8 @@ setGeneric("bdplm",
            prior_control_sd          = NULL, #1e4,
            prior_covariate_effect    = 0,
            prior_covariate_sd        = 1e4,
-           number_mcmc_alpha         = 10000,
-           number_mcmc_sigmagrid     = 1000,
+           number_mcmc_alpha         = 5000,
+           number_mcmc_sigmagrid     = 5000,
            number_mcmc_sigma         = 100,
            number_mcmc_beta          = 10000,
            alpha_max                 = 1,
@@ -179,8 +179,8 @@ setMethod("bdplm",
            prior_control_sd          = NULL, #1e4,
            prior_covariate_effect    = 0,
            prior_covariate_sd        = 1e4,
-           number_mcmc_alpha         = 10000,
-           number_mcmc_sigmagrid     = 1000,
+           number_mcmc_alpha         = 5000,
+           number_mcmc_sigmagrid     = 5000,
            number_mcmc_sigma         = 100,
            number_mcmc_beta          = 10000,
            alpha_max                 = 1,
@@ -507,7 +507,7 @@ setMethod("bdplm",
     lower <- 1/qgamma(.9999999999,a/2,(a*b)/2)
     upper <- 1/qgamma(.0000000001,a/2,(a*b)/2)
 
-    grid_sigma2 <- seq(lower,upper,length.out=number_mcmc_sigmagrid)
+    grid_sigma2 <- runif(number_mcmc_sigmagrid,lower,upper)
 
     ### Sample candidate values of sigma2
     sigma2candidates <- sigma2marginalmc(n            = number_mcmc_sigmagrid,

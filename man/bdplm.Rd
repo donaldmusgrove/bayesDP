@@ -9,7 +9,7 @@ bdplm(formula = formula, data = data, data0 = NULL,
   prior_treatment_effect = NULL, prior_control_effect = NULL,
   prior_treatment_sd = NULL, prior_control_sd = NULL,
   prior_covariate_effect = 0, prior_covariate_sd = 10000,
-  number_mcmc_alpha = 10000, number_mcmc_sigmagrid = 1000,
+  number_mcmc_alpha = 5000, number_mcmc_sigmagrid = 5000,
   number_mcmc_sigma = 100, number_mcmc_beta = 10000, alpha_max = 1,
   fix_alpha = FALSE, weibull_scale = 0.135, weibull_shape = 3,
   method = "fixed")
@@ -53,10 +53,10 @@ care must be taken to ensure the length of the input matches the number of
 covariates.}
 
 \item{number_mcmc_alpha}{scalar. Number of Monte Carlo
-simulations for estimating the historical data weight. Default is 10000.}
+simulations for estimating the historical data weight. Default is 5000.}
 
 \item{number_mcmc_sigmagrid}{scalar. Grid size for computing sigma.
-Default is 1000. See "Details" for more information.}
+Default is 5000. See "Details" for more information.}
 
 \item{number_mcmc_sigma}{scalar. Number of Monte Carlo simulations for
 estimating sigma. Default is 1000. See "Details" for more information.}
