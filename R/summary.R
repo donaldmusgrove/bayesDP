@@ -541,52 +541,5 @@ setMethod("summary", signature(object = "bdpsurvival"), function(object){
   }
 })
 
-# Helper functions:
 
-pp <- function(m){
-  write.table(format(m, justify="right"),
-              row.names=T, col.names=F, quote=F)
-}
-
-
-#' @title bdpregression Object Summary
-#' @description \code{summary} method for class \code{bdpregression}.
-#' @param object object of class \code{bdpregression}. The result of a call to the
-#'   \code{\link{bdpregression}} function.
-#'
-#' @details Displays a summary of the \code{bdpregression} fit including the
-#'   input data, the stochastic comparison between current and historical
-#'   data, and the resulting historical data weight (alpha). If historical
-#'   data is missing then no stochastic comparison nor weight are displayed.
-#'
-#'   ...
-#'
-#' @import methods
-#' @importFrom utils head
-#' @importFrom utils write.table
-#' @export
-setMethod("summary", signature(object = "bdpregression"), function(object){
-
-
-  posterior_treatment <- object$posterior_treatment
-  posterior_control   <- object$posterior_control
-  arm2                <- object$args1$arm2
-
-  if(!arm2){
-    summ <- summary(posterior_treatment$posterior_regression)
-
-    cat("One-armed bdp regression")
-    cat("\n")
-    print(summ)
-
-    if(!is.null(posterior_treatment$p_hat)){
-      cat(paste0("Stochastic comparison (p_hat) - treatment (current vs. historical data): ",
-                 round(posterior_treatment$p_hat,4)))
-      cat("\n")
-      cat(paste0("Discount function value (alpha) - treatment: ",
-                 round(posterior_treatment$alpha_discount,4)))
-    }
-  }
-
-})
 
