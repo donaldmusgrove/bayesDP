@@ -386,16 +386,17 @@ setMethod("bdplm",
 
     cnames0 <- names(df0)
     cnames0 <- cnames0[!(cnames0 %in% c("Y", "intercept", "historical","treatment","control"))]
-    cnames0 <- c("treatment", "control", cnames0)
+    cnames0 <- c("treatment","control", cnames0)
     f0      <- paste0("Y~ -1+",paste0(cnames0,collapse="+"))
 
     fit_0   <- lm(f0, data=df0)
     summ_0  <- summary(fit_0)
 
-    if(is.null(prior_treatment_effect)) prior_treatment_effect <- summ_0$coef[2,1]
-    if(is.null(prior_control_effect))   prior_control_effect   <- summ_0$coef[1,1]
-    if(is.null(prior_treatment_sd))     prior_treatment_sd     <- summ_0$coef[2,2]
-    if(is.null(prior_control_sd))       prior_control_sd       <- summ_0$coef[1,2]
+    if(is.null(prior_treatment_effect)) prior_treatment_effect <- summ_0$coef[1,1]
+    if(is.null(prior_control_effect))   prior_control_effect   <- summ_0$coef[2,1]
+
+    if(is.null(prior_treatment_sd))     prior_treatment_sd     <- summ_0$coef[1,2]
+    if(is.null(prior_control_sd))       prior_control_sd       <- summ_0$coef[2,2]
   }
 
 
@@ -414,8 +415,8 @@ setMethod("bdplm",
   # Estimate augmented treatment effect
   ##############################################################################
   ### Compute prior terms
-  tau2   <- c(prior_control_sd, prior_treatment_sd, prior_covariate_sd)^2
-  mu0    <- c(prior_control_effect, prior_treatment_effect, prior_covariate_effect)
+  tau2   <- c(prior_treatment_sd, prior_control_sd, prior_covariate_sd)^2
+  mu0    <- c(prior_treatment_effect, prior_control_effect, prior_covariate_effect)
 
 
   ### Calculate constants from current data
