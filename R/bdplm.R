@@ -463,6 +463,7 @@ setMethod("bdplm",
                                        mu0          = mu0,
                                        ystar        = ystar)
 
+
     ### Normalize the marginal posteriors (log-likelihoods) and exponentiate
     logL  <- sigma2candidates$logL
     logL  <- logL[is.finite(logL)]
