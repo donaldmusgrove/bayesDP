@@ -156,23 +156,38 @@ the following components:
   coefficients.
 }
 \examples{
-# Simulate  data
-n_t  <- 25
-n_c  <- 25
-n_t0 <- 50
-n_c0 <- 50
-x          <- rnorm(n_t+n_c+n_t0+n_c0, 34, 5)
+# Set sample sizes
+n_t  <- 30     # Current treatment sample size
+n_c  <- 30     # Current control sample size
+n_t0 <- 80     # Historical treatment sample size
+n_c0 <- 80     # Historical control sample size
 
-treatment  <- c(rep(1, n_t+n_t0), rep(0, n_c+n_c0))
-historical <- c(rep(0, n_t), rep(1,n_t0), rep(0, n_c), rep(1,n_c0))
+# Treatment group vectors for current and historical data
+treatment   <- c(rep(1,n_t), rep(0,n_c))
+treatment0  <- c(rep(1,n_t0), rep(0,n_c0))
 
-Y  <- treatment + 0*historical + x*3.5 + rnorm(n_t+n_c+n_t0+n_c0,0,0.1)
-df <- data.frame(Y=Y, treatment=treatment, historical=historical, x=x)
+# Simulate a covariate effect for current and historical data
+x  <- rnorm(n_t+n_c, 1, 5)
+x0 <- rnorm(n_t0+n_c0, 1, 5)
 
-df_  <- subset(df, historical==0)
-df_0 <- subset(df, historical==1)
+# Simulate outcome:
+# - Intercept of 10 for current and historical data
+# - Treatment effect of 34 for current data
+# - Treatment effect of 30 for historical data
+# - Covariate effect of 3 for current and historical data
+Y  <- 10 + 34*treatment  + x*3 + rnorm(n_t+n_c,0,5)
+Y0 <- 10 + 30*treatment0 + x0*3 + rnorm(n_t0+n_c0,0,5)
 
-fit <- bdplm(formula=Y ~ treatment+x,
-             data=df_, data0=df_0)
+# Place data into separate treatment and control data frames and
+# assign historical = 0 (current) or historical = 1 (historical)
+df_ <- data.frame(Y=Y, treatment=treatment, x=x, historical=0, intercept=1)
+df0 <- data.frame(Y=Y0, treatment=treatment0, x=x0, historical=1, intercept=1)
+
+# Fit model using default settings
+fit <- bdplm(formula=Y ~ treatment+x, data=df_, data0=df0)
+
+# Look at estimates and discount weight
+fit$estimates
+fit$alpha_discount
 
 }
