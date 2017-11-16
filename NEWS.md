@@ -1,3 +1,13 @@
+# bayesDP 1.3.0
+## Major new features
+* Addition of the bdplm function.
+* Removal of bdpregression
+
+## Bug fixes and minor improvements
+* Additional documentation
+* Code changes/fixes
+
+
 # bayesDP 1.2.0
 ## Major new features
 * Supports one-arm regression analysis
