@@ -29,7 +29,6 @@
 setMethod("plot", signature(x = "bdpnormal"), function(x, type=NULL, print=TRUE){
   posterior_treatment <- x$posterior_treatment
   posterior_control   <- x$posterior_control
-  two_side            <- x$args1$two_side
   N0_t                <- x$args1$N0_t
   N0_c                <- x$args1$N0_c
   N_t                 <- x$args1$N_t
@@ -132,12 +131,7 @@ setMethod("plot", signature(x = "bdpnormal"), function(x, type=NULL, print=TRUE)
   ### - Only makes sense to plot if Current/historical treatment are present or
   ###   both current/historical control are present
   ##############################################################################
-  if(!two_side | method == "mc"){
-    p_hat <- seq(0,1,length.out=100)
-  } else{
-    p_hat <- seq(0,1,length.out=100)
-    p_hat <- ifelse(p_hat>.5,1-p_hat,p_hat)
-  }
+  p_hat <- seq(0,1,length.out=100)
 
   discountfun_plot <- NULL
 
@@ -148,8 +142,10 @@ setMethod("plot", signature(x = "bdpnormal"), function(x, type=NULL, print=TRUE)
     D1 <- data.frame(group = "Treatment",
                      y     = discount_function_treatment,
                      x     = seq(0,1,length.out=100))
-    D2 <- data.frame(group=c("Treatment"), p_hat=median(posterior_treatment$p_hat))
-    D3 <- data.frame(group=c("Treatment"), p_hat=median(posterior_treatment$alpha_discount))
+    D2 <- data.frame(group = c("Treatment"),
+                     p_hat = median(posterior_treatment$p_hat))
+    D3 <- data.frame(group = c("Treatment"),
+                     p_hat = median(posterior_treatment$alpha_discount))
 
     discountfun_plot <- ggplot() +
       geom_line(data=D1,aes_string(y="y",x="x",color="group"),size=1) +

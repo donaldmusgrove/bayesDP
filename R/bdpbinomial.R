@@ -176,7 +176,7 @@
 #'
 #' @rdname bdpbinomial
 #' @import methods
-#' @importFrom stats sd density is.empty.model median model.offset model.response pweibull quantile rbeta rgamma rnorm var vcov pchisq
+#' @importFrom stats sd density is.empty.model median model.offset model.response pweibull quantile rbeta rgamma rnorm var vcov
 #' @aliases bdpbinomial,ANY-method
 #' @export bdpbinomial
 bdpbinomial <- setClass("bdpbinomial",
@@ -443,8 +443,8 @@ posterior_binomial <- function(y, N, y0, N0, alpha_max, fix_alpha, a0, b0,
     } else if(method == "mc"){
       v     <- 1/((y + a0 - 1)/posterior_flat^2 + (N-y+b0-1)/(posterior_flat-1)^2)
       v0    <- 1/((y0 + a0 - 1)/prior^2 + (N0-y0+b0-1)/(prior-1)^2)
-      Z     <- (posterior_flat-prior)^2 / (v+v0)
-      p_hat <- pchisq(Z,1,lower.tail=FALSE)
+      Z     <- abs(posterior_flat-prior) / (v+v0)
+      p_hat <- 2*(1-pnorm(Z))
     }
 
 

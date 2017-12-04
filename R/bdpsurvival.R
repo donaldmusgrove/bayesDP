@@ -223,7 +223,7 @@
 #'
 #' @rdname bdpsurvival
 #' @import methods
-#' @importFrom stats sd density is.empty.model median model.offset model.response pweibull quantile rbeta rgamma rnorm var vcov pchisq
+#' @importFrom stats sd density is.empty.model median model.offset model.response pweibull quantile rbeta rgamma rnorm var vcov
 #' @importFrom survival Surv survSplit
 #' @aliases bdpsurvival,ANY-method
 #' @export bdpsurvival
@@ -605,8 +605,8 @@ posterior_survival <- function(S, S0, surv_time, alpha_max, fix_alpha, a0, b0,
 
       v          <- as.matrix(posterior_flat_hazard[,1:nIntervals]^2) %*% (surv_times^2/a_post[1:nIntervals])
       v0         <- as.matrix(prior_hazard[,1:nIntervals]^2) %*% (surv_times^2/a_post0[1:nIntervals])
-      Z          <- (logS - logS0)^2 / (v+v0)
-      p_hat      <- pchisq(Z, df=1, lower.tail=FALSE)
+      Z          <- abs(logS - logS0) / (v+v0)
+      p_hat      <- 2*(1-pnorm(Z))
 
     } else if(method == "fixed"){
       p_hat <- mean(posterior_flat_survival > prior_survival)   # higher is better survival
@@ -633,8 +633,8 @@ posterior_survival <- function(S, S0, surv_time, alpha_max, fix_alpha, a0, b0,
       v0    <- 1/(a_post0)
       R     <- rowSums(as.matrix(R0/(v+v0) / sum(1/(v+v0))))
       V0    <- 1 / sum(1/(v+v0))
-      Z     <- R^2 / V0
-      p_hat <- pchisq(Z, df=1, lower.tail=FALSE)
+      Z     <- abs(R) / V0
+      p_hat <- 2*(1-pnorm(Z))
     } else if(method == "fixed"){
       R0     <- log(prior_hazard)-log(posterior_flat_hazard)
       V0     <- 1/apply(R0,2,var)

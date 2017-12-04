@@ -8,8 +8,8 @@
 bdpnormal(mu_t = NULL, sigma_t = NULL, N_t = NULL, mu0_t = NULL,
   sigma0_t = NULL, N0_t = NULL, mu_c = NULL, sigma_c = NULL,
   N_c = NULL, mu0_c = NULL, sigma0_c = NULL, N0_c = NULL,
-  alpha_max = 1, fix_alpha = FALSE, weibull_scale = 0.135,
-  weibull_shape = 3, number_mcmc = 10000, two_side = TRUE,
+  discount_function = "weibull", alpha_max = 1, fix_alpha = FALSE,
+  weibull_scale = 0.135, weibull_shape = 3, number_mcmc = 10000,
   method = "fixed", compare = TRUE)
 }
 \arguments{
@@ -39,6 +39,13 @@ group.}
 
 \item{N0_c}{scalar. Number of observations of the historical control group.}
 
+\item{discount_function}{character. Specify the discount function to use.
+Currently supports \code{weibull}, \code{scaledweibull}, and
+\code{identity}. The discount function \code{scaledweibull} scales
+the output of the Weibull CDF to have a max value of 1. The \code{identity}
+discount function uses the posterior probability directly as the discount
+weight. Default value is "\code{weibull}".}
+
 \item{alpha_max}{scalar. Maximum weight the discount function can apply.
 Default is 1. For a two-arm trial, users may specify a vector of two values
 where the first value is used to weight the historical treatment group and
@@ -61,9 +68,6 @@ treatment group and the second value is used to estimate the weight of the
 historical control group.}
 
 \item{number_mcmc}{scalar. Number of Monte Carlo simulations. Default is 10000.}
-
-\item{two_side}{logical. Indicator of two-sided test for the discount
-function. Default value is TRUE.}
 
 \item{method}{character. Analysis method with respect to estimation of the weight
 paramter alpha. Default value "\code{fixed}" estimates alpha once and holds it fixed

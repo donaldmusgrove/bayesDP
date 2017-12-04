@@ -43,7 +43,7 @@ the historical data.}
 \item{prior_covariate_effect}{vector. The prior mean(s) of the covariate
 effect(s). Default value is zero. If a single value is input, the
 the scalar is repeated to the length of the input covariates. Otherwise,
-care must be taken to ensure the length of the input matche the number of
+care must be taken to ensure the length of the input matches the number of
 covariates.}
 
 \item{prior_covariate_sd}{vector. The prior standard deviation(s) of the
@@ -118,7 +118,9 @@ the following components:
   in the presence of covariates using the regression analysis
   implementation of the Bayesian discount prior. This function is currently
   a barebones implementation and does not support \code{summary},
-  \code{plot}, or \code{print} methods.
+  \code{plot}, or \code{print} methods. Currently, the function only supports
+  a two-arm clinical trial where all of current and historical treatment and
+  current and historical control data are present.
 }
 \details{
 \code{bdplm} uses a two-stage approach for determining the

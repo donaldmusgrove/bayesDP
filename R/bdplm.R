@@ -3,7 +3,9 @@
 #'   in the presence of covariates using the regression analysis
 #'   implementation of the Bayesian discount prior. This function is currently
 #'   a barebones implementation and does not support \code{summary},
-#'   \code{plot}, or \code{print} methods.
+#'   \code{plot}, or \code{print} methods. Currently, the function only supports
+#'   a two-arm clinical trial where all of current and historical treatment and
+#'   current and historical control data are present.
 #' @param formula an object of class "formula." See "Details" for
 #'   more information, including specification of treatment
 #'   data indicators.
@@ -25,7 +27,7 @@
 #' @param prior_covariate_effect vector. The prior mean(s) of the covariate
 #'   effect(s). Default value is zero. If a single value is input, the
 #'   the scalar is repeated to the length of the input covariates. Otherwise,
-#'   care must be taken to ensure the length of the input matche the number of
+#'   care must be taken to ensure the length of the input matches the number of
 #'   covariates.
 #' @param prior_covariate_sd vector. The prior standard deviation(s) of the
 #'   covariate effect(s). Default value is 1e4. If a single value is input, the
@@ -154,7 +156,7 @@
 #'
 #' @rdname bdplm
 #' @import methods
-#' @importFrom stats density is.empty.model median model.offset model.response pweibull pnorm quantile rbeta rgamma rnorm var vcov contrasts<- dt gaussian lm.fit model.frame model.matrix.default offset rchisq terms terms.formula coefficients pchisq lm qgamma runif
+#' @importFrom stats density is.empty.model median model.offset model.response pweibull pnorm quantile rbeta rgamma rnorm var vcov contrasts<- dt gaussian lm.fit model.frame model.matrix.default offset terms terms.formula coefficients lm qgamma runif
 #' @aliases bdplm,ANY-method
 #' @useDynLib bayesDP
 #' @export bdplm
@@ -378,21 +380,21 @@ setMethod("bdplm",
   ##############################################################################
   # Estimate discount weights for each of the treatment and control arms
   ##############################################################################
-  discount_treatment <- discount_lm(df                = df_t,
-                                    alpha_max         = alpha_max[1],
-                                    fix_alpha         = fix_alpha,
-                                    number_mcmc_alpha = number_mcmc_alpha,
-                                    weibull_shape     = weibull_shape[1],
-                                    weibull_scale     = weibull_scale[1],
-                                    method            = method)
+  discount_treatment <- discount_lm(df                 = df_t,
+                                    alpha_max          = alpha_max[1],
+                                    fix_alpha          = fix_alpha,
+                                    number_mcmc_alpha  = number_mcmc_alpha,
+                                    weibull_shape      = weibull_shape[1],
+                                    weibull_scale      = weibull_scale[1],
+                                    method             = method)
 
-  discount_control <- discount_lm(df                = df_c,
-                                  alpha_max         = alpha_max[2],
-                                  fix_alpha         = fix_alpha,
-                                  number_mcmc_alpha = number_mcmc_alpha,
-                                  weibull_shape     = weibull_shape[2],
-                                  weibull_scale     = weibull_scale[2],
-                                  method            = method)
+  discount_control <- discount_lm(df                 = df_c,
+                                  alpha_max          = alpha_max[2],
+                                  fix_alpha          = fix_alpha,
+                                  number_mcmc_alpha  = number_mcmc_alpha,
+                                  weibull_shape      = weibull_shape[2],
+                                  weibull_scale      = weibull_scale[2],
+                                  method             = method)
 
 
   ##############################################################################
@@ -607,8 +609,9 @@ setMethod("bdplm",
 #    - Estimate alpha based on the above comparison
 ################################################################################
 discount_lm <- function(df, alpha_max, fix_alpha,
-                         number_mcmc_alpha,
-                         weibull_shape, weibull_scale, method){
+                        number_mcmc_alpha,
+                        weibull_shape, weibull_scale,
+                        method){
 
   # Create formula
   cnames <- names(df)
@@ -634,8 +637,8 @@ discount_lm <- function(df, alpha_max, fix_alpha,
   if(method == "fixed"){
     p_hat  <- mean(beta>0)
   } else if(method == "mc"){
-    Z     <- beta^2/sigma2_beta
-    p_hat <- pchisq(Z,1,lower.tail=FALSE)
+    Z     <- abs(beta)/sigma2_beta
+    p_hat <- 2*(1-pnorm(Z))
   }
 
 
@@ -646,6 +649,7 @@ discount_lm <- function(df, alpha_max, fix_alpha,
     if (method == "mc") {
       alpha_discount <- pweibull(p_hat, shape=weibull_shape,
                                  scale=weibull_scale)*alpha_max
+
     } else if (method == "fixed"){
       p_hat          <- ifelse(p_hat > 0.5, 1 - p_hat, p_hat)
       alpha_discount <- pweibull(p_hat, shape=weibull_shape,
