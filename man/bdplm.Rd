@@ -104,20 +104,18 @@ Monte Carlo iteration. See the the \code{bdplm} vignette \cr
 An object of class "\code{bdplm}" is a list containing at least
 the following components:
 \describe{
-   \itemize{
-     \item{\code{posterior}}{
-       data frame. The posterior draws of the covariates, the intercept, and
-       the treatment effect. The grid of sigma values are included.}
-     \item{\code{alpha_discount}}{
-       vector. The posterior probability of the stochastic comparison
-       between the current and historical data for each of the treatment
-       and control arms. If \code{method="mc"}, the result is a matrix of
-       estimates, otherwise for \code{method="fixed"}, the result is a vector
-       of estimates.}
-     \item{\code{estimates}}{
-       list. The posterior means and standard errors of the intercept,
-       treatment effect, covariate effect(s) and error variance.}
-   }
+  \item{\code{posterior}}{
+    data frame. The posterior draws of the covariates, the intercept, and
+    the treatment effect. The grid of sigma values are included.}
+  \item{\code{alpha_discount}}{
+    vector. The posterior probability of the stochastic comparison
+    between the current and historical data for each of the treatment
+    and control arms. If \code{method="mc"}, the result is a matrix of
+    estimates, otherwise for \code{method="fixed"}, the result is a vector
+    of estimates.}
+  \item{\code{estimates}}{
+    list. The posterior means and standard errors of the intercept,
+    treatment effect, covariate effect(s) and error variance.}
 }
 }
 \description{
