@@ -76,8 +76,8 @@ Monte Carlo iteration. See the the \code{bdpnormal} vignette \cr
 \code{vignette("bdpnormal-vignette", package="bayesDP")} for more details.}
 
 \item{compare}{logical. Should a comparison object be included in the fit?
-For a one-sided analysis, the comparison object is simply the posterior
-chain of the treatment group parameter. For a two-sided analysis, the comparison
+For a one-arm analysis, the comparison object is simply the posterior
+chain of the treatment group parameter. For a two-arm analysis, the comparison
 object is the posterior chain of the treatment effect that compares treatment and
 control. If \code{compare=TRUE}, the comparison object is accessible in the
 \code{final} slot, else the \code{final} slot is \code{NULL}. Default is

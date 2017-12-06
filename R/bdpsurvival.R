@@ -19,6 +19,12 @@
 #' @param surv_time scalar. Survival time of interest for computing the
 #'   probability of survival for a single arm (OPC) trial. Default is
 #'   overall, i.e., current+historical, median survival time.
+#' @param discount_function character. Specify the discount function to use.
+#'   Currently supports \code{weibull}, \code{scaledweibull}, and
+#'   \code{identity}. The discount function \code{scaledweibull} scales
+#'   the output of the Weibull CDF to have a max value of 1. The \code{identity}
+#'   discount function uses the posterior probability directly as the discount
+#'   weight. Default value is "\code{weibull}".
 #' @param alpha_max scalar. Maximum weight the discount function can apply.
 #'   Default is 1. For a two-arm trial, users may specify a vector of two values
 #'   where the first value is used to weight the historical treatment group and
@@ -37,16 +43,14 @@
 #'   values where the first value is used to estimate the weight of the
 #'   historical treatment group and the second value is used to estimate the
 #'   weight of the historical control group.
-#' @param two_side logical. Indicator of two-sided test for the discount
-#'   function. Default value is TRUE.
 #' @param method character. Analysis method with respect to estimation of the weight
 #'   paramter alpha. Default value "\code{fixed}" estimates alpha once and holds it fixed
 #'   throughout the analysis. Alternative method "\code{mc}" estimates alpha for each
 #'   Monte Carlo iteration. See the the \code{bdpsurvival} vignette \cr
 #'   \code{vignette("bdpsurvival-vignette", package="bayesDP")} for more details.
 #' @param compare logical. Should a comparison object be included in the fit?
-#'   For a one-sided analysis, the comparison object is simply the posterior
-#'   chain of the treatment group parameter. For a two-sided analysis, the comparison
+#'   For a one-arm analysis, the comparison object is simply the posterior
+#'   chain of the treatment group parameter. For a two-arm analysis, the comparison
 #'   object is the posterior chain of the treatment effect that compares treatment and
 #'   control. If \code{compare=TRUE}, the comparison object is accessible in the
 #'   \code{final} slot, else the \code{final} slot is \code{NULL}. Default is
@@ -232,39 +236,39 @@ bdpsurvival <- setClass("bdpsurvival", slots = c(posterior_treatment = "list",
                                                  final = "list",
                                                  args1 = "list"))
 setGeneric("bdpsurvival",
-  function(formula       = formula,
-           data          = data,
-           breaks        = NULL,
-           a0            = 0.1,
-           b0            = 0.1,
-           surv_time     = NULL,
-           alpha_max     = 1,
-           fix_alpha     = FALSE,
-           number_mcmc   = 10000,
-           weibull_scale = 0.135,
-           weibull_shape = 3,
-           two_side      = TRUE,
-           method        = "fixed",
-           compare       = TRUE){
+  function(formula           = formula,
+           data              = data,
+           breaks            = NULL,
+           a0                = 0.1,
+           b0                = 0.1,
+           surv_time         = NULL,
+           discount_function = "weibull",
+           alpha_max         = 1,
+           fix_alpha         = FALSE,
+           number_mcmc       = 10000,
+           weibull_scale     = 0.135,
+           weibull_shape     = 3,
+           method            = "fixed",
+           compare           = TRUE){
              standardGeneric("bdpsurvival")
            })
 
 setMethod("bdpsurvival",
   signature(),
-  function(formula       = formula,
-           data          = data,
-           breaks        = NULL,
-           a0            = 0.1,
-           b0            = 0.1,
-           surv_time     = NULL,
-           alpha_max     = 1,
-           fix_alpha     = FALSE,
-           number_mcmc   = 10000,
-           weibull_scale = 0.135,
-           weibull_shape = 3,
-           two_side      = TRUE,
-           method        = "fixed",
-           compare       = TRUE){
+  function(formula           = formula,
+           data              = data,
+           breaks            = NULL,
+           a0                = 0.1,
+           b0                = 0.1,
+           surv_time         = NULL,
+           discount_function = "weibull",
+           alpha_max         = 1,
+           fix_alpha         = FALSE,
+           number_mcmc       = 10000,
+           weibull_scale     = 0.135,
+           weibull_shape     = 3,
+           method            = "fixed",
+           compare           = TRUE){
 
   ### Check data frame and ensure it has the correct column names
   namesData <- tolower(names(data))
@@ -285,8 +289,17 @@ setMethod("bdpsurvival",
   }
 
 
+  # Check that discount_function is input correctly
+  all_functions <- c("weibull", "scaledweibull", "identity")
+  function_match <- match(discount_function, all_functions)
+  if(is.na(function_match)) {
+    stop("discount_function input incorrectly.")
+  }
+
+
   historical <- NULL
   treatment <- NULL
+
 
   ##############################################################################
   # Quick check, if alpha_max, weibull_scale, or weibull_shape have length 1,
@@ -375,59 +388,59 @@ setMethod("bdpsurvival",
   }
 
   posterior_treatment <- posterior_survival(
-    S             = S_t,
-    S0            = S0_t,
-    surv_time     = surv_time,
-    alpha_max     = alpha_max[1],
-    fix_alpha     = fix_alpha,
-    a0            = a0,
-    b0            = b0,
-    number_mcmc   = number_mcmc,
-    weibull_shape = weibull_shape[1],
-    weibull_scale = weibull_scale[1],
-    two_side      = two_side,
-    breaks        = breaks,
-    arm2          = arm2,
-    method        = method)
+    S                 = S_t,
+    S0                = S0_t,
+    surv_time         = surv_time,
+    discount_function = discount_function,
+    alpha_max         = alpha_max[1],
+    fix_alpha         = fix_alpha,
+    a0                = a0,
+    b0                = b0,
+    number_mcmc       = number_mcmc,
+    weibull_shape     = weibull_shape[1],
+    weibull_scale     = weibull_scale[1],
+    breaks            = breaks,
+    arm2              = arm2,
+    method            = method)
 
   if(arm2){
     posterior_control <- posterior_survival(
-      S             = S_c,
-      S0            = S0_c,
-      alpha_max     = alpha_max[2],
-      fix_alpha     = fix_alpha,
-      a0            = a0,
-      b0            = b0,
-      surv_time     = surv_time,
-      number_mcmc   = number_mcmc,
-      weibull_shape = weibull_shape[2],
-      weibull_scale = weibull_scale[2],
-      two_side      = two_side,
-      breaks        = breaks,
-      arm2          = arm2,
-      method        = method)
+      S                 = S_c,
+      S0                = S0_c,
+      discount_function = discount_function,
+      alpha_max         = alpha_max[2],
+      fix_alpha         = fix_alpha,
+      a0                = a0,
+      b0                = b0,
+      surv_time         = surv_time,
+      number_mcmc       = number_mcmc,
+      weibull_shape     = weibull_shape[2],
+      weibull_scale     = weibull_scale[2],
+      breaks            = breaks,
+      arm2              = arm2,
+      method            = method)
   } else{
     posterior_control <- NULL
   }
 
 
-  args1 <- list(S_t           = S_t,
-                S_c           = S_c,
-                S0_t          = S0_t,
-                S0_c          = S0_c,
-                alpha_max     = alpha_max,
-                fix_alpha     = fix_alpha,
-                a0            = a0,
-                b0            = b0,
-                surv_time     = surv_time,
-                number_mcmc   = number_mcmc,
-                weibull_scale = weibull_scale,
-                weibull_shape = weibull_shape,
-                two_side      = two_side,
-                method        = method,
-                arm2          = arm2,
-                breaks        = breaks,
-                data          = data)
+  args1 <- list(S_t               = S_t,
+                S_c               = S_c,
+                S0_t              = S0_t,
+                S0_c              = S0_c,
+                discount_function = discount_function,
+                alpha_max         = alpha_max,
+                fix_alpha         = fix_alpha,
+                a0                = a0,
+                b0                = b0,
+                surv_time         = surv_time,
+                number_mcmc       = number_mcmc,
+                weibull_scale     = weibull_scale,
+                weibull_shape     = weibull_shape,
+                method            = method,
+                arm2              = arm2,
+                breaks            = breaks,
+                data              = data)
 
 
   ##############################################################################
@@ -468,9 +481,10 @@ setMethod("bdpsurvival",
 # 2) Estimate the posterior of the augmented data
 ################################################################################
 ### Combine  loss function and posterior estimation into one function
-posterior_survival <- function(S, S0, surv_time, alpha_max, fix_alpha, a0, b0,
+posterior_survival <- function(S, S0, surv_time, discount_function,
+                               alpha_max, fix_alpha, a0, b0,
                                number_mcmc, weibull_shape, weibull_scale,
-                               two_side, breaks, arm2, method){
+                               breaks, arm2, method){
 
 
   ### Extract intervals and count number of intervals
@@ -617,12 +631,20 @@ posterior_survival <- function(S, S0, surv_time, alpha_max, fix_alpha, a0, b0,
     if(fix_alpha){
       alpha_discount <- alpha_max
     } else{
-      if (!two_side | method == "mc") {
-        alpha_discount <- pweibull(p_hat, shape=weibull_shape, scale=weibull_scale)*alpha_max
-      } else if (two_side){
-        p_hat    <- ifelse(p_hat > 0.5, 1 - p_hat, p_hat)
-        alpha_discount <- pweibull(p_hat, shape=weibull_shape, scale=weibull_scale)*alpha_max
-      }
+        p_hat          <- 2*ifelse(p_hat > 0.5, 1 - p_hat, p_hat)
+
+        # Compute alpha discount based on distribution
+        if(discount_function == "weibull"){
+          alpha_discount <- pweibull(p_hat, shape=weibull_shape,
+                                     scale=weibull_scale)*alpha_max
+        } else if(discount_function == "scaledweibull"){
+          max_p <- pweibull(1, shape=weibull_shape, scale=weibull_scale)
+
+          alpha_discount <- pweibull(p_hat, shape=weibull_shape,
+                                     scale=weibull_scale)*alpha_max/max_p
+        } else if(discount_function == "identity"){
+          alpha_discount <- p_hat
+        }
     }
   } else{
     ### Weight historical data via (approximate) hazard ratio comparing
@@ -639,7 +661,7 @@ posterior_survival <- function(S, S0, surv_time, alpha_max, fix_alpha, a0, b0,
       R0     <- log(prior_hazard)-log(posterior_flat_hazard)
       V0     <- 1/apply(R0,2,var)
       logHR0 <- R0%*%V0/sum(V0)    #weighted average  of SE^2
-      p_hat <- mean(logHR0 > 0)    #larger is higher failure
+      p_hat  <- mean(logHR0 > 0)   #larger is higher failure
     } else{
       stop("Unrecognized method. Use one of 'fixed' or 'mc'")
     }
@@ -647,12 +669,20 @@ posterior_survival <- function(S, S0, surv_time, alpha_max, fix_alpha, a0, b0,
     if(fix_alpha){
       alpha_discount <- alpha_max
     } else{
-      if (!two_side | method == "mc") {
-        alpha_discount <- pweibull(p_hat, shape=weibull_shape, scale=weibull_scale)*alpha_max
-      } else if (two_side){
-        p_hat    <- ifelse(p_hat > 0.5, 1 - p_hat, p_hat)
-        alpha_discount <- pweibull(p_hat, shape=weibull_shape, scale=weibull_scale)*alpha_max
-      }
+        p_hat    <- 2*ifelse(p_hat > 0.5, 1 - p_hat, p_hat)
+
+        # Compute alpha discount based on distribution
+        if(discount_function == "weibull"){
+          alpha_discount <- pweibull(p_hat, shape=weibull_shape,
+                                     scale=weibull_scale)*alpha_max
+        } else if(discount_function == "scaledweibull"){
+          max_p <- pweibull(1, shape=weibull_shape, scale=weibull_scale)
+
+          alpha_discount <- pweibull(p_hat, shape=weibull_shape,
+                                     scale=weibull_scale)*alpha_max/max_p
+        } else if(discount_function == "identity"){
+          alpha_discount <- p_hat
+        }
     }
   }
 

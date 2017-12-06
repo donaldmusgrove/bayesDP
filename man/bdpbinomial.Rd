@@ -6,10 +6,10 @@
 \title{Bayesian Discount Prior: Binomial counts}
 \usage{
 bdpbinomial(y_t = NULL, N_t = NULL, y0_t = NULL, N0_t = NULL,
-  y_c = NULL, N_c = NULL, y0_c = NULL, N0_c = NULL, alpha_max = 1,
-  fix_alpha = FALSE, a0 = 1, b0 = 1, number_mcmc = 10000,
-  weibull_scale = 0.135, weibull_shape = 3, two_side = TRUE,
-  method = "fixed", compare = TRUE)
+  y_c = NULL, N_c = NULL, y0_c = NULL, N0_c = NULL,
+  discount_function = "weibull", alpha_max = 1, fix_alpha = FALSE,
+  a0 = 1, b0 = 1, number_mcmc = 10000, weibull_scale = 0.135,
+  weibull_shape = 3, method = "fixed", compare = TRUE)
 }
 \arguments{
 \item{y_t}{scalar. Number of events for the current treatment group.}
@@ -27,6 +27,13 @@ bdpbinomial(y_t = NULL, N_t = NULL, y0_t = NULL, N0_t = NULL,
 \item{y0_c}{scalar. Number of events for the historical control group.}
 
 \item{N0_c}{scalar. Sample size of the historical control group.}
+
+\item{discount_function}{character. Specify the discount function to use.
+Currently supports \code{weibull}, \code{scaledweibull}, and
+\code{identity}. The discount function \code{scaledweibull} scales
+the output of the Weibull CDF to have a max value of 1. The \code{identity}
+discount function uses the posterior probability directly as the discount
+weight. Default value is "\code{weibull}".}
 
 \item{alpha_max}{scalar. Maximum weight the discount function can apply.
 Default is 1. For a two-arm trial, users may specify a vector of two values
@@ -55,9 +62,6 @@ where the first value is used to estimate the weight of the historical
 treatment group and the second value is used to estimate the weight of the
 historical control group.}
 
-\item{two_side}{logical. Indicator of two-sided test for the discount
-function. Default value is TRUE.}
-
 \item{method}{character. Analysis method with respect to estimation of the weight
 paramter alpha. Default value "\code{fixed}" estimates alpha once and holds it fixed
 throughout the analysis. Alternative method "\code{mc}" estimates alpha for each
@@ -65,8 +69,8 @@ Monte Carlo iteration. See the the \code{bdpbinomial} vignette \cr
 \code{vignette("bdpbinomial-vignette", package="bayesDP")} for more details.}
 
 \item{compare}{logical. Should a comparison object be included in the fit?
-For a one-sided analysis, the comparison object is simply the posterior
-chain of the treatment group parameter. For a two-sided analysis, the comparison
+For a one-arm analysis, the comparison object is simply the posterior
+chain of the treatment group parameter. For a two-arm analysis, the comparison
 object is the posterior chain of the treatment effect that compares treatment and
 control. If \code{compare=TRUE}, the comparison object is accessible in the
 \code{final} slot, else the \code{final} slot is \code{NULL}. Default is

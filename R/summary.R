@@ -31,7 +31,6 @@ setMethod("summary", signature(object = "bdpnormal"), function(object){
   arm2                <- object$args$arm2
   posterior_treatment <- object$posterior_treatment
   posterior_control   <- object$posterior_control
-  two_side            <- object$args1$two_side
   mu_t                <- object$args1$mu_t
   sigma_t             <- object$args1$sigma_t
   N_t                 <- object$args1$N_t
@@ -154,7 +153,7 @@ setMethod("summary", signature(object = "bdpnormal"), function(object){
         cat("\n")
       }
     }
-    cat("alternative hypothesis: ", ifelse(two_side, "two.sided", "one.sided"))
+    cat("alternative hypothesis: two.sided")
     cat("\n")
 
     cat("95 percent CI: \n")
@@ -203,7 +202,6 @@ setMethod("summary", signature(object = "bdpbinomial"), function(object){
   arm2                <- object$args$arm2
   posterior_treatment <- object$posterior_treatment
   posterior_control   <- object$posterior_control
-  two_side            <- object$args1$two_side
   y_t                 <- object$args1$y_t
   N_t                 <- object$args1$N_t
   y_c                 <- object$args1$y_c
@@ -330,7 +328,7 @@ setMethod("summary", signature(object = "bdpbinomial"), function(object){
       }
     }
 
-    cat("alternative hypothesis: ", ifelse(two_side, "two.sided", "one.sided"))
+    cat("alternative hypothesis: two.sided")
     cat("\n")
     cat("95 percent CI:\n")
     cat(paste0(" "), comp_CI)

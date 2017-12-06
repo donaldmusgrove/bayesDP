@@ -34,6 +34,12 @@
 #'   the scalar is repeated to the length of the input covariates. Otherwise,
 #'   care must be taken to ensure the length of the input matches the number of
 #'   covariates.
+#' @param discount_function character. Specify the discount function to use.
+#'   Currently supports \code{weibull}, \code{scaledweibull}, and
+#'   \code{identity}. The discount function \code{scaledweibull} scales
+#'   the output of the Weibull CDF to have a max value of 1. The \code{identity}
+#'   discount function uses the posterior probability directly as the discount
+#'   weight. Default value is "\code{weibull}".
 #' @param alpha_max scalar. Maximum weight the discount function can apply.
 #'   Default is 1. Users may specify a vector of two values where the first
 #'   value is used to weight the historical treatment group and
@@ -177,6 +183,7 @@ setGeneric("bdplm",
            number_mcmc_sigmagrid     = 5000,
            number_mcmc_sigma         = 100,
            number_mcmc_beta          = 10000,
+           discount_function         = "weibull",
            alpha_max                 = 1,
            fix_alpha                 = FALSE,
            weibull_scale             = 0.135,
@@ -200,6 +207,7 @@ setMethod("bdplm",
            number_mcmc_sigmagrid     = 5000,
            number_mcmc_sigma         = 100,
            number_mcmc_beta          = 10000,
+           discount_function         = "weibull",
            alpha_max                 = 1,
            fix_alpha                 = FALSE,
            weibull_scale             = 0.135,
@@ -334,6 +342,15 @@ setMethod("bdplm",
   }
 
 
+  # Check that discount_function is input correctly
+  all_functions <- c("weibull", "scaledweibull", "identity")
+  function_match <- match(discount_function, all_functions)
+  if(is.na(function_match)) {
+    stop("discount_function input incorrectly.")
+  }
+
+
+
   historical <- NULL
   treatment  <- NULL
   intercept  <- NULL
@@ -381,6 +398,7 @@ setMethod("bdplm",
   # Estimate discount weights for each of the treatment and control arms
   ##############################################################################
   discount_treatment <- discount_lm(df                 = df_t,
+                                    discount_function  = discount_function,
                                     alpha_max          = alpha_max[1],
                                     fix_alpha          = fix_alpha,
                                     number_mcmc_alpha  = number_mcmc_alpha,
@@ -389,6 +407,7 @@ setMethod("bdplm",
                                     method             = method)
 
   discount_control <- discount_lm(df                 = df_c,
+                                  discount_function  = discount_function,
                                   alpha_max          = alpha_max[2],
                                   fix_alpha          = fix_alpha,
                                   number_mcmc_alpha  = number_mcmc_alpha,
@@ -608,7 +627,7 @@ setMethod("bdplm",
 #    - Test that the historical effect is different from zero
 #    - Estimate alpha based on the above comparison
 ################################################################################
-discount_lm <- function(df, alpha_max, fix_alpha,
+discount_lm <- function(df, discount_function, alpha_max, fix_alpha,
                         number_mcmc_alpha,
                         weibull_shape, weibull_scale,
                         method){
@@ -646,17 +665,21 @@ discount_lm <- function(df, alpha_max, fix_alpha,
   if(fix_alpha){
     alpha_discount <- alpha_max
   } else{
-    if (method == "mc") {
-      alpha_discount <- pweibull(p_hat, shape=weibull_shape,
-                                 scale=weibull_scale)*alpha_max
+    p_hat          <- 2*ifelse(p_hat > 0.5, 1 - p_hat, p_hat)
 
-    } else if (method == "fixed"){
-      p_hat          <- ifelse(p_hat > 0.5, 1 - p_hat, p_hat)
+    # Compute alpha discount based on distribution
+    if(discount_function == "weibull"){
       alpha_discount <- pweibull(p_hat, shape=weibull_shape,
                                  scale=weibull_scale)*alpha_max
+    } else if(discount_function == "scaledweibull"){
+      max_p <- pweibull(1, shape=weibull_shape, scale=weibull_scale)
+
+      alpha_discount <- pweibull(p_hat, shape=weibull_shape,
+                                 scale=weibull_scale)*alpha_max/max_p
+    } else if(discount_function == "identity"){
+      alpha_discount <- p_hat
     }
   }
-
 
   res <- list(p_hat          = p_hat,
               alpha_discount = alpha_discount)

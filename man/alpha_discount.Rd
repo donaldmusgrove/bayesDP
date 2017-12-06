@@ -5,32 +5,31 @@
 \alias{alpha_discount,ANY-method}
 \title{Bayesian Discount Prior: Historical Data Weight (alpha)}
 \usage{
-alpha_discount(p_hat = NULL, alpha_max = 1, weibull_scale = 0.135,
-  weibull_shape = 3)
+alpha_discount(p_hat = NULL, discount_function = "weibull", alpha_max = 1,
+  weibull_scale = 0.135, weibull_shape = 3)
 }
 \arguments{
 \item{p_hat}{scalar. The posterior probability of a stochastic comparison.
 This value can be the output of \code{posterior_probability} or a value
 between 0 and 1.}
 
+\item{discount_function}{character. Specify the discount function to use.
+Currently supports \code{weibull}, \code{scaledweibull}, and
+\code{identity}. The discount function \code{scaledweibull} scales
+the output of the Weibull CDF to have a max value of 1. The \code{identity}
+discount function uses the posterior probability directly as the discount
+weight. Default value is "\code{weibull}".}
+
 \item{alpha_max}{scalar. Maximum weight the discount function can apply.
-Default is 1. For a two-arm trial, users may specify a vector of two values
-where the first value is used to weight the historical treatment group and
-the second value is used to weight the historical control group.}
+Default is 1.}
 
 \item{weibull_scale}{scalar. Scale parameter of the Weibull discount function
 used to compute alpha, the weight parameter of the historical data. Default
-value is 0.135. For a two-arm trial, users may specify a vector of two values
-where the first value is used to estimate the weight of the historical
-treatment group and the second value is used to estimate the weight of the
-historical control group.}
+value is 0.135.}
 
 \item{weibull_shape}{scalar. Shape parameter of the Weibull discount function
 used to compute alpha, the weight parameter of the historical data. Default
-value is 3. For a two-arm trial, users may specify a vector of two values
-where the first value is used to estimate the weight of the historical
-treatment group and the second value is used to estimate the weight of the
-historical control group.}
+value is 3.}
 }
 \value{
 \code{alpha_discount} returns an object of class "alpha_discount".
@@ -50,14 +49,15 @@ An object of class \code{alpha_discount} contains the following:
 }
 \details{
 This function is not used internally but is given for educational purposes.
-  Given inputs \code{p_hat}, \code{alpha_max}, \code{weibull_shape}, and
-  \code{weibull_scale} the output is the weight that would be applied to
-  historical data in the context of a one- or two-arm clinical trial.
+  Given inputs \code{p_hat}, \code{discount_function}, \code{alpha_max},
+  \code{weibull_shape}, and \code{weibull_scale} the output is the weight
+  that would be applied to historical data in the context of a one- or
+  two-arm clinical trial.
 }
 \examples{
 alpha_discount(0.5)
 
-alpha_discount(0)
+alpha_discount(0.5, discount_function="identity")
 
 }
 \references{

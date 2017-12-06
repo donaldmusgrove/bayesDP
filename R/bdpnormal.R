@@ -57,8 +57,8 @@
 #'   Monte Carlo iteration. See the the \code{bdpnormal} vignette \cr
 #'   \code{vignette("bdpnormal-vignette", package="bayesDP")} for more details.
 #' @param compare logical. Should a comparison object be included in the fit?
-#'   For a one-sided analysis, the comparison object is simply the posterior
-#'   chain of the treatment group parameter. For a two-sided analysis, the comparison
+#'   For a one-arm analysis, the comparison object is simply the posterior
+#'   chain of the treatment group parameter. For a two-arm analysis, the comparison
 #'   object is the posterior chain of the treatment effect that compares treatment and
 #'   control. If \code{compare=TRUE}, the comparison object is accessible in the
 #'   \code{final} slot, else the \code{final} slot is \code{NULL}. Default is
@@ -513,7 +513,6 @@ posterior_normal <- function(mu, sigma, N, mu0, sigma0, N0, discount_function,
 
           alpha_discount <- pweibull(p_hat, shape=weibull_shape,
                                      scale=weibull_scale)*alpha_max/max_p
-
         } else if(discount_function == "identity"){
           alpha_discount <- p_hat
         }

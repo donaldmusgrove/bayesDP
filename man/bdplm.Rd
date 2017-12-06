@@ -10,9 +10,9 @@ bdplm(formula = formula, data = data, data0 = NULL,
   prior_treatment_sd = NULL, prior_control_sd = NULL,
   prior_covariate_effect = 0, prior_covariate_sd = 10000,
   number_mcmc_alpha = 5000, number_mcmc_sigmagrid = 5000,
-  number_mcmc_sigma = 100, number_mcmc_beta = 10000, alpha_max = 1,
-  fix_alpha = FALSE, weibull_scale = 0.135, weibull_shape = 3,
-  method = "fixed")
+  number_mcmc_sigma = 100, number_mcmc_beta = 10000,
+  discount_function = "weibull", alpha_max = 1, fix_alpha = FALSE,
+  weibull_scale = 0.135, weibull_shape = 3, method = "fixed")
 }
 \arguments{
 \item{formula}{an object of class "formula." See "Details" for
@@ -63,6 +63,13 @@ estimating sigma. Default is 1000. See "Details" for more information.}
 
 \item{number_mcmc_beta}{scalar. Number of Monte Carlo simulations for
 estimating beta, the vector of regression coefficients. Default is 10000.}
+
+\item{discount_function}{character. Specify the discount function to use.
+Currently supports \code{weibull}, \code{scaledweibull}, and
+\code{identity}. The discount function \code{scaledweibull} scales
+the output of the Weibull CDF to have a max value of 1. The \code{identity}
+discount function uses the posterior probability directly as the discount
+weight. Default value is "\code{weibull}".}
 
 \item{alpha_max}{scalar. Maximum weight the discount function can apply.
 Default is 1. Users may specify a vector of two values where the first

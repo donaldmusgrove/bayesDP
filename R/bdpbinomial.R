@@ -11,6 +11,12 @@
 #' @param N_c scalar. Sample size of the current control group.
 #' @param y0_c scalar. Number of events for the historical control group.
 #' @param N0_c scalar. Sample size of the historical control group.
+#' @param discount_function character. Specify the discount function to use.
+#'   Currently supports \code{weibull}, \code{scaledweibull}, and
+#'   \code{identity}. The discount function \code{scaledweibull} scales
+#'   the output of the Weibull CDF to have a max value of 1. The \code{identity}
+#'   discount function uses the posterior probability directly as the discount
+#'   weight. Default value is "\code{weibull}".
 #' @param alpha_max scalar. Maximum weight the discount function can apply.
 #'   Default is 1. For a two-arm trial, users may specify a vector of two values
 #'   where the first value is used to weight the historical treatment group and
@@ -31,16 +37,14 @@
 #' @param number_mcmc scalar. Number of Monte Carlo simulations. Default is 10000.
 #' @param a0 scalar. Prior value for the beta rate. Default is 1.
 #' @param b0 scalar. Prior value for the beta rate. Default is 1.
-#' @param two_side logical. Indicator of two-sided test for the discount
-#'   function. Default value is TRUE.
 #' @param method character. Analysis method with respect to estimation of the weight
 #'   paramter alpha. Default value "\code{fixed}" estimates alpha once and holds it fixed
 #'   throughout the analysis. Alternative method "\code{mc}" estimates alpha for each
 #'   Monte Carlo iteration. See the the \code{bdpbinomial} vignette \cr
 #'   \code{vignette("bdpbinomial-vignette", package="bayesDP")} for more details.
 #' @param compare logical. Should a comparison object be included in the fit?
-#'   For a one-sided analysis, the comparison object is simply the posterior
-#'   chain of the treatment group parameter. For a two-sided analysis, the comparison
+#'   For a one-arm analysis, the comparison object is simply the posterior
+#'   chain of the treatment group parameter. For a two-arm analysis, the comparison
 #'   object is the posterior chain of the treatment effect that compares treatment and
 #'   control. If \code{compare=TRUE}, the comparison object is accessible in the
 #'   \code{final} slot, else the \code{final} slot is \code{NULL}. Default is
@@ -186,47 +190,47 @@ bdpbinomial <- setClass("bdpbinomial",
                                   args1 = "list"))
 
 setGeneric("bdpbinomial",
-           function(y_t           = NULL,
-                    N_t           = NULL,
-                    y0_t          = NULL,
-                    N0_t          = NULL,
-                    y_c           = NULL,
-                    N_c           = NULL,
-                    y0_c          = NULL,
-                    N0_c          = NULL,
-                    alpha_max     = 1,
-                    fix_alpha     = FALSE,
-                    a0            = 1,
-                    b0            = 1,
-                    number_mcmc   = 10000,
-                    weibull_scale = 0.135,
-                    weibull_shape = 3,
-                    two_side      = TRUE,
-                    method        = "fixed",
-                    compare       = TRUE){
+           function(y_t               = NULL,
+                    N_t               = NULL,
+                    y0_t              = NULL,
+                    N0_t              = NULL,
+                    y_c               = NULL,
+                    N_c               = NULL,
+                    y0_c              = NULL,
+                    N0_c              = NULL,
+                    discount_function = "weibull",
+                    alpha_max         = 1,
+                    fix_alpha         = FALSE,
+                    a0                = 1,
+                    b0                = 1,
+                    number_mcmc       = 10000,
+                    weibull_scale     = 0.135,
+                    weibull_shape     = 3,
+                    method            = "fixed",
+                    compare           = TRUE){
              standardGeneric("bdpbinomial")
            })
 
 setMethod("bdpbinomial",
           signature(),
-          function(y_t           = NULL,
-                   N_t           = NULL,
-                   y0_t          = NULL,
-                   N0_t          = NULL,
-                   y_c           = NULL,
-                   N_c           = NULL,
-                   y0_c          = NULL,
-                   N0_c          = NULL,
-                   alpha_max     = 1,
-                   fix_alpha     = FALSE,
-                   a0            = 1,
-                   b0            = 1,
-                   number_mcmc   = 10000,
-                   weibull_scale = 0.135,
-                   weibull_shape = 3,
-                   two_side      = TRUE,
-                   method        = "fixed",
-                   compare       = TRUE){
+          function(y_t               = NULL,
+                   N_t               = NULL,
+                   y0_t              = NULL,
+                   N0_t              = NULL,
+                   y_c               = NULL,
+                   N_c               = NULL,
+                   y0_c              = NULL,
+                   N0_c              = NULL,
+                   discount_function = "weibull",
+                   alpha_max         = 1,
+                   fix_alpha         = FALSE,
+                   a0                = 1,
+                   b0                = 1,
+                   number_mcmc       = 10000,
+                   weibull_scale     = 0.135,
+                   weibull_shape     = 3,
+                   method            = "fixed",
+                   compare           = TRUE){
 
 
   ################################################################################
@@ -299,6 +303,14 @@ setMethod("bdpbinomial",
     arm2 <- FALSE
   }
 
+  # Check that discount_function is input correctly
+  all_functions <- c("weibull", "scaledweibull", "identity")
+  function_match <- match(discount_function, all_functions)
+  if(is.na(function_match)) {
+    stop("discount_function input incorrectly.")
+  }
+
+
 
   ##############################################################################
   # Quick check, if alpha_max, weibull_scale, or weibull_shape have length 1,
@@ -327,6 +339,7 @@ setMethod("bdpbinomial",
     N             = N_t,
     y0            = y0_t,
     N0            = N0_t,
+    discount_function = discount_function,
     alpha_max     = alpha_max[1],
     fix_alpha     = fix_alpha,
     a0            = a0,
@@ -334,49 +347,48 @@ setMethod("bdpbinomial",
     number_mcmc   = number_mcmc,
     weibull_scale = weibull_scale[1],
     weibull_shape = weibull_shape[1],
-    two_side      = two_side,
     method        = method)
 
   if(arm2){
     posterior_control <- posterior_binomial(
-      y             = y_c,
-      N             = N_c,
-      y0            = y0_c,
-      N0            = N0_c,
-      alpha_max     = alpha_max[2],
-      fix_alpha     = fix_alpha,
-      a0            = a0,
-      b0            = b0,
-      number_mcmc   = number_mcmc,
-      weibull_scale = weibull_scale[2],
-      weibull_shape = weibull_shape[2],
-      two_side      = two_side,
-      method        = method)
+      y                 = y_c,
+      N                 = N_c,
+      y0                = y0_c,
+      N0                = N0_c,
+      discount_function = discount_function,
+      alpha_max         = alpha_max[2],
+      fix_alpha         = fix_alpha,
+      a0                = a0,
+      b0                = b0,
+      number_mcmc       = number_mcmc,
+      weibull_scale     = weibull_scale[2],
+      weibull_shape     = weibull_shape[2],
+      method            = method)
   } else{
     posterior_control <- NULL
   }
 
 
-  args1 <- list(y_t           = y_t,
-                N_t           = N_t,
-                y0_t          = y0_t,
-                N0_t          = N0_t,
-                y_c           = y_c,
-                N_c           = N_c,
-                y0_c          = y0_c,
-                N0_c          = N0_c,
-                alpha_max     = alpha_max,
-                fix_alpha     = fix_alpha,
-                a0            = a0,
-                b0            = b0,
-                number_mcmc   = number_mcmc,
-                weibull_scale = weibull_scale,
-                weibull_shape = weibull_shape,
-                two_side      = two_side,
-                method        = method,
-                arm2          = arm2,
-                intent        = paste(intent,collapse=", ",
-                compare       = compare))
+  args1 <- list(y_t               = y_t,
+                N_t               = N_t,
+                y0_t              = y0_t,
+                N0_t              = N0_t,
+                y_c               = y_c,
+                N_c               = N_c,
+                y0_c              = y0_c,
+                N0_c              = N0_c,
+                discount_function = discount_function,
+                alpha_max         = alpha_max,
+                fix_alpha         = fix_alpha,
+                a0                = a0,
+                b0                = b0,
+                number_mcmc       = number_mcmc,
+                weibull_scale     = weibull_scale,
+                weibull_shape     = weibull_shape,
+                method            = method,
+                arm2              = arm2,
+                intent            = paste(intent,collapse=", ",
+                compare           = compare))
 
   ##############################################################################
   ### Create final (comparison) object
@@ -412,9 +424,10 @@ setMethod("bdpbinomial",
 # 1) Estimate the discount function (if current+historical data both present)
 # 2) Estimate the posterior of the augmented data
 ################################################################################
-posterior_binomial <- function(y, N, y0, N0, alpha_max, fix_alpha, a0, b0,
+posterior_binomial <- function(y, N, y0, N0, discount_function,
+                               alpha_max, fix_alpha, a0, b0,
                                number_mcmc, weibull_scale, weibull_shape,
-                               two_side, method){
+                               method){
 
   ### Compute posterior(s) of current (flat) and historical (prior) data
   ### with non-informative priors
@@ -452,14 +465,22 @@ posterior_binomial <- function(y, N, y0, N0, alpha_max, fix_alpha, a0, b0,
     if(fix_alpha == TRUE){
       alpha_discount <- alpha_max
     } else{
-      if (!two_side | method == "mc") {
-        alpha_discount <- pweibull(p_hat, shape=weibull_shape,
-                                   scale=weibull_scale)*alpha_max
-      } else if (two_side){
-        p_hat    <- ifelse(p_hat > 0.5, 1 - p_hat, p_hat)
-        alpha_discount <- pweibull(p_hat, shape=weibull_shape,
-                                   scale=weibull_scale)*alpha_max
-      }
+        p_hat    <- 2*ifelse(p_hat > 0.5, 1 - p_hat, p_hat)
+
+        # Compute alpha discount based on distribution
+        if(discount_function == "weibull"){
+          alpha_discount <- pweibull(p_hat, shape=weibull_shape,
+                                     scale=weibull_scale)*alpha_max
+        } else if(discount_function == "scaledweibull"){
+          max_p <- pweibull(1, shape=weibull_shape, scale=weibull_scale)
+
+          alpha_discount <- pweibull(p_hat, shape=weibull_shape,
+                                     scale=weibull_scale)*alpha_max/max_p
+
+        } else if(discount_function == "identity"){
+          alpha_discount <- p_hat
+        }
+
     }
 
   } else{

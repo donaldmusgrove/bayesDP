@@ -6,7 +6,7 @@
 \title{Bayesian Discount Prior: Comparison Between Current and Historical Data}
 \usage{
 probability_discount(mu = NULL, sigma = NULL, N = NULL, mu0 = NULL,
-  sigma0 = NULL, N0 = NULL, number_mcmc = 10000, two_side = TRUE)
+  sigma0 = NULL, N0 = NULL, number_mcmc = 10000, method = "fixed")
 }
 \arguments{
 \item{mu}{scalar. Mean of the current data.}
@@ -23,8 +23,11 @@ probability_discount(mu = NULL, sigma = NULL, N = NULL, mu0 = NULL,
 
 \item{number_mcmc}{scalar. Number of Monte Carlo simulations. Default is 10000.}
 
-\item{two_side}{logical. Indicator of two-sided test for the discount
-function. Default value is TRUE.}
+\item{method}{character. Analysis method. Default value "\code{fixed}" estimates
+the posterior probability and holds it fixed. Alternative method "\code{mc}"
+estimates the posterior probability for each Monte Carlo iteration.
+See the the \code{bdpnormal} vignette \cr
+\code{vignette("bdpnormal-vignette", package="bayesDP")} for more details.}
 }
 \value{
 \code{probability_discount} returns an object of class "probability_discount".
@@ -32,20 +35,22 @@ function. Default value is TRUE.}
 An object of class \code{probability_discount} contains the following:
 \describe{
  \item{\code{p_hat}}{
-   scalar. The posterior probability of the comparison historical data weight.}
+   scalar. The posterior probability of the comparison historical data weight. If
+   \code{method="mc"}, a vector of posterior probabilities of length
+   \code{number_mcmc} is returned.}
 }
 }
 \description{
 \code{probability_discount} can be used to estimate the posterior
   probability of the comparison between historical and current data in the
-  context of a one- or two-arm clinical trial with normal (mean) data.
-  \code{probability_discount} is not used internally but is
-  given for educational purposes.
+  context of a clinical trial with normal (mean) data.
+  \code{probability_discount} is not used internally but is given for
+  educational purposes.
 }
 \details{
 This function is not used internally but is given for educational purposes.
   Given the inputs,  the output is the posterior probability of the comparison
-  between current and historical data in the context of a one- or two-arm clinical
+  between current and historical data in the context of a clinical
   trial with normal (mean) data.
 }
 \examples{
