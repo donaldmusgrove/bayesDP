@@ -148,8 +148,8 @@
 #'
 #' # Place data into separate treatment and control data frames and
 #' # assign historical = 0 (current) or historical = 1 (historical)
-#' df_ <- data.frame(Y=Y, treatment=treatment, x=x, historical=0, intercept=1)
-#' df0 <- data.frame(Y=Y0, treatment=treatment0, x=x0, historical=1, intercept=1)
+#' df_ <- data.frame(Y=Y, treatment=treatment, x=x, intercept=1)
+#' df0 <- data.frame(Y=Y0, treatment=treatment0, x=x0, intercept=1)
 #'
 #' # Fit model using default settings
 #' fit <- bdplm(formula=Y ~ treatment+x, data=df_, data0=df0)
