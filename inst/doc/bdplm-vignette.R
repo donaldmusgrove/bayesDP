@@ -13,8 +13,7 @@ opts_chunk$set(
   out.width = "60%",
   fig.align = "center"
   )
-
-# Run two models to document the discount function plots
+  
 fit01 <- bdpbinomial(y_t=10, N_t=500, y0_t=25, N0_t=250)
 fit02 <- bdpbinomial(y_t=10, N_t=500, y0_t=25, N0_t=250)
 
@@ -37,43 +36,39 @@ p1 + ggtitle("Discount Function Plot :-)")
 
 ## ------------------------------------------------------------------------
 set.seed(42)
-fit1 <- bdpbinomial(y_t       = 10,
-                    N_t       = 200,
-                    y0_t      = 25,
-                    N0_t      = 250,
-                    alpha_max = 1,
-                    fix_alpha = TRUE)
-summary(fit1)
+### Simulate  data
+# Sample sizes
+n_t  <- 25  #current treatment sample size
+n_c  <- 25  #current control sample size
+n_t0 <- 50  #historical treatment sample size
+n_c0 <- 50  #historical treatment sample size
 
-## ------------------------------------------------------------------------
-set.seed(42)
-fit1a <- bdpbinomial(y_t       = 10,
-                     N_t       = 200,
-                     y0_t      = 25,
-                     N0_t      = 250,
-                     alpha_max = 1,
-                     fix_alpha = FALSE)
-summary(fit1a)
+# Treatment and historical indicators
+treatment  <- c(rep(1, n_t+n_t0), rep(0, n_c+n_c0))
+historical <- c(rep(0, n_t), rep(1,n_t0), rep(0, n_c), rep(1,n_c0))
 
-## ------------------------------------------------------------------------
-mean_augmented <- round(median(fit1a$posterior_treatment$posterior),4)
-CI95_augmented <- round(quantile(fit1a$posterior_treatment$posterior, prob=c(0.025, 0.975)),4)
+# Covariate effect
+x    <- rnorm(n_t+n_c+n_t0+n_c0, 34, 5) 
 
-## ------------------------------------------------------------------------
-plot(fit1a)
+# Outcome
+Y  <- treatment + 0*historical + x*3.5 + rnorm(n_t+n_c+n_t0+n_c0,0,0.1)
 
-## ------------------------------------------------------------------------
-set.seed(42)
-fit2 <- bdpbinomial(y_t  = 10,
-                    N_t  = 200,
-                    y0_t = 25,
-                    N0_t = 250,
-                    y_c  = 15,
-                    N_c  = 200,
-                    y0_c = 20,
-                    N0_c = 250)
-summary(fit2)
+# Place data in a single dataframe
+df <- data.frame(Y=Y, treatment=treatment, historical=historical, x=x)
 
-## ------------------------------------------------------------------------
-plot(fit2)
+# Create current and historical dataframes
+df_  <- subset(df, historical==0)
+df_0 <- subset(df, historical==1)
+
+
+# Fit the model with default inputs
+fit <- bdplm(formula=Y ~ treatment+x,
+             data=df_, data0=df_0)
+
+# View estimates:
+fit$estimates$coef
+
+# View alpha discount weight parameters:
+fit$alpha_discount
+
 

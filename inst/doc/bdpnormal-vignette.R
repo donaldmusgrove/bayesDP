@@ -16,16 +16,22 @@ opts_chunk$set(
 
 # Run two models to document the discount function plots
 fit01 <- bdpnormal(mu_t=10, sigma_t = 1, N_t=500, 
-                   mu0_t=10, sigma0_t = 1, N0_t=500, two_side=FALSE)
+                   mu0_t=10, sigma0_t = 1, N0_t=500)
 fit02 <- bdpnormal(mu_t=10, sigma_t = 1, N_t=500, 
                    mu0_t=10, sigma0_t = 1, N0_t=500)
 
+fit_scaledweibull <- bdpbinomial(y_t=10, N_t=500, y0_t=25, N0_t=250, 
+                                 discount_function="scaledweibull")
+fit_identity <- bdpbinomial(y_t=10, N_t=500, y0_t=25, N0_t=250,
+                            discount_function="identity")
 
 ## ---- echo=FALSE---------------------------------------------------------
-plot(fit02, type="discount")
+df1 <- plot(fit02, type="discount", print=FALSE)
+df1 + ggtitle("Discount function plot", "Weibull distribution with shape=3 and scale=0.135")
 
 ## ---- echo=FALSE---------------------------------------------------------
-plot(fit01, type="discount")
+df2 <- plot(fit_identity, type="discount", print=FALSE)
+df2 + ggtitle("Discount function plot", "Identity")
 
 ## ------------------------------------------------------------------------
 p1 <- plot(fit01, type="discount", print=FALSE)

@@ -32,9 +32,13 @@ opts_chunk$set(
   )
 
 # Run two models to document the discount function plots
-fit01 <- bdpbinomial(y_t=10, N_t=500, y0_t=25, N0_t=250, two_side=FALSE)
+fit01 <- bdpbinomial(y_t=10, N_t=500, y0_t=25, N0_t=250)
 fit02 <- bdpbinomial(y_t=10, N_t=500, y0_t=25, N0_t=250)
 
+fit_scaledweibull <- bdpbinomial(y_t=10, N_t=500, y0_t=25, N0_t=250, 
+                                 discount_function="scaledweibull")
+fit_identity <- bdpbinomial(y_t=10, N_t=500, y0_t=25, N0_t=250,
+                            discount_function="identity")
 ```
 # Introduction
 The purpose of this vignette is to introduce the `bdpbinomial` function. `bdpbinomial` is used for estimating posterior samples from a Binomial event rate outcome for clinical trials where an informative prior is used. In the parlance of clinical trials, the informative prior is derived from historical data. The weight given to the historical data is determined using what we refer to as a discount function. There are three steps in carrying out estimation:
@@ -67,22 +71,13 @@ $$ \tilde{\theta}\mid y,N \sim \mathcal{B}eta\left(y+a_0,\,N-y+b_0 \right)$$
 and
 
 $$ \theta_0\mid y_0,N_0 \sim \mathcal{B}eta\left(y_0+a_0,\,N_0-y_0+b_0 \right),$$
-respectively. We next compute the posterior probability $p = Pr\left(\tilde{\theta} \lt \theta_0\mid y, N, y_0, N_0\right)$. Finally, for a Weibull distribution function (i.e., the Weibull cumulative distribution function), denoted $W$, $\hat{\alpha}$ is computed as 
-
+respectively. We next compute the posterior probability $p = Pr\left(\tilde{\theta} \lt \theta_0\mid y, N, y_0, N_0\right)$. Finally, for a discount function, denoted $W$, $\hat{\alpha}$ is computed as 
 $$
-\begin{array}{ccc}
-\mbox{One-sided analysis} & & \mbox{Two-sided analysis} \\
-\hat{\alpha}=\alpha_{max}\cdot W\left(p, \,w_{shape}, \,w_{scale}\right),
-& &
-\hat{\alpha}=\begin{cases}
-\alpha_{max}\cdot W\left(p, \,w_{shape}, \,w_{scale}\right),\,0\le p\le0.5\\
-\alpha_{max}\cdot W\left(1-p, \,w_{shape}, \,w_{scale}\right),\,0.5 \lt p \le 1,
-\end{cases}
-\end{array}
+\hat{\alpha} = \alpha_{max}\cdot W\left(p, \,w\right),\,0\le p\le1,
 $$
-where $w_{shape}$ and $w_{scale}$ are the shape and scale of the Weibull distribution function, respectively and $\alpha_{max}$ scales the weight $\hat{\alpha}$ by a user-input maximum value. Using the default values of $w_{shape}=3$ and $w_{scale}=0.135$, $\hat{\alpha}$ increases to 1 as $p$ increases to 1 (one-sided) and $\hat{\alpha}$ increases to 1 as $p$ goes to 0.5 (two-sided).
+where $w$ is one or more parameters associated with the discount function and $\alpha_{max}$ scales the weight $\hat{\alpha}$ by a user-input maximum value. More details on the discount functions are given in the discount function section below.
 
-There are several model inputs at this first stage. First, the user can select `fix_alpha=TRUE` and force a fixed value of $\hat{\alpha}$ (at the `alpha_max` input), as opposed to estimation via the discount function. Next, a Monte Carlo estimation approach is used, requiring several samples from the posterior distributions. Thus, the user can input a sample size greater than or less than the default value of `number_mcmc=10000`. Next, the Beta rate parameters can be changed from the defaults of $a_0=b_0=1$ (`a0` and `b0` inputs). Finally, the shape of the Weibull discount function can be altered by changing the Weibull shape and scale parameters from the default values of $w_{shape}=3$ and $w_{scale}=0.135$ (`weibull_shape` and `weibull_scale` inputs).
+There are several model inputs at this first stage. First, the user can select the discount function type via the `discount_function` input (see below). Next, choosing `fix_alpha=TRUE` forces a fixed value of $\hat{\alpha}$ (at the `alpha_max` input), as opposed to estimation via the discount function. In the next modeling stage, a Monte Carlo estimation approach is used, requiring several samples from the posterior distributions. Thus, the user can input a sample size greater than or less than the default value of `number_mcmc=10000`. Finally, the Beta rate parameters can be changed from the defaults of $a_0=b_0=1$ (`a0` and `b0` inputs). 
 
 An alternate Monte Carlo-based estimation scheme of $\hat{\alpha}$ has been implemented, controlled by the function input `method="mc"`. Here, instead of treating $\hat{\alpha}$ as a fixed quantity, $\hat{\alpha}$ is treated as random. First, $p$, is computed as 
 
@@ -91,38 +86,49 @@ v^2 & = & \displaystyle{\left(\frac{y+a_0-1}{\tilde{\theta}^2}+\frac{N-y+b_0-1}{
 \\
 v^2_0 & = & \displaystyle{\left(\frac{y_0+a_0-1}{\theta^2_0}+\frac{N_0-y_0+b_0-1}{\left(\theta_0-1\right)^2}\right)^{-1}} ,\\
 \\
-Z & = & \displaystyle{\frac{\left(\tilde{\theta}-\theta_0\right)^2}{v^2 + v^2_0}} ,\\
+Z & = & \displaystyle{\frac{\left|\tilde{\theta}-\theta_0\right|}{\sqrt{v^2 + v^2_0}}} ,\\
 \\
-p &  =  & \chi^2_{Z,1},
+p &  =  & 2\left(1-\Phi\left(Z\right)\right),
 \end{array}
 $$
-where $\chi^2_{x,d}$ is the $x$th quantile of a chi-square distribution with $d$ degrees of freedom (the value $p$ is found via the `pchisq` R function using `lower.tail=FALSE`). Here, $v^2$ and $v^2_0$ are the variances of $\tilde{\theta}$ and $\theta_0$, respectively, derived via the Fisher information. Next, $p$ is used to construct $\hat{\alpha}$ using the one-sided analysis approach described above. Since the values $Z$ and $p$ are computed at each iteration of the Monte Carlo estimation scheme, $\hat{\alpha}$ is computed at each iteration of the Monte Carlo estimation scheme, resulting in a distribution of $\hat{\alpha}$ values.
-
-
+where $\Phi\left(x\right)$ is the $x$th quantile of a standard normal (the value $p$ is found via the `pnorm` R function). Here, $v^2$ and $v^2_0$ are the variances of $\tilde{\theta}$ and $\theta_0$, respectively, derived via the Fisher information. Next, $p$ is used to construct $\hat{\alpha}$ via the discount function. Since the values $Z$ and $p$ are computed at each iteration of the Monte Carlo estimation scheme, $\hat{\alpha}$ is computed at each iteration of the Monte Carlo estimation scheme, resulting in a distribution of $\hat{\alpha}$ values.
 
 With the historical data weight (or weights) $\hat{\alpha}$ in hand, we can  move on to estimation of the posterior distribution of the current data.
 
 
 ### Discount function
-Throughout this vignette, we refer to a discount function. The discount function is a Weibull distribution function and has the form
+There are currently three discount functions implememented throughout the `bayesDP` packge. The discount function is specified using the `discount_function` input with the following choices available:
+
+1. `weibull` (default): Weibull cumulative distribution function (CDF);
+
+2. `scaledweibull`: Scaled Weibull CDF;
+
+3. `identity`: Identity.
+
+The Weibull CDF is the default discount function and has two user-specified parameters associated with it, the shape and scale. The default shape is 3 and the default scale is 0.135, each of which are controlled by the function inputs `weibull_shape` and `weibull_scale`, respectively. The form of the Weibull CDF is
 $$W(x) = 1 - \exp\left\{- (x/w_{scale})^{w_{shape}}\right\}.$$
-During estimation, a user may be interested in selecting values of $w_{shape}$ and $w_{scale}$ that result in optimal statistical properties of the analysis. Thus, the discount function can be used to control the false positive rate (type I error) and/or the false negative rate (type II error). Examples in a following section illustrate the shape of the discount function using the default shape and scale parameters.
 
-Another important aspect related to the discount function is the analysis type: one-sided or two-sided. The sidedness of the analysis is analogous to a one- or two-sided hypothesis test. Using the default shape and scale inputs, a __two-sided__ analysis type results in a discount function with the following curve:
+The second discount function option is the Scaled Weibull CDF. The Scaled Weibull CDF is the Weibull CDF divided by the value of the Weibull CDF evaluated at 1, i.e., 
+$$W^{\ast}(x) = W(x)/W(1).$$
+Similar to the Weibull CDF, the Scaled Weibull CDF has two user-specified parameters associated with it, the shape and scale, again controlled by the function inputs `weibull_shape` and `weibull_scale`, respectively.
+
+The third discount function is the identity. This simply sets the discount weight $\hat{\alpha}=p$.
+
+Using the default shape and scale inputs, each of the discount functions are shown below.
 ```{r, echo=FALSE}
-plot(fit02, type="discount")
+df1 <- plot(fit02, type="discount", print=FALSE)
+df1 + ggtitle("Discount function plot", "Weibull distribution with shape=3 and scale=0.135")
+```
+
+```{r, echo=FALSE}
+df2 <- plot(fit_identity, type="discount", print=FALSE)
+df2 + ggtitle("Discount function plot", "Identity")
 ```
 
 
-The discount function of a __one-sided__ analysis, again with the default shape and scale inputs, has the following curve:
-```{r, echo=FALSE}
-plot(fit01, type="discount")
-```
+In each of the above plots, the x-axis is the stochastic comparison between current and historical data, which we've denoted $p$. The y-axis is the discount value $\hat{\alpha}$ that corresponds to a given value of $p$. 
 
-
-In both of the above plots, the x-axis is the stochastic comparison between current and historical data, which we've denoted $p$. The y-axis is the discount value $\hat{\alpha}$ that corresponds to a given value of $p$. 
-
-An advanced input for the plot function is `print`. The default value is `print = TRUE`, which simpy returns the graphics. Alternately, users can specify `print = FALSE`, which returns a `ggplot2` object. Below is an example using the discount function plot:
+An advanced input for the plot function is `print`. The default value is `print = TRUE`, which simply returns the graphics. Alternately, users can specify `print = FALSE`, which returns a `ggplot2` object. Below is an example using the discount function plot:
 ```{r}
 p1 <- plot(fit01, type="discount", print=FALSE)
 p1 + ggtitle("Discount Function Plot :-)")
