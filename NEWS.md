@@ -1,5 +1,16 @@
 # bayesDP 1.3.0
 ## Major new features
+* Changes to inputs for bdpsurvival
+  + Current and (optional) historical data are specified in separate data frames
+
+
+## Bug fixes and minor improvements
+* Placeholder
+
+
+
+# bayesDP 1.3.0
+## Major new features
 * Addition of the bdplm function for two-arm trials
 * Users can now choose between 3 discount functions via the discount_function input:
   + Weibull CDF
