@@ -470,7 +470,6 @@ setMethod("summary", signature(object = "bdpsurvival"), function(object){
       n_c    <- nrow(data_c)
       e_c    <- sum(data_c$status)
     } else{
-      data_c <- subset(data, historical == 1 & treatment == 0)
       n_c    <- nrow(data_c)
       e_c    <- sum(data_c$status)
     }

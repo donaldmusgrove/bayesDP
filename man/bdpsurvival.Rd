@@ -5,19 +5,23 @@
 \alias{bdpsurvival,ANY-method}
 \title{Bayesian Discount Prior: Survival Analysis}
 \usage{
-bdpsurvival(formula = formula, data = data, breaks = NULL, a0 = 0.1,
-  b0 = 0.1, surv_time = NULL, discount_function = "weibull",
+bdpsurvival(formula = formula, data = data, data0 = NULL, breaks = NULL,
+  a0 = 0.1, b0 = 0.1, surv_time = NULL, discount_function = "weibull",
   alpha_max = 1, fix_alpha = FALSE, number_mcmc = 10000,
   weibull_scale = 0.135, weibull_shape = 3, method = "fixed",
   compare = TRUE)
 }
 \arguments{
 \item{formula}{an object of class "formula." Must have a survival object on
-the left side and exactly two inputs on the right side: treatment and
-historical. See "Details" for more information.}
+the left side and at most one input on the right side, treatment. See
+"Details" for more information.}
 
-\item{data}{data frame. A data frame with columns 'time', 'status',
-'treatment', and historical.' See "Details" for required structure.}
+\item{data}{a data frame containing the current data variables in the model.
+Columns denoting 'time' and 'status' must be present. See "Details" for required
+structure.}
+
+\item{data0}{optional. A data frame containing the historical data variables in the model.
+If present, the column labels of data and data0 must match.}
 
 \item{breaks}{vector. Breaks (interval starts) used to compose the breaks of the
 piecewise exponential model. Do not include zero. Default breaks are the
@@ -173,22 +177,17 @@ the following components:
   estimation procedures.
 
   To carry out a single arm (OPC) analysis, data for the current and
-  historical treatments are specified in a data frame. The data frame must have
-  columns with names 'time', 'status', 'treatment', and 'historical.' Column
-  'time' is the survival (censor) time of the event and 'status' is the
-  event indicator. The column 'treatment' is used to indicate which observations
-  are in the treatment and control group. A value of 1 indicates that the
-  observation is in the treatment group. The column 'historical' indicates
-  whether the observation is from the historical data (1) or current data (0).
-  The results are then based on the posterior probability of survival at
-  \code{surv_time} for the current data augmented by the historical data.
+  historical treatments are specified in separate data frames, data and data0,
+  respectively. The data frames must have matching columns denoting time and status.
+  The 'time' column is the survival (censor) time of the event and the 'status' column
+  is the event indicator. The results are then based on the posterior probability of
+  survival at \code{surv_time} for the current data augmented by the historical data.
 
   Two-arm (RCT) analyses are specified similarly to a single arm trial. Again
-  the input data frame must have columns with names 'time', 'status',
-  'treatment', and 'historical.' Column 'time' is the survival (censor) time
-  of the event and 'status' is the event indicator. Now, the 'treatment'
-  column must use 0 to indicate the control group. The current data are
-  augmented by historical data (if present) and the results are then based
+  the input data frames must have columns denoting time and status, but now
+  an additional column named 'treatment' is required to denote treatment and control
+  data. The 'treatment' column must use 0 to indicate the control group. The current data
+  are augmented by historical data (if present) and the results are then based
   on the posterior distribution of the hazard ratio between the treatment
   and control groups.
 
@@ -197,19 +196,20 @@ the following components:
 }
 \examples{
 # One-arm trial (OPC) example - survival probability at 5 years
-# Simulate survival data for a single arm (OPC) trial
-time   <- c(rexp(50, rate=1/20), rexp(50, rate=1/10))
-status <- c(rexp(50, rate=1/30), rexp(50, rate=1/30))
-status <- ifelse(time < status, 1, 0)
 
-# Collect data into a data frame
-example_surv_1arm <- data.frame(status     = status,
-                                time       = time,
-                                historical = c(rep(1,50),rep(0,50)),
-                                treatment  = 1)
+# Collect data into data frames
+surv_1arm <- data.frame(status = rexp(50, rate=1/30),
+                        time   = rexp(50, rate=1/20))
+surv_1arm$status <- ifelse(surv_1arm$time < surv_1arm$status, 1, 0)
 
-fit1 <- bdpsurvival(Surv(time, status) ~ historical + treatment,
-                    data = example_surv_1arm,
+surv_1arm0 <- data.frame(status = rexp(50, rate=1/30),
+                         time   = rexp(50, rate=1/10))
+surv_1arm0$status <- ifelse(surv_1arm0$time < surv_1arm0$status, 1, 0)
+
+
+fit1 <- bdpsurvival(Surv(time, status) ~ 1,
+                    data  = surv_1arm,
+                    data0 = surv_1arm0,
                     surv_time = 5)
 
 print(fit1)
@@ -217,31 +217,30 @@ print(fit1)
 plot(fit1)
 }
 
-# Two-arm trial (OPC) example
-# Simulate survival data for a two-arm trial
-time   <- c(rexp(50, rate=1/20), # Current treatment
-            rexp(50, rate=1/10), # Current control
-            rexp(50, rate=1/30), # Historical treatment
-            rexp(50, rate=1/5))  # Historical control
-status <- rexp(200, rate=1/40)
-status <- ifelse(time < status, 1, 0)
+# Two-arm trial example
+# Collect data into data frames
+surv_2arm <- data.frame(time = c(rexp(50, rate=1/20),  # Current treatment
+                                 rexp(50, rate=1/10)), # Current control
+                                 status = rexp(100, rate=1/40),
+                                 treatment = c(rep(1,50), rep(0,50)))
+                                 surv_2arm$status <- ifelse(surv_2arm$time < surv_2arm$status, 1, 0)
 
-# Collect data into a data frame
-example_surv_2arm <- data.frame(status     = status,
-                                time       = time,
-                                historical = c(rep(0,100),rep(1,100)),
-                                treatment  = c(rep(1,50),rep(0,50),rep(1,50),rep(0,50)))
+surv_2arm0 <- data.frame(time = c(rexp(50, rate=1/30),  # Historical treatment
+                                  rexp(50, rate=1/5)),  # Historical control
+                         status =  rexp(100, rate=1/40),
+                         treatment = c(rep(1,50), rep(0,50)))
+surv_2arm0$status <- ifelse(surv_2arm0$time < surv_2arm0$status, 1, 0)
 
-fit2 <- bdpsurvival(Surv(time, status) ~ historical + treatment,
-                       data = example_surv_2arm)
-
+fit2 <- bdpsurvival(Surv(time, status) ~ treatment,
+                    data = surv_2arm,
+                    data0 = surv_2arm0)
 summary(fit2)
 
 ### Fix alpha at 1
-fit2_1 <- bdpsurvival(Surv(time, status) ~ historical + treatment,
-                      data = example_surv_2arm,
+fit2_1 <- bdpsurvival(Surv(time, status) ~ treatment,
+                      data = surv_2arm,
+                      data0 = surv_2arm0,
                       fix_alpha = TRUE)
-
 summary(fit2_1)
 
 
