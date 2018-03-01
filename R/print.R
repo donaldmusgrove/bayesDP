@@ -60,6 +60,7 @@ setMethod("print", signature(x = "bdpsurvival"), function(x){
 
   args1               <- x$args1
   data                <- args1$data
+  data_current        <- args1$data_current
   breaks              <- args1$breaks
   arm2                <- args1$arm2
 
@@ -81,7 +82,7 @@ setMethod("print", signature(x = "bdpsurvival"), function(x){
     s_t    <- with(data_t, Surv(time, status))# , type="mstate"))
     s_t    <- survival::survfitKM(factor(rep(1,n)), s_t)
 
-    print_1arm <- matrix(c(nrow(data_t),
+    print_1arm <- matrix(c(nrow(data_current),
                          sum(s_t$n.event),
                          surv_time,
                          1-median(survival_time_posterior_flat),

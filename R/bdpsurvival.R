@@ -515,7 +515,8 @@ setMethod("bdpsurvival",
                 method            = method,
                 arm2              = arm2,
                 breaks            = breaks,
-                data              = dataSplit)
+                data              = dataSplit,
+                data_current      = data)
 
 
   ##############################################################################
