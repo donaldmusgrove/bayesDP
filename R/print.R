@@ -100,3 +100,41 @@ setMethod("print", signature(x = "bdpsurvival"), function(x){
   }
 
 })
+
+
+
+
+#' @title bdplm Object Print
+#' @description \code{print} method for class \code{bdplm}.
+#' @import methods
+#' @importFrom utils head
+#' @importFrom utils write.table
+#' @importFrom stats density is.empty.model median model.offset model.response pweibull quantile rbeta rgamma rnorm var vcov
+#' @param x object of class \code{bdplm}. The result of a call to the
+#'   \code{\link{bdplm}} function.
+#' @details Displays a print of the \code{bdplm} fit and the initial function call.
+#'   The fit includes the estimate of the intercept, treatment effect, and
+#'   covariate effects.
+#'
+#' @export
+setMethod("print", signature(x = "bdplm"), function(x){
+
+  # Format coefficients
+  coefs <- x$estimates$coefficients
+  p     <- ncol(coefs)
+  coefs <- coefs[,-p]
+  names(coefs)[1] <- "(Intercept)"
+  coefs[1,] <- round(coefs[1,], 3)
+  dimnames(coefs) <- list("", names(coefs))
+
+
+  # Print output
+  cat("\n")
+  cat("Call:\n")
+  print(x$args1$call)
+  cat("\n\n")
+  cat("Coefficients:\n")
+  print(coefs)
+  cat("\n")
+
+})

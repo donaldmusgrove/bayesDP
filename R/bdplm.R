@@ -596,6 +596,10 @@ setMethod("bdplm",
   beta_samples$treatment <- beta_samples$treatment-beta_samples$control
   beta_samples$sigma     <- sqrt(beta_samples$sigma)
 
+  ### Format posterior table
+  m            <- ncol(beta_samples)
+  beta_samples <- beta_samples[,c(m,1,3:(m-1))]
+
   ### Format alpha_discount values
   alpha_discount <- data.frame(treatment = discount_treatment$alpha_discount,
                                control   = discount_control$alpha_discount)
@@ -608,9 +612,15 @@ setMethod("bdplm",
   estimates$se           <- estimates$se[c("intercept", "treatment", covs_df, "sigma")]
 
 
+  ### Format input arguments
+  args1 <- list(call  = call,
+                data  = df)
+
+  ### Format output
   me <- list(posterior      = beta_samples,
              alpha_discount = alpha_discount,
-             estimates      = estimates)
+             estimates      = estimates,
+             args1          = args1)
 
   class(me) <- "bdplm"
   return(me)
