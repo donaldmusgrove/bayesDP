@@ -685,7 +685,7 @@ discount_lm <- function(df, discount_function, alpha_max, fix_alpha,
       alpha_discount <- pweibull(p_hat, shape=weibull_shape,
                                  scale=weibull_scale)*alpha_max/max_p
     } else if(discount_function == "identity"){
-      alpha_discount <- p_hat
+      alpha_discount <- p_hat*alpha_max
     }
   }
 

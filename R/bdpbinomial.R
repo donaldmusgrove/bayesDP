@@ -478,7 +478,7 @@ posterior_binomial <- function(y, N, y0, N0, discount_function,
                                      scale=weibull_scale)*alpha_max/max_p
 
         } else if(discount_function == "identity"){
-          alpha_discount <- p_hat
+          alpha_discount <- p_hat*alpha_max
         }
 
     }

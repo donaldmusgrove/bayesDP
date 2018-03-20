@@ -514,7 +514,7 @@ posterior_normal <- function(mu, sigma, N, mu0, sigma0, N0, discount_function,
           alpha_discount <- pweibull(p_hat, shape=weibull_shape,
                                      scale=weibull_scale)*alpha_max/max_p
         } else if(discount_function == "identity"){
-          alpha_discount <- p_hat
+          alpha_discount <- p_hat*alpha_max
         }
     }
   } else{
