@@ -454,9 +454,11 @@ posterior_binomial <- function(y, N, y0, N0, discount_function,
     if(method == "fixed"){
       p_hat <- mean(posterior_flat < prior)   # larger is higher failure
     } else if(method == "mc"){
-      v     <- 1/((y + a0 - 1)/posterior_flat^2 + (N-y+b0-1)/(posterior_flat-1)^2)
-      v0    <- 1/((y0 + a0 - 1)/prior^2 + (N0-y0+b0-1)/(prior-1)^2)
-      Z     <- abs(posterior_flat-prior) / (v+v0)
+      # v     <- 1/((y + a0 - 1)/posterior_flat^2 + (N-y+b0-1)/(posterior_flat-1)^2)
+      # v0    <- 1/((y0 + a0 - 1)/prior^2 + (N0-y0+b0-1)/(prior-1)^2)
+      v     <- posterior_flat*(1-posterior_flat)/N
+      v0    <- prior*(1-prior)/N0
+      Z     <- abs(posterior_flat-prior) / sqrt(v+v0)
       p_hat <- 2*(1-pnorm(Z))
     }
 

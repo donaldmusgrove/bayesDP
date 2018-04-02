@@ -82,9 +82,9 @@ There are several model inputs at this first stage. First, the user can select t
 An alternate Monte Carlo-based estimation scheme of $\hat{\alpha}$ has been implemented, controlled by the function input `method="mc"`. Here, instead of treating $\hat{\alpha}$ as a fixed quantity, $\hat{\alpha}$ is treated as random. First, $p$, is computed as 
 
 $$ \begin{array}{rcl}
-v^2 & = & \displaystyle{\left(\frac{y+a_0-1}{\tilde{\theta}^2}+\frac{N-y+b_0-1}{\left(\tilde{\theta}-1\right)^2}\right)^{-1}} ,\\
+v^2 & = & \displaystyle{\tilde{\theta}\left(1-\tilde{\theta}\right)/N} ,\\
 \\
-v^2_0 & = & \displaystyle{\left(\frac{y_0+a_0-1}{\theta^2_0}+\frac{N_0-y_0+b_0-1}{\left(\theta_0-1\right)^2}\right)^{-1}} ,\\
+v^2_0 & = & \displaystyle{\theta_0\left(1-\theta_0\right)/N_0} ,\\
 \\
 Z & = & \displaystyle{\frac{\left|\tilde{\theta}-\theta_0\right|}{\sqrt{v^2 + v^2_0}}} ,\\
 \\
@@ -194,7 +194,7 @@ summary(fit1a)
 
 When `alpha` is not constrained to one, it is estimated based on a comparison between the current and historical data. We see that the stochastic comparison, `p_hat`, between historical and control is 0.9762. Here, `p_hat` is the posterior probability that the current event rate is less than the historical event rate under vague priors. With the present example, `p_hat = 0.9762` implies that the current and historical event rates are very different. The result is that the weight given to the historical data is shrunk towards zero. Thus, the estimate of `alpha` from the discount function is 0.0061, essentially zero, and the augmented posterior estimate of the event rate is approximately the event rate of 0.05 observed in the current data.
 
-Many of the the values presented in the `summary` method are accessible from the fit object. For instance, `alpha` is found in `fit1a$posterior_treatment$alpha_discount` and `p_hat` is located at `fit1a$posterior_treatment$p_hat`. The augmented probability of success and CI are computed at run-time. The results can be replicated as:
+Many of the the values presented in the `summary` method are accessible from the fit object. For instance, `alpha` is found in `fit1a$posterior_treatment$alpha_discount` and `p_hat` is located at `fit1a$posterior_treatment$p_hat`. The `sample estimates` and CI are computed at run-time. The results can be replicated as:
 ```{r}
 mean_augmented <- round(median(fit1a$posterior_treatment$posterior),4)
 CI95_augmented <- round(quantile(fit1a$posterior_treatment$posterior, prob=c(0.025, 0.975)),4)

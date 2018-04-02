@@ -493,7 +493,7 @@ posterior_normal <- function(mu, sigma, N, mu0, sigma0, N0, discount_function,
     if(method == "fixed"){
       p_hat <- mean(posterior_flat_mu < prior_mu)   # larger is higher failure
     } else if(method == "mc"){
-      Z     <- abs(posterior_flat_mu-prior_mu) / (s^2+s0^2)
+      Z     <- abs(posterior_flat_mu-prior_mu) / sqrt(s^2+s0^2)
       p_hat <- 2*(1-pnorm(Z))
     }
 

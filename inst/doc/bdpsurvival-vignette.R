@@ -15,32 +15,32 @@ opts_chunk$set(
   )
   
 # Run two models to document the discount function plots
-time   <- c(rexp(50, rate=1/20), rexp(50, rate=1/10))
-status <- c(rexp(50, rate=1/30), rexp(50, rate=1/30))
-status <- ifelse(time < status, 1, 0)
-example_surv_1arm <- data.frame(status     = status,
-                                time       = time,
-                                historical = c(rep(1,50),rep(0,50)),
-                                treatment  = 1)
+surv_1arm <- data.frame(status = rexp(50, rate=1/30),
+                        time   = rexp(50, rate=1/20))
+surv_1arm$status <- ifelse(surv_1arm$time < surv_1arm$status, 1, 0)
 
-fit01 <- bdpsurvival(Surv(time, status) ~ historical + treatment,
-                     data = example_surv_1arm,
-                     surv_time = 5)
-fit02 <- bdpsurvival(Surv(time, status) ~ historical + treatment,
-                     data = example_surv_1arm,
+surv_1arm0 <- data.frame(status = rexp(50, rate=1/30),
+                         time   = rexp(50, rate=1/10))
+surv_1arm0$status <- ifelse(surv_1arm0$time < surv_1arm0$status, 1, 0)
+
+
+fit01 <- bdpsurvival(Surv(time, status) ~ 1,
+                     data  = surv_1arm,
+                     data0 = surv_1arm0,
                      surv_time = 5)
 
-fit_scaledweibull <- bdpbinomial(y_t=10, N_t=500, y0_t=25, N0_t=250, 
-                                 discount_function="scaledweibull")
-fit_identity <- bdpbinomial(y_t=10, N_t=500, y0_t=25, N0_t=250,
-                            discount_function="identity")
+fit01_identity <- bdpsurvival(Surv(time, status) ~ 1,
+                     data  = surv_1arm,
+                     data0 = surv_1arm0,
+                     surv_time = 5,
+                     discount_function="identity")
 
 ## ---- echo=FALSE---------------------------------------------------------
-df1 <- plot(fit02, type="discount", print=FALSE)
+df1 <- plot(fit01, type="discount", print=FALSE)
 df1 + ggtitle("Discount function plot", "Weibull distribution with shape=3 and scale=0.135")
 
 ## ---- echo=FALSE---------------------------------------------------------
-df2 <- plot(fit_identity, type="discount", print=FALSE)
+df2 <- plot(fit01_identity, type="discount", print=FALSE)
 df2 + ggtitle("Discount function plot", "Identity")
 
 ## ------------------------------------------------------------------------
@@ -49,50 +49,49 @@ p1 + ggtitle("Discount Function Plot :-)")
 
 ## ------------------------------------------------------------------------
 set.seed(42)
-# Simulate survival times
-time_current    <- rexp(50, rate=1/10)
-time_historical <- rexp(50, rate=1/15)
+# Simulate survival times for current and historical data
+surv_1arm <- data.frame(status = 1,
+                        time   = rexp(50, rate=1/10))
 
-# Combine simulated data into a data frame
-data1 <- data.frame(status     = 1,
-                    time       = c(time_current, time_historical),
-                    historical = c(rep(0,50),rep(1,50)),
-                    treatment  = 1)
+# Simulate survival times for historical data
+surv_1arm0 <- data.frame(status = 1,
+                         time   = rexp(50, rate=1/15))
 
 ## ------------------------------------------------------------------------
 set.seed(42)
-fit1 <- bdpsurvival(Surv(time, status) ~ historical + treatment,
-                    data = data1,
+fit1 <- bdpsurvival(Surv(time, status) ~ 1,
+                    data  = surv_1arm,
+                    data0 = surv_1arm0,
                     surv_time = 5)
-
 print(fit1)
 
 ## ---- include=FALSE------------------------------------------------------
-survival_time_posterior_flat1 <- ppexp(5,
-                                       fit1$posterior_treatment$posterior_hazard,
-                                       cuts=c(0,fit1$args1$breaks))
-surv_augmented1 <- round(1-median(survival_time_posterior_flat1), 4)
-CI95_augmented1 <- round(1-quantile(survival_time_posterior_flat1, prob=c(0.975, 0.025)), 4)
+survival_time_posterior <- ppexp(5,
+                                 fit1$posterior_treatment$posterior_hazard,
+                                 cuts=c(0,fit1$args1$breaks))
+surv_augmented1 <- round(1-median(survival_time_posterior), 4)
+CI95_augmented1 <- round(1-quantile(survival_time_posterior, prob=c(0.975, 0.025)), 4)
 
 ## ------------------------------------------------------------------------
 summary(fit1)
 
 ## ------------------------------------------------------------------------
 set.seed(42)
-fit1a <- bdpsurvival(Surv(time, status) ~ historical + treatment,
-                     data = data1,
-                     surv_time = 5,
-                     alpha_max = 1,
-                     fix_alpha = TRUE)
+fit1a <- bdpsurvival(Surv(time, status) ~ 1,
+                    data  = surv_1arm,
+                    data0 = surv_1arm0,
+                    surv_time = 5,
+                    alpha_max = 1,
+                    fix_alpha = TRUE)
 
 print(fit1a)
 
 ## ------------------------------------------------------------------------
-survival_time_posterior_flat <- ppexp(5,
-                                      fit1a$posterior_treatment$posterior_hazard,
-                                      cuts=c(0,fit1a$args1$breaks))
-surv_augmented <- 1-median(survival_time_posterior_flat)
-CI95_augmented <- 1-quantile(survival_time_posterior_flat, prob=c(0.975, 0.025))
+survival_time_posterior <- ppexp(5,
+                                 fit1a$posterior_treatment$posterior_hazard,
+                                 cuts=c(0,fit1a$args1$breaks))
+surv_augmented <- 1-median(survival_time_posterior)
+CI95_augmented <- 1-quantile(survival_time_posterior, prob=c(0.975, 0.025))
 
 ## ------------------------------------------------------------------------
 plot(fit1a)
@@ -108,17 +107,19 @@ time_current_cntrl    <- rexp(50, rate=1/20)
 time_historical_cntrl <- rexp(50, rate=1/20)
 
 
-# Combine simulated data into a data frame
-data2 <- data.frame(status     = 1,
-                    time       = c(time_current_trt,   time_historical_trt,
-                                   time_current_cntrl, time_historical_cntrl),
-                    historical = c(rep(0,50),rep(1,50), rep(0,50),rep(1,50)),
-                    treatment  = c(rep(1,100), rep(0,100)))
+# Combine simulated data into data frames
+surv_2arm <- data.frame(treatment = c(rep(1,50),rep(0,50)),
+                        time      = c(time_current_trt, time_current_cntrl),
+                        status    = 1)
+
+surv_2arm0 <- data.frame(treatment = c(rep(1,50),rep(0,50)),
+                         time      = c(time_historical_trt, time_historical_cntrl),
+                         status    = 1)
 
 ## ------------------------------------------------------------------------
 set.seed(42)
-fit2 <- bdpsurvival(Surv(time, status) ~ historical + treatment,
-                    data = data2)
-
+fit2 <- bdpsurvival(Surv(time, status) ~ treatment,
+                    data = surv_2arm,
+                    data0 = surv_2arm0)
 print(fit2)
 

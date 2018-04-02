@@ -32,25 +32,25 @@ opts_chunk$set(
   )
   
 # Run two models to document the discount function plots
-time   <- c(rexp(50, rate=1/20), rexp(50, rate=1/10))
-status <- c(rexp(50, rate=1/30), rexp(50, rate=1/30))
-status <- ifelse(time < status, 1, 0)
-example_surv_1arm <- data.frame(status     = status,
-                                time       = time,
-                                historical = c(rep(1,50),rep(0,50)),
-                                treatment  = 1)
+surv_1arm <- data.frame(status = rexp(50, rate=1/30),
+                        time   = rexp(50, rate=1/20))
+surv_1arm$status <- ifelse(surv_1arm$time < surv_1arm$status, 1, 0)
 
-fit01 <- bdpsurvival(Surv(time, status) ~ historical + treatment,
-                     data = example_surv_1arm,
-                     surv_time = 5)
-fit02 <- bdpsurvival(Surv(time, status) ~ historical + treatment,
-                     data = example_surv_1arm,
+surv_1arm0 <- data.frame(status = rexp(50, rate=1/30),
+                         time   = rexp(50, rate=1/10))
+surv_1arm0$status <- ifelse(surv_1arm0$time < surv_1arm0$status, 1, 0)
+
+
+fit01 <- bdpsurvival(Surv(time, status) ~ 1,
+                     data  = surv_1arm,
+                     data0 = surv_1arm0,
                      surv_time = 5)
 
-fit_scaledweibull <- bdpbinomial(y_t=10, N_t=500, y0_t=25, N0_t=250, 
-                                 discount_function="scaledweibull")
-fit_identity <- bdpbinomial(y_t=10, N_t=500, y0_t=25, N0_t=250,
-                            discount_function="identity")
+fit01_identity <- bdpsurvival(Surv(time, status) ~ 1,
+                     data  = surv_1arm,
+                     data0 = surv_1arm0,
+                     surv_time = 5,
+                     discount_function="identity")
 ```
 
 # Introduction
@@ -175,7 +175,7 @@ Z_2 & = & \displaystyle{\left|\tilde{R}\right|\left(\sum_{j=1}^J\frac{1}{1/v^2_{
 p_2 &  =  & 2\left(1-\Phi\left(Z_2\right)\right),
 \end{array}
 $$
-where $\Phi\left(x\right)$ is the $x$th quantile of a standard normal (the value $p_2$ is found via the `pnorm` R function). Here, $v^2_{2j}$ and $v^2_{02j}}$ are the variances of $\log\lambda_j$ and $\log\lambda_{0j}$, respectively, derived via the Fisher information. Next, $p_2$ is used to construct $\hat{\alpha}$ via the discount function. Since the values $Z_2$ and $p_2$ are computed at each iteration of the Monte Carlo estimation scheme, $\hat{\alpha}$ is computed at each iteration of the Monte Carlo estimation scheme, resulting in a distribution of $\hat{\alpha}$ values.
+where $\Phi\left(x\right)$ is the $x$th quantile of a standard normal (the value $p_2$ is found via the `pnorm` R function). Here, $v^2_{2j}$ and $v^2_{02j}$ are the variances of $\log\lambda_j$ and $\log\lambda_{0j}$, respectively, derived via the Fisher information. Next, $p_2$ is used to construct $\hat{\alpha}$ via the discount function. Since the values $Z_2$ and $p_2$ are computed at each iteration of the Monte Carlo estimation scheme, $\hat{\alpha}$ is computed at each iteration of the Monte Carlo estimation scheme, resulting in a distribution of $\hat{\alpha}$ values.
 
 
 With the historical data weight (or weights) $\hat{\alpha}$ in hand, we can  move on to estimation of the posterior distribution of the current data.
@@ -203,12 +203,12 @@ The third discount function is the identity. This simply sets the discount weigh
 
 Using the default shape and scale inputs, each of the discount functions are shown below.
 ```{r, echo=FALSE}
-df1 <- plot(fit02, type="discount", print=FALSE)
+df1 <- plot(fit01, type="discount", print=FALSE)
 df1 + ggtitle("Discount function plot", "Weibull distribution with shape=3 and scale=0.135")
 ```
 
 ```{r, echo=FALSE}
-df2 <- plot(fit_identity, type="discount", print=FALSE)
+df2 <- plot(fit01_identity, type="discount", print=FALSE)
 df2 + ggtitle("Discount function plot", "Identity")
 ```
 
@@ -256,24 +256,13 @@ respectively. We then construct the log hazard ratio $\beta$ using the estimates
 
 
 ## Function inputs
-The data inputs for `bdpsurvival` is via a data frame that must have very specific column names. The required columns are `status`, `time`, `historical`, and `treatment`. Descriptions of each column are as follows:
+Data for `bdpsurvival` is input via data frame(s) that must have certain columns. Though `bdpsurvival` supports analyses with no historical data, other packages/functions should be used.
 
-- `status` - an indicator (0 or 1) of whether an event was observed (1) or if the observation is right-censored (0)
-- `time` - the event or censor time
-- `historical` - an indicator (0 or 1) of whether the observation source is historical data (1) or current data (0)
-- `treatment`- an indicator (0 or 1) of whether the observation source is treatment group (1) or control group (0)
+To carry out an analysis using historical data, two data frames need to be constructed: (1) current data, input via `data`; and (2) historical data, input via `data0`. The analysis type, i.e., one-arm vs. two-arm, is controlled via the right-hand-side (RHS) of the formula input. 
 
-Historical data are not necessary, but using this function would not be necessary either.  __At the minimum, at least one `historical=0` and one `treatment=1` observation must be present__. Each of the following input combinations for observations are allowed:
+Suppose we have data frames with matching column names. The survival times are stored in the `time` column while the event indicator is stored in the `status` column. Then, the formula input `Surv(time, status) ~ 1` specifies a one-arm treatment. As long as the term `treatment` does not appear on the RHS of the formula, the analysis will be one-arm.
 
-- (`historical=0`, `treatment=1`) - one-arm trial
-- (`historical=0`, `treatment=1`) + (`historical=1`, `treatment=1`) - one-arm trial
-- (`historical=0`, `treatment=1`) + (`historical=0`, `treatment=0`) - two-arm trial
-- (`historical=0`, `treatment=1`) + (`historical=0`, `treatment=0`) - two-arm trial
-- (`historical=0`, `treatment=1`) + (`historical=1`, `treatment=1`) + (`historical=0`, `treatment=0`) - two-arm trial
-- (`historical=0`, `treatment=1`) + (`historical=1`, `treatment=1`) + (`historical=1`, `treatment=0`) - two-arm trial
-- (`historical=0`, `treatment=1`) + (`historical=1`, `treatment=1`) + (`historical=0`, `treatment=0`)+ (`historical=1`, `treatment=0`) - two-arm trial
-
-
+Now, suppose we desire a two-arm analysis. Then, the current and historical data frames must contain a column named exactly `treatment`. The treatment column is binary and indicates treatment and control observations. Now, the formula input `Surv(time, status) ~ treatment` specifies a two-arm treatment. 
 
 
 # Examples
@@ -281,35 +270,33 @@ Historical data are not necessary, but using this function would not be necessar
 To demonstrate a one-arm trial, we will simulate survival data from an exponential distribution. For ease of exposition, we will assume that there are no censored observations.
 ```{r}
 set.seed(42)
-# Simulate survival times
-time_current    <- rexp(50, rate=1/10)
-time_historical <- rexp(50, rate=1/15)
+# Simulate survival times for current and historical data
+surv_1arm <- data.frame(status = 1,
+                        time   = rexp(50, rate=1/10))
 
-# Combine simulated data into a data frame
-data1 <- data.frame(status     = 1,
-                    time       = c(time_current, time_historical),
-                    historical = c(rep(0,50),rep(1,50)),
-                    treatment  = 1)
+# Simulate survival times for historical data
+surv_1arm0 <- data.frame(status = 1,
+                         time   = rexp(50, rate=1/15))
 ```
-In this example, we've simulated current survival times from an exponential distribution with rate `1/10` and historical survival times from an exponential distribution with rate `1/15`. With our data frame constructed, we can now fit the `bdpsurvival` model. Since this is a one-arm trial, we will request the survival probability at `surv_time=5`. Thus, estimation using the default model inputs is carried out:
+In this example, we've simulated current survival times from an exponential distribution with rate `1/10` and historical survival times from an exponential distribution with rate `1/15`; `status = 1` for all observations, implying no times are censored. With our data frame constructed, we can now fit the `bdpsurvival` model. Since this is a one-arm trial, we will request the survival probability at `surv_time=5`. Thus, estimation using the default model inputs is carried out:
 
 ```{r}
 set.seed(42)
-fit1 <- bdpsurvival(Surv(time, status) ~ historical + treatment,
-                    data = data1,
+fit1 <- bdpsurvival(Surv(time, status) ~ 1,
+                    data  = surv_1arm,
+                    data0 = surv_1arm0,
                     surv_time = 5)
-
 print(fit1)
 ```
 
 ```{r, include=FALSE}
-survival_time_posterior_flat1 <- ppexp(5,
-                                       fit1$posterior_treatment$posterior_hazard,
-                                       cuts=c(0,fit1$args1$breaks))
-surv_augmented1 <- round(1-median(survival_time_posterior_flat1), 4)
-CI95_augmented1 <- round(1-quantile(survival_time_posterior_flat1, prob=c(0.975, 0.025)), 4)
+survival_time_posterior <- ppexp(5,
+                                 fit1$posterior_treatment$posterior_hazard,
+                                 cuts=c(0,fit1$args1$breaks))
+surv_augmented1 <- round(1-median(survival_time_posterior), 4)
+CI95_augmented1 <- round(1-quantile(survival_time_posterior, prob=c(0.975, 0.025)), 4)
 ```
-The `print` method displays the median survival probability of ``r surv_augmented1``  and the 95% lower and upper interval limits of ``r CI95_augmented1[1]`` and ``r CI95_augmented1[2]``, respectively. The `summary` method is implemented as well. For a one-arm trial, the summary outputs a survival table as follows:
+The `print` method displays the median survival probability of ``r surv_augmented1`` and the 95% lower and upper interval limits of ``r CI95_augmented1[1]`` and ``r CI95_augmented1[2]``, respectively. The `summary` method is implemented as well. For a one-arm trial, the summary outputs a survival table as follows:
 ```{r}
 summary(fit1)
 ```
@@ -318,11 +305,12 @@ In the above output, in addition to a survival table, we can see the stochastic 
 Suppose that we would like to apply full weight to the historical data. This can be accomplished by setting `alpha_max=1` and `fix_alpha=TRUE` as follows:
 ```{r}
 set.seed(42)
-fit1a <- bdpsurvival(Surv(time, status) ~ historical + treatment,
-                     data = data1,
-                     surv_time = 5,
-                     alpha_max = 1,
-                     fix_alpha = TRUE)
+fit1a <- bdpsurvival(Surv(time, status) ~ 1,
+                    data  = surv_1arm,
+                    data0 = surv_1arm0,
+                    surv_time = 5,
+                    alpha_max = 1,
+                    fix_alpha = TRUE)
 
 print(fit1a)
 ```
@@ -331,11 +319,11 @@ Now, the median survival probability shifts upwards towards the historical data.
 
 Many of the the values presented in the `summary` and `print` methods are accessible from the fit object. For instance, `alpha` is found in `fit1a$posterior_treatment$alpha_discount` and `p_hat` is located at `fit1a$posterior_treatment$p_hat`. The augmented survival probability and CI are computed at run-time. The results can be replicated as:
 ```{r}
-survival_time_posterior_flat <- ppexp(5,
-                                      fit1a$posterior_treatment$posterior_hazard,
-                                      cuts=c(0,fit1a$args1$breaks))
-surv_augmented <- 1-median(survival_time_posterior_flat)
-CI95_augmented <- 1-quantile(survival_time_posterior_flat, prob=c(0.975, 0.025))
+survival_time_posterior <- ppexp(5,
+                                 fit1a$posterior_treatment$posterior_hazard,
+                                 cuts=c(0,fit1a$args1$breaks))
+surv_augmented <- 1-median(survival_time_posterior)
+CI95_augmented <- 1-quantile(survival_time_posterior, prob=c(0.975, 0.025))
 ```
 Here, we first compute the piecewise exponential cumulative distribution function using the `ppexp` function. The `ppexp` function requires the survival time, `5` here, the posterior draws of the piecewise hazards, and the cuts points of the corresponding intervals.
 
@@ -362,19 +350,21 @@ time_current_cntrl    <- rexp(50, rate=1/20)
 time_historical_cntrl <- rexp(50, rate=1/20)
 
 
-# Combine simulated data into a data frame
-data2 <- data.frame(status     = 1,
-                    time       = c(time_current_trt,   time_historical_trt,
-                                   time_current_cntrl, time_historical_cntrl),
-                    historical = c(rep(0,50),rep(1,50), rep(0,50),rep(1,50)),
-                    treatment  = c(rep(1,100), rep(0,100)))
+# Combine simulated data into data frames
+surv_2arm <- data.frame(treatment = c(rep(1,50),rep(0,50)),
+                        time      = c(time_current_trt, time_current_cntrl),
+                        status    = 1)
+
+surv_2arm0 <- data.frame(treatment = c(rep(1,50),rep(0,50)),
+                         time      = c(time_historical_trt, time_historical_cntrl),
+                         status    = 1)
 ```
-In this example, we've simulated current and historical control survival times from exponential distributions with rate `1/20`. Note how the `data2` data frame has been constructed; we've taken care to ensure that the current/historical and treatment/control indicators line up properly. With our data frame constructed, we can now fit the `bdpsurvival` model. Before proceeding, it is worth pointing out that the discount function is applied separately to the treatment and control data. Now, let's carry out the two-arm analysis using default inputs:
+In this example, we've simulated current and historical control survival times from exponential distributions with rate `1/20`. Note how the data frames have been constructed; we've taken care to ensure that the current/historical and treatment/control indicators line up properly. With our data frame constructed, we can now fit the `bdpsurvival` model. Before proceeding, it is worth pointing out that the discount function is applied separately to the treatment and control data. Now, let's carry out the two-arm analysis using default inputs:
 ```{r}
 set.seed(42)
-fit2 <- bdpsurvival(Surv(time, status) ~ historical + treatment,
-                    data = data2)
-
+fit2 <- bdpsurvival(Surv(time, status) ~ treatment,
+                    data = surv_2arm,
+                    data0 = surv_2arm0)
 print(fit2)
 ```
 
