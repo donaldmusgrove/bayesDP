@@ -1,12 +1,13 @@
-# bayesDP 1.3.0
+# bayesDP 1.3.1
 ## Major new features
 * Changes to inputs for bdpsurvival
   + Current and (optional) historical data are specified in separate data frames
-
+* Updated normal approximation used for method="mc" of the bdpbinomial and bdpnormal functions
 
 ## Bug fixes and minor improvements
-* Placeholder
-
+* Summary method for bdplm now exists and mimics lm
+* Removed bdpbinomial vignette language around success (vs event) 
+* Reported one-arm sample size for bdpsurvival print method adjusted to current data only
 
 
 # bayesDP 1.3.0
