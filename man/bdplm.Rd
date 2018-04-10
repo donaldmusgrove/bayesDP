@@ -195,7 +195,7 @@ fit <- bdplm(formula=Y ~ treatment+x, data=df_, data0=df0,
              method="fixed")
 
 # Look at estimates and discount weight
-fit$estimates
-fit$alpha_discount
+summary(fit)
+print(fit)
 
 }

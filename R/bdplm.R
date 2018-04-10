@@ -156,8 +156,8 @@
 #'              method="fixed")
 #'
 #' # Look at estimates and discount weight
-#' fit$estimates
-#' fit$alpha_discount
+#' summary(fit)
+#' print(fit)
 #'
 #' @rdname bdplm
 #' @import methods
