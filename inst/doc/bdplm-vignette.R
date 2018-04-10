@@ -13,62 +13,65 @@ opts_chunk$set(
   out.width = "60%",
   fig.align = "center"
   )
-  
-fit01 <- bdpbinomial(y_t=10, N_t=500, y0_t=25, N0_t=250)
-fit02 <- bdpbinomial(y_t=10, N_t=500, y0_t=25, N0_t=250)
+
+set.seed(42)  
+fit01 <- bdpbinomial(y_t=10, N_t=500, y0_t=25, N0_t=250, method="fixed")
+fit02 <- bdpbinomial(y_t=10, N_t=500, y0_t=10, N0_t=250, method="fixed",
+                     discount_function="weibull")
 
 fit_scaledweibull <- bdpbinomial(y_t=10, N_t=500, y0_t=25, N0_t=250, 
-                                 discount_function="scaledweibull")
-fit_identity <- bdpbinomial(y_t=10, N_t=500, y0_t=25, N0_t=250,
-                            discount_function="identity")
-
-## ---- echo=FALSE---------------------------------------------------------
-df1 <- plot(fit02, type="discount", print=FALSE)
-df1 + ggtitle("Discount function plot", "Weibull distribution with shape=3 and scale=0.135")
+                                 discount_function="scaledweibull",
+                                 method="fixed")
+fit_identity <- bdpbinomial(y_t=10, N_t=500, y0_t=10, N0_t=250,
+                            method="fixed")
 
 ## ---- echo=FALSE---------------------------------------------------------
 df2 <- plot(fit_identity, type="discount", print=FALSE)
 df2 + ggtitle("Discount function plot", "Identity")
 
+## ---- echo=FALSE---------------------------------------------------------
+df1 <- plot(fit02, type="discount", print=FALSE)
+df1 + ggtitle("Discount function plot", "Weibull distribution with shape=3 and scale=0.135")
+
 ## ------------------------------------------------------------------------
-p1 <- plot(fit01, type="discount", print=FALSE)
+p1 <- plot(fit02, type="discount", print=FALSE)
 p1 + ggtitle("Discount Function Plot :-)")
 
 ## ------------------------------------------------------------------------
 set.seed(42)
 ### Simulate  data
 # Sample sizes
-n_t  <- 25  #current treatment sample size
-n_c  <- 25  #current control sample size
-n_t0 <- 50  #historical treatment sample size
-n_c0 <- 50  #historical treatment sample size
+n_t  <- 30     # Current treatment sample size
+n_c  <- 30     # Current control sample size
+n_t0 <- 80     # Historical treatment sample size
+n_c0 <- 80     # Historical control sample size
 
-# Treatment and historical indicators
-treatment  <- c(rep(1, n_t+n_t0), rep(0, n_c+n_c0))
-historical <- c(rep(0, n_t), rep(1,n_t0), rep(0, n_c), rep(1,n_c0))
+# Treatment group vectors for current and historical data
+treatment   <- c(rep(1,n_t), rep(0,n_c))
+treatment0  <- c(rep(1,n_t0), rep(0,n_c0))
 
-# Covariate effect
-x    <- rnorm(n_t+n_c+n_t0+n_c0, 34, 5) 
+# Simulate a covariate effect for current and historical data
+x  <- rnorm(n_t+n_c, 1, 5)
+x0 <- rnorm(n_t0+n_c0, 1, 5)
 
-# Outcome
-Y  <- treatment + 0*historical + x*3.5 + rnorm(n_t+n_c+n_t0+n_c0,0,0.1)
+# Simulate outcome:
+# - Intercept of 10 for current and historical data
+# - Treatment effect of 31 for current data
+# - Treatment effect of 30 for historical data
+# - Covariate effect of 3 for current and historical data
+Y  <- 10 + 31*treatment  + x*3 + rnorm(n_t+n_c,0,5)
+Y0 <- 10 + 30*treatment0 + x0*3 + rnorm(n_t0+n_c0,0,5)
 
-# Place data in a single dataframe
-df <- data.frame(Y=Y, treatment=treatment, historical=historical, x=x)
+# Place data into separate treatment and control data frames and
+# assign historical = 0 (current) or historical = 1 (historical)
+df_ <- data.frame(Y=Y, treatment=treatment, x=x)
+df0 <- data.frame(Y=Y0, treatment=treatment0, x=x0)
 
-# Create current and historical dataframes
-df_  <- subset(df, historical==0)
-df_0 <- subset(df, historical==1)
+# Fit model using default settings
+fit <- bdplm(formula=Y ~ treatment+x, data=df_, data0=df0,
+             method="fixed")
 
-
-# Fit the model with default inputs
-fit <- bdplm(formula=Y ~ treatment+x,
-             data=df_, data0=df_0)
-
-# View estimates:
-fit$estimates$coef
-
-# View alpha discount weight parameters:
-fit$alpha_discount
-
+summary(fit)
+print(fit)
+#plot(fit)   <-- Not yet implemented
 

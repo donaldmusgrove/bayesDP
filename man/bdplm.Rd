@@ -11,8 +11,8 @@ bdplm(formula = formula, data = data, data0 = NULL,
   prior_covariate_effect = 0, prior_covariate_sd = 10000,
   number_mcmc_alpha = 5000, number_mcmc_sigmagrid = 5000,
   number_mcmc_sigma = 100, number_mcmc_beta = 10000,
-  discount_function = "weibull", alpha_max = 1, fix_alpha = FALSE,
-  weibull_scale = 0.135, weibull_shape = 3, method = "fixed")
+  discount_function = "identity", alpha_max = 1, fix_alpha = FALSE,
+  weibull_scale = 0.135, weibull_shape = 3, method = "mc")
 }
 \arguments{
 \item{formula}{an object of class "formula." See "Details" for
@@ -69,7 +69,7 @@ Currently supports \code{weibull}, \code{scaledweibull}, and
 \code{identity}. The discount function \code{scaledweibull} scales
 the output of the Weibull CDF to have a max value of 1. The \code{identity}
 discount function uses the posterior probability directly as the discount
-weight. Default value is "\code{weibull}".}
+weight. Default value is "\code{identity}".}
 
 \item{alpha_max}{scalar. Maximum weight the discount function can apply.
 Default is 1. Users may specify a vector of two values where the first
@@ -83,19 +83,20 @@ used to compute alpha, the weight parameter of the historical data. Default
 value is 0.135. Users may specify a vector of two
 values where the first value is used to estimate the weight of the
 historical treatment group and the second value is used to estimate the
-weight of the historical control group.}
+weight of the historical control group.
+Not used when \code{discount_function} = "identity".}
 
 \item{weibull_shape}{scalar. Shape parameter of the Weibull discount function
 used to compute alpha, the weight parameter of the historical data. Default
 value is 3. Users may specify a vector of two values
 where the first value is used to estimate the weight of the historical
 treatment group and the second value is used to estimate the weight of the
-historical control group.}
+historical control group. Not used when \code{discount_function} = "identity".}
 
 \item{method}{character. Analysis method with respect to estimation of the weight
-paramter alpha. Default value "\code{fixed}" estimates alpha once and holds it fixed
-throughout the analysis. Alternative method "\code{mc}" estimates alpha for each
-Monte Carlo iteration. See the the \code{bdplm} vignette \cr
+paramter alpha. Default method "\code{mc}" estimates alpha for each
+Monte Carlo iteration. Alternate value "\code{fixed}" estimates alpha once and
+holds it fixed throughout the analysis.  See the the \code{bdplm} vignette \cr
 \code{vignette("bdplm-vignette", package="bayesDP")} for more details.}
 }
 \value{
@@ -121,32 +122,31 @@ the following components:
 \description{
 \code{bdplm} is used to estimate the treatment effect
   in the presence of covariates using the regression analysis
-  implementation of the Bayesian discount prior. This function is currently
-  a barebones implementation and does not support \code{summary},
-  \code{plot}, or \code{print} methods. Currently, the function only supports
-  a two-arm clinical trial where all of current and historical treatment and
-  current and historical control data are present.
+  implementation of the Bayesian discount prior. \code{summary} and
+  \code{print} methods are supported. Currently, the function only supports
+  a two-arm clinical trial where all of current treatment, current control,
+  historical treatment, and historical control data are present
 }
 \details{
 \code{bdplm} uses a two-stage approach for determining the
   strength of historical data in estimation of an adjusted mean or covariate
-  effect. In the first stage, a Weibull distribution function is used as a
-  \emph{discount function} that defines the maximum strength of the
-  historical data (via \code{weibull_shape}, \code{weibull_scale}, and
-  \code{alpha_max}) and discounts based on disagreement with the current data.
+  effect. In the first stage, a \emph{discount function} is used that
+  that defines the maximum strength of the
+  historical data and discounts based on disagreement with the current data.
   Disagreement between current and historical data is determined by stochastically
   comparing the respective posterior distributions under noninformative priors.
   Here with a two-arm regression analysis, the comparison is the
   proability (\code{p}) that the covariate effect of an historical data indicator is
   significantly different from zero. The comparison metric \code{p} is then
-  input into the Weibull discount function and the final strength of the
+  input into the discount function and the final strength of the
   historical data is returned (\code{alpha}).
 
   In the second stage, posterior estimation is performed where the discount
   function parameter, \code{alpha}, is used to weight the historical data
   effects.
 
-  The formula must include an intercept and both data and data0 must be present.
+  The formula must include an intercept (i.e., do not use \code{-1} in
+  the formula) and both data and data0 must be present.
   The column names of data and data0 must match. See \code{examples} below for
   example usage.
 
@@ -179,19 +179,20 @@ x0 <- rnorm(n_t0+n_c0, 1, 5)
 
 # Simulate outcome:
 # - Intercept of 10 for current and historical data
-# - Treatment effect of 34 for current data
+# - Treatment effect of 31 for current data
 # - Treatment effect of 30 for historical data
 # - Covariate effect of 3 for current and historical data
-Y  <- 10 + 34*treatment  + x*3 + rnorm(n_t+n_c,0,5)
+Y  <- 10 + 31*treatment  + x*3 + rnorm(n_t+n_c,0,5)
 Y0 <- 10 + 30*treatment0 + x0*3 + rnorm(n_t0+n_c0,0,5)
 
 # Place data into separate treatment and control data frames and
 # assign historical = 0 (current) or historical = 1 (historical)
-df_ <- data.frame(Y=Y, treatment=treatment, x=x, intercept=1)
-df0 <- data.frame(Y=Y0, treatment=treatment0, x=x0, intercept=1)
+df_ <- data.frame(Y=Y, treatment=treatment, x=x)
+df0 <- data.frame(Y=Y0, treatment=treatment0, x=x0)
 
 # Fit model using default settings
-fit <- bdplm(formula=Y ~ treatment+x, data=df_, data0=df0)
+fit <- bdplm(formula=Y ~ treatment+x, data=df_, data0=df0,
+             method="fixed")
 
 # Look at estimates and discount weight
 fit$estimates

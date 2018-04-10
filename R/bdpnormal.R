@@ -32,7 +32,7 @@
 #'   \code{identity}. The discount function \code{scaledweibull} scales
 #'   the output of the Weibull CDF to have a max value of 1. The \code{identity}
 #'   discount function uses the posterior probability directly as the discount
-#'   weight. Default value is "\code{weibull}".
+#'   weight. Default value is "\code{identity}".
 #' @param alpha_max scalar. Maximum weight the discount function can apply.
 #'   Default is 1. For a two-arm trial, users may specify a vector of two values
 #'   where the first value is used to weight the historical treatment group and
@@ -43,18 +43,19 @@
 #'   value is 3. For a two-arm trial, users may specify a vector of two values
 #'   where the first value is used to estimate the weight of the historical
 #'   treatment group and the second value is used to estimate the weight of the
-#'   historical control group.
+#'   historical control group. Not used when \code{discount_function} = "identity".
 #' @param weibull_scale scalar. Scale parameter of the Weibull discount function
 #'   used to compute alpha, the weight parameter of the historical data. Default
 #'   value is 0.135. For a two-arm trial, users may specify a vector of two values
 #'   where the first value is used to estimate the weight of the historical
 #'   treatment group and the second value is used to estimate the weight of the
-#'   historical control group.
+#'   historical control group. Not used when \code{discount_function} = "identity".
 #' @param number_mcmc scalar. Number of Monte Carlo simulations. Default is 10000.
 #' @param method character. Analysis method with respect to estimation of the weight
-#'   paramter alpha. Default value "\code{fixed}" estimates alpha once and holds it fixed
-#'   throughout the analysis. Alternative method "\code{mc}" estimates alpha for each
-#'   Monte Carlo iteration. See the the \code{bdpnormal} vignette \cr
+#'   paramter alpha. Default method "\code{mc}" estimates alpha for each
+#'   Monte Carlo iteration. Alternate value "\code{fixed}" estimates alpha once
+#'   and holds it fixed throughout the analysis.  See the the
+#'   \code{bdpnormal} vignette \cr
 #'   \code{vignette("bdpnormal-vignette", package="bayesDP")} for more details.
 #' @param compare logical. Should a comparison object be included in the fit?
 #'   For a one-arm analysis, the comparison object is simply the posterior
@@ -64,20 +65,18 @@
 #'   \code{final} slot, else the \code{final} slot is \code{NULL}. Default is
 #'   \code{TRUE}.
 #' @details \code{bdpnormal} uses a two-stage approach for determining the
-#'   strength of historical data in estimation of a mean outcome.  In the first
-#'   stage, a Weibull distribution function is used as a
-#'   \emph{discount function} that defines the maximum strength of the
-#'   historical data (via \code{weibull_shape}, \code{weibull_scale}, and
-#'   \code{alpha_max}) and discounts based on disagreement with the current data.
+#'   strength of historical data in estimation of a mean outcome. In the first stage,
+#'   a \emph{discount function} is used that that defines the maximum strength of the
+#'   historical data and discounts based on disagreement with the current data.
 #'   Disagreement between current and historical data is determined by stochastically
 #'   comparing the respective posterior distributions under noninformative priors.
 #'   With Gaussian data, the comparison is the proability (\code{p}) that the current
 #'   mean is less than the historical mean. The comparison metric \code{p} is then
-#'   input into the Weibull discount function and the final strength of the
+#'   input into the discount function and the final strength of the
 #'   historical data is returned (alpha).
 #'
 #'  In the second stage, posterior estimation is performed where the discount
-#'  function parameter, \code{alpha}, is used as a fixed value for all posterior
+#'  function parameter, \code{alpha}, is used incorporated in all posterior
 #'  estimation procedures.
 #'
 #'  To carry out a single arm (OPC) analysis, data for the current treatment
@@ -181,18 +180,20 @@
 #'
 #' @examples
 #' # One-arm trial (OPC) example
-#' fit <- bdpnormal(mu_t = 30, sigma_t = 10, N_t = 250,
-#'                  mu0_t = 50, sigma0_t = 5, N0_t = 250)
+#' fit <- bdpnormal(mu_t  = 30, sigma_t  = 10,  N_t = 50,
+#'                  mu0_t = 32, sigma0_t = 10, N0_t = 50,
+#'                  method = "fixed")
 #' summary(fit)
 #' \dontrun{
 #' plot(fit)
 #' }
 #'
 #' # Two-arm (RCT) example
-#' fit2 <- bdpnormal(mu_t = 30, sigma_t = 10, N_t = 250,
-#'                   mu0_t = 50, sigma0_t = 5, N0_t = 250,
-#'                   mu_c = 25, sigma_c = 10, N_c = 250,
-#'                   mu0_c = 50, sigma0_c = 5, N0_c = 250)
+#' fit2 <- bdpnormal(mu_t  = 30, sigma_t  = 10,  N_t = 50,
+#'                   mu0_t = 32, sigma0_t = 10, N0_t = 50,
+#'                   mu_c  = 25, sigma_c  = 10,  N_c = 50,
+#'                   mu0_c = 25, sigma0_c = 10, N0_c = 50,
+#'                   method = "fixed")
 #' summary(fit2)
 #' \dontrun{
 #' plot(fit2)
@@ -221,13 +222,13 @@ setGeneric("bdpnormal",
                     mu0_c             = NULL,
                     sigma0_c          = NULL,
                     N0_c              = NULL,
-                    discount_function = "weibull",
+                    discount_function = "identity",
                     alpha_max         = 1,
                     fix_alpha         = FALSE,
                     weibull_scale     = 0.135,
                     weibull_shape     = 3,
                     number_mcmc       = 10000,
-                    method            = "fixed",
+                    method            = "mc",
                     compare           = TRUE){
              standardGeneric("bdpnormal")
            })
@@ -246,13 +247,13 @@ setMethod("bdpnormal",
                    mu0_c             = NULL,
                    sigma0_c          = NULL,
                    N0_c              = NULL,
-                   discount_function = "weibull",
+                   discount_function = "identity",
                    alpha_max         = 1,
                    fix_alpha         = FALSE,
                    weibull_scale     = 0.135,
                    weibull_shape     = 3,
                    number_mcmc       = 10000,
-                   method            = "fixed",
+                   method            = "mc",
                    compare           = TRUE){
 
   ################################################################################
@@ -492,6 +493,7 @@ posterior_normal <- function(mu, sigma, N, mu0, sigma0, N0, discount_function,
     ### Test of model vs real
     if(method == "fixed"){
       p_hat <- mean(posterior_flat_mu < prior_mu)   # larger is higher failure
+      p_hat <- 2*ifelse(p_hat > 0.5, 1 - p_hat, p_hat)
     } else if(method == "mc"){
       Z     <- abs(posterior_flat_mu-prior_mu) / sqrt(s^2+s0^2)
       p_hat <- 2*(1-pnorm(Z))
@@ -502,8 +504,6 @@ posterior_normal <- function(mu, sigma, N, mu0, sigma0, N0, discount_function,
     if(fix_alpha == TRUE){
       alpha_discount <- alpha_max
     } else{
-        p_hat          <- 2*ifelse(p_hat > 0.5, 1 - p_hat, p_hat)
-
         # Compute alpha discount based on distribution
         if(discount_function == "weibull"){
           alpha_discount <- pweibull(p_hat, shape=weibull_shape,

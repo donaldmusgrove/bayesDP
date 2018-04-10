@@ -6,9 +6,9 @@
 \title{Bayesian Discount Prior: Survival Analysis}
 \usage{
 bdpsurvival(formula = formula, data = data, data0 = NULL, breaks = NULL,
-  a0 = 0.1, b0 = 0.1, surv_time = NULL, discount_function = "weibull",
+  a0 = 0.1, b0 = 0.1, surv_time = NULL, discount_function = "identity",
   alpha_max = 1, fix_alpha = FALSE, number_mcmc = 10000,
-  weibull_scale = 0.135, weibull_shape = 3, method = "fixed",
+  weibull_scale = 0.135, weibull_shape = 3, method = "mc",
   compare = TRUE)
 }
 \arguments{
@@ -42,7 +42,7 @@ Currently supports \code{weibull}, \code{scaledweibull}, and
 \code{identity}. The discount function \code{scaledweibull} scales
 the output of the Weibull CDF to have a max value of 1. The \code{identity}
 discount function uses the posterior probability directly as the discount
-weight. Default value is "\code{weibull}".}
+weight. Default value is "\code{identity}".}
 
 \item{alpha_max}{scalar. Maximum weight the discount function can apply.
 Default is 1. For a two-arm trial, users may specify a vector of two values
@@ -68,9 +68,10 @@ treatment group and the second value is used to estimate the weight of the
 historical control group.}
 
 \item{method}{character. Analysis method with respect to estimation of the weight
-paramter alpha. Default value "\code{fixed}" estimates alpha once and holds it fixed
-throughout the analysis. Alternative method "\code{mc}" estimates alpha for each
-Monte Carlo iteration. See the the \code{bdpsurvival} vignette \cr
+paramter alpha. Default method "\code{mc}" estimates alpha for each
+Monte Carlo iteration. Alternate value "\code{fixed}" estimates alpha once
+and holds it fixed throughout the analysis.  See the the
+\code{bdpsurvival} vignette \cr
 \code{vignette("bdpsurvival-vignette", package="bayesDP")} for more details.}
 
 \item{compare}{logical. Should a comparison object be included in the fit?
@@ -152,16 +153,17 @@ the following components:
 \code{bdpsurvival} is used to estimate the survival probability
   (single arm trial; OPC) or hazard ratio (two-arm trial; RCT) for
   right-censored data using the survival analysis implementation of the
-  Bayesian discount prior. This code is modeled after
+  Bayesian discount prior. In the current implementation, a two-arm analysis
+  requires all of current treatment, current control, historical treatment,
+  and historical control data. This code is modeled after
   the methodologies developed in Haddad et al. (2017).
 }
 \details{
 \code{bdpsurvival} uses a two-stage approach for determining the
   strength of historical data in estimation of a survival probability outcome.
-  In the first stage, a Weibull distribution function is used as a
-  \emph{discount function} that defines the maximum strength of the
-  historical data (via \code{weibull_shape}, \code{weibull_scale}, and
-  \code{alpha_max}) and discounts based on disagreement with the current data.
+  In the first stage, a \emph{discount function} is used that
+  that defines the maximum strength of the
+  historical data and discounts based on disagreement with the current data.
   Disagreement between current and historical data is determined by stochastically
   comparing the respective posterior distributions under noninformative priors.
   With a single arm survival data analysis, the comparison is the
@@ -169,11 +171,11 @@ the following components:
   survival. For a two-arm survival data, analysis the comparison is the
   probability that the hazard ratio comparing treatment and control is
   different from zero. The comparison metric \code{p} is then
-  input into the Weibull discount function and the final strength of the
+  input into the discount function and the final strength of the
   historical data is returned (alpha).
 
   In the second stage, posterior estimation is performed where the discount
-  function parameter, \code{alpha}, is used as a fixed value for all posterior
+  function parameter, \code{alpha}, is used incorporated in all posterior
   estimation procedures.
 
   To carry out a single arm (OPC) analysis, data for the current and
@@ -198,19 +200,20 @@ the following components:
 # One-arm trial (OPC) example - survival probability at 5 years
 
 # Collect data into data frames
-surv_1arm <- data.frame(status = rexp(50, rate=1/30),
-                        time   = rexp(50, rate=1/20))
-surv_1arm$status <- ifelse(surv_1arm$time < surv_1arm$status, 1, 0)
+df_ <- data.frame(status = rexp(50, rate=1/30),
+                  time   = rexp(50, rate=1/20))
+df_$status <- ifelse(df_$time < df_$status, 1, 0)
 
-surv_1arm0 <- data.frame(status = rexp(50, rate=1/30),
-                         time   = rexp(50, rate=1/10))
-surv_1arm0$status <- ifelse(surv_1arm0$time < surv_1arm0$status, 1, 0)
+df0 <- data.frame(status = rexp(50, rate=1/30),
+                  time   = rexp(50, rate=1/10))
+df0$status <- ifelse(df0$time < df0$status, 1, 0)
 
 
 fit1 <- bdpsurvival(Surv(time, status) ~ 1,
-                    data  = surv_1arm,
-                    data0 = surv_1arm0,
-                    surv_time = 5)
+                    data  = df_,
+                    data0 = df0,
+                    surv_time = 5,
+                    method = "fixed")
 
 print(fit1)
 \dontrun{
@@ -219,28 +222,30 @@ plot(fit1)
 
 # Two-arm trial example
 # Collect data into data frames
-surv_2arm <- data.frame(time = c(rexp(50, rate=1/20),  # Current treatment
-                                 rexp(50, rate=1/10)), # Current control
-                                 status = rexp(100, rate=1/40),
-                                 treatment = c(rep(1,50), rep(0,50)))
-                                 surv_2arm$status <- ifelse(surv_2arm$time < surv_2arm$status, 1, 0)
+df_ <- data.frame(time = c(rexp(50, rate=1/20),  # Current treatment
+                           rexp(50, rate=1/10)), # Current control
+                  status = rexp(100, rate=1/40),
+                  treatment = c(rep(1,50), rep(0,50)))
+df_$status <- ifelse(df_$time < df_$status, 1, 0)
 
-surv_2arm0 <- data.frame(time = c(rexp(50, rate=1/30),  # Historical treatment
-                                  rexp(50, rate=1/5)),  # Historical control
-                         status =  rexp(100, rate=1/40),
-                         treatment = c(rep(1,50), rep(0,50)))
-surv_2arm0$status <- ifelse(surv_2arm0$time < surv_2arm0$status, 1, 0)
+df0 <- data.frame(time = c(rexp(50, rate=1/30),  # Historical treatment
+                           rexp(50, rate=1/5)),  # Historical control
+                  status =  rexp(100, rate=1/40),
+                  treatment = c(rep(1,50), rep(0,50)))
+df0$status <- ifelse(df0$time < df0$status, 1, 0)
 
 fit2 <- bdpsurvival(Surv(time, status) ~ treatment,
-                    data = surv_2arm,
-                    data0 = surv_2arm0)
+                    data = df_,
+                    data0 = df0,
+                    method = "fixed")
 summary(fit2)
 
 ### Fix alpha at 1
 fit2_1 <- bdpsurvival(Surv(time, status) ~ treatment,
-                      data = surv_2arm,
-                      data0 = surv_2arm0,
-                      fix_alpha = TRUE)
+                      data = df_,
+                      data0 = df0,
+                      fix_alpha = TRUE,
+                      method = "fixed")
 summary(fit2_1)
 
 

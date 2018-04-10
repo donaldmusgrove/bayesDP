@@ -30,14 +30,17 @@ opts_chunk$set(
   out.width = "60%",
   fig.align = "center"
   )
-  
-fit01 <- bdpbinomial(y_t=10, N_t=500, y0_t=25, N0_t=250)
-fit02 <- bdpbinomial(y_t=10, N_t=500, y0_t=25, N0_t=250)
+
+set.seed(42)  
+fit01 <- bdpbinomial(y_t=10, N_t=500, y0_t=25, N0_t=250, method="fixed")
+fit02 <- bdpbinomial(y_t=10, N_t=500, y0_t=10, N0_t=250, method="fixed",
+                     discount_function="weibull")
 
 fit_scaledweibull <- bdpbinomial(y_t=10, N_t=500, y0_t=25, N0_t=250, 
-                                 discount_function="scaledweibull")
-fit_identity <- bdpbinomial(y_t=10, N_t=500, y0_t=25, N0_t=250,
-                            discount_function="identity")
+                                 discount_function="scaledweibull",
+                                 method="fixed")
+fit_identity <- bdpbinomial(y_t=10, N_t=500, y0_t=10, N0_t=250,
+                            method="fixed")
 ```
 
 # Introduction
@@ -47,7 +50,7 @@ The purpose of this vignette is to introduce the `bdplm` function. `bdplm` is us
 
 2. Estimation of the posterior distribution of the current data, conditional on the historical data weighted by $\hat{\alpha}$
 
-3. If a two-arm clinical trial, estimation of the posterior treatment effect, i.e., treatment versus control
+3. Estimation of the posterior treatment effect, i.e., treatment versus control
 
 Throughout this vignette, we use the terms `current`, `historical`, `treatment`, and `control`. These terms are used because the model was envisioned in the context of clinical trials where historical data may be present. Because of this terminology, there are 4 potential sources of data:
 
@@ -69,10 +72,10 @@ If only treatment data is input, the function considers the analysis a one-arm t
 Before we get into our estimation scheme, we will briefly describe our implementation of the linear regression model. The linear regression model implementation, via `bdplm`, serves as an advanced companion to the `bdpnormal` model. With the `bdpnormal` model, we are interested in comparing mean outcomes via the probability that the mean values from treatment and control arms are not equivalent. When covariate adjustments are needed, `bdpnormal` is no longer a viable solution. Thus, `bdplm` allows analysts to adjust the treatment and control arm comparison for covariate effects.
 
 The analysis model of interest has the form
-$$y_i = \beta_0 + \beta_1I(treatment_i) + x_{2i}\beta_1 + \cdots+x_{mi}\beta_m + \varepsilon_i, \varepsilon_i \sim \mathcal{N}ormal\left(0,\,\sigma^2\right),\,\,\,i=1,\dots,n,$$
-where $I(treatment_i)$ indicates whether observation $i$ is in the treatment arm, $\beta_0$ is the intercept, $\beta_1$ is the treatment effect, $x_{ji}$ is the $j$th covariate with corresponding $\beta_j$ covariate effect, $j=1,\dots,m$, and $\sigma^2$ is the unknown error variance. 
+$$y_i = \beta_0 + \beta_1I(treatment_i) + x_{2i}\beta_2 + \cdots+x_{mi}\beta_m + \varepsilon_i, \varepsilon_i \sim \mathcal{N}ormal\left(0,\,\sigma^2\right),\,\,\,i=1,\dots,n,$$
+where $I(treatment_i)$ indicates whether observation $i$ is in the treatment arm, $\beta_0$ is the intercept, $\beta_1$ is the treatment effect, $x_{ji}$ is the $j$th covariate with corresponding $\beta_j$ covariate effect, $j=2,\dots,m$, and $\sigma^2$ is the unknown error variance. 
 
-Let $\boldsymbol{x}_i^T\boldsymbol{\beta}_{-(0,1)} = x_{2i}\beta_1 + \cdots+x_{mi}\beta_m$. Then, in order to place prior values on the treatment effect, we reparameterize the linear regression model as
+Let $\boldsymbol{x}_i^T\boldsymbol{\beta}_{-(0,1)} = x_{2i}\beta_2 + \cdots+x_{mi}\beta_m$. Then, in order to place prior values on the treatment effect, we reparameterize the linear regression model as
 $$y_i = \beta_0^{\ast}I(control_i) + \beta_1^{\ast}I(treatment_i) + \boldsymbol{x}_i^T\beta_{-(0,1)} + \varepsilon_i, \varepsilon_i \sim \mathcal{N}ormal\left(0,\,\sigma^2\right),\,\,\,i=1,\dots,n,$$
 where now $I(control_i)$ indicates whether observation $i$ is in the control arm, i.e., $I(control_i) = 1 - I(treatment_i)$. It is then straightforward to show that $\beta_0 = \beta^{\ast}_0$ and $\beta_1 = \beta_1^{\ast} - \beta^{\ast}_0$.
 
@@ -88,9 +91,9 @@ Finally, for a discount function, denoted $W$, $\hat{\alpha}$ is computed as
 $$
 \hat{\alpha} = \alpha_{max}\cdot W\left(p, \,w\right),\,0\le p\le1,
 $$
-where $w$ is one or more parameters associated with the discount function and $\alpha_{max}$ scales the weight $\hat{\alpha}$ by a user-input maximum value. More details on the discount functions are given in the discount function section below.
+where $w$ may be one or more parameters associated with the discount function and $\alpha_{max}$ scales the weight $\hat{\alpha}$ by a user-input maximum value. More details on the discount functions are given in the discount function section below.
 
-There are several model inputs at this first stage. First, the user can select `fix_alpha=TRUE` and force a fixed value of $\hat{\alpha}$ (at the `alpha_max` input), as opposed to estimation via the discount function. Next, a Monte Carlo estimation approach is used, requiring several samples from the posterior distributions. Thus, the user can input a sample size greater than or less than the default value of `number_mcmc_alpha=10000`. 
+There are several model inputs at this first stage. First, the user can select `fix_alpha=TRUE` and force a fixed value of $\hat{\alpha}$ (at the `alpha_max` input), as opposed to estimation via the discount function.  
 
 An alternate Monte Carlo-based estimation scheme of $\hat{\alpha}$ has been implemented, controlled by the function input `method="mc"`. Here, instead of treating $\hat{\alpha}$ as a fixed quantity, $\hat{\alpha}$ is treated as random. First, $p$, is computed as 
 
@@ -101,49 +104,46 @@ Z & = & \displaystyle{\frac{\left|\beta_1\right|}{\sigma_{\beta}}},\\
 p &  =  & 2\left(1-\Phi\left(Z\right)\right),
 \end{array}
 $$
-where $\Phi\left(x\right)$ is the $x$th quantile of a standard normal (the value $p$ is found via the `pnorm` R function). Next, $p$ is used to construct $\hat{\alpha}$ via the discount function. Since the values $Z$ and $p$ are computed at each iteration of the Monte Carlo estimation scheme, $\hat{\alpha}$ is computed at each iteration of the Monte Carlo estimation scheme, resulting in a distribution of $\hat{\alpha}$ values.
-
-With the historical data weight (or weights) $\hat{\alpha}$ in hand, we can  move on to estimation of the posterior distribution of the current data.
+where $\sigma_{\beta}$ is an estimate of the standard deviation of $\beta_1$ and $\Phi\left(x\right)$ is the $x$th quantile of a standard normal (i.e., the `pnorm` R function). Next, $p$ is used to construct $\hat{\alpha}$ via the discount function. Since the values $Z$ and $p$ are computed at each iteration of the Monte Carlo estimation scheme, $\hat{\alpha}$ is computed at each iteration of the Monte Carlo estimation scheme, resulting in a distribution of $\hat{\alpha}$ values.
 
 
 ### Discount function
-There are currently three discount functions implememented throughout the `bayesDP` packge. The discount function is specified using the `discount_function` input with the following choices available:
+There are currently three discount functions implemented throughout the `bayesDP` package. The discount function is specified using the `discount_function` input with the following choices available:
 
-1. `weibull` (default): Weibull cumulative distribution function (CDF);
+1. `identity` (default): Identity.
 
-2. `scaledweibull`: Scaled Weibull CDF;
+2. `weibull`: Weibull cumulative distribution function (CDF);
 
-3. `identity`: Identity.
+3. `scaledweibull`: Scaled Weibull CDF;
 
-The Weibull CDF is the default discount function and has two user-specified parameters associated with it, the shape and scale. The default shape is 3 and the default scale is 0.135, each of which are controlled by the function inputs `weibull_shape` and `weibull_scale`, respectively. The form of the Weibull CDF is
+First, the identity discount function (default) sets the discount weight $\hat{\alpha}=p$.
+
+Second, the Weibull CDF has two user-specified parameters associated with it, the shape and scale. The default shape is 3 and the default scale is 0.135, each of which are controlled by the function inputs `weibull_shape` and `weibull_scale`, respectively. The form of the Weibull CDF is
 $$W(x) = 1 - \exp\left\{- (x/w_{scale})^{w_{shape}}\right\}.$$
 
-The second discount function option is the Scaled Weibull CDF. The Scaled Weibull CDF is the Weibull CDF divided by the value of the Weibull CDF evaluated at 1, i.e., 
+The third discount function option is the Scaled Weibull CDF. The Scaled Weibull CDF is the Weibull CDF divided by the value of the Weibull CDF evaluated at 1, i.e., 
 $$W^{\ast}(x) = W(x)/W(1).$$
 Similar to the Weibull CDF, the Scaled Weibull CDF has two user-specified parameters associated with it, the shape and scale, again controlled by the function inputs `weibull_shape` and `weibull_scale`, respectively.
 
-The third discount function is the identity. This simply sets the discount weight $\hat{\alpha}=p$.
 
 Using the default shape and scale inputs, each of the discount functions are shown below.
-```{r, echo=FALSE}
-df1 <- plot(fit02, type="discount", print=FALSE)
-df1 + ggtitle("Discount function plot", "Weibull distribution with shape=3 and scale=0.135")
-```
-
 ```{r, echo=FALSE}
 df2 <- plot(fit_identity, type="discount", print=FALSE)
 df2 + ggtitle("Discount function plot", "Identity")
 ```
 
+```{r, echo=FALSE}
+df1 <- plot(fit02, type="discount", print=FALSE)
+df1 + ggtitle("Discount function plot", "Weibull distribution with shape=3 and scale=0.135")
+```
 
 In each of the above plots, the x-axis is the stochastic comparison between current and historical data, which we've denoted $p$. The y-axis is the discount value $\hat{\alpha}$ that corresponds to a given value of $p$. 
 
 An advanced input for the plot function is `print`. The default value is `print = TRUE`, which simply returns the graphics. Alternately, users can specify `print = FALSE`, which returns a `ggplot2` object. Below is an example using the discount function plot:
 ```{r}
-p1 <- plot(fit01, type="discount", print=FALSE)
+p1 <- plot(fit02, type="discount", print=FALSE)
 p1 + ggtitle("Discount Function Plot :-)")
 ```
-
 
 
 
@@ -162,7 +162,7 @@ $$
 where $\boldsymbol{\mu}_{\beta}=\left(\mu_0,\,\mu_1,\,\mu_2,\dots,\,\mu_m\right)^T$
 and $\boldsymbol{\Sigma}_{\beta}=\mbox{diag}\left(\tau^2_0/\alpha_{00},\,\tau^2_1/\alpha{01},\,\tau^2_2,\dots,\tau^2_m\right)$ are known and $\boldsymbol{\Sigma}_y=\sigma^2\mathbf{I}_n$. Here, $\mu_0$ and $\mu_1$ are the prior means of the control and treatment effects, respectively, while $\mu_2,\dots,\,\mu_m$ are the prior means of the covariate effects. Likewise, $\tau^2_0/\alpha_{00}$ and $\tau^2_1/\alpha_{01}$ are the prior variances of the control and treatment effects (weighted by the discount function result $\alpha$), respectively, while $\tau^2_2,\dots,\tau^2_m$ are the prior variances of the remaining covariate effects.
 
-Using what we refer to as the Gelman parameterization (see Gelman's Bayesian data analysis, 3rd edition, chapter 14, for more information), the model can be reparameterized to improve computational efficiency. First, write
+Using what we refer to as the Gelman parameterization (see Gelman's Bayesian Data Analysis, 3rd edition, chapter 14, for more information), the model can be reparameterized to improve computational efficiency. First, write
 $$
 \mathbf{y}_{\ast}=\left(\begin{array}{c}
 \mathbf{y}\\
@@ -193,14 +193,14 @@ $$
 \pi\left(\sigma^2\mid\mathbf{y}\right) & \propto & {\displaystyle \left(\frac{1}{\sigma^2}\right)^{n/2+1}\left|\mathbf{V}_{\beta}\right|^{1/2}\exp\left\{ -\frac{1}{2}\left(\mathbf{y}_{\ast}-\mathbf{X}_{\ast}\hat{\boldsymbol{\beta}}\right)^T\boldsymbol{\Sigma}_{\ast}^{-1}\left(\mathbf{y}_{\ast}-\mathbf{X}_{\ast}\hat{\boldsymbol{\beta}}\right)\right\} }.
 \end{array}
 $$
-Notice that both $\mathbf{V}_{\beta}$ and $\Sigma_{\ast}$ contain $\sigma^2$. Thus, this marginal posterior does not have a known distribution. We resort to a grid search of $\sigma^2$ where 100s or 1000s of values of $\sigma^2$ are proposed, on a grid, and the proposed values are sampled with probability proportional to the likelihood evaluated at the proposal. 
+Notice that both $\mathbf{V}_{\beta}$ and $\Sigma_{\ast}$ contain $\sigma^2$. Thus, this marginal posterior of $\sigma^2$ does not have a known distribution. We resort to a grid search of $\sigma^2$ where 100s or 1000s of values of $\sigma^2$ are proposed, on a grid, and the proposed values are sampled with probability proportional to the likelihood evaluated at the proposal. 
 
 Finally, values of $\sigma^2$ sampled from the posterior distribution are then used to sample values of $\boldsymbol{\beta}$ from 
 $$
 \boldsymbol{\beta} \sim \mathcal{N}\left(\hat{\boldsymbol{\beta}},\, \mathbf{V}_{\beta}\right).
 $$
 
-## Function inputs
+## Inputting Data
 The data inputs for `bdplm` are via dataframes `data` and `data0` that must have matching column names. Each dataframe must have a binary column named `treatment` that indicates treatment vs. control. If no covariate columns are present, users should use the `bdpnormal` function. Currently, both `data` and `data0` must be input since only a two-armed clinical trial with historical data has been implemented.
 
 
@@ -212,38 +212,38 @@ Throughout this package, we define a two-arm trial as an analysis where a curren
 set.seed(42)
 ### Simulate  data
 # Sample sizes
-n_t  <- 25  #current treatment sample size
-n_c  <- 25  #current control sample size
-n_t0 <- 50  #historical treatment sample size
-n_c0 <- 50  #historical treatment sample size
+n_t  <- 30     # Current treatment sample size
+n_c  <- 30     # Current control sample size
+n_t0 <- 80     # Historical treatment sample size
+n_c0 <- 80     # Historical control sample size
 
-# Treatment and historical indicators
-treatment  <- c(rep(1, n_t+n_t0), rep(0, n_c+n_c0))
-historical <- c(rep(0, n_t), rep(1,n_t0), rep(0, n_c), rep(1,n_c0))
+# Treatment group vectors for current and historical data
+treatment   <- c(rep(1,n_t), rep(0,n_c))
+treatment0  <- c(rep(1,n_t0), rep(0,n_c0))
 
-# Covariate effect
-x    <- rnorm(n_t+n_c+n_t0+n_c0, 34, 5) 
+# Simulate a covariate effect for current and historical data
+x  <- rnorm(n_t+n_c, 1, 5)
+x0 <- rnorm(n_t0+n_c0, 1, 5)
 
-# Outcome
-Y  <- treatment + 0*historical + x*3.5 + rnorm(n_t+n_c+n_t0+n_c0,0,0.1)
+# Simulate outcome:
+# - Intercept of 10 for current and historical data
+# - Treatment effect of 31 for current data
+# - Treatment effect of 30 for historical data
+# - Covariate effect of 3 for current and historical data
+Y  <- 10 + 31*treatment  + x*3 + rnorm(n_t+n_c,0,5)
+Y0 <- 10 + 30*treatment0 + x0*3 + rnorm(n_t0+n_c0,0,5)
 
-# Place data in a single dataframe
-df <- data.frame(Y=Y, treatment=treatment, historical=historical, x=x)
+# Place data into separate treatment and control data frames and
+# assign historical = 0 (current) or historical = 1 (historical)
+df_ <- data.frame(Y=Y, treatment=treatment, x=x)
+df0 <- data.frame(Y=Y0, treatment=treatment0, x=x0)
 
-# Create current and historical dataframes
-df_  <- subset(df, historical==0)
-df_0 <- subset(df, historical==1)
+# Fit model using default settings
+fit <- bdplm(formula=Y ~ treatment+x, data=df_, data0=df0,
+             method="fixed")
 
-
-# Fit the model with default inputs
-fit <- bdplm(formula=Y ~ treatment+x,
-             data=df_, data0=df_0)
-
-# View estimates:
-fit$estimates$coef
-
-# View alpha discount weight parameters:
-fit$alpha_discount
-
+summary(fit)
+print(fit)
+#plot(fit)   <-- Not yet implemented
 ```
 

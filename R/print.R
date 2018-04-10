@@ -115,7 +115,8 @@ setMethod("print", signature(x = "bdpsurvival"), function(x){
 #'   \code{\link{bdplm}} function.
 #' @details Displays a print of the \code{bdplm} fit and the initial function call.
 #'   The fit includes the estimate of the intercept, treatment effect, and
-#'   covariate effects.
+#'   covariate effects. The discount function weight estimates are displayed as well.
+#'   If \code{method}="mc", the median estimate of alpha is displayed.
 #'
 #' @export
 setMethod("print", signature(x = "bdplm"), function(x){
@@ -128,6 +129,10 @@ setMethod("print", signature(x = "bdplm"), function(x){
   coefs[1,] <- round(coefs[1,], 3)
   dimnames(coefs) <- list("", names(coefs))
 
+  # Format alpha
+  alpha_mat <- apply(x$alpha_discount, 2, median)
+  alpha_mat <- matrix(alpha_mat, nrow=1)
+  dimnames(alpha_mat) <- list("", names(x$alpha_discount))
 
   # Print output
   cat("\n")
@@ -136,6 +141,8 @@ setMethod("print", signature(x = "bdplm"), function(x){
   cat("\n\n")
   cat("Coefficients:\n")
   print(coefs)
+  cat("\n\n")
+  cat("Discount function value (alpha):\n")
+  print(alpha_mat)
   cat("\n")
-
 })

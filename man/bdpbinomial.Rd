@@ -7,9 +7,9 @@
 \usage{
 bdpbinomial(y_t = NULL, N_t = NULL, y0_t = NULL, N0_t = NULL,
   y_c = NULL, N_c = NULL, y0_c = NULL, N0_c = NULL,
-  discount_function = "weibull", alpha_max = 1, fix_alpha = FALSE,
+  discount_function = "identity", alpha_max = 1, fix_alpha = FALSE,
   a0 = 1, b0 = 1, number_mcmc = 10000, weibull_scale = 0.135,
-  weibull_shape = 3, method = "fixed", compare = TRUE)
+  weibull_shape = 3, method = "mc", compare = TRUE)
 }
 \arguments{
 \item{y_t}{scalar. Number of events for the current treatment group.}
@@ -33,7 +33,7 @@ Currently supports \code{weibull}, \code{scaledweibull}, and
 \code{identity}. The discount function \code{scaledweibull} scales
 the output of the Weibull CDF to have a max value of 1. The \code{identity}
 discount function uses the posterior probability directly as the discount
-weight. Default value is "\code{weibull}".}
+weight. Default value is "\code{identity}".}
 
 \item{alpha_max}{scalar. Maximum weight the discount function can apply.
 Default is 1. For a two-arm trial, users may specify a vector of two values
@@ -53,19 +53,19 @@ used to compute alpha, the weight parameter of the historical data. Default
 value is 0.135. For a two-arm trial, users may specify a vector of two values
 where the first value is used to estimate the weight of the historical
 treatment group and the second value is used to estimate the weight of the
-historical control group.}
+historical control group. Not used when \code{discount_function} = "identity".}
 
 \item{weibull_shape}{scalar. Shape parameter of the Weibull discount function
 used to compute alpha, the weight parameter of the historical data. Default
 value is 3. For a two-arm trial, users may specify a vector of two values
 where the first value is used to estimate the weight of the historical
 treatment group and the second value is used to estimate the weight of the
-historical control group.}
+historical control group. Not used when \code{discount_function} = "identity".}
 
 \item{method}{character. Analysis method with respect to estimation of the weight
-paramter alpha. Default value "\code{fixed}" estimates alpha once and holds it fixed
-throughout the analysis. Alternative method "\code{mc}" estimates alpha for each
-Monte Carlo iteration. See the the \code{bdpbinomial} vignette \cr
+paramter alpha. Default method "\code{mc}" estimates alpha for each
+Monte Carlo iteration. Alternate value "\code{fixed}" estimates alpha once and
+holds it fixed throughout the analysis. See the the \code{bdpbinomial} vignette \cr
 \code{vignette("bdpbinomial-vignette", package="bayesDP")} for more details.}
 
 \item{compare}{logical. Should a comparison object be included in the fit?
@@ -147,19 +147,17 @@ the following components:
 \details{
 \code{bdpbinomial} uses a two-stage approach for determining the
   strength of historical data in estimation of a binomial count mean outcome.
-  In the first stage, a Weibull distribution function is used as a
-  \emph{discount function} that defines the maximum strength of the
-  historical data (via \code{weibull_shape}, \code{weibull_scale}, and
-  \code{alpha_max}) and discounts based on disagreement with the current data.
-  Disagreement between current and historical data is determined by stochastically
-  comparing the respective posterior distributions under noninformative priors.
-  With binomial data, the comparison is the proability (\code{p}) that the current
+  In the first stage, a \emph{discount function} is used that that defines the
+  maximum strength of the historical data and discounts based on disagreement with
+  the current data. Disagreement between current and historical data is determined by
+  stochastically comparing the respective posterior distributions under noninformative
+  priors. With binomial data, the comparison is the proability (\code{p}) that the current
   count is less than the historical count. The comparison metric \code{p} is then
   input into the Weibull discount function and the final strength of the
   historical data is returned (alpha).
 
  In the second stage, posterior estimation is performed where the discount
- function parameter, \code{alpha}, is used as a fixed value for all posterior
+ function parameter, \code{alpha}, is used incorporated in all posterior
  estimation procedures.
 
  To carry out a single arm (OPC) analysis, data for the current treatment
@@ -177,10 +175,11 @@ the following components:
 }
 \examples{
 # One-arm trial (OPC) example
-fit <- bdpbinomial(y_t           = 10,
-                   N_t           = 500,
-                   y0_t          = 25,
-                   N0_t          = 250)
+fit <- bdpbinomial(y_t    = 10,
+                   N_t    = 500,
+                   y0_t   = 25,
+                   N0_t   = 250,
+                   method = "fixed")
 summary(fit)
 print(fit)
 \dontrun{
@@ -188,14 +187,15 @@ plot(fit)
 }
 
 # Two-arm (RCT) example
-fit2 <- bdpbinomial(y_t = 10,
-                    N_t = 500,
-                    y0_t = 25,
-                    N0_t = 250,
-                    y_c = 8,
-                    N_c = 500,
-                    y0_c = 20,
-                    N0_c = 250)
+fit2 <- bdpbinomial(y_t    = 10,
+                    N_t    = 500,
+                    y0_t   = 25,
+                    N0_t   = 250,
+                    y_c    = 8,
+                    N_c    = 500,
+                    y0_c   = 20,
+                    N0_c   = 250,
+                    method = "fixed")
 summary(fit2)
 print(fit2)
 \dontrun{
