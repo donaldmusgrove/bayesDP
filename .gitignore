@@ -1,7 +1,8 @@
-.Rproj.user
 .Rhistory
 .RData
 .Ruserdata
+.Rproj.user
+*.Rproj
 *.o
 *.dll
 *.so
