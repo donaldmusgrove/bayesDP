@@ -84,8 +84,15 @@ where now $I(control_i)$ indicates whether observation $i$ is in the control arm
 In the first estimation step, the historical data weight $\hat{\alpha}$ is estimated. In the case of a two-arm trial, where both treatment and control data are available, an $\hat{\alpha}$ value is estimated separately for each of the treatment and control arms. Of course, historical treatment or historical control data must be present, otherwise $\hat{\alpha}$ is not estimated for the corresponding arm.
 
 When historical data are available, estimation of $\hat{\alpha}$ is carried out as follows. Let $\boldsymbol{y}$ and $\boldsymbol{y}_0$ denote the current and historical data, respectively. The following linear regression model is then fit to the data:
-$$y_i = \tilde{\beta}_0 + \tilde{\beta}_1I(historical_i) + x_{1i}\tilde{\beta}_2 + \cdots+x_{mi}\tilde{\beta}_m + \varepsilon_i, \varepsilon_i \sim \mathcal{N}ormal\left(0,\,\sigma^2\right),\,\,\,i=1,\dots,n,$$
-where $I(historical_i)$ indicates whether observation $i$ is historical. With vague priors on each parameter, we estimate the posterior probability that $\tilde{\beta}_1 \ne 0$, i.e., $p = Pr\left(\tilde{\beta_1} \ne 0 \mid \boldsymbol{y}, \boldsymbol{y}_0, \tilde{\beta}_0, \tilde{\beta}_2, \dots, \tilde{\beta}_m,\sigma^2\right)$.
+$$y_i = \tilde{\beta}_0 + \tilde{\beta}_1I(historical_i) + x_{2i}\tilde{\beta}_2 + \cdots+x_{mi}\tilde{\beta}_m + \varepsilon_i, \varepsilon_i \sim \mathcal{N}ormal\left(0,\,\sigma^2\right),\,\,\,i=1,\dots,n,$$
+where $I(historical_i)$ indicates whether observation $i$ is historical. With vague priors on each parameter, we estimate the posterior probability that $\tilde{\beta}_1 > 0$ by first computing $p_1 = Pr\left(\tilde{\beta_1} > 0 \mid \boldsymbol{y}, \boldsymbol{y}_0\right)$. Then, we calculate the posterior probability $p$ as
+
+$$
+p=\begin{cases}
+2p_{1}, & p_{1}\le0.5\\
+2\left(1-p_{1}\right), & p_{1}>0.5.
+\end{cases}
+$$
 
 Finally, for a discount function, denoted $W$, $\hat{\alpha}$ is computed as 
 $$
@@ -160,7 +167,7 @@ $$
 \end{array}
 $$
 where $\boldsymbol{\mu}_{\beta}=\left(\mu_0,\,\mu_1,\,\mu_2,\dots,\,\mu_m\right)^T$
-and $\boldsymbol{\Sigma}_{\beta}=\mbox{diag}\left(\tau^2_0/\alpha_{00},\,\tau^2_1/\alpha{01},\,\tau^2_2,\dots,\tau^2_m\right)$ are known and $\boldsymbol{\Sigma}_y=\sigma^2\mathbf{I}_n$. Here, $\mu_0$ and $\mu_1$ are the prior means of the control and treatment effects, respectively, while $\mu_2,\dots,\,\mu_m$ are the prior means of the covariate effects. Likewise, $\tau^2_0/\alpha_{00}$ and $\tau^2_1/\alpha_{01}$ are the prior variances of the control and treatment effects (weighted by the discount function result $\alpha$), respectively, while $\tau^2_2,\dots,\tau^2_m$ are the prior variances of the remaining covariate effects.
+and $\boldsymbol{\Sigma}_{\beta}=\mbox{diag}\left(\tau^2_0/\alpha_{00},\,\tau^2_1/\alpha_{01},\,\tau^2_2,\dots,\tau^2_m\right)$ are known and $\boldsymbol{\Sigma}_y=\sigma^2\mathbf{I}_n$. Here, $\mu_0$ and $\mu_1$ are the prior means of the control and treatment effects, respectively, while $\mu_2,\dots,\,\mu_m$ are the prior means of the covariate effects. Likewise, $\tau^2_0/\alpha_{00}$ and $\tau^2_1/\alpha_{01}$ are the prior variances of the control and treatment effects (weighted by the discount function result $\alpha$), respectively, while $\tau^2_2,\dots,\tau^2_m$ are the prior variances of the remaining covariate effects.
 
 Using what we refer to as the Gelman parameterization (see Gelman's Bayesian Data Analysis, 3rd edition, chapter 14, for more information), the model can be reparameterized to improve computational efficiency. First, write
 $$
