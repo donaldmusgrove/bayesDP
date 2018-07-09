@@ -1,7 +1,6 @@
 # bayesDP 1.3.2
 ## Bug fixes and minor improvements
 * Minor bdplm vignette typo fixes
-* Updated description to allow older R versions to use the package
 
 
 # bayesDP 1.3.1
