@@ -19,7 +19,8 @@ NeedsCompilation: yes
 Maintainer: Shawn Balcome <sbalcome@mdic.org>
 Repository: CRAN
 Imports:
-    Rcpp
+    Rcpp,
+    MCMCpack
 LinkingTo: Rcpp, RcppArmadillo
 RoxygenNote: 6.1.0
 Suggests:
