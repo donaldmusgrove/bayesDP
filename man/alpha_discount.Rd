@@ -5,8 +5,8 @@
 \alias{alpha_discount,ANY-method}
 \title{Bayesian Discount Prior: Historical Data Weight (alpha)}
 \usage{
-alpha_discount(p_hat = NULL, discount_function = "weibull", alpha_max = 1,
-  weibull_scale = 0.135, weibull_shape = 3)
+alpha_discount(p_hat = NULL, discount_function = "weibull",
+  alpha_max = 1, weibull_scale = 0.135, weibull_shape = 3)
 }
 \arguments{
 \item{p_hat}{scalar. The posterior probability of a stochastic comparison.

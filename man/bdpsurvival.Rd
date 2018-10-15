@@ -5,11 +5,11 @@
 \alias{bdpsurvival,ANY-method}
 \title{Bayesian Discount Prior: Survival Analysis}
 \usage{
-bdpsurvival(formula = formula, data = data, data0 = NULL, breaks = NULL,
-  a0 = 0.1, b0 = 0.1, surv_time = NULL, discount_function = "identity",
-  alpha_max = 1, fix_alpha = FALSE, number_mcmc = 10000,
-  weibull_scale = 0.135, weibull_shape = 3, method = "mc",
-  compare = TRUE)
+bdpsurvival(formula = formula, data = data, data0 = NULL,
+  breaks = NULL, a0 = 0.1, b0 = 0.1, surv_time = NULL,
+  discount_function = "identity", alpha_max = 1, fix_alpha = FALSE,
+  number_mcmc = 10000, weibull_scale = 0.135, weibull_shape = 3,
+  method = "mc", compare = TRUE)
 }
 \arguments{
 \item{formula}{an object of class "formula." Must have a survival object on
